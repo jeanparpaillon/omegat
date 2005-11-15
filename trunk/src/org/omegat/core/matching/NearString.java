@@ -30,38 +30,26 @@ import org.omegat.core.*;
  */
 public class NearString implements Comparable
 {
-	public NearString(StringEntry strEntry, 
-				double nearScore, 
-				byte[] nearData,
-				String projName)
-	{
-		str = strEntry;
-		score = nearScore;
-		attr = nearData;
-		if (projName != null)
-			proj = projName;
-	}
-
-	public int compareTo(Object obj)
-	{
-		NearString visitor = (NearString) obj;
-		Double homeScore = new Double(score);
-		Double visitorScore = new Double(visitor.score);
-		// return homeScore.compareTo(visitorScore);
-		// backwards, because we need to sort it this way (1.0 -> 0.9 -> ...)
-		int result = visitorScore.compareTo(homeScore);
-		if( result==0 )
-		{
-			if( equals(obj) )
-				return 0;
-			else
-				return 1;
-		}
-		return result;
-	}
-
-	public StringEntry str;
-	public double score;
-	public byte[] attr;	// matching attributes of near strEntry
-	public String proj = ""; // NOI18N
+    public NearString(StringEntry strEntry,
+            int nearScore,
+            byte[] nearData,
+            String projName)
+    {
+        str = strEntry;
+        score = nearScore;
+        attr = nearData;
+        if (projName != null)
+            proj = projName;
+    }
+    
+    public int compareTo(Object object)
+    {
+        NearString visitor = (NearString)object;
+        return (visitor.score<score) ? -1 : 1 ;
+    }
+    
+    public StringEntry str;
+    public int score;
+    public byte[] attr;	// matching attributes of near strEntry
+    public String proj = ""; // NOI18N
 }
