@@ -45,7 +45,7 @@ public class XMLTag extends Tag
     /**
      * Returns the tag in its original form as it was in original document.
      * E.g. for &lt;strong&gt; tag should return 
-     * &lt;bpt i="3"&gt;&amp;lt;strong&amp;gt;&lt;/bpt&gt;.
+     * &lt;strong&gt;.
      */
     public String toOriginal() 
     {
