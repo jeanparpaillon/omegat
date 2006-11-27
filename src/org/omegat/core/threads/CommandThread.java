@@ -315,14 +315,11 @@ public class CommandThread extends Thread
             if( !projectClosing )
                 displayError(OStrings.getString("TF_LOAD_ERROR"), e);
             else
-                StaticUtils.logRB("CT_CANCEL_LOAD");               // NOI18N
+                StaticUtils.log("Project Load aborted by user.");               // NOI18N
         }
         // Fix for bug 1571944 @author Henry Pijffers (henry.pijffers@saxnot.com)
         catch (OutOfMemoryError oome) {
             // Oh shit, we're all out of storage space!
-            // Of course we should've cleaned up after ourselves earlier,
-            // but since we didn't, do a bit of cleaning up now, otherwise
-            // we can't even inform the user about our slacking off.
             m_strEntryHash.clear();
             m_strEntryHash = null;
             m_strEntryList.clear();
@@ -346,7 +343,7 @@ public class CommandThread extends Thread
 
             // There, that should do it, now inform the user
             String msg = OStrings.getString("OUT_OF_MEMORY");
-            StaticUtils.logError("OUT_OF_MEMORY", msg);
+            StaticUtils.log(msg);
             oome.printStackTrace(StaticUtils.getLogStream());
             m_transFrame.displayError(msg, oome);
 
@@ -694,7 +691,7 @@ public class CommandThread extends Thread
         }
         catch (IOException e)
         {
-            StaticUtils.logErrorRB("CT_ERROR_CREATING_TMX");
+            StaticUtils.log(OStrings.getString("CT_ERROR_CREATING_TMX"));
             StaticUtils.log(e.getMessage());
             e.printStackTrace(StaticUtils.getLogStream());
             throw new IOException(OStrings.getString("CT_ERROR_CREATING_TMX") +
@@ -741,9 +738,8 @@ public class CommandThread extends Thread
                 continue;
             // shorten filename to that which is relative to src root
             String midName = filename.substring(srcRoot.length());
-            m_transFrame.setMessageText(StaticUtils.format(
-                OStrings.getString("CT_COMPILE_FILE_MX"), new Object[] {midName}));
-
+            m_transFrame.setMessageText(OStrings.getString("CT_COMPILE_FILE_MX") + midName);
+            
             fm.translateFile(srcRoot, midName, locRoot, processedFiles);
         }
         m_transFrame.setMessageText(OStrings.getString("CT_COMPILE_DONE_MX"));
@@ -885,7 +881,7 @@ public class CommandThread extends Thread
             {
                 if (!src.mkdirs())
                 {
-                    String msg = OStrings.getString("CT_ERROR_CREATE") + "\n(.../src/)";      // NOI18N
+                    String msg = OStrings.getString("CT_ERROR_CREATE") + " (.../src/)";      // NOI18N
                     throw new IOException(msg);
                 }
             }
@@ -896,7 +892,7 @@ public class CommandThread extends Thread
             {
                 if (!glos.mkdirs())
                 {
-                    String msg = OStrings.getString("CT_ERROR_CREATE") + "\n(.../glos/)";     // NOI18N
+                    String msg = OStrings.getString("CT_ERROR_CREATE") + " (.../glos/)";     // NOI18N
                     throw new IOException(msg);
                 }
             }
@@ -907,7 +903,7 @@ public class CommandThread extends Thread
             {
                 if (!tm.mkdirs())
                 {
-                    String msg = OStrings.getString("CT_ERROR_CREATE") + "\n(.../tm/)";       // NOI18N
+                    String msg = OStrings.getString("CT_ERROR_CREATE") + " (.../tm/)";       // NOI18N
                     throw new IOException(msg);
                 }
             }
@@ -918,7 +914,7 @@ public class CommandThread extends Thread
             {
                 if (!loc.mkdirs())
                 {
-                    String msg = OStrings.getString("CT_ERROR_CREATE") + "\n(.../target/)"; // NOI18N
+                    String msg = OStrings.getString("CT_ERROR_CREATE") + " (.../target/)"; // NOI18N
                     throw new IOException(msg);
                 }
             }
@@ -946,7 +942,8 @@ public class CommandThread extends Thread
             proj = new File(m_config.getProjectInternal() + OConsts.STATUS_EXTENSION);
             if (!proj.exists())
             {
-                StaticUtils.logErrorRB("CT_ERROR_CANNOT_FIND_TMX", new Object[] {proj}); // NOI18N
+                StaticUtils.log(OStrings.getString("CT_ERROR_CANNOT_FIND_TMX")+
+                "'" + proj + "'"); // NOI18N
                 // nothing to do here
                 return;
             }
@@ -1020,8 +1017,7 @@ public class CommandThread extends Thread
             // feed file name to project window
             String filepath = filename.substring(m_config.getSourceRoot().length());
             
-            m_transFrame.setMessageText(StaticUtils.format(
-                OStrings.getString("CT_LOAD_FILE_MX"), new Object[] {filepath}));
+            m_transFrame.setMessageText(OStrings.getString("CT_LOAD_FILE_MX") + filepath);
             
             m_curFile = new ProjectFileData();
             m_curFile.name = filename;
@@ -1278,7 +1274,7 @@ public class CommandThread extends Thread
      */
     void displayError(String msg, Throwable e)
     {
-        StaticUtils.logRB("LD_ERROR", new Object[] {msg}); // NOI18N
+        StaticUtils.log(OStrings.getString("LD_ERROR") + " " + msg); // NOI18N
         e.printStackTrace(StaticUtils.getLogStream());
         e.printStackTrace();
         StaticUtils.log("----------------------------"); // NOI18N

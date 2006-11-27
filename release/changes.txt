@@ -1,37 +1,46 @@
 ----------------------------------------------------------------------
- OmegaT 1.7.0 Changes
+ OmegaT 1.6.1 Changes
 ----------------------------------------------------------------------
 
-1.7.0 vs. 1.6.1_01
-
-  2 Enhancements
-  1 Bugfixes
-
-----------------------------------------------------------------------
-1.7.0
-SAY SOMETHING USEFUL
-
- Enhancements:
-
-  - Jump to segment #
-  http://sourceforge.net/support/tracker.php?aid=1086959
-
-  - Indicate number of results in search window
-  http://sourceforge.net/support/tracker.php?aid=1427915
-
- Bug fixes:
-
-  - Hardcoded bits of text unlocalisable
-  http://sourceforge.net/support/tracker.php?aid=1602798
-
-----------------------------------------------------------------------
-
-1.6.1_01 vs. 1.4.5.04
- !!!COPY FROM 1.6.1_01 RELEASE!!!
+1.6.1 vs. 1.4.5.04
+   60 Enchancements
+  118 Bugfixes
 
 ----------------------------------------------------------------------
 1.6.1_01
- !!!COPY FROM 1.6.1_01 RELEASE!!!
+Contains new localisations plus a couple bug fixes
+
+ Implemented requests:
+
+  -
+
+ Other enhancements:
+
+  - French UI localisation + instant start guide translation
+
+  - Brazilian Portugese UI localisation + instant start guide
+  translation
+
+  - Slovak UI localisation + full manual translation
+
+  - Italian instant start guide translation
+
+ Bug fixes:
+
+   - Localisation errors
+   http://sourceforge.net/support/tracker.php?aid=1598209
+
+   - Some texts not loaded from external resource bundle
+   http://sourceforge.net/support/tracker.php?aid=1602787
+
+   - [target=japanese] some trailing spaces are not reproduced
+   http://sourceforge.net/support/tracker.php?aid=1599209
+
+   - Insert best match (% setting)
+   http://sourceforge.net/support/tracker.php?aid=1599127
+
+   - Segmentation of bundles on empty lines
+   http://sourceforge.net/support/tracker.php?aid=1577534
 
 ----------------------------------------------------------------------
 1.6.1

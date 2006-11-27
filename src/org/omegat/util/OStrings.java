@@ -34,7 +34,6 @@ import java.util.PropertyResourceBundle;
  * Localizable strings.
  * <p>
  * Please don't add any new strings here, use <code>getString</code> method.
- * This class still has so many strings for legacy reasons only.
  *
  * @author Keith Godfrey
  * @author Maxym Mykhalchuk

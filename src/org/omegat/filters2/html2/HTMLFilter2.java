@@ -206,9 +206,8 @@ public class HTMLFilter2 extends AbstractFilter
         }
         catch( Exception e )
         {
-            StaticUtils.logErrorRB("HTML_EXC_EDIT_OPTIONS");
-            StaticUtils.log(e.getMessage());
-            e.printStackTrace(StaticUtils.getLogStream());
+            StaticUtils.log("XHTML filter thrown an exception: " +              // NOI18N
+                    e.getMessage());
             return currentOptions;
         }
     }

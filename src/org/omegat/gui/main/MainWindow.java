@@ -55,9 +55,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.swing.ImageIcon;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -327,7 +324,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         setAccelerator(gotoNextUntranslatedMenuItem , KeyEvent.VK_U);
         setAccelerator(gotoNextSegmentMenuItem , KeyEvent.VK_N);
         setAccelerator(gotoPreviousSegmentMenuItem , KeyEvent.VK_P);
-        setAccelerator(gotoSegmentMenuItem, KeyEvent.VK_J);
         
         //setAccelerator(viewFileListCheckBoxMenuItem, KeyEvent.VK_L);
         setAccelerator(viewFileListMenuItem, KeyEvent.VK_L);
@@ -674,8 +670,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         activateEntry();
     }
     
-    
-    
     /**
      * Finds the next untranslated entry in the document.
      * <p>
@@ -819,10 +813,10 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     {
         // build local offsets
         int start = m_segmentStartOffset + m_sourceDisplayLength +
-                OStrings.getSegmentStartMarker().length() + 1;
+                OStrings.getSegmentStartMarker().length();
         int end = editor.getTextLength() - m_segmentEndInset -
-                OStrings.getSegmentEndMarker().length() - 1;
-
+                OStrings.getSegmentEndMarker().length();
+        
         // remove text
         editor.select(start, end);
         editor.replaceSelection(text);
@@ -883,7 +877,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         gotoNextSegmentMenuItem.setEnabled(false);
         gotoNextUntranslatedMenuItem.setEnabled(false);
         gotoPreviousSegmentMenuItem.setEnabled(false);
-        gotoSegmentMenuItem.setEnabled(false);
         
         //viewFileListCheckBoxMenuItem.setEnabled(false);
         viewFileListMenuItem.setEnabled(false);
@@ -936,7 +929,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         gotoNextSegmentMenuItem.setEnabled(true);
         gotoNextUntranslatedMenuItem.setEnabled(true);
         gotoPreviousSegmentMenuItem.setEnabled(true);
-        gotoSegmentMenuItem.setEnabled(true);
         
         //viewFileListCheckBoxMenuItem.setEnabled(true);
         viewFileListMenuItem.setEnabled(true);
@@ -1219,107 +1211,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         }
         
     }
-
-    /**
-      * Asks the user for a segment number and then displays the segment.
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public void doGotoEntry() {
-        // Create a dialog for input
-        final JOptionPane input = new JOptionPane(OStrings.getString("MW_PROMPT_SEG_NR_MSG"),
-                                                  JOptionPane.PLAIN_MESSAGE,
-                                                  JOptionPane.OK_CANCEL_OPTION); // create option pane
-        input.setWantsInput(true); // make it require input
-        final JDialog dialog = new JDialog(
-            this, OStrings.getString("MW_PROMPT_SEG_NR_TITLE"), true); // create dialog
-        dialog.setContentPane(input); // add option pane to dialog
-
-        // Make the dialog verify the input
-        input.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent event) {
-                // Handle the event
-                if (dialog.isVisible() && (event.getSource() == input)) {
-                    // If user pressed Enter or OK, check the input
-                    String property = event.getPropertyName();
-                    Object value    = input.getValue();
-
-                    // Don't do the checks if no option has been selected
-                    if (value == JOptionPane.UNINITIALIZED_VALUE)
-                        return;
-
-                    if (   property.equals(JOptionPane.INPUT_VALUE_PROPERTY)
-                        || (   property.equals(JOptionPane.VALUE_PROPERTY)
-                            && ((Integer)value).intValue() == JOptionPane.OK_OPTION)) {
-                        // Prevent the checks from being done twice
-                        input.setValue(JOptionPane.UNINITIALIZED_VALUE);
-
-                        // Get the value entered by the user
-                        String inputValue = (String)input.getInputValue();
-
-                        // Check if the user entered a value at all
-                        if ((inputValue == null) || (inputValue.trim().length() == 0)) {
-                            // Show error message
-                            displayErrorMessage();
-                            return;
-                        }
-
-                        // Check if the user really entered a number
-                        int segmentNr = -1;
-                        try {
-                            // Just parse it. If parsed, it's a number.
-                            segmentNr = Integer.parseInt(inputValue);
-                        }
-                        catch (NumberFormatException e) {
-                            // If the exception is thrown, the user didn't enter a number
-                            // Show error message
-                            displayErrorMessage();
-                            return;
-                        }
-
-                        // Check if the segment number is within bounds
-                        if (segmentNr < 1 || segmentNr > CommandThread.core.numEntries()) {
-                            // Tell the user he has to enter a number within certain bounds
-                            displayErrorMessage();
-                            return;
-                        }
-                    }
-
-                    // If we're here, the user has either pressed Cancel/Esc,
-                    // or has entered a valid number. In all cases, close the dialog.
-                    dialog.setVisible(false);
-                }
-            }
-
-            private void displayErrorMessage() {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    StaticUtils.format(OStrings.getString("MW_SEGMENT_NUMBER_ERROR"),
-                                         new Object[] {new Integer(CommandThread.core.numEntries())}),
-                    OStrings.getString("TF_ERROR"),
-                    JOptionPane.ERROR_MESSAGE
-                );
-            }
-        });
-
-        // Show the input dialog
-        dialog.pack(); // make it look good
-        dialog.setLocationRelativeTo(this); // center it on the main window
-        dialog.setVisible(true); // show it
-
-        // Get the input value, if any
-        Object inputValue = input.getInputValue();
-        if ((inputValue != null) && !inputValue.equals(JOptionPane.UNINITIALIZED_VALUE)) {
-            // Go to the segment the user requested
-            try {
-                doGotoEntry((String)inputValue);
-            }
-            catch (ClassCastException e) {
-                // Shouldn't happen, but still... Just eat silently.
-            }
-        }
-    }
-
+    
     public void doGotoEntry(int entryNum)
     {
         if (!m_projectLoaded)
@@ -1331,10 +1223,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         if (m_curEntryNum < m_xlFirstEntry)
         {
             if (m_curEntryNum < 0)
-                m_curEntryNum = CommandThread.core.numEntries() - 1;
-            // empty project bugfix:
-            if (m_curEntryNum < 0)
-                m_curEntryNum = 0;
+                m_curEntryNum = CommandThread.core.numEntries();
             loadDocument();
         }
         else if (m_curEntryNum > m_xlLastEntry)
@@ -2309,7 +2198,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         gotoNextUntranslatedMenuItem = new javax.swing.JMenuItem();
         gotoNextSegmentMenuItem = new javax.swing.JMenuItem();
         gotoPreviousSegmentMenuItem = new javax.swing.JMenuItem();
-        gotoSegmentMenuItem = new javax.swing.JMenuItem();
         toolsMenu = new javax.swing.JMenu();
         toolsValidateTagsMenuItem = new javax.swing.JMenuItem();
         optionsMenu = new javax.swing.JMenu();
@@ -2479,11 +2367,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 
         gotoMenu.add(gotoPreviousSegmentMenuItem);
 
-        org.openide.awt.Mnemonics.setLocalizedText(gotoSegmentMenuItem, OStrings.getString("TF_MENU_EDIT_GOTO"));
-        gotoSegmentMenuItem.addActionListener(this);
-
-        gotoMenu.add(gotoSegmentMenuItem);
-
         mainMenu.add(gotoMenu);
 
         org.openide.awt.Mnemonics.setLocalizedText(toolsMenu, OStrings.getString("TF_MENU_TOOLS"));
@@ -2652,9 +2535,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         else if (evt.getSource() == gotoPreviousSegmentMenuItem)
         {
             MainWindow.this.gotoPreviousSegmentMenuItemActionPerformed(evt);
-        }
-        else if (evt.getSource() == gotoSegmentMenuItem) {
-            MainWindow.this.gotoSegmentMenuItemActionPerformed(evt);
         }
         //else if (evt.getSource() == viewFileListCheckBoxMenuItem)
         else if (evt.getSource() == viewFileListMenuItem)
@@ -2926,11 +2806,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         doPrevEntry();
     }//GEN-LAST:event_gotoPreviousSegmentMenuItemActionPerformed
     
-    private void gotoSegmentMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_gotoSegmentMenuItemActionPerformed
-    {//GEN-HEADEREND:event_gotoSegmentMenuItemActionPerformed
-        doGotoEntry();
-    }//GEN-LAST:event_gotoSegmentMenuItemActionPerformed
-    
     private void gotoNextSegmentMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_gotoNextSegmentMenuItemActionPerformed
     {//GEN-HEADEREND:event_gotoNextSegmentMenuItemActionPerformed
         doNextEntry();
@@ -3016,7 +2891,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     private javax.swing.JMenuItem gotoNextSegmentMenuItem;
     private javax.swing.JMenuItem gotoNextUntranslatedMenuItem;
     private javax.swing.JMenuItem gotoPreviousSegmentMenuItem;
-    private javax.swing.JMenuItem gotoSegmentMenuItem;
     private javax.swing.JMenuItem helpAboutMenuItem;
     private javax.swing.JMenuItem helpContentsMenuItem;
     private javax.swing.JMenu helpMenu;

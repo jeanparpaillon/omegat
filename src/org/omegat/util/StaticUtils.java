@@ -219,7 +219,7 @@ public class StaticUtils
       * memory is saved. Token lists are not saved when
       * all tokens are requested. Again to save memory.
       */
-    private static java.util.Map tokenCache = new java.util.Hashtable();
+    private static java.util.Map tokenCache    = new java.util.Hashtable();
 
     /** Removes all token lists from the cache. */
     public static void clearTokenCache() {
@@ -227,40 +227,41 @@ public class StaticUtils
     }
 
     /**
-      * Breaks a string into tokens.
-      * <p>
-      * Examples:
-      * <ul>
-      * <li> This is a semi-good way. -> "this", "is", "a", "semi-good", "way"
-      * <li> Fine, thanks, and you? -> "fine", "thanks", "and", "you"
-      * <li> C&all this action -> "call", "this", "action" ('&' is eaten)
-      * </ul>
-      * <p>
-      * Also skips OmegaT tags.
-      *
-      * @param str string to tokenize
-      * @return List of all tokens (words only)
-      */
+     * Builds a list of tokens and a list of their offsets w/in a file.
+     * <p>
+     * It breaks string into tokens like in the following examples:
+     * <ul>
+     * <li> This is a semi-good way. -> "this", "is", "a", "semi-good", "way"
+     * <li> Fine, thanks, and you? -> "fine", "thanks", "and", "you"
+     * <li> C&all this action -> "call", "this", "action" ('&' is eaten)
+     * </ul>
+     * <p>
+     * Also skips OmegaT tags.
+     *
+     * @param str string to tokenize
+     * @return list of tokens
+     */
     public static List tokenizeText(String str) {
         return tokenizeText(str, false);
     }
 
     /**
-      * Breaks a string into tokens.
-      * <p>
-      * Examples:
-      * <ul>
-      * <li> This is a semi-good way. -> "this", "is", "a", "semi-good", "way"
-      * <li> Fine, thanks, and you? -> "fine", "thanks", "and", "you"
-      * <li> C&all this action -> "call", "this", "action" ('&' is eaten)
-      * </ul>
-      * <p>
-      * OmegaT tags and other non-word tokens are skipped if the parameter "all" is false.
-      *
-      * @param str string to tokenize
-      * @param all If true, numbers, tags, and other non-word tokens are included in the list
-      * @return List of tokens (all)
-      */
+     * Builds a list of tokens and a list of their offsets w/in a file.
+     * <p>
+     * It breaks string into tokens like in the following examples:
+     * <ul>
+     * <li> This is a semi-good way. -> "this", "is", "a", "semi-good", "way"
+     * <li> Fine, thanks, and you? -> "fine", "thanks", "and", "you"
+     * <li> C&all this action -> "call", "this", "action" ('&' is eaten)
+     * </ul>
+     * <p>
+     * Also skips OmegaT tags.
+     *
+     * @param str string to tokenize
+     * @param all if false, only word tokens are included,
+     *            if true, non-word tokens are also included
+     * @return list of tokens
+     */
     public static List tokenizeText(String str, boolean all) {
         // check if we've already tokenized this string
         // no sense in retokenizing identical strings
@@ -313,7 +314,7 @@ public class StaticUtils
 
         return tokens;
     }
-
+    
     /**
      * Returns the names of all font families available.
      */
@@ -414,9 +415,9 @@ public class StaticUtils
             try {
                 // create a new session print stream for the log file
                 log = new SessionPrintStream( // encapsulated to output session ID
-                    new PrintStream(
-                        new FileOutputStream(getConfigDir() + FILE_LOG, true), 
-                        true, "UTF-8")); // NOI18N
+                    new PrintStream(new FileOutputStream(getConfigDir() + FILE_LOG, true),
+                                    true,
+                                    "UTF-8")); // NOI18N
             }
             catch(Exception e) {
                 // in case we cannot create a log file on dist,
@@ -455,225 +456,6 @@ public class StaticUtils
         }
 
         System.out.println(s);
-    }
-
-    /**
-      * Logs a message, retrieved from the resource bundle.
-      *
-      * @param key The key of the message in the resource bundle.
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logRB(String key) {
-        logRB(key, null);
-    }
-
-    /**
-      * Logs a message, retrieved from the resource bundle.
-      *
-      * @param key        The key of the message in the resource bundle.
-      * @param parameters Parameters for the message. These are inserted by
-      *                   using StaticUtils.format.
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logRB(String key, Object[] parameters) {
-        // Retrieve the message
-        String message = OStrings.getString(key);
-
-        // Format the message, if there are parameters
-        if (parameters != null)
-            message = format(message, parameters);
-
-        // Write the message to the log
-        log(message);
-    }
-
-    /**
-      * Writes a warning message to the log (to be retrieved from the
-      * resource bundle), preceded by a lie containing the warning ID.
-      *
-      * While the warning message can be localised, the warning ID should not,
-      * so developers can determine what warning was given by looking at the
-      * warning ID, instead of trying to interpret localised messages.
-      *
-      * @param id The key of the warning message in the resource bundle
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logWarningRB(String key) {
-        // Retrieve the waring message
-        String message = OStrings.getString(key);
-
-        // Log it
-        logWarning(key, message, null);
-    }
-
-    /**
-      * Writes a warning message to the log (to be retrieved from the
-      * resource bundle), preceded by a line containing the warning ID.
-      *
-      * While the warning message can be localised, the warning ID should not,
-      * so developers can determine what warning was given by looking at the
-      * warning ID, instead of trying to interpret localised messages.
-      *
-      * @param key        The key of the warning message in the resource bundle
-      * @param parameters Parameters for the warning message. These are
-      *                   inserted by using StaticUtils.format.
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logWarningRB(String key, Object[] parameters) {
-        // Retrieve the warning message
-        String message = OStrings.getString(key);
-
-        // Log it
-        logWarning(key, message, parameters);
-    }
-
-    /**
-      * Writes the specified warning message to the log, preceded by a line
-      * containing the warning ID.
-      *
-      * While the warning message can be localised, the warning ID should not,
-      * so developers can determine what warning was given by looking at the
-      * warning ID, instead of trying to interpret localised messages.
-      *
-      * @param id      An identification string for the warning
-      * @param message The actual warning message
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logWarning(String id, String message) {
-        logWarning(id, message, null);
-    }
-
-    /**
-      * Writes the specified warning message to the log, preceded by a line
-      * containing the warning ID.
-      *
-      * While the warning message can be localised, the warning ID should not,
-      * so developers can determine what warning was given by looking at the
-      * warning ID, instead of trying to interpret localised messages.
-      *
-      * @param id         An identification string for the warning
-      * @param message    The actual warning message
-      * @param parameters Parameters for the warning message. These are
-      *                   inserted by using StaticUtils.format.
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logWarning(String id, String message, Object[] parameters) {
-        logIdentifiableMessage(
-            format(OStrings.getString("SU_LOG_WARNING_ID"), new Object[] {id}),
-            message,
-            parameters);
-    }
-
-    /**
-      * Writes an error message to the log (to be retrieved from the
-      * resource bundle), preceded by a line containing the error ID.
-      *
-      * While the error message can be localised, the error ID should not,
-      * so developers can determine what error was given by looking at the
-      * error ID, instead of trying to interpret localised messages.
-      *
-      * @param key The key of the error message in the resource bundle
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logErrorRB(String key) {
-        // Retrieve and log the error message
-        String message = OStrings.getString(key);
-
-        // Log it
-        logError(key, message, null);
-    }
-
-    /**
-      * Writes an error message to the log (to be retrieved from the
-      * resource bundle), preceded by a line containing the error ID.
-      *
-      * While the error message can be localised, the error ID should not,
-      * so developers can determine what error was given by looking at the
-      * error ID, instead of trying to interpret localised messages.
-      *
-      * @param id         The key of the error message in the resource bundle
-      * @param parameters Parameters for the error message. These are
-      *                   inserted by using StaticUtils.format.
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logErrorRB(String key, Object[] parameters) {
-        // Retrieve the error message
-        String message = OStrings.getString(key);
-
-        // Log it
-        logError(key, message, parameters);
-    }
-
-    /**
-      * Writes the specified error message to the log, preceded by a line
-      * containing the error ID.
-      *
-      * While the error message can be localised, the error ID should not,
-      * so developers can determine what error was given by looking at the
-      * error ID, instead of trying to interpret localised messages.
-      *
-      * @param id      An identification string for the error
-      * @param message The actual error message
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logError(String id, String message) {
-        logError(id, message, null);
-    }
-
-    /**
-      * Writes the specified error message to the log, preceded by a line
-      * containing the error ID.
-      *
-      * While the error message can be localised, the error ID should not,
-      * so developers can determine what error was given by looking at the
-      * error ID, instead of trying to interpret localised messages.
-      *
-      * @param id         An identification string for the error
-      * @param message    The actual error message
-      * @param parameters Parameters for the error message. These are
-      *                   inserted by using StaticUtils.format.
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public static void logError(String id, String message, Object[] parameters) {
-        logIdentifiableMessage(
-            format(OStrings.getString("SU_LOG_ERROR_ID"), new Object[] {id}),
-            message,
-            parameters);
-    }
-
-    /**
-      * Writes the specified message to the log, preced by a line containing
-      * an identification for the message.
-      *
-      * While the message can be localised, the ID should not, so developers
-      * can determine what message was given by looking at the error ID,
-      * instead of trying to interpret localised messages.
-      *
-      * @param idLine     The identification line for the message
-      * @param message    The actual message
-      * @param parameters Parameters for the message. These are
-      *                   inserted by using StaticUtils.format.
-      */
-    protected static void logIdentifiableMessage(String idLine, String message, Object[] parameters) {
-        // First write the ID line to the log
-        log(idLine);
-
-        // Format the message, if there are parameters
-        if (parameters != null)
-            message = format(message, parameters);
-
-        // Write the message to the log
-        log(message);
     }
 
     /**
@@ -782,7 +564,7 @@ public class StaticUtils
         {
             // get the name of the operating system
             os = System.getProperty("os.name");                                 // NOI18N
-
+            
             // get the user's home directory
             home = System.getProperty("user.home");                             // NOI18N
         }
@@ -792,16 +574,15 @@ public class StaticUtils
             // the location of the config dir cannot be determined,
             // set the config dir to the current working dir
             m_configDir = new File(".").getAbsolutePath();                      // NOI18N
-
+            
             // log the exception, only do this after the config dir
             // has been set to the current working dir, otherwise
             // the log method will probably fail
-            logErrorRB("SU_USERHOME_PROP_ACCESS_ERROR");
             log(e.toString());
-
+            
             return m_configDir;
         }
-
+        
         // if os or user home is null or empty, we cannot reliably determine
         // the config dir, so we use the current working dir (= empty string)
         if ( (os == null) || (os.length() == 0) ||
@@ -872,10 +653,8 @@ public class StaticUtils
                     
                     // if the dir could not be created,
                     // set the config dir to the current working dir
-                    if (!created) {
-                        logErrorRB("SU_CONFIG_DIR_CREATE_ERROR");
+                    if (!created)
                         m_configDir = new File(".").getAbsolutePath();          // NOI18N
-                    }
                 }
             }
             catch (SecurityException e)
@@ -885,7 +664,6 @@ public class StaticUtils
                 m_configDir = new File(".").getAbsolutePath();                  // NOI18N
                 
                 // log the exception, but only after the config dir has been reset
-                logErrorRB("SU_CONFIG_DIR_CREATE_ERROR");
                 log(e.toString());
             }
         }

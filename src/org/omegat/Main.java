@@ -80,7 +80,7 @@ public class Main
         catch (Exception e)
         {
             // do nothing
-            StaticUtils.logErrorRB("MAIN_ERROR_CANT_INIT_OSLF");
+            StaticUtils.log(OStrings.getString("MAIN_ERROR_CANT_INIT_OSLF"));
         }
         
         MainWindow mainwindow = new MainWindow();

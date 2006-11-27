@@ -574,9 +574,7 @@ public class FilterMaster
         }
         catch( Exception e )
         {
-            StaticUtils.logErrorRB("FILTERMASTER_ERROR_LOADING_FILTERS_CONFIG");
-            StaticUtils.log(e.getMessage());
-            e.printStackTrace(StaticUtils.getLogStream());
+            StaticUtils.log(OStrings.getString("FILTERMASTER_ERROR_LOADING_FILTERS_CONFIG") + e);
             filters = setupBuiltinFilters();
         }
     }
@@ -744,8 +742,9 @@ public class FilterMaster
                 {
                     // couldn't load one of filters
                     // eat (almost) silently
-                    StaticUtils.logErrorRB("FILTERMASTER_ERROR_LOADING_FILTER",
-                        new Object[]{filterList.get(j), ((URL)filterList.get(0)).getFile()});
+                    StaticUtils.log("Filter '"+(String)filterList.get(j)+       // NOI18N
+                            "' from '"+((URL)filterList.get(0)).getFile()+"'"+  // NOI18N
+                            " cannot be loaded");                               // NOI18N
                 }
             }
         }
@@ -765,11 +764,9 @@ public class FilterMaster
         }
         catch( FileNotFoundException fnfe )
         {
-            StaticUtils.logErrorRB("FILTERMASTER_ERROR_SAVING_FILTERS_CONFIG");
-            StaticUtils.log(fnfe.getMessage());
-            fnfe.printStackTrace(StaticUtils.getLogStream());
+            StaticUtils.log(OStrings.getString("FILTERMASTER_ERROR_SAVING_FILTERS_CONFIG") + fnfe);
             JOptionPane.showMessageDialog(null,
-                    OStrings.getString("FILTERMASTER_ERROR_SAVING_FILTERS_CONFIG") + "\n" + fnfe,
+                    OStrings.getString("FILTERMASTER_ERROR_SAVING_FILTERS_CONFIG") + fnfe,
                     OStrings.getString("ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
         }
     }

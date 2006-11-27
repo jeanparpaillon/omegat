@@ -1,5 +1,5 @@
 ==============================================================================
-  OmegaT 1.7.0 Read Me file
+  OmegaT 1.6.1 Read Me file
 
   1.  Information about OmegaT
   2.  What is OmegaT?
@@ -115,8 +115,8 @@ Previous contributors include:
 Code has been contributed by
   Kim Bruning
   Sacha Chua
-  Maxym Mykhalchuk (lead developer)
-  Henry Pijffers (1.6, 1.7 series release manager)
+  Maxym Mykhalchuk (current lead developer)
+  Henry Pijffers (1.6 version release manager)
   Benjamin Siband
 
 Localization contributed by
@@ -150,18 +150,18 @@ Localization contributed by
 Other contributions by
   Sabine Cretella
   Dmitri Gabinski
-  Jean-Christophe Helary (documentation manager)
+  Jean-Christophe Helary (current documentation manager)
   Samuel Murray
-  Marc Prior (localization manager)
+  Marc Prior (current localization manager)
   and many, many more very helpful people
 
 OmegaT uses the following libraries:
   HTMLParser by Somik Raha, Derrick Oswald and others (LGPL License).
   http://sourceforge.net/projects/htmlparser
-
+  
   MRJ Adapter by Steve Roy (LGPL License).
   http://homepage.mac.com/sroy/mrjadapter/
-
+  
   VLDocking Framework by VLSolutions (CeCILL License).
   http://www.vlsolutions.com/en/products/docking/
 
@@ -215,10 +215,17 @@ File formats supported:
   - DocBook documentation file format
 
 Core changes:
-  TO BE DETERMINED
+  - Flexible (Sentence) Segmentation
+  - File format filters may be created as plugins
+  - Refactored code with more comments
+  - Windows installer
+  - Attributes of HTML tags are translatable
+  - Full TMX 1.1-1.4b Level 1 compatibility
+  - Partial TMX 1.4b Level 2 support
 
-New UI features (compared to OmegaT 1.6 series):
-  TO BE DETERMINED
+New UI features (comparing to 1.4 OmegaT series):
+  - Find interface rewritten with enhanced functionality
+  - Main interface improved by using dockable windows
 
 ==============================================================================
 
