@@ -33,10 +33,9 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import org.omegat.filters2.TranslationException;
-import org.omegat.util.Log;
+import org.omegat.util.xml.XMLReader;
 import org.omegat.util.OStrings;
 import org.omegat.util.StaticUtils;
-import org.omegat.util.xml.XMLReader;
 
 /**
  * A reader for XML stream.
@@ -316,8 +315,7 @@ public class XMLStreamReader
                 }
                 catch (IOException e)
                 {
-                    Log.logErrorRB("XSR_ERROR_IOEXCEPTION");
-                    Log.log(e);
+                    StaticUtils.log(OStrings.getString("XSR_ERROR_IOEXCEPTION") + e);
                 }
                 return 0;
             }
@@ -1032,7 +1030,7 @@ public class XMLStreamReader
                     break;
                     
                 default:
-                    Log.log("INTERNAL ERROR untrapped parse state " + state);	// NOI18N
+                    StaticUtils.log("INTERNAL ERROR untrapped parse state " + state);	// NOI18N
             }
             
             if (state == state_finish)

@@ -1,44 +1,45 @@
 ----------------------------------------------------------------------
- OmegaT 1.7.0 Changes
+ OmegaT 1.6.1 Changes
 ----------------------------------------------------------------------
 
-1.7.0 vs. 1.6.1_01
-
-  4 Enhancements
-  2 Bugfixes
+1.6.1_02 vs. 1.4.5.04
+   67 Enchancements
+  120 Bugfixes
 
 ----------------------------------------------------------------------
-1.7.0
-SAY SOMETHING USEFUL
+1.6.1_02
+Contains new and updated localisations, legacy manual translations,
+and two bug fixes
 
  Implemented requests:
 
-  - Jump to segment #
-  http://sourceforge.net/support/tracker.php?aid=1086959
-
-  - Indicate number of results in search window
-  http://sourceforge.net/support/tracker.php?aid=1427915
-
-  - Log file l10n and debugging
-  http://sourceforge.net/support/tracker.php?aid=1209835
+  -
 
  Other enhancements:
 
-  - New logging API
+  - French localisation updated
+
+  - Serbo-Croation UI localisation + instant start guide translation
+
+  - User manual language selection screen (displays only if a
+  translation in the system language is unavailable)
+
+  - Legacy user manual translations re-introduced for Belo-Russian,
+  German, Esperanto, Spanish, French, Japanese, and Russian.
+
+  - Italian user manual translation
+
+  - Albanian UI localisation + instant start guide translation
+
+  - Belarusian UI localisation updated
 
  Bug fixes:
 
-  - Hardcoded bits of text unlocalisable
-  http://sourceforge.net/support/tracker.php?aid=1602798
+  - Corrupted TMX after weird GUI interaction
+  http://sourceforge.net/support/tracker.php?aid=1604963
 
-  - log.txt encoding
-  http://sourceforge.net/support/tracker.php?aid=1600139
-
-----------------------------------------------------------------------
-
-1.6.1 vs. 1.4.5.04
-   60 Enchancements
-  118 Bugfixes
+  - Inconsistent license information
+  http://sourceforge.net/support/tracker.php?aid=1609275
 
 ----------------------------------------------------------------------
 1.6.1_01

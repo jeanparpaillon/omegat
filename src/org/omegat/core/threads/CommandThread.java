@@ -63,7 +63,6 @@ import org.omegat.core.ProjectProperties;
 import org.omegat.gui.main.MainWindow;
 import org.omegat.gui.messages.MessageRelay;
 import org.omegat.util.LFileCopy;
-import org.omegat.util.Log;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.PatternConsts;
@@ -218,7 +217,7 @@ public class CommandThread extends Thread
                 m_saveCount = 1;
             save();
         }
-        
+               
         m_strEntryHash.clear();
         
         m_legacyTMs.clear();
@@ -238,6 +237,8 @@ public class CommandThread extends Thread
                 m_projWin.setVisible(false);
             m_projWin.reset();
         }
+        
+        StaticUtils.clearTokenCache();
         
         numberofTranslatedSegments = 0;
     }
@@ -316,15 +317,12 @@ public class CommandThread extends Thread
             if( !projectClosing )
                 displayError(OStrings.getString("TF_LOAD_ERROR"), e);
             else
-                Log.logRB("CT_CANCEL_LOAD");               // NOI18N
+                StaticUtils.log("Project Load aborted by user.");               // NOI18N
         }
-        // Fix for bug 1571944 @author Henry Pijffers (henry.pijffers@saxnot.com)
+        // (Bit of a) fix for bug 1571944 @author Henry Pijffers (henry.pijffers@saxnot.com)
         catch (OutOfMemoryError oome) {
             // Oh shit, we're all out of storage space!
-            // Of course we should've cleaned up after ourselves earlier,
-            // but since we didn't, do a bit of cleaning up now, otherwise
-            // we can't even inform the user about our slacking off.
-            m_strEntryHash.clear();
+            m_strEntryHash.clear(); // It may be enough to clear just this, worth trying FIX!
             m_strEntryHash = null;
             m_strEntryList.clear();
             m_strEntryList = null;
@@ -346,9 +344,10 @@ public class CommandThread extends Thread
             System.gc();
 
             // There, that should do it, now inform the user
-            Log.logErrorRB("OUT_OF_MEMORY");
-            Log.log(oome);
-            m_transFrame.displayError(OStrings.getString("OUT_OF_MEMORY"), oome);
+            String msg = OStrings.getString("OUT_OF_MEMORY");
+            StaticUtils.log(msg);
+            oome.printStackTrace(StaticUtils.getLogStream());
+            m_transFrame.displayError(msg, oome);
 
             // Just quit, we can't help it anyway
             System.exit(0);
@@ -499,6 +498,11 @@ public class CommandThread extends Thread
         // Close output stream
         out.close();
     }
+    
+    // Matchers for detecting OmegaT-specific inline tags
+    private final Matcher singleTagMatcher = Pattern.compile("&lt;[\\S&&[^/\\d]]+(\\d+)/&gt;").matcher("");
+    private final Matcher startTagMatcher  = Pattern.compile("&lt;[\\S&&[^/\\d]]+(\\d+)&gt;").matcher("");
+    private final Matcher endTagMatcher    = Pattern.compile("&lt;/[\\S&&[^\\d]]+(\\d+)&gt;").matcher("");
 
     /**
       * Creates three-quarted-assed TMX level 2 segments from OmegaT internal segments
@@ -514,15 +518,15 @@ public class CommandThread extends Thread
 
        // Find all single tags
        //Matcher match = Pattern.compile("&lt;[a-zA-Z\-]+\\d+/&gt;").matcher(segment);
-       Matcher match = Pattern.compile("&lt;[\\S&&[^/\\d]]+(\\d+)/&gt;").matcher(segment);
+       singleTagMatcher.reset(segment);
        int previousMatchEnd = 0;
-       while (match.find()) {
+       while (singleTagMatcher.find()) {
           // get the OmegaT tag and tag number
-          String tag = match.group();
-          String tagNumber = match.group(1);
+          String tag       = singleTagMatcher.group();
+          String tagNumber = singleTagMatcher.group(1);
 
           // Wrap the OmegaT tag in TMX tags in the result
-          result.append(segment.substring(previousMatchEnd, match.start())); // text betw. prev. & cur. match
+          result.append(segment.substring(previousMatchEnd, singleTagMatcher.start())); // text betw. prev. & cur.
           result.append("<ph x='");    // TMX start tag + i attribute
           result.append(tagNumber);    // OmegaT tag number used as x attribute
           result.append("'>");
@@ -530,7 +534,7 @@ public class CommandThread extends Thread
           result.append("</ph>");      // TMX end tag
 
           // Store the current match's end positions
-          previousMatchEnd = match.end();
+          previousMatchEnd = singleTagMatcher.end();
        }
 
        // Append the text from the last match (single tag) to the end of the segment
@@ -539,19 +543,19 @@ public class CommandThread extends Thread
        result.setLength(0); // Clear result buffer
 
        // Find all start tags
-       match = Pattern.compile("&lt;[\\S&&[^/\\d]]+(\\d+)&gt;").matcher(segment);
+       startTagMatcher.reset(segment);
        previousMatchEnd = 0;
-       while (match.find()) {
+       while (startTagMatcher.find()) {
           // get the OmegaT tag and tag number
-          String tag = match.group();
-          String tagNumber = match.group(1);
+          String tag       = startTagMatcher.group();
+          String tagNumber = startTagMatcher.group(1);
 
           // Check if the corresponding end tag is in this segment too
           String endTag = "&lt;/" + tag.substring(4);
           boolean paired = segment.indexOf(endTag) > -1;
 
           // Wrap the OmegaT tag in TMX tags in the result
-          result.append(segment.substring(previousMatchEnd, match.start())); // text betw. prev. & cur. match
+          result.append(segment.substring(previousMatchEnd, startTagMatcher.start())); // text betw. prev. & cur.
           if (paired) {
              result.append("<bpt i='"); // TMX start tag + i attribute
              result.append(tagNumber);  // OmegaT tag number used as i attribute
@@ -567,7 +571,7 @@ public class CommandThread extends Thread
           result.append(paired ? "</bpt>" : "</it>"); // TMX end tag
 
           // Store the current match's end positions
-          previousMatchEnd = match.end();
+          previousMatchEnd = startTagMatcher.end();
        }
 
        // Append the text from the last match (start tag) to the end of the segment
@@ -576,19 +580,19 @@ public class CommandThread extends Thread
        result.setLength(0); // Clear result buffer
 
        // Find all end tags
-       match = Pattern.compile("&lt;/[\\S&&[^\\d]]+(\\d+)&gt;").matcher(segment);
+       endTagMatcher.reset(segment);
        previousMatchEnd = 0;
-       while (match.find()) {
+       while (endTagMatcher.find()) {
           // get the OmegaT tag and tag number
-          String tag = match.group();
-          String tagNumber = match.group(1);
+          String tag       = endTagMatcher.group();
+          String tagNumber = endTagMatcher.group(1);
 
           // Check if the corresponding start tag is in this segment too
           String startTag = "&lt;" + tag.substring(5);
           boolean paired = segment.indexOf(startTag) > -1;
 
           // Wrap the OmegaT tag in TMX tags in the result
-          result.append(segment.substring(previousMatchEnd, match.start())); // text betw. prev. & cur. match
+          result.append(segment.substring(previousMatchEnd, endTagMatcher.start())); // text betw. prev. & cur.
           result.append(paired ? "<ept i='" : "<it pos='end' x='"); // TMX start tag + i/x attribute
           result.append(tagNumber);                                 // OmegaT tag number used as i/x attribute
           result.append("'>");
@@ -596,7 +600,7 @@ public class CommandThread extends Thread
           result.append(paired ? "</ept>" : "</it>");               // TMX end tag
 
           // Store the current match's end positions
-          previousMatchEnd = match.end();
+          previousMatchEnd = endTagMatcher.end();
        }
 
        // Append the text from the last match (end tag) to the end of the segment
@@ -696,8 +700,9 @@ public class CommandThread extends Thread
         }
         catch (IOException e)
         {
-            Log.logErrorRB("CT_ERROR_CREATING_TMX");
-            Log.log(e);
+            StaticUtils.log(OStrings.getString("CT_ERROR_CREATING_TMX"));
+            StaticUtils.log(e.getMessage());
+            e.printStackTrace(StaticUtils.getLogStream());
             throw new IOException(OStrings.getString("CT_ERROR_CREATING_TMX") +
                     "\n" +                                                      // NOI18N
                     e.getMessage());
@@ -742,9 +747,8 @@ public class CommandThread extends Thread
                 continue;
             // shorten filename to that which is relative to src root
             String midName = filename.substring(srcRoot.length());
-            m_transFrame.setMessageText(StaticUtils.format(
-                OStrings.getString("CT_COMPILE_FILE_MX"), new Object[] {midName}));
-
+            m_transFrame.setMessageText(OStrings.getString("CT_COMPILE_FILE_MX") + midName);
+            
             fm.translateFile(srcRoot, midName, locRoot, processedFiles);
         }
         m_transFrame.setMessageText(OStrings.getString("CT_COMPILE_DONE_MX"));
@@ -886,7 +890,7 @@ public class CommandThread extends Thread
             {
                 if (!src.mkdirs())
                 {
-                    String msg = OStrings.getString("CT_ERROR_CREATE") + "\n(.../src/)";      // NOI18N
+                    String msg = OStrings.getString("CT_ERROR_CREATE") + " (.../src/)";      // NOI18N
                     throw new IOException(msg);
                 }
             }
@@ -897,7 +901,7 @@ public class CommandThread extends Thread
             {
                 if (!glos.mkdirs())
                 {
-                    String msg = OStrings.getString("CT_ERROR_CREATE") + "\n(.../glos/)";     // NOI18N
+                    String msg = OStrings.getString("CT_ERROR_CREATE") + " (.../glos/)";     // NOI18N
                     throw new IOException(msg);
                 }
             }
@@ -908,7 +912,7 @@ public class CommandThread extends Thread
             {
                 if (!tm.mkdirs())
                 {
-                    String msg = OStrings.getString("CT_ERROR_CREATE") + "\n(.../tm/)";       // NOI18N
+                    String msg = OStrings.getString("CT_ERROR_CREATE") + " (.../tm/)";       // NOI18N
                     throw new IOException(msg);
                 }
             }
@@ -919,7 +923,7 @@ public class CommandThread extends Thread
             {
                 if (!loc.mkdirs())
                 {
-                    String msg = OStrings.getString("CT_ERROR_CREATE") + "\n(.../target/)"; // NOI18N
+                    String msg = OStrings.getString("CT_ERROR_CREATE") + " (.../target/)"; // NOI18N
                     throw new IOException(msg);
                 }
             }
@@ -947,7 +951,8 @@ public class CommandThread extends Thread
             proj = new File(m_config.getProjectInternal() + OConsts.STATUS_EXTENSION);
             if (!proj.exists())
             {
-                Log.logErrorRB("CT_ERROR_CANNOT_FIND_TMX", new Object[] {proj}); // NOI18N
+                StaticUtils.log(OStrings.getString("CT_ERROR_CANNOT_FIND_TMX")+
+                "'" + proj + "'"); // NOI18N
                 // nothing to do here
                 return;
             }
@@ -1021,8 +1026,7 @@ public class CommandThread extends Thread
             // feed file name to project window
             String filepath = filename.substring(m_config.getSourceRoot().length());
             
-            m_transFrame.setMessageText(StaticUtils.format(
-                OStrings.getString("CT_LOAD_FILE_MX"), new Object[] {filepath}));
+            m_transFrame.setMessageText(OStrings.getString("CT_LOAD_FILE_MX") + filepath);
             
             m_curFile = new ProjectFileData();
             m_curFile.name = filename;
@@ -1279,9 +1283,10 @@ public class CommandThread extends Thread
      */
     void displayError(String msg, Throwable e)
     {
-        Log.logRB("LD_ERROR", new Object[] {msg}); // NOI18N
-        Log.log(e);
-        Log.log("----------------------------"); // NOI18N
+        StaticUtils.log(OStrings.getString("LD_ERROR") + " " + msg); // NOI18N
+        e.printStackTrace(StaticUtils.getLogStream());
+        e.printStackTrace();
+        StaticUtils.log("----------------------------"); // NOI18N
         if( m_transFrame!=null )
             MessageRelay.uiMessageDisplayError(m_transFrame, msg, e);
     }
@@ -1312,7 +1317,6 @@ public class CommandThread extends Thread
         String tokenPrev;
         String tokenStr = new String();
         
-/* try { // FIX: remove this when bug 1589484 is fixed */
         int start = breaker.first();
         for (int end = breaker.next(); end!=BreakIterator.DONE; 
                 start = end, end = breaker.next())
@@ -1335,41 +1339,6 @@ public class CommandThread extends Thread
             }
         }
         return nTokens;
-/* }
-catch (IllegalArgumentException exception) { // FIX: remove this when bug 1589484 is fixed
-    String message =   "IllegalArgumentException caught!\n"
-                     + "Please report this to the OmegaT team, by going to the bug report at:\n"
-                     + "http://sourceforge.net/support/tracker.php?aid=1589484\n"
-                     + "and report the details below (location, string, breaker string, memory, stack trace)\n"
-                     + "Location: CommandThread.numberOfWords\n"
-                     + "String: [" + str + "]\n"
-                     + "Breaker string: [" + ((org.omegat.util.WordIterator)breaker).getString() + "]\n"
-                     + "Available memory: " + Runtime.getRuntime().freeMemory() + " bytes\n";
-    System.err.println(message + "Stack trace (below):");
-    System.err.println(exception.getMessage());
-    exception.printStackTrace(System.err);
-
-    displayErrorMessage(message + "Stack trace: see log file (" + StaticUtils.getLogLocation() + ")", exception);
-
-    return nTokens;
-}
-catch (StringIndexOutOfBoundsException exception) { // FIX: remove this when bug 1589484 is fixed
-    String message =   "StringIndexOutOfBoundsException caught!\n"
-                     + "Please report this to the OmegaT team, by going to the bug report at:\n"
-                     + "http://sourceforge.net/support/tracker.php?aid=1589484\n"
-                     + "and report the details below (location, string, breaker string, memory, stack trace)\n"
-                     + "Location: CommandThread.numberOfWords\n"
-                     + "String: [" + str + "]\n"
-                     + "Breaker string: [" + ((org.omegat.util.WordIterator)breaker).getString() + "]\n"
-                     + "Available memory: " + Runtime.getRuntime().freeMemory() + " bytes\n";
-    System.err.println(message + "Stack trace (below):");
-    System.err.println(exception.getMessage());
-    exception.printStackTrace(System.err);
-
-    displayErrorMessage(message + "Stack trace: see log file (" + StaticUtils.getLogLocation() + ")", exception);
-
-    return nTokens;
-} */
     }
     
     /** Computes the number of characters excluding spaces in a string. */

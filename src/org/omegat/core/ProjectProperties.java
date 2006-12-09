@@ -32,7 +32,6 @@ import java.io.InterruptedIOException;
 import org.omegat.filters2.TranslationException;
 import org.omegat.gui.dialogs.ProjectPropertiesDialog;
 import org.omegat.util.Language;
-import org.omegat.util.Log;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
@@ -301,8 +300,9 @@ public class ProjectProperties
         catch( TranslationException te )
         {
             reset();
-            Log.log(te);
-            throw new IOException(OStrings.getString("PP_ERROR_UNABLE_TO_READ_PROJECT_FILE"));
+            te.printStackTrace();
+            te.printStackTrace(StaticUtils.getLogStream());
+            throw new IOException(OStrings.getString("PP_ERROR_UNABLE_TO_READ_PROJECT_FILE") + te);
         }
     }
     

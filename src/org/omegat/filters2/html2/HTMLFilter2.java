@@ -38,8 +38,8 @@ import org.htmlparser.util.ParserException;
 import org.omegat.filters2.AbstractFilter;
 import org.omegat.filters2.Instance;
 import org.omegat.filters2.TranslationException;
-import org.omegat.util.Log;
 import org.omegat.util.OStrings;
+import org.omegat.util.StaticUtils;
 
 /**
  * A filter to translate HTML and XHTML files.
@@ -206,8 +206,8 @@ public class HTMLFilter2 extends AbstractFilter
         }
         catch( Exception e )
         {
-            Log.logErrorRB("HTML_EXC_EDIT_OPTIONS");
-            Log.log(e);
+            StaticUtils.log("XHTML filter thrown an exception: " +              // NOI18N
+                    e.getMessage());
             return currentOptions;
         }
     }

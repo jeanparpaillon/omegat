@@ -62,9 +62,8 @@ import org.omegat.filters3.xml.docbook.DocBookFilter;
 import org.omegat.filters3.xml.opendoc.OpenDocFilter;
 import org.omegat.filters3.xml.opendoc.OpenDocXMLFilter;
 import org.omegat.filters3.xml.xhtml.XHTMLFilter;
-import org.omegat.util.Language;
 import org.omegat.util.LFileCopy;
-import org.omegat.util.Log;
+import org.omegat.util.Language;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
@@ -575,8 +574,7 @@ public class FilterMaster
         }
         catch( Exception e )
         {
-            Log.logErrorRB("FILTERMASTER_ERROR_LOADING_FILTERS_CONFIG");
-            Log.log(e);
+            StaticUtils.log(OStrings.getString("FILTERMASTER_ERROR_LOADING_FILTERS_CONFIG") + e);
             filters = setupBuiltinFilters();
         }
     }
@@ -744,8 +742,9 @@ public class FilterMaster
                 {
                     // couldn't load one of filters
                     // eat (almost) silently
-                    Log.logErrorRB("FILTERMASTER_ERROR_LOADING_FILTER",
-                        new Object[]{filterList.get(j), ((URL)filterList.get(0)).getFile()});
+                    StaticUtils.log("Filter '"+(String)filterList.get(j)+       // NOI18N
+                            "' from '"+((URL)filterList.get(0)).getFile()+"'"+  // NOI18N
+                            " cannot be loaded");                               // NOI18N
                 }
             }
         }
@@ -765,10 +764,9 @@ public class FilterMaster
         }
         catch( FileNotFoundException fnfe )
         {
-            Log.logErrorRB("FILTERMASTER_ERROR_SAVING_FILTERS_CONFIG");
-            Log.log(fnfe);
+            StaticUtils.log(OStrings.getString("FILTERMASTER_ERROR_SAVING_FILTERS_CONFIG") + fnfe);
             JOptionPane.showMessageDialog(null,
-                    OStrings.getString("FILTERMASTER_ERROR_SAVING_FILTERS_CONFIG") + "\n" + fnfe,
+                    OStrings.getString("FILTERMASTER_ERROR_SAVING_FILTERS_CONFIG") + fnfe,
                     OStrings.getString("ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
         }
     }

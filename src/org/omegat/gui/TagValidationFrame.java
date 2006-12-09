@@ -147,9 +147,6 @@ public class TagValidationFrame extends JFrame
         if (evt == WindowEvent.WINDOW_CLOSING || evt == WindowEvent.WINDOW_CLOSED) {
             // save window size and position
             saveWindowLayout();
-
-            // notify main window
-            m_parent.tagValidationWindowClosed();
         }
         super.processWindowEvent(w);
     }

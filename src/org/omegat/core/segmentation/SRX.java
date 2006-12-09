@@ -43,7 +43,6 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import org.omegat.util.Language;
-import org.omegat.util.Log;
 import org.omegat.util.OStrings;
 import org.omegat.util.StaticUtils;
 
@@ -117,12 +116,14 @@ public class SRX implements Serializable, Cloneable
         }
         catch( IOException ioe )
         {
-            Log.logErrorRB("CORE_SRX_ERROR_SAVING_SEGMENTATION_CONFIG");
-            Log.log(ioe);
-            JOptionPane.showMessageDialog(null,
-                OStrings.getString("CORE_SRX_ERROR_SAVING_SEGMENTATION_CONFIG")
-                    + "\n" + ioe,
-                OStrings.getString("ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
+            String message = 
+                    StaticUtils.format(
+                    OStrings.getString("CORE_SRX_ERROR_SAVING_SEGMENTATION_CONFIG"),
+                    new Object[] {ioe} );
+            StaticUtils.log(message);
+            JOptionPane.showMessageDialog(null, 
+                    message,
+                    OStrings.getString("ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -156,12 +157,10 @@ public class SRX implements Serializable, Cloneable
                     sb.append(exceptions.get(i));
                     sb.append("\n");                                            // NOI18N
                 }
-                Log.logErrorRB(
-                    "CORE_SRX_EXC_LOADING_SEG_RULES",
-                    new Object[] {sb.toString()});
-                res = new SRX();
-                res.initDefaults();
-                return res;
+                throw new Exception(
+                        StaticUtils.format(
+                        "Exceptions occured while loading segmentation rules:\n{0}",// NOI18N
+                        new Object[] {sb.toString()} ) );
             }
             
             // checking the version
@@ -180,7 +179,10 @@ public class SRX implements Serializable, Cloneable
         {
             // silently ignoring FNF
             if( !(e instanceof FileNotFoundException) )
-                Log.log(e);
+            {
+                StaticUtils.log(e.getMessage());
+                e.printStackTrace(StaticUtils.getLogStream());
+            }
             res = new SRX();
             res.initDefaults();
         }

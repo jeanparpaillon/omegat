@@ -30,7 +30,6 @@ import javax.swing.UIManager;
 
 import org.omegat.core.threads.CommandThread;
 import org.omegat.gui.main.MainWindow;
-import org.omegat.util.Log;
 import org.omegat.util.OStrings;
 import org.omegat.util.StaticUtils;
 
@@ -56,14 +55,14 @@ public class Main
             }
         }
 
-        Log.log(
-            "\n" +                                                                    // NOI18N
-            "===================================================================" +   // NOI18N
-            "\n" +                                                                    // NOI18N
-            OStrings.getDisplayVersion() +                                            // NOI18N
-            " ("+new Date()+") " +                                                    // NOI18N
-            " Locale "+Locale.getDefault()+                                           // NOI18N
-            "\n");                                                                    // NOI18N
+        StaticUtils.log(
+                "\n" +                                                                    // NOI18N
+                "===================================================================" +   // NOI18N
+                "\n" +                                                                    // NOI18N
+                OStrings.getDisplayVersion() +                                            // NOI18N
+                " ("+new Date()+") " +                                                    // NOI18N
+                " Locale "+Locale.getDefault()+                                           // NOI18N
+                "\n");                                                                    // NOI18N
 
         try
         {
@@ -81,7 +80,7 @@ public class Main
         catch (Exception e)
         {
             // do nothing
-            Log.logErrorRB("MAIN_ERROR_CANT_INIT_OSLF");
+            StaticUtils.log(OStrings.getString("MAIN_ERROR_CANT_INIT_OSLF"));
         }
         
         MainWindow mainwindow = new MainWindow();

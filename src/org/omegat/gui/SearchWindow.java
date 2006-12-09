@@ -57,7 +57,6 @@ import javax.swing.undo.UndoManager;
 import org.omegat.core.threads.CommandThread;
 import org.omegat.core.threads.SearchThread;
 import org.omegat.gui.main.MainWindow;
-import org.omegat.util.Log;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
@@ -78,8 +77,7 @@ public class SearchWindow extends JFrame
     public SearchWindow(MainWindow par, String startText)
     {
         //super(par, false);
-        m_parent = par;
-
+        
         m_searchLabel = new JLabel();
         m_searchField = new MFindField();
 
@@ -94,7 +92,6 @@ public class SearchWindow extends JFrame
 
         m_exactSearchRB   = new JRadioButton();
         m_keywordSearchRB = new JRadioButton();
-        m_resultsLabel    = new JLabel();
 
         ButtonGroup bg = new ButtonGroup();
         bg.add(m_exactSearchRB);
@@ -104,8 +101,6 @@ public class SearchWindow extends JFrame
         bRB.add(m_exactSearchRB);
         bRB.add(Box.createHorizontalStrut(10));
         bRB.add(m_keywordSearchRB);
-        bRB.add(Box.createHorizontalStrut(10));
-        bRB.add(m_resultsLabel);
 
         m_caseCB          = new JCheckBox();
         m_regexCB         = new JCheckBox();
@@ -444,10 +439,6 @@ public class SearchWindow extends JFrame
     public void displayResults()
     {
         m_viewer.finalize();
-        m_resultsLabel.setText(
-            StaticUtils.format(OStrings.getString("SW_NR_OF_RESULTS"),
-                               new Object[] {new Integer(m_viewer.getNrEntries())})
-        );
     }
     
     public void addEntry(int num, String preamble, String src, String tar)
@@ -486,10 +477,7 @@ public class SearchWindow extends JFrame
         {
             // save user preferences
             savePreferences();
-
-            // notify main window
-            m_parent.searchWindowClosed(this);
-
+            
             if (m_thread != null)
                 m_thread.interrupt();
         }
@@ -544,7 +532,7 @@ public class SearchWindow extends JFrame
                             OStrings.getString("SW_ERROR_BAD_DIR"), 
                             new Object[] {m_dirField.getText()} );
                     m_viewer.setText(error);
-                    Log.log(error);
+                    StaticUtils.log(error);
                     return;
                 }
                 if (CommandThread.core != null && m_dirCB.isSelected())
@@ -656,15 +644,12 @@ public class SearchWindow extends JFrame
         private UndoManager undoManager;
     }
 
-    private MainWindow m_parent;
-
     private JLabel      m_searchLabel;
     private JTextField  m_searchField;
     private JButton     m_searchButton;
 
     private JRadioButton m_exactSearchRB;
     private JRadioButton m_keywordSearchRB;
-    private JLabel       m_resultsLabel;
 
     private JCheckBox m_caseCB;
     private JCheckBox m_regexCB;

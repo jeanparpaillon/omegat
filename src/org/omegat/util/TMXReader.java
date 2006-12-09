@@ -462,63 +462,68 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler
         try 
         {
             // log the parsing attempt
-            Log.logRB("TMXR_INFO_READING_FILE", new Object[]{displayFilename});
-
+            StaticUtils.log(StaticUtils.format(
+                OStrings.getString("TMXR_INFO_READING_FILE"), 
+                new Object[]{displayFilename}));
+        
             // create a new SAX parser factory
             javax.xml.parsers.SAXParserFactory parserFactory =
                javax.xml.parsers.SAXParserFactory.newInstance();
-
+        
             // configure the factory
             parserFactory.setValidating(false); // skips TMX validity checking
-
+            
             // create a new SAX parser
             javax.xml.parsers.SAXParser parser = parserFactory.newSAXParser();
-
+            
             // make this TMX reader the default entity resolver for the parser,
             // so we can handle DTD declarations ourselves
             parser.getXMLReader().setEntityResolver(this);
-
+            
             // parse the TM, provide the current TMX reader as notification handler
             InputSource is = new InputSource(new XMLReader(filename, m_encoding));
             is.setSystemId("");                                                 // NOI18N
             parser.parse(is, this);
-
+            
             // if no source could be found for 1 or more TUs, log this fact
             // don't do this if the TMX file is the project TM
             if (!isProjectTMX && sourceNotFound)
-                Log.logWarningRB("TMXR_WARNING_SOURCE_NOT_FOUND");
-
+                StaticUtils.log(OStrings.getString("TMXR_WARNING_SOURCE_NOT_FOUND"));
+            
             // log the fact that parsing is done
-            Log.logRB("TMXR_INFO_READING_COMPLETE");
-            Log.log("");
+            StaticUtils.log(OStrings.getString("TMXR_INFO_READING_COMPLETE"));
+            StaticUtils.log("");
         }
         catch (SAXParseException exception) {
             // log error
-            Log.logErrorRB("TMXR_FATAL_ERROR_WHILE_PARSING",
+            StaticUtils.log(StaticUtils.format(
+                OStrings.getString("TMXR_FATAL_ERROR_WHILE_PARSING"),
                 new Object[]{String.valueOf(exception.getLineNumber()),
-                             String.valueOf(exception.getColumnNumber())});
-            Log.log(exception);
+                             String.valueOf(exception.getColumnNumber()),
+                             exception.getLocalizedMessage()}));
+                exception.printStackTrace(StaticUtils.getLogStream());
 
             // display error
-            CommandThread.core.displayErrorMessage(
-                StaticUtils.format(
-                    OStrings.getString("TMXR_FATAL_ERROR_WHILE_PARSING__DISPLAY"),
-                    new Object[]{displayFilename,
-                                 String.valueOf(exception.getLineNumber()),
-                                 String.valueOf(exception.getColumnNumber())}),
+            CommandThread.core.displayErrorMessage(StaticUtils.format(
+                OStrings.getString("TMXR_FATAL_ERROR_WHILE_PARSING__DISPLAY"),
+                new Object[]{displayFilename,
+                             String.valueOf(exception.getLineNumber()),
+                             String.valueOf(exception.getColumnNumber()),
+                             exception.getLocalizedMessage()}),
                 exception);
         }
         catch (Exception exception)
         {
             // log exception
-            Log.logErrorRB("TMXR_EXCEPTION_WHILE_PARSING");
-            Log.log(exception);
+            StaticUtils.log(StaticUtils.format(
+                OStrings.getString("TMXR_EXCEPTION_WHILE_PARSING"), 
+                new Object[]{exception.getLocalizedMessage()}));
+            exception.printStackTrace(StaticUtils.getLogStream());
 
             // display error
-            CommandThread.core.displayErrorMessage(
-                StaticUtils.format(
-                    OStrings.getString("TMXR_EXCEPTION_WHILE_PARSING__DISPLAY"),
-                    new Object[]{displayFilename, Log.getLogLocation()}),
+            CommandThread.core.displayErrorMessage(StaticUtils.format(
+                OStrings.getString("TMXR_EXCEPTION_WHILE_PARSING__DISPLAY"),
+                new Object[]{displayFilename, StaticUtils.getLogLocation()}),
                 exception);
         }
     }
@@ -528,10 +533,12 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler
       */
     public void warning(SAXParseException exception) throws SAXException 
     {
-        Log.logWarningRB("TMXR_WARNING_WHILE_PARSING",
+        StaticUtils.log(StaticUtils.format(
+            OStrings.getString("TMXR_WARNING_WHILE_PARSING"), 
             new Object[]{String.valueOf(exception.getLineNumber()),
-                         String.valueOf(exception.getColumnNumber())});
-        Log.log(exception);
+                         String.valueOf(exception.getColumnNumber()),
+                         exception.getLocalizedMessage()}));
+            exception.printStackTrace(StaticUtils.getLogStream());
     }
 
     /**
@@ -539,10 +546,12 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler
       */
     public void error(SAXParseException exception) throws SAXException 
     {
-        Log.logErrorRB("TMXR_RECOVERABLE_ERROR_WHILE_PARSING",
+        StaticUtils.log(StaticUtils.format(
+            OStrings.getString("TMXR_RECOVERABLE_ERROR_WHILE_PARSING"), 
             new Object[]{String.valueOf(exception.getLineNumber()),
-                         String.valueOf(exception.getColumnNumber())});
-        Log.log(exception);
+                         String.valueOf(exception.getColumnNumber()),
+                         exception.getLocalizedMessage()}));
+            exception.printStackTrace(StaticUtils.getLogStream());
     }
     
     /**
@@ -550,10 +559,12 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler
       */
     public void fatalError(SAXParseException exception) throws SAXException 
     {
-        Log.logErrorRB("TMXR_FATAL_ERROR_WHILE_PARSING",
+        StaticUtils.log(StaticUtils.format(
+            OStrings.getString("TMXR_FATAL_ERROR_WHILE_PARSING"), 
             new Object[]{String.valueOf(exception.getLineNumber()),
-                         String.valueOf(exception.getColumnNumber())});
-        Log.log(exception);
+                         String.valueOf(exception.getColumnNumber()),
+                         exception.getLocalizedMessage()}));
+            exception.printStackTrace(StaticUtils.getLogStream());
     }
 
     /**
@@ -692,26 +703,35 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler
         tmxSourceLanguage   = attributes.getValue(TMX_ATTR_SRCLANG);
 
         // log some details
-        Log.logRB("TMXR_INFO_CREATION_TOOL",         new Object[]{creationtool});
-        Log.logRB("TMXR_INFO_CREATION_TOOL_VERSION", new Object[]{creationtoolversion});
-        Log.logRB("TMXR_INFO_SEG_TYPE",              new Object[]{segtype});
-        Log.logRB("TMXR_INFO_SOURCE_LANG",           new Object[]{tmxSourceLanguage});
+        StaticUtils.log(StaticUtils.format(
+            OStrings.getString("TMXR_INFO_CREATION_TOOL"), 
+            new Object[]{creationtool}));
+        StaticUtils.log(StaticUtils.format(
+            OStrings.getString("TMXR_INFO_CREATION_TOOL_VERSION"), 
+            new Object[]{creationtoolversion}));
+        StaticUtils.log(StaticUtils.format(
+            OStrings.getString("TMXR_INFO_SEG_TYPE"), 
+            new Object[]{segtype}));
+        StaticUtils.log(StaticUtils.format(
+          OStrings.getString("TMXR_INFO_SOURCE_LANG"), 
+          new Object[]{tmxSourceLanguage}));
 
         // give a warning if the TMX source language is
         // different from the project source language
         if (!tmxSourceLanguage.equalsIgnoreCase(sourceLanguage)) 
         {
-            Log.logWarningRB("TMXR_WARNING_INCORRECT_SOURCE_LANG",
-                new Object[]{tmxSourceLanguage, sourceLanguage});
+            StaticUtils.log(StaticUtils.format(
+                OStrings.getString("TMXR_WARNING_INCORRECT_SOURCE_LANG"),
+                new Object[]{tmxSourceLanguage, sourceLanguage}));
         }
 
         // give a warning that TMX file will be upgraded from 1.4.x
         if (isUpgrade14X())
-            Log.logWarningRB("TMXR_WARNING_UPGRADE_14X");
+            StaticUtils.log(OStrings.getString("TMXR_WARNING_UPGRADE_14X"));
 
         // give a warning that TMX file will be upgraded to sentence segmentation
         if (isUpgradeSentSeg())
-            Log.logWarningRB("TMXR_WARNING_UPGRADE_SENTSEG");
+            StaticUtils.log(OStrings.getString("TMXR_WARNING_UPGRADE_SENTSEG"));
 
         // check if level 2 codes should be included (only for OmegaT 1.6.0-final and higher)
         checkLevel2();
@@ -756,8 +776,10 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler
             while (commaPos > 0);
 
             // Log presence of preferred variant languages
-            Log.logRB("TMXR_INFO_VARIANT_LANGUAGES_DISPLAYED",
-                new Object[]{languages.toString()});
+            
+            StaticUtils.log(StaticUtils.format(
+                OStrings.getString("TMXR_INFO_VARIANT_LANGUAGES_DISPLAYED"),
+                new Object[]{languages.toString()}));
         }
     }
 
@@ -951,7 +973,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler
         // ensure we're in a translation unit
         if (!inTU) 
         {
-            Log.logWarningRB("TMXR_WARNING_TUV_NOT_IN_TU");
+            StaticUtils.log(OStrings.getString("TMXR_WARNING_TUV_NOT_IN_TU"));
             return;
         }
     
@@ -964,7 +986,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler
         // if the language is not specified, skip the tuv
         if (language == null) 
         {
-            Log.logWarningRB("TMXR_WARNING_TUV_LANG_NOT_SPECIFIED");
+            StaticUtils.log(OStrings.getString("TMXR_WARNING_TUV_LANG_NOT_SPECIFIED"));
             return;
         }
 
@@ -1001,7 +1023,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler
         // ensure we are currently in a tuv
         if (!inTUV) 
         {
-            Log.logWarningRB("TMXR_WARNING_SEG_NOT_IN_TUV");
+            StaticUtils.log(OStrings.getString("TMXR_WARNING_SEG_NOT_IN_TUV"));
             return;
         }
 

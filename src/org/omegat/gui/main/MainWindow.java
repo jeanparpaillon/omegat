@@ -55,9 +55,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.swing.ImageIcon;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -92,7 +89,6 @@ import org.omegat.gui.dialogs.WorkflowOptionsDialog;
 import org.omegat.gui.filters2.FiltersCustomizer;
 import org.omegat.gui.segmentation.SegmentationCustomizer;
 import org.omegat.util.LFileCopy;
-import org.omegat.util.Log;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
@@ -271,7 +267,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         }
         catch(NoClassDefFoundError e)
         {
-            Log.log(e);
+            e.printStackTrace(StaticUtils.getLogStream());
         }
 
         // all except MacOSX
@@ -280,9 +276,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             projectMenu.add(separator2inProjectMenu);
             projectMenu.add(projectExitMenuItem);
         }
-
-        // Add Language submenu to Options menu
-
     }
 
     /**
@@ -299,7 +292,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         }
         catch( Exception e )
         {
-            Log.log(e);
+            e.printStackTrace(StaticUtils.getLogStream());
         }
     }
     
@@ -331,8 +324,8 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         setAccelerator(gotoNextUntranslatedMenuItem , KeyEvent.VK_U);
         setAccelerator(gotoNextSegmentMenuItem , KeyEvent.VK_N);
         setAccelerator(gotoPreviousSegmentMenuItem , KeyEvent.VK_P);
-        setAccelerator(gotoSegmentMenuItem, KeyEvent.VK_J);
         
+        //setAccelerator(viewFileListCheckBoxMenuItem, KeyEvent.VK_L);
         setAccelerator(viewFileListMenuItem, KeyEvent.VK_L);
         
         setAccelerator(toolsValidateTagsMenuItem , KeyEvent.VK_T);
@@ -365,7 +358,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     private void updateTitle()
     {
         String s = OStrings.getDisplayVersion();
-        if(isProjectLoaded())
+        if( isProjectLoaded() )
         {
             s += " :: " + m_activeProj;                                         // NOI18N
             try
@@ -478,6 +471,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     
     public void filelistWindowClosed()
     {
+        //viewFileListCheckBoxMenuItem.setSelected(false);
     }
     
     /** Loads Instant start article */
@@ -650,11 +644,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
-    public void tagValidationWindowClosed() {
-        m_tagWin = null;
-    }
-
+    
     public synchronized void doNextEntry()
     {
         if (!isProjectLoaded())
@@ -693,8 +683,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         activateEntry();
     }
     
-    
-    
     /**
      * Finds the next untranslated entry in the document.
      * <p>
@@ -708,7 +696,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     private synchronized void doNextUntranslatedEntry()
     {
         // check if a document is loaded
-        if (isProjectLoaded() == false)
+        if (m_projectLoaded == false)
             return;
         
         // save the current entry
@@ -823,18 +811,18 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     {
         if (!isProjectLoaded())
             return;
-        
+
         if (m_activeMatch < 0)
             return;
 
         if (m_activeMatch >= m_curEntry.getStrEntry().getNearListTranslated().size())
             return;
-        
+
         NearString near = (NearString) m_curEntry.getStrEntry().
                 getNearListTranslated().get(m_activeMatch);
         doReplaceEditText(near.str.getTranslation());
     }
-    
+
     /** replaces the entire edit area with a given text */
     private synchronized void doReplaceEditText(String text)
     {
@@ -850,7 +838,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             editor.replaceSelection(text);
         }
     }
-    
+
     /** Closes the project. */
     public void doCloseProject()
     {
@@ -860,10 +848,8 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             doSave();
         m_projWin.reset();
         synchronized (this) {m_projectLoaded = false;}
-
-        synchronized (this) {
-            editor.setText(OStrings.getString("TF_INTRO_MESSAGE"));
-        }
+        
+        editor.setText(OStrings.getString("TF_INTRO_MESSAGE"));
         matches.clear();
         glossary.clear();
         
@@ -905,8 +891,8 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         gotoNextSegmentMenuItem.setEnabled(false);
         gotoNextUntranslatedMenuItem.setEnabled(false);
         gotoPreviousSegmentMenuItem.setEnabled(false);
-        gotoSegmentMenuItem.setEnabled(false);
 
+        //viewFileListCheckBoxMenuItem.setEnabled(false);
         viewFileListMenuItem.setEnabled(false);
         toolsValidateTagsMenuItem.setEnabled(false);
 
@@ -959,9 +945,10 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         gotoNextSegmentMenuItem.setEnabled(true);
         gotoNextUntranslatedMenuItem.setEnabled(true);
         gotoPreviousSegmentMenuItem.setEnabled(true);
-        gotoSegmentMenuItem.setEnabled(true);
         
+        //viewFileListCheckBoxMenuItem.setEnabled(true);
         viewFileListMenuItem.setEnabled(true);
+        //viewFileListCheckBoxMenuItem.setSelected(true);
         toolsValidateTagsMenuItem.setEnabled(true);
         
         synchronized (editor) {
@@ -1023,7 +1010,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                 doReloadProject();
         }
     }
-
+    
     /**
      * Displays the font dialog to allow selecting
      * the font for source, target text (in main window)
@@ -1044,7 +1031,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             }
             matches.setFont(m_font);
             glossary.setFont(m_font);
-
+            
             Preferences.setPreference(OConsts.TF_SRC_FONT_NAME, m_font.getName());
             Preferences.setPreference(OConsts.TF_SRC_FONT_SIZE, m_font.getSize());
             activateEntry();
@@ -1153,11 +1140,11 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             displayError( "Please close the project first!", new Exception( "Another project is open")); // NOI18N
             return;
         }
-
+        
         matches.clear();
         glossary.clear();
         editorScroller.setViewportView(editor);
-
+        
         RequestPacket load;
         load = new RequestPacket(RequestPacket.LOAD, this);
         CommandThread.core.messageBoardPost(load);
@@ -1174,16 +1161,16 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             displayError( "Please close the project first!", new Exception( "Another project is open")); // NOI18N
             return;
         }
-
+        
         matches.clear();
         glossary.clear();
         editorScroller.setViewportView(editor);
-
+        
         RequestPacket load;
         load = new RequestPacket(RequestPacket.LOAD, this, projectRoot);
         CommandThread.core.messageBoardPost(load);
     }
-
+    
     /**
      * Reloads, i.e. closes and loads the same project.
      */
@@ -1246,107 +1233,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         }
         
     }
-
-    /**
-      * Asks the user for a segment number and then displays the segment.
-      *
-      * @author Henry Pijffers (henry.pijffers@saxnot.com)
-      */
-    public synchronized void doGotoEntry() {
-        // Create a dialog for input
-        final JOptionPane input = new JOptionPane(OStrings.getString("MW_PROMPT_SEG_NR_MSG"),
-                                                  JOptionPane.PLAIN_MESSAGE,
-                                                  JOptionPane.OK_CANCEL_OPTION); // create option pane
-        input.setWantsInput(true); // make it require input
-        final JDialog dialog = new JDialog(
-            this, OStrings.getString("MW_PROMPT_SEG_NR_TITLE"), true); // create dialog
-        dialog.setContentPane(input); // add option pane to dialog
-
-        // Make the dialog verify the input
-        input.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent event) {
-                // Handle the event
-                if (dialog.isVisible() && (event.getSource() == input)) {
-                    // If user pressed Enter or OK, check the input
-                    String property = event.getPropertyName();
-                    Object value    = input.getValue();
-
-                    // Don't do the checks if no option has been selected
-                    if (value == JOptionPane.UNINITIALIZED_VALUE)
-                        return;
-
-                    if (   property.equals(JOptionPane.INPUT_VALUE_PROPERTY)
-                        || (   property.equals(JOptionPane.VALUE_PROPERTY)
-                            && ((Integer)value).intValue() == JOptionPane.OK_OPTION)) {
-                        // Prevent the checks from being done twice
-                        input.setValue(JOptionPane.UNINITIALIZED_VALUE);
-
-                        // Get the value entered by the user
-                        String inputValue = (String)input.getInputValue();
-
-                        // Check if the user entered a value at all
-                        if ((inputValue == null) || (inputValue.trim().length() == 0)) {
-                            // Show error message
-                            displayErrorMessage();
-                            return;
-                        }
-
-                        // Check if the user really entered a number
-                        int segmentNr = -1;
-                        try {
-                            // Just parse it. If parsed, it's a number.
-                            segmentNr = Integer.parseInt(inputValue);
-                        }
-                        catch (NumberFormatException e) {
-                            // If the exception is thrown, the user didn't enter a number
-                            // Show error message
-                            displayErrorMessage();
-                            return;
-                        }
-
-                        // Check if the segment number is within bounds
-                        if (segmentNr < 1 || segmentNr > CommandThread.core.numEntries()) {
-                            // Tell the user he has to enter a number within certain bounds
-                            displayErrorMessage();
-                            return;
-                        }
-                    }
-
-                    // If we're here, the user has either pressed Cancel/Esc,
-                    // or has entered a valid number. In all cases, close the dialog.
-                    dialog.setVisible(false);
-                }
-            }
-
-            private void displayErrorMessage() {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    StaticUtils.format(OStrings.getString("MW_SEGMENT_NUMBER_ERROR"),
-                                         new Object[] {new Integer(CommandThread.core.numEntries())}),
-                    OStrings.getString("TF_ERROR"),
-                    JOptionPane.ERROR_MESSAGE
-                );
-            }
-        });
-
-        // Show the input dialog
-        dialog.pack(); // make it look good
-        dialog.setLocationRelativeTo(this); // center it on the main window
-        dialog.setVisible(true); // show it
-
-        // Get the input value, if any
-        Object inputValue = input.getInputValue();
-        if ((inputValue != null) && !inputValue.equals(JOptionPane.UNINITIALIZED_VALUE)) {
-            // Go to the segment the user requested
-            try {
-                doGotoEntry((String)inputValue);
-            }
-            catch (ClassCastException e) {
-                // Shouldn't happen, but still... Just eat silently.
-            }
-        }
-    }
-
+    
     public synchronized void doGotoEntry(int entryNum)
     {
         if (!isProjectLoaded())
@@ -1358,10 +1245,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         if (m_curEntryNum < m_xlFirstEntry)
         {
             if (m_curEntryNum < 0)
-                m_curEntryNum = CommandThread.core.numEntries() - 1;
-            // empty project bugfix:
-            if (m_curEntryNum < 0)
-                m_curEntryNum = 0;
+                m_curEntryNum = CommandThread.core.numEntries();
             loadDocument();
         }
         else if (m_curEntryNum > m_xlLastEntry)
@@ -1430,7 +1314,9 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         synchronized (editor) {
             String selection = editor.getSelectedText();
             if (selection != null)
+            {
                 selection.trim();
+            }
 
             //SearchThread srch = new SearchThread(this, selection);
             //srch.start();
@@ -1440,10 +1326,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             dt.start();
             m_searches.add(search);
         }
-    }
-
-    public void searchWindowClosed(SearchWindow searchWindow) {
-        m_searches.remove(searchWindow);
     }
 
     /**
@@ -1474,11 +1356,11 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             str = new String()+' ';
         statusLabel.setText(str);
     }
-
+    
     /////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////
     // internal routines
-
+    
     /**
      * Displays all segments in current document.
      * <p>
@@ -1526,7 +1408,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 
             editor.setText(textBuf.toString());
         } // synchronized (editor)
-
+        
         Thread.yield();
     }
     
@@ -1603,11 +1485,11 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 
         synchronized (editor) {
             AbstractDocument xlDoc = (AbstractDocument)editor.getDocument();
-
+    
             int start = m_segmentStartOffset + m_sourceDisplayLength +
-                OStrings.getSegmentStartMarker().length();
+                    OStrings.getSegmentStartMarker().length();
             int end = editor.getTextLength() - m_segmentEndInset -
-                OStrings.getSegmentEndMarker().length();
+                    OStrings.getSegmentEndMarker().length();
             String display_string;
             String new_translation;
             if (start == end)
@@ -1623,13 +1505,15 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                 }
                 catch(BadLocationException ble)
                 {
-                    Log.log(IMPOSSIBLE);
-                    Log.log(ble);
+                    StaticUtils.log(IMPOSSIBLE);
+                    StaticUtils.log(ble.getMessage());
+                    ble.printStackTrace();
+                    ble.printStackTrace(StaticUtils.getLogStream());
                     new_translation = new String();
                 }
                 display_string = new_translation;
             }
-
+    
             int totalLen = m_sourceDisplayLength + OStrings.getSegmentStartMarker().length() +
                     new_translation.length() + OStrings.getSegmentEndMarker().length();
             try
@@ -1640,10 +1524,12 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             }
             catch(BadLocationException ble)
             {
-                Log.log(IMPOSSIBLE);
-                Log.log(ble);
+                StaticUtils.log(IMPOSSIBLE);
+                StaticUtils.log(ble.getMessage());
+                ble.printStackTrace();
+                ble.printStackTrace(StaticUtils.getLogStream());
             }
-
+    
             int localCur = m_curEntryNum - m_xlFirstEntry;
             DocumentSegment docSeg = m_docSegList[localCur];
             docSeg.length = display_string.length() + "\n\n".length();              // NOI18N
@@ -1701,17 +1587,19 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                         }
                         catch(BadLocationException ble)
                         {
-                            Log.log(IMPOSSIBLE);
-                            Log.log(ble);
+                            StaticUtils.log(IMPOSSIBLE);
+                            StaticUtils.log(ble.getMessage());
+                            ble.printStackTrace();
+                            ble.printStackTrace(StaticUtils.getLogStream());
                         }
                         docSeg.length = ds_nn.length();
                     }
                 }
             }
             editor.cancelUndo();
-        } // synchronize (editor)
+        } // synchronized (editor)
     }
-
+    
     /**
      * Activates the current entry by displaying source text and embedding
      * displayed text in markers.
@@ -1726,25 +1614,25 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 
         synchronized (editor) {
             AbstractDocument xlDoc = (AbstractDocument)editor.getDocument();
-
+    
             // recover data about current entry
             // <HP-experiment>
             if (m_curEntryNum < m_xlFirstEntry) {
-                Log.log("ERROR: Current entry # lower than first entry #");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log("ERROR: Current entry # lower than first entry #");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
                 // FIX: m_curEntryNum = m_xlFirstEntry;
             }
             if (m_curEntryNum > m_xlLastEntry) {
-                Log.log("ERROR: Current entry # greater than last entry #");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log("ERROR: Current entry # greater than last entry #");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
                 // FIX: m_curEntryNum = m_xlLastEntry;
             }
             // </HP-experiment>
             m_curEntry = CommandThread.core.getSTE(m_curEntryNum);
             String srcText = m_curEntry.getSrcText();
-
+            
             m_sourceDisplayLength = srcText.length();
-
+            
             // sum up total character offset to current segment start
             m_segmentStartOffset = 0;
             int localCur = m_curEntryNum - m_xlFirstEntry;
@@ -1757,22 +1645,23 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                     docSeg = m_docSegList[i];
                     m_segmentStartOffset += docSeg.length; // length includes \n
                 }
-
+    
                 //DocumentSegment // <HP-experiment> re-join with next line once done experimenting
                 docSeg = m_docSegList[localCur];
             }
             catch (Exception exception) {
-                Log.log("ERROR: exception while calculating character offset:");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                Log.log(exception);
+                StaticUtils.log("ERROR: exception while calculating character offset:");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log(exception.getMessage());
+                exception.printStackTrace(StaticUtils.getLogStream());
                 return; // deliberately breaking, to simulate previous behaviour
                 // FIX: for (int i=0; i<localCur && i < m_docSegList.length; i++)
             }
             // </HP-experiment>
-
+            
             // -2 to move inside newlines at end of segment
             m_segmentEndInset = editor.getTextLength() - (m_segmentStartOffset + docSeg.length-2);
-
+            
             // get label tags
             String startStr = OStrings.getSegmentStartMarker();
             String endStr = OStrings.getSegmentEndMarker();
@@ -1788,16 +1677,17 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                 }
             }
             catch (Exception exception) {
-                Log.log("ERROR: exception while putting segment # in start tag:");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                Log.log(exception);
+                StaticUtils.log("ERROR: exception while putting segment # in start tag:");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log(exception.getMessage());
+                exception.printStackTrace(StaticUtils.getLogStream());
                 return; // deliberately breaking, to simulate previous behaviour
                 // FIX: since these are localised, don't assume number appears, keep try/catch block
             }
             // </HP-experiment>
-
+            
             String translation = m_curEntry.getTranslation();
-
+            
             // append to end of segment first
             try
             {
@@ -1806,23 +1696,26 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             }
             catch(BadLocationException ble)
             {
-                Log.log(IMPOSSIBLE);
-                Log.log(ble);
+                StaticUtils.log(IMPOSSIBLE);
+                StaticUtils.log(ble.getMessage());
+                ble.printStackTrace();
+                ble.printStackTrace(StaticUtils.getLogStream());
             }
             // <HP-experiment>
             catch (Exception exception) {
-                Log.log("ERROR: exception while inserting end tag:");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                Log.log(exception);
+                StaticUtils.log("ERROR: exception while inserting end tag:");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log(exception.getMessage());
+                exception.printStackTrace(StaticUtils.getLogStream());
                 return; // deliberately breaking, to simulate previous behaviour
                 // FIX: unknown
             }
             // </HP-experiment>
-
+            
             if( translation==null || translation.length()==0 )
             {
                 translation=m_curEntry.getSrcText();
-
+                
                 // if "Leave translation empty" is set
                 // then we don't insert a source text into target
                 //
@@ -1836,21 +1729,24 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                     }
                     catch(BadLocationException ble)
                     {
-                        Log.log(IMPOSSIBLE);
-                        Log.log(ble);
+                        StaticUtils.log(IMPOSSIBLE);
+                        StaticUtils.log(ble.getMessage());
+                        ble.printStackTrace();
+                        ble.printStackTrace(StaticUtils.getLogStream());
                     }
                     // <HP-experiment>
                     catch (Exception exception) {
-                        Log.log("ERROR: exception while removing source text:");
-                        Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                        Log.log(exception);
+                        StaticUtils.log("ERROR: exception while removing source text:");
+                        StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                        StaticUtils.log(exception.getMessage());
+                        exception.printStackTrace(StaticUtils.getLogStream());
                         return; // deliberately breaking, to simulate previous behaviour
                         // FIX: unknown
                     }
                     // </HP-experiment>
                     translation = new String();
                 }
-
+                
                 // if WORKFLOW_OPTION "Insert best fuzzy match into target field" is set
                 // RFE "Option: Insert best match (80%+) into target field"
                 //      http://sourceforge.net/support/tracker.php?aid=1075976
@@ -1865,9 +1761,10 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                         percentage = Integer.parseInt(percentage_s);
                     }
                     catch (Exception exception) {
-                        Log.log("ERROR: exception while parsing percentage:");
-                        Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                        Log.log(exception);
+                        StaticUtils.log("ERROR: exception while parsing percentage:");
+                        StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                        StaticUtils.log(exception.getMessage());
+                        exception.printStackTrace(StaticUtils.getLogStream());
                         return; // deliberately breaking, to simulate previous behaviour
                         // FIX: unknown, but expect number parsing errors
                     }
@@ -1889,14 +1786,17 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                             }
                             catch(BadLocationException ble)
                             {
-                                Log.log(IMPOSSIBLE);
-                                Log.log(ble);
+                                StaticUtils.log(IMPOSSIBLE);
+                                StaticUtils.log(ble.getMessage());
+                                ble.printStackTrace();
+                                ble.printStackTrace(StaticUtils.getLogStream());
                             }
                             // <HP-experiment>
                             catch (Exception exception) {
-                                Log.log("ERROR: exception while inserting translation:");
-                                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                                Log.log(exception);
+                                StaticUtils.log("ERROR: exception while inserting translation:");
+                                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                                StaticUtils.log(exception.getMessage());
+                                exception.printStackTrace(StaticUtils.getLogStream());
                                 return; // deliberately breaking, to simulate previous behaviour
                                 // FIX: unknown
                             }
@@ -1905,7 +1805,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                     }
                 }
             }
-
+            
             try
             {
                 xlDoc.insertString(m_segmentStartOffset, " ", Styles.PLAIN);        // NOI18N
@@ -1914,19 +1814,22 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             }
             catch(BadLocationException ble)
             {
-                Log.log(IMPOSSIBLE);
-                Log.log(ble);
+                StaticUtils.log(IMPOSSIBLE);
+                StaticUtils.log(ble.getMessage());
+                ble.printStackTrace();
+                ble.printStackTrace(StaticUtils.getLogStream());
             }
             // <HP-experiment>
             catch (Exception exception) {
-                Log.log("ERROR: exception while inserting translation:");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                Log.log(exception);
+                StaticUtils.log("ERROR: exception while inserting translation:");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log(exception.getMessage());
+                exception.printStackTrace(StaticUtils.getLogStream());
                 return; // deliberately breaking, to simulate previous behaviour
                 // FIX: unknown
             }
             // </HP-experiment>
-
+            
             // <HP-experiment>
             try {
                 if (m_curEntry.getSrcFile().name.compareTo(m_activeFile) != 0)
@@ -1936,31 +1839,33 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                 }
             }
             catch (Exception exception) {
-                Log.log("ERROR: exception while updating title:");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                Log.log(exception);
+                StaticUtils.log("ERROR: exception while updating title:");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log(exception.getMessage());
+                exception.printStackTrace(StaticUtils.getLogStream());
                 return; // deliberately breaking, to simulate previous behaviour
                 // FIX: unknown
             }
             // </HP-experiment>
-
+            
             // <HP-experiment>
             try {
                 updateFuzzyInfo();
                 updateGlossaryInfo();
             }
             catch (Exception exception) {
-                Log.log("ERROR: exception while updating match and glossary info:");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                Log.log(exception);
+                StaticUtils.log("ERROR: exception while updating match and glossary info:");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log(exception.getMessage());
+                exception.printStackTrace(StaticUtils.getLogStream());
                 return; // deliberately breaking, to simulate previous behaviour
                 // FIX: unknown
             }
             // </HP-experiment>
-
+            
             StringEntry curEntry = m_curEntry.getStrEntry();
             int nearLength = curEntry.getNearListTranslated().size();
-
+            
             // <HP-experiment>
             try {
                 if (nearLength > 0 && m_glossaryLength > 0)
@@ -1988,14 +1893,15 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                     setMessageText(new String());                                       // NOI18N
             }
             catch (Exception exception) {
-                Log.log("ERROR: exception while setting message text:");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                Log.log(exception);
+                StaticUtils.log("ERROR: exception while setting message text:");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log(exception.getMessage());
+                exception.printStackTrace(StaticUtils.getLogStream());
                 return; // deliberately breaking, to simulate previous behaviour
                 // FIX: unknown
             }
             // </HP-experiment>
-
+    
             int offsetPrev = 0;
             int localNum = m_curEntryNum-m_xlFirstEntry;
             // <HP-experiment>
@@ -2007,15 +1913,16 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                 }
             }
             catch (Exception exception) {
-                Log.log("ERROR: exception while calculating previous offset:");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                Log.log(exception);
+                StaticUtils.log("ERROR: exception while calculating previous offset:");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log(exception.getMessage());
+                exception.printStackTrace(StaticUtils.getLogStream());
                 return; // deliberately breaking, to simulate previous behaviour
                 // FIX: unknown
             }
             // </HP-experiment>
             final int lookPrev = m_segmentStartOffset - offsetPrev;
-
+            
             int offsetNext = 0;
             int localLast = m_xlLastEntry-m_xlFirstEntry;
             // <HP-experiment>
@@ -2027,9 +1934,10 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                 }
             }
             catch (Exception exception) {
-                Log.log("ERROR: exception while calculating next offset:");
-                Log.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
-                Log.log(exception);
+                StaticUtils.log("ERROR: exception while calculating next offset:");
+                StaticUtils.log("Please report to the OmegaT developers (omegat-development@lists.sourceforge.net)");
+                StaticUtils.log(exception.getMessage());
+                exception.printStackTrace(StaticUtils.getLogStream());
                 return; // deliberately breaking, to simulate previous behaviour
                 // FIX: unknown
             }
@@ -2037,7 +1945,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             final int lookNext = m_segmentStartOffset + srcText.length() + 
                     OStrings.getSegmentStartMarker().length() + 1 + translation.length() + 
                     OStrings.getSegmentEndMarker().length() + offsetNext;
-
+            
             SwingUtilities.invokeLater(new Runnable()
             {
                 public void run()
@@ -2069,17 +1977,17 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                     {} // eating silently
                 }
             });
-
+            
             if (!m_docReady)
             {
                 m_docReady = true;
             }
             editor.cancelUndo();
-        } // synchronize (editor)
+        } // synchronized (editor)
 
         entryActivated = true;
     }
-
+    
     /**
      * Displays a warning message.
      *
@@ -2148,11 +2056,11 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                 if( pos<=start && epos<=start && spos<=start )
                     return false;
             }
-        } // synchronized (editor)
+        }
 
         return true;
     }
-
+    
     /**
      * Checks whether the selection & caret is inside editable text,
      * and changes their positions accordingly if not.
@@ -2168,7 +2076,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
             // -1 for space before tag, -2 for newlines
             int end = editor.getTextLength() - m_segmentEndInset -
                     OStrings.getSegmentEndMarker().length();
-    
+            
             if (spos != epos)
             {
                 // dealing with a selection here - make sure it's w/in bounds
@@ -2201,15 +2109,18 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
                     editor.setCaretPosition(end);
                 }
             }
-        } // synchronized (editor)
+        }
     }
-
+    
     public void fatalError(String msg, Throwable re)
     {
-        Log.log(msg);
+        StaticUtils.log(msg);
         if (re != null)
-            Log.log(re);
-
+        {
+            re.printStackTrace(StaticUtils.getLogStream());
+            re.printStackTrace();
+        }
+        
         // try for 10 seconds to shutdown gracefully
         CommandThread.core.interrupt();
         for( int i=0; i<100 && CommandThread.core!=null; i++ )
@@ -2282,7 +2193,8 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
      * always regenerated by the Form Editor.
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private void initComponents()
+    {
         separator2inProjectMenu = new javax.swing.JSeparator();
         projectExitMenuItem = new javax.swing.JMenuItem();
         statusLabel = new javax.swing.JLabel();
@@ -2299,6 +2211,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         projectCompileMenuItem = new javax.swing.JMenuItem();
         separator1inProjectMenu = new javax.swing.JSeparator();
         projectEditMenuItem = new javax.swing.JMenuItem();
+        //viewFileListCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         viewFileListMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         editUndoMenuItem = new javax.swing.JMenuItem();
@@ -2321,7 +2234,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         gotoNextUntranslatedMenuItem = new javax.swing.JMenuItem();
         gotoNextSegmentMenuItem = new javax.swing.JMenuItem();
         gotoPreviousSegmentMenuItem = new javax.swing.JMenuItem();
-        gotoSegmentMenuItem = new javax.swing.JMenuItem();
         toolsMenu = new javax.swing.JMenu();
         toolsValidateTagsMenuItem = new javax.swing.JMenuItem();
         optionsMenu = new javax.swing.JMenu();
@@ -2393,9 +2305,13 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 
         projectMenu.add(projectEditMenuItem);
 
-        org.openide.awt.Mnemonics.setLocalizedText(viewFileListMenuItem, OStrings.getString("TF_MENU_FILE_PROJWIN"));
+        //org.openide.awt.Mnemonics.setLocalizedText(viewFileListCheckBoxMenuItem,
+        org.openide.awt.Mnemonics.setLocalizedText(viewFileListMenuItem,
+                                                   OStrings.getString("TF_MENU_FILE_PROJWIN"));
+        //viewFileListCheckBoxMenuItem.addActionListener(this);
         viewFileListMenuItem.addActionListener(this);
 
+        //projectMenu.add(viewFileListCheckBoxMenuItem);
         projectMenu.add(viewFileListMenuItem);
 
         mainMenu.add(projectMenu);
@@ -2487,11 +2403,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 
         gotoMenu.add(gotoPreviousSegmentMenuItem);
 
-        org.openide.awt.Mnemonics.setLocalizedText(gotoSegmentMenuItem, OStrings.getString("TF_MENU_EDIT_GOTO"));
-        gotoSegmentMenuItem.addActionListener(this);
-
-        gotoMenu.add(gotoSegmentMenuItem);
-
         mainMenu.add(gotoMenu);
 
         org.openide.awt.Mnemonics.setLocalizedText(toolsMenu, OStrings.getString("TF_MENU_TOOLS"));
@@ -2563,172 +2474,225 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 
     // Code for dispatching events from components to event handlers.
 
-    public void actionPerformed(java.awt.event.ActionEvent evt) {
-        if (evt.getSource() == projectExitMenuItem) {
+    public void actionPerformed(java.awt.event.ActionEvent evt)
+    {
+        if (evt.getSource() == projectExitMenuItem)
+        {
             MainWindow.this.projectExitMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == projectNewMenuItem) {
+        else if (evt.getSource() == projectNewMenuItem)
+        {
             MainWindow.this.projectNewMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == projectOpenMenuItem) {
+        else if (evt.getSource() == projectOpenMenuItem)
+        {
             MainWindow.this.projectOpenMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == projectImportMenuItem) {
+        else if (evt.getSource() == projectImportMenuItem)
+        {
             MainWindow.this.projectImportMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == projectReloadMenuItem) {
+        else if (evt.getSource() == projectReloadMenuItem)
+        {
             MainWindow.this.projectReloadMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == projectCloseMenuItem) {
+        else if (evt.getSource() == projectCloseMenuItem)
+        {
             MainWindow.this.projectCloseMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == projectSaveMenuItem) {
+        else if (evt.getSource() == projectSaveMenuItem)
+        {
             MainWindow.this.projectSaveMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == projectCompileMenuItem) {
+        else if (evt.getSource() == projectCompileMenuItem)
+        {
             MainWindow.this.projectCompileMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == projectEditMenuItem) {
+        else if (evt.getSource() == projectEditMenuItem)
+        {
             MainWindow.this.projectEditMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == viewFileListMenuItem) {
-            MainWindow.this.viewFileListMenuItemActionPerformed(evt);
-        }
-        else if (evt.getSource() == editUndoMenuItem) {
+        else if (evt.getSource() == editUndoMenuItem)
+        {
             MainWindow.this.editUndoMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editRedoMenuItem) {
+        else if (evt.getSource() == editRedoMenuItem)
+        {
             MainWindow.this.editRedoMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editOverwriteTranslationMenuItem) {
+        else if (evt.getSource() == editOverwriteTranslationMenuItem)
+        {
             MainWindow.this.editOverwriteTranslationMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editInsertTranslationMenuItem) {
+        else if (evt.getSource() == editInsertTranslationMenuItem)
+        {
             MainWindow.this.editInsertTranslationMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editOverwriteSourceMenuItem) {
+        else if (evt.getSource() == editOverwriteSourceMenuItem)
+        {
             MainWindow.this.editOverwriteSourceMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editInsertSourceMenuItem) {
+        else if (evt.getSource() == editInsertSourceMenuItem)
+        {
             MainWindow.this.editInsertSourceMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editFindInProjectMenuItem) {
+        else if (evt.getSource() == editFindInProjectMenuItem)
+        {
             MainWindow.this.editFindInProjectMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editSelectFuzzy1MenuItem) {
+        else if (evt.getSource() == editSelectFuzzy1MenuItem)
+        {
             MainWindow.this.editSelectFuzzy1MenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editSelectFuzzy2MenuItem) {
+        else if (evt.getSource() == editSelectFuzzy2MenuItem)
+        {
             MainWindow.this.editSelectFuzzy2MenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editSelectFuzzy3MenuItem) {
+        else if (evt.getSource() == editSelectFuzzy3MenuItem)
+        {
             MainWindow.this.editSelectFuzzy3MenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editSelectFuzzy4MenuItem) {
+        else if (evt.getSource() == editSelectFuzzy4MenuItem)
+        {
             MainWindow.this.editSelectFuzzy4MenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == editSelectFuzzy5MenuItem) {
+        else if (evt.getSource() == editSelectFuzzy5MenuItem)
+        {
             MainWindow.this.editSelectFuzzy5MenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == gotoNextUntranslatedMenuItem) {
+        else if (evt.getSource() == gotoNextUntranslatedMenuItem)
+        {
             MainWindow.this.gotoNextUntranslatedMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == gotoNextSegmentMenuItem) {
+        else if (evt.getSource() == gotoNextSegmentMenuItem)
+        {
             MainWindow.this.gotoNextSegmentMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == gotoPreviousSegmentMenuItem) {
+        else if (evt.getSource() == gotoPreviousSegmentMenuItem)
+        {
             MainWindow.this.gotoPreviousSegmentMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == gotoSegmentMenuItem) {
-            MainWindow.this.gotoSegmentMenuItemActionPerformed(evt);
+        //else if (evt.getSource() == viewFileListCheckBoxMenuItem)
+        else if (evt.getSource() == viewFileListMenuItem)
+        {
+            //MainWindow.this.viewFileListCheckBoxMenuItemActionPerformed(evt);
+            MainWindow.this.viewFileListMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == toolsValidateTagsMenuItem) {
+        else if (evt.getSource() == toolsValidateTagsMenuItem)
+        {
             MainWindow.this.toolsValidateTagsMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == optionsTabAdvanceCheckBoxMenuItem) {
+        else if (evt.getSource() == optionsTabAdvanceCheckBoxMenuItem)
+        {
             MainWindow.this.optionsTabAdvanceCheckBoxMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == optionsAlwaysConfirmQuitCheckBoxMenuItem) {
+        else if (evt.getSource() == optionsAlwaysConfirmQuitCheckBoxMenuItem)
+        {
             MainWindow.this.optionsAlwaysConfirmQuitCheckBoxMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == optionsFontSelectionMenuItem) {
+        else if (evt.getSource() == optionsFontSelectionMenuItem)
+        {
             MainWindow.this.optionsFontSelectionMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == optionsSetupFileFiltersMenuItem) {
+        else if (evt.getSource() == optionsSetupFileFiltersMenuItem)
+        {
             MainWindow.this.optionsSetupFileFiltersMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == optionsSentsegMenuItem) {
+        else if (evt.getSource() == optionsSentsegMenuItem)
+        {
             MainWindow.this.optionsSentsegMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == optionsWorkflowMenuItem) {
+        else if (evt.getSource() == optionsWorkflowMenuItem)
+        {
             MainWindow.this.optionsWorkflowMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == optionsRestoreGUIMenuItem) {
+        else if (evt.getSource() == optionsRestoreGUIMenuItem)
+        {
             MainWindow.this.optionsRestoreGUIMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == helpContentsMenuItem) {
+        else if (evt.getSource() == helpContentsMenuItem)
+        {
             MainWindow.this.helpContentsMenuItemActionPerformed(evt);
         }
-        else if (evt.getSource() == helpAboutMenuItem) {
+        else if (evt.getSource() == helpAboutMenuItem)
+        {
             MainWindow.this.helpAboutMenuItemActionPerformed(evt);
         }
     }
 
-    public void componentHidden(java.awt.event.ComponentEvent evt) {
+    public void componentHidden(java.awt.event.ComponentEvent evt)
+    {
     }
 
-    public void componentMoved(java.awt.event.ComponentEvent evt) {
-        if (evt.getSource() == MainWindow.this) {
+    public void componentMoved(java.awt.event.ComponentEvent evt)
+    {
+        if (evt.getSource() == MainWindow.this)
+        {
             MainWindow.this.formComponentMoved(evt);
         }
     }
 
-    public void componentResized(java.awt.event.ComponentEvent evt) {
-        if (evt.getSource() == MainWindow.this) {
+    public void componentResized(java.awt.event.ComponentEvent evt)
+    {
+        if (evt.getSource() == MainWindow.this)
+        {
             MainWindow.this.formComponentResized(evt);
         }
     }
 
-    public void componentShown(java.awt.event.ComponentEvent evt) {
+    public void componentShown(java.awt.event.ComponentEvent evt)
+    {
     }
 
-    public void windowActivated(java.awt.event.WindowEvent evt) {
+    public void windowActivated(java.awt.event.WindowEvent evt)
+    {
     }
 
-    public void windowClosed(java.awt.event.WindowEvent evt) {
+    public void windowClosed(java.awt.event.WindowEvent evt)
+    {
+        Window window = evt.getWindow();
+        if (window == m_tagWin)
+            m_tagWin = null;
+        else if (m_searches.contains(window))
+            m_searches.remove(window);
     }
 
-    public void windowClosing(java.awt.event.WindowEvent evt) {
-        if (evt.getSource() == MainWindow.this) {
+    public void windowClosing(java.awt.event.WindowEvent evt)
+    {
+        if (evt.getSource() == MainWindow.this)
+        {
             MainWindow.this.formWindowClosing(evt);
         }
     }
 
-    public void windowDeactivated(java.awt.event.WindowEvent evt) {
+    public void windowDeactivated(java.awt.event.WindowEvent evt)
+    {
     }
 
-    public void windowDeiconified(java.awt.event.WindowEvent evt) {
+    public void windowDeiconified(java.awt.event.WindowEvent evt)
+    {
     }
 
-    public void windowIconified(java.awt.event.WindowEvent evt) {
+    public void windowIconified(java.awt.event.WindowEvent evt)
+    {
     }
 
-    public void windowOpened(java.awt.event.WindowEvent evt) {
+    public void windowOpened(java.awt.event.WindowEvent evt)
+    {
     }// </editor-fold>//GEN-END:initComponents
 
-    private void optionsRestoreGUIMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionsRestoreGUIMenuItemActionPerformed
-        restoreGUI();
-    }//GEN-LAST:event_optionsRestoreGUIMenuItemActionPerformed
-
+    //private void viewFileListCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_viewFileListCheckBoxMenuItemActionPerformed
     private void viewFileListMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_viewFileListMenuItemActionPerformed
     {//GEN-HEADEREND:event_viewFileListMenuItemActionPerformed
         if( m_projWin==null )
         {
+            //viewFileListCheckBoxMenuItem.setSelected(false);
             viewFileListMenuItem.setSelected(false);
             return;
         }
 
         // if the project window is not shown or in the background, show it
+        //if (viewFileListCheckBoxMenuItem.isSelected() || !m_projWin.isActive()) {
         if (!m_projWin.isActive()) {
             m_projWin.buildDisplay();
             m_projWin.setVisible(true);
@@ -2780,6 +2744,11 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     {//GEN-HEADEREND:event_optionsWorkflowMenuItemActionPerformed
         setupWorkflow();
     }//GEN-LAST:event_optionsWorkflowMenuItemActionPerformed
+    
+    private void optionsRestoreGUIMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_optionsRestoreGUIMenuItemActionPerformed
+    {//GEN-HEADEREND:event_optionsRestoreGUIMenuItemActionPerformed
+        restoreGUI();
+    }//GEN-LAST:event_optionsRestoreGUIMenuItemActionPerformed
     
     private void optionsSentsegMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_optionsSentsegMenuItemActionPerformed
     {//GEN-HEADEREND:event_optionsSentsegMenuItemActionPerformed
@@ -2873,11 +2842,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         doPrevEntry();
     }//GEN-LAST:event_gotoPreviousSegmentMenuItemActionPerformed
     
-    private void gotoSegmentMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_gotoSegmentMenuItemActionPerformed
-    {//GEN-HEADEREND:event_gotoSegmentMenuItemActionPerformed
-        doGotoEntry();
-    }//GEN-LAST:event_gotoSegmentMenuItemActionPerformed
-    
     private void gotoNextSegmentMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_gotoNextSegmentMenuItemActionPerformed
     {//GEN-HEADEREND:event_gotoNextSegmentMenuItemActionPerformed
         doNextEntry();
@@ -2963,7 +2927,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     private javax.swing.JMenuItem gotoNextSegmentMenuItem;
     private javax.swing.JMenuItem gotoNextUntranslatedMenuItem;
     private javax.swing.JMenuItem gotoPreviousSegmentMenuItem;
-    private javax.swing.JMenuItem gotoSegmentMenuItem;
     private javax.swing.JMenuItem helpAboutMenuItem;
     private javax.swing.JMenuItem helpContentsMenuItem;
     private javax.swing.JMenu helpMenu;
@@ -2971,11 +2934,11 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     private javax.swing.JCheckBoxMenuItem optionsAlwaysConfirmQuitCheckBoxMenuItem;
     private javax.swing.JMenuItem optionsFontSelectionMenuItem;
     private javax.swing.JMenu optionsMenu;
-    private javax.swing.JMenuItem optionsRestoreGUIMenuItem;
     private javax.swing.JMenuItem optionsSentsegMenuItem;
     private javax.swing.JMenuItem optionsSetupFileFiltersMenuItem;
     private javax.swing.JCheckBoxMenuItem optionsTabAdvanceCheckBoxMenuItem;
     private javax.swing.JMenuItem optionsWorkflowMenuItem;
+    private javax.swing.JMenuItem optionsRestoreGUIMenuItem;
     private javax.swing.JMenuItem projectCloseMenuItem;
     private javax.swing.JMenuItem projectCompileMenuItem;
     private javax.swing.JMenuItem projectEditMenuItem;
@@ -2998,6 +2961,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
     private javax.swing.JLabel statusLabel;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JMenuItem toolsValidateTagsMenuItem;
+    //private javax.swing.JCheckBoxMenuItem viewFileListCheckBoxMenuItem;
     private javax.swing.JMenuItem viewFileListMenuItem;
     // End of variables declaration//GEN-END:variables
 

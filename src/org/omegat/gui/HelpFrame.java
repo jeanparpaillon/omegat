@@ -53,7 +53,7 @@ import javax.swing.KeyStroke;          // HP
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import org.omegat.util.Log;
+
 import org.omegat.util.StaticUtils;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
@@ -220,7 +220,8 @@ public class HelpFrame extends JFrame
             }
         }
         catch (IOException exception) {
-            Log.log(exception);
+            StaticUtils.log(exception.getMessage());
+            exception.printStackTrace(StaticUtils.getLogStream());
             return;
         }
 
@@ -434,7 +435,8 @@ public class HelpFrame extends JFrame
                               + m_language + File.separator + file)).getCanonicalPath();
         }
         catch (IOException exception) {
-            Log.log(exception);
+            StaticUtils.log(exception.getMessage());
+            exception.printStackTrace(StaticUtils.getLogStream());
             return null;
         }
     }
@@ -497,7 +499,8 @@ public class HelpFrame extends JFrame
             prop.load(new FileInputStream(v));
         }
         catch (IOException exception) {
-            Log.log(exception);
+            StaticUtils.log(exception.getMessage());
+            exception.printStackTrace(StaticUtils.getLogStream());
             return null;
         }
 

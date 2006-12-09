@@ -34,7 +34,6 @@ import java.util.PropertyResourceBundle;
  * Localizable strings.
  * <p>
  * Please don't add any new strings here, use <code>getString</code> method.
- * This class still has so many strings for legacy reasons only.
  *
  * @author Keith Godfrey
  * @author Maxym Mykhalchuk
@@ -86,7 +85,7 @@ public class OStrings
     private static String __VERSION_KEY = "version";                            // NOI18N
     private static String __UPDATE_KEY  = "update";                             // NOI18N
 
-    /** Just a version, e.g. "1.6" */
+    /** Just a version, e.g. "1.6" or "1.6.1" */
     public static final String VERSION =
             ResourceBundle.getBundle("org/omegat/Version").getString(__VERSION_KEY);
 
