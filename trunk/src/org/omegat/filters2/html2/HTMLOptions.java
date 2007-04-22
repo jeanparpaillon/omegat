@@ -4,6 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
+               2007 Didier Briel
                Home page: http://www.omegat.org/omegat/omegat.html
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -39,8 +40,14 @@ import java.io.Serializable;
  * <li>[]  Only if HTML file has an encoding declaration
  * <li>[] Never
  * </ul>
- *
+ * Translatable attributes:
+ * <ul>[+] href
+ * <ul>[+] src
+ * <ul>[+] lang
+ * <ul>[+] hreflang
+ * </ul>
  * @author Maxym Mykhalchuk
+ * @author Didier Briel
  */
 public class HTMLOptions implements Serializable
 {
@@ -74,5 +81,75 @@ public class HTMLOptions implements Serializable
     public void setRewriteEncoding(int rewriteEncoding)
     {
         this.rewriteEncoding = rewriteEncoding;
+    }
+    
+    /** Hold value of properties. */
+    private boolean translateHref = true;
+    private boolean translateSrc = true;
+    private boolean translateLang = true;
+    private boolean translateHreflang = true;
+    
+    /**
+     * Returns whether href attributes should be translated.
+     */
+    public boolean getTranslateHref()
+    {
+        return this.translateHref;
+    }
+
+    /**
+     * Sets whether href attributes should be translated.
+     */
+    public void setTranslateHref(boolean translateHref)
+    {
+        this.translateHref = translateHref;
+    }
+   
+    /**
+     * Returns whether src attributes should be translated.
+     */
+    public boolean getTranslateSrc()
+    {
+        return this.translateSrc;
+    }
+
+    /**
+     * Sets whether src attributes should be translated.
+     */
+    public void setTranslateSrc(boolean translateSrc)
+    {
+        this.translateSrc = translateSrc;
+    }
+    
+    /**
+     * Returns whether lang attributes should be translated.
+     */
+    public boolean getTranslateLang()
+    {
+        return this.translateLang;
+    }
+
+    /**
+     * Sets whether lang attributes should be translated.
+     */
+    public void setTranslateLang(boolean translateLang)
+    {
+        this.translateLang = translateLang;
+    }
+
+   /**
+     * Returns whether hreflang attributes should be translated.
+     */
+    public boolean getTranslateHreflang()
+    {
+        return this.translateHreflang;
+    }
+
+    /**
+     * Sets whether hreflang attributes should be translated.
+     */
+    public void setTranslateHreflang(boolean translateHreflang)
+    {
+        this.translateHreflang = translateHreflang;
     }
 }
