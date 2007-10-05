@@ -4,7 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
-               2007 Didier Briel, Martin Fleurke
+               2007 Didier Briel
                Home page: http://www.omegat.org/omegat/omegat.html
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -45,13 +45,10 @@ import java.io.Serializable;
  * <ul>[+] src
  * <ul>[+] lang
  * <ul>[+] hreflang
- * <ul>[+] value
  * </ul>
  * Start a new paragraph on breaks (<br>: [ ]
- * Skip text matchin regExp []
  * @author Maxym Mykhalchuk
  * @author Didier Briel
- * @author Martin Fleurke
  */
 public class HTMLOptions implements Serializable
 {
@@ -92,7 +89,6 @@ public class HTMLOptions implements Serializable
     private boolean translateSrc = true;
     private boolean translateLang = true;
     private boolean translateHreflang = true;
-    private boolean translateValue = true;
     private boolean paragraphOnBr = false;
     
     /**
@@ -158,22 +154,6 @@ public class HTMLOptions implements Serializable
     {
         this.translateHreflang = translateHreflang;
     }
-
-    /**
-     * Sets whether value attributes should be translated.
-     */
-    public void setTranslateValue(boolean translateValue)
-    {
-        this.translateValue = translateValue;
-    }
-
-    /**
-     * Returns whether value attributes should be translated.
-     */
-    public boolean getTranslateValue()
-    {
-        return this.translateValue;
-    }
    
    /**
      * Returns whether a new paragraph should be started on BR.
@@ -190,23 +170,4 @@ public class HTMLOptions implements Serializable
     {
         this.paragraphOnBr = paragraphOnBr;
     }
-    
-    private String skipRegExp="";
-    
-    /**
-     * Returns the regular expression that matches text not to be translated
-     */
-    public String getskipRegExp()
-    {
-        return this.skipRegExp;
-    }
-
-    /**
-     * Sets whether a new paragraph should be started on BR.
-     */
-    public void setSkipRegExp(String skipRegExp)
-    {
-        this.skipRegExp = skipRegExp;
-    }
-    
 }

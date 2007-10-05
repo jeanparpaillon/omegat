@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
- Portions copyright 2007 - Zoltan Bartko - bartkozoltan@bartkozoltan.com
                Home page: http://www.omegat.org/omegat/omegat.html
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -98,11 +97,5 @@ public class Token
         return hash+"@"+offset;                                                 // NOI18N
     }
 
-    /**
-     * Return the section of the string denoted by the token
-     */
-    public String getTextFromString(String input) {
-        return input.substring(offset, length+offset);
-}
 }
 

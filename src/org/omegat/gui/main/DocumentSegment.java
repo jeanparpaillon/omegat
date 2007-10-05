@@ -39,9 +39,5 @@ class DocumentSegment
      * It also includes the 2 newlines used for spacing
      */
      public int length;
-     
-     public String toString(){
-         return "length:"+length;
-}
 }
 

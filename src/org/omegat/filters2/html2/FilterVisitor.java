@@ -4,7 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
-               2007 Didier Briel, Martin Fleurke 
+               2007 Didier Briel 
                Home page: http://www.omegat.org/omegat/omegat.html
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -46,9 +46,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-
 
 import org.omegat.filters2.AbstractFilter;
 import org.omegat.filters2.Instance;
@@ -62,7 +59,6 @@ import org.omegat.util.OStrings;
  * @author Maxym Mykhalchuk
  * @author Didier Briel
  * @author Henry Pijffers (henry.pijffers@saxnot.com)
- * @author Martin Fleurke
  */
 public class FilterVisitor extends NodeVisitor
 {
@@ -185,8 +181,7 @@ public class FilterVisitor extends NodeVisitor
                 maybeTranslateAttribute(tag, "src");                            // NOI18N
             maybeTranslateAttribute(tag, "summary");                            // NOI18N
             maybeTranslateAttribute(tag, "title");                              // NOI18N
-            if( "INPUT".equals(tag.getTagName()) &&
-            		options.getTranslateValue() )                           // NOI18N
+            if( "INPUT".equals(tag.getTagName()) )                              // NOI18N
                 maybeTranslateAttribute(tag, "value");                          // NOI18N
 
             queuePrefix(tag);
@@ -379,7 +374,7 @@ public class FilterVisitor extends NodeVisitor
     {
         // detecting the first starting tag in 'befors'
         // that has its ending in the paragraph
-        // all before this "first good" are simply written out
+        // all before this "first good" are simply writen out
         ArrayList all = new ArrayList();
         all.addAll(befors);
         all.addAll(translatable);
@@ -422,7 +417,7 @@ public class FilterVisitor extends NodeVisitor
                     }
                 }
             }
-            // if we could find an ending, 
+            // if we coud find an ending, 
             // this is a "good one"
             if( found )
                 break;
@@ -1233,45 +1228,9 @@ public class FilterVisitor extends NodeVisitor
                     res.append(ch);
             }
         }
-        String contents = res.toString();
-        // Rewrite characters that cannot be encoded to html character strings.
-        // Each character in the contents-string is checked. If a character
-        // can't be encoded, all its occurrences are replaced with the 
-        // html-equivalent string.
-        // Then, the next character is checked. 
-        // (The loop over the contents-string is restarted for the modified 
-        // content, but the starting-position will be the position where the 
-        // last unencodable character was found)
-        // [1802000] HTML filter loses html-encoded characters if not supported
-        String encoding = this.filter.getTargetEncoding();
-        if (encoding != null) {
-            CharsetEncoder charsetEncoder = 
-                    Charset.forName(encoding).newEncoder();
-            int i=0;
-            boolean notfinished = true;
-            while (notfinished) {
-        	for (;i< contents.length(); i++) {
-                    char x = contents.charAt(i);
-        	    if (!charsetEncoder.canEncode(x)) {
-                        String regexp;
-                        if (x=='[' || x=='\\' ||
-                            x=='^'||x=='$'||x=='.'||x=='|'||x=='?'||x=='*'||
-                            x=='+'||x=='('||x==')') {
-        		    // escape special regexp characters
-        		    regexp = "\\"+x;
-        		 } else 
-                             regexp = ""+x;
-        	        String replacement= "&#"+(int)x+';';
-        	        contents = contents.replaceAll(regexp, replacement);
-        		break;
-        	    }
-                }
-                if (i == contents.length()) 
-                    notfinished = false;
-            }
-        }
-        return contents;
-    } 
+        return res.toString();
+    }
+    
     
 }
 

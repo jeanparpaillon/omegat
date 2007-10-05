@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
-               2007 Martin Fleurke
                Home page: http://www.omegat.org/omegat/omegat.html
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -32,9 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.htmlparser.Parser;
 import org.htmlparser.util.ParserException;
@@ -54,7 +50,6 @@ import org.omegat.util.OStrings;
  * devoted to compressing space.
  *
  * @author Maxym Mykhalchuk
- * @author Martin Fleurke
  */
 public class HTMLFilter2 extends AbstractFilter
 {
@@ -65,18 +60,6 @@ public class HTMLFilter2 extends AbstractFilter
 
     /** Stores the source encoding of HTML file. */
     private String sourceEncoding;
-
-    /** Stores the target encoding of HTML file. */
-    private String targetEncoding;
-    
-    /** A regular Expression Pattern to be matched to the strings to be translated.
-     * If there is a match, the string should not be translated
-     */
-    private Pattern skipRegExpPattern;
-    
-    /** The options of this filter */
-    private HTMLOptions options;
-    
     
     /**
      * Customized version of creating input reader for HTML files,
@@ -102,13 +85,13 @@ public class HTMLFilter2 extends AbstractFilter
     {
         HTMLWriter hwriter;
         HTMLOptions options = (HTMLOptions) getOptions();
+        String theEncoding;
         if (encoding==null)
-            this.targetEncoding = sourceEncoding;            
+            theEncoding = sourceEncoding;
         else
-            this.targetEncoding = encoding;
+            theEncoding = encoding;
         
-        hwriter = new HTMLWriter(outfile.getAbsolutePath(), 
-                this.targetEncoding, options);
+        hwriter = new HTMLWriter(outfile.getAbsolutePath(), theEncoding, options);
         return new BufferedWriter(hwriter);
     }
 
@@ -132,27 +115,6 @@ public class HTMLFilter2 extends AbstractFilter
             throw new IOException(OStrings.getString("HTML__FILE_TOO_BIG"));
         }
         
-        if (this.hasOptions()) // HHC filter has no options
-        {
-            this.options = (HTMLOptions) this.getOptions();
-            if (this.options == null)
-                this.options = new HTMLOptions();
-        }
-
-        // Prepare matcher
-        String skipRegExp = options.getskipRegExp();
-        if (skipRegExp != null && skipRegExp.length()>0) 
-        {
-            try 
-            {
-        	this.skipRegExpPattern = Pattern.compile(skipRegExp, Pattern.CASE_INSENSITIVE);
-            } 
-            catch (PatternSyntaxException e) 
-            {
-        	Log.log(e);
-            }
-        }
-        
         Parser parser = new Parser();
         try
         {
@@ -170,20 +132,7 @@ public class HTMLFilter2 extends AbstractFilter
     /** Package-internal processEntry to give it to FilterVisitor */
     String privateProcessEntry(String entry)
     {
-    	if (skipRegExpPattern != null) 
-        {
-    	    if (skipRegExpPattern.matcher(entry).matches()) 
-            {
-//  	        System.out.println("Skipping \""+entry+"\"");
-    		return entry;
-    	    } 
-            else 
-            {
-//  		System.out.println("Using: \""+entry+"\"");
-    		return super.processEntry(entry);
-    	    }
-    	}
-    	return super.processEntry(entry);
+        return super.processEntry(entry);
     }
     
     //////////////////////////////////////////////////////////////////////////
@@ -263,12 +212,5 @@ public class HTMLFilter2 extends AbstractFilter
         }
     }
 
-    /**
-     * Returns the encoding of the html writer (if already set) 
-     * @return the target encoding
-     */
-    public String getTargetEncoding() 
-    {
-        return this.targetEncoding;
-    }
+    
 }

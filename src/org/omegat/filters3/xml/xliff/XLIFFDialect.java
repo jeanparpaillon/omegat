@@ -66,7 +66,6 @@ public class XLIFFDialect extends DefaultXMLDialect
             "bpt",                                                              // NOI18N
             "ept",                                                              // NOI18N
             "it",                                                               // NOI18N
-            "context",                                                          // NOI18N
         });
     }
 }
