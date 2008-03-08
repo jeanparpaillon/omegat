@@ -25,6 +25,7 @@
 package org.omegat.core.data;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 
 import org.omegat.core.ProjectProperties;
 import org.omegat.filters2.TranslationException;
@@ -36,9 +37,24 @@ import org.omegat.filters2.TranslationException;
  */
 public interface IDataEngine {
     /**
+     * Create new project.
+     */
+    void createProject();
+
+    /**
+     * Load project.
+     */
+    boolean loadProject(String projectDir) throws IOException, InterruptedIOException, TranslationException;
+
+    /**
      * Save project.
      */
     void saveProject();
+
+    /**
+     * Close project.
+     */
+    void closeProject();
 
     /**
      * Create translated documents.
