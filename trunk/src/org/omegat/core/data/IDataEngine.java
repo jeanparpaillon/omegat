@@ -67,4 +67,11 @@ public interface IDataEngine {
      * @return project properties
      */
     ProjectProperties getProjectProperties();
+
+    /**
+     * Get project loaded status.
+     * 
+     * @return true if project loaded
+     */
+    boolean isProjectLoaded();
 }
