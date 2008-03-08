@@ -25,6 +25,7 @@
 package org.omegat.core;
 
 import org.omegat.core.data.IDataEngine;
+import org.omegat.gui.main.IEditor;
 import org.omegat.gui.main.IMainWindow;
 
 /**
@@ -35,6 +36,7 @@ import org.omegat.gui.main.IMainWindow;
 public class Core {
     private static IDataEngine dataEngine;
     private static IMainWindow mainWindow;
+    private static IEditor editor;
 
     /** Get data engine instance. */
     public static IDataEngine getDataEngine() {
@@ -45,6 +47,11 @@ public class Core {
     public static IMainWindow getMainWindow() {
 	return mainWindow;
     }
+    
+    /** Get editor instance. */
+    public static IEditor getEditor() {
+        return editor;
+    }
 
     /**
      * Initialize application core from exists main components instances.
@@ -52,8 +59,9 @@ public class Core {
      * TODO: change initialization for instantiate component instances, instead
      * use already created instanced
      */
-    public static void initialize(final IDataEngine de, final IMainWindow mw) {
-	dataEngine=de;
-	mainWindow=mw;
+    public static void initialize(final IDataEngine de, final IMainWindow mw, final IEditor ed) {
+	dataEngine = de;
+        mainWindow = mw;
+        editor = ed;
     }
 }
