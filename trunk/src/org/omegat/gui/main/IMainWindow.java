@@ -24,12 +24,26 @@
 
 package org.omegat.gui.main;
 
+import java.awt.Font;
+
+import javax.swing.JFrame;
+
 /**
  * Interface for access to main window functionality.
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public interface IMainWindow {
+    /**
+     * Get application frame.
+     */
+    JFrame getApplicationFrame();
+
+    /**
+     * Get main application font.
+     */
+    Font getApplicationFont();
+
     /**
      * Show message in status bar.
      * 
