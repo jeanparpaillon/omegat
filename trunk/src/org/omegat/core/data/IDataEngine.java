@@ -73,4 +73,16 @@ public interface IDataEngine {
      * @return true if project loaded
      */
     boolean isProjectLoaded();
+
+    /**
+     * Iterate for all entries in project.
+     */
+    void iterateByAllEntries(EntriesIteratorCallback callback);
+
+    /**
+     * Callback for entries iterator.
+     */
+    public interface EntriesIteratorCallback {
+        void onEntry(StringEntry entry);
+    }
 }
