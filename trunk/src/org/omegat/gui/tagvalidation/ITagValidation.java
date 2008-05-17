@@ -24,7 +24,6 @@
 
 package org.omegat.gui.tagvalidation;
 
-import java.awt.Font;
 
 /**
  * Interface for tag validation.
@@ -36,9 +35,4 @@ public interface ITagValidation {
      * Calls IDataEngine for get invalid tags list and show they.
      */
     void validateTags();
-    
-    /**
-     * Set font for window.
-     */
-    void setFont(Font newFont);
 }
