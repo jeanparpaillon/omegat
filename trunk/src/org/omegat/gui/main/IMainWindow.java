@@ -35,7 +35,7 @@ import com.vlsolutions.swing.docking.Dockable;
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  */
-public interface IMainWindow {
+public interface IMainWindow extends IMessageWindow {
     /**
      * Get application frame.
      */
