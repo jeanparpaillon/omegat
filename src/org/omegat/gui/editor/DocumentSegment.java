@@ -3,7 +3,7 @@
           with fuzzy matching, translation memory, keyword search, 
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2009 Didier Briel
+ Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -22,34 +22,26 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 **************************************************************************/
 
-package org.omegat.filters3.xml;
-
+package org.omegat.gui.editor;
 
 /**
- * A processing instruction in an XML file.
- * For example, <code>&lt;? here is the processing instruction ?&gt;</code>.
+ * Tiny class to represent one document segment.
+ * As of now, only the display length is stored, maybe will be more in the future.
  *
- * @author Didier Briel
+ * @author Keith Godfrey
+ * @author Maxym Mykhalchuk
  */
-public class ProcessingInstruction extends XMLPseudoTag
+class DocumentSegment
 {
-    private String data;
-    private String target;
-    
-    /** Creates a new instance of ProcessingInstruction */
-    public ProcessingInstruction(String data, String target){
-        this.data = data;
-        this.target = target;
-    }
-
     /**
-     * Returns the processing instruction in its original form as it was in 
-     * the original document.
+     * Display Length -- the char count of the display value of the segment,
+     * i.e. translation if it exists, else source.
+     * It also includes the 2 newlines used for spacing
      */
-    public String toOriginal(){
-        if (target.length() > 0)
-            return "<?" + data + " " +target + "?>";
-        else
-            return "<?" + data + "?>";
-    }
+     public int length;
+     
+     public String toString(){
+         return "length:"+length;
 }
+}
+

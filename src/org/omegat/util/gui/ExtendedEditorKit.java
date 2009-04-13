@@ -3,7 +3,7 @@
           with fuzzy matching, translation memory, keyword search, 
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2008 Alex Buloichik
+ Copyright (C) 2007 - Zoltan Bartko - bartkozoltan@bartkozoltan.com
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -20,28 +20,22 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- **************************************************************************/
+**************************************************************************/
 
-package org.omegat.gui.editor;
+package org.omegat.util.gui;
+
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.ViewFactory;
 
 /**
- * Some utilities methods.
- * 
- * @author Alex Buloichik (alex73mail@gmail.com)
+ * Custom editor kit. As seen on 
+ * http://forum.java.sun.com/thread.jspa?threadID=5168528&messageID=9647272
+ *
+ * @author bartkoz
  */
-public class EditorUtils {
-    /**
-     * Check if language is RTL.
-     * 
-     * @param language
-     *            ISO-639-2 language code
-     * @return true if language is RTL
-     */
-    public static boolean isRTL(final String language) {
-        return "ar".equalsIgnoreCase(language)
-                || "iw".equalsIgnoreCase(language)
-                || "he".equalsIgnoreCase(language)
-                || "fa".equalsIgnoreCase(language)
-                || "ur".equalsIgnoreCase(language);
-    }
+public class ExtendedEditorKit extends StyledEditorKit {
+        public ViewFactory getViewFactory() {
+                return new ExtendedViewFactory();
+        }
+
 }

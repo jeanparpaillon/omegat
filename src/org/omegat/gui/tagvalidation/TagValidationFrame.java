@@ -4,8 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2000-2006 Keith Godfrey, Maxym Mykhalchuk, Henry Pijffers
-               2007 Didier Briel
-               2008 Martin Fleurke
+           (C) 2007  Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -63,7 +62,6 @@ import org.openide.awt.Mnemonics;
  * @author Keith Godfrey
  * @author Henry Pijffers (henry.pijffers@saxnot.com)
  * @author Didier Briel
- * @author Martin Fleurke
  */
 public class TagValidationFrame extends JFrame
 {

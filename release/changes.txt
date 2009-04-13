@@ -1,67 +1,24 @@
 ----------------------------------------------------------------------
- OmegaT 2.0.2 
+ OmegaT 2.0.1 update 1
 ----------------------------------------------------------------------
-2.0.2 vs. 2.0.1
+2.0.1 update 1 vs. 2.0.1
 
-  5 Enhancements
-  8 Bugfixes
+  0 Enhancement
+  1 Bugfix
 ----------------------------------------------------------------------
-2.0.1 update 2
-
-  Implemented requests:
-
-  - Support for alpha-3 language codes of ISO 639-2 and 639-3
-  http://sourceforge.net/support/tracker.php?aid=1570557 
-
-  Other enhancements:
-
-  - Source and target segments are now, by default, left justified for LTR 
-languages and right justified for RTL languages depending on the
-languages of the project. It is still possible to switch with Shift+Ctrl+O,
-which has now three states: 
-- Justification according to languages (default)
-- Justification on the left
-- Justification on the right
-
-  - Ctrl+Page up and Ctrl+Page down go to the beginning/end of a document 
-(without entering the segment) 
-
-  - Update of some user interface texts for clarification purposes
-
-  - Spanish localisation updated to 2.0.2 (UI, readme, instant start) 
+2.0.1 update 1
 
   Bug Fixes: 
 
   - Glossary: unclear display if combined entries contain a ","
   http://sourceforge.net/support/tracker.php?aid=2628490 
 
-  - Bidi wrong justification
-  http://sourceforge.net/support/tracker.php?aid=1383289 
-
-  - OmegaT hangs at random
-  http://sourceforge.net/support/tracker.php?aid=1762277  
-
-  - Random hangs, exceptions in command line, nothing in log
-  http://sourceforge.net/support/tracker.php?aid=1817830 
-
-  - Confused display when RTL segment starts with LTR characters 
-  http://sourceforge.net/support/tracker.php?aid=1898522  
-
-  - Spellchecker slow down 
-  http://sourceforge.net/support/tracker.php?aid=1908643 
-
-  - Pattern after in Text files segmentation rule contained "\s+" instead
-of " +"
-
-  - The SkipMeta option in the HTML and XHTML filters was not initialised to 
-the default value
-
 ----------------------------------------------------------------------
  OmegaT 2.0.1
 ----------------------------------------------------------------------
 2.0.1 vs. 2.0.0 update 1
 
-  9 Enhancements
+  8 Enhancements
   1 Bugfix
 
 ----------------------------------------------------------------------
@@ -80,9 +37,6 @@ the default value
 
   - Interface for scripting languages
   http://sourceforge.net/support/tracker.php?aid=1989533  
-
-  - Specify project from command line
-  http://sourceforge.net/support/tracker.php?aid=1880170   
   
   Other enhancements:
   
@@ -107,7 +61,7 @@ and copied to the clipboard.
 ----------------------------------------------------------------------
 2.0.0 update 1 vs. 2.0.0
 
-  8 Enhancements
+  7 Enhancements
   1 Bugfix
 
 ----------------------------------------------------------------------
@@ -136,12 +90,6 @@ and copied to the clipboard.
 
   - OmegaT can use tokenizers to get stemming in fuzzy and glossary matches. 
   (Requires tokenizers from http://sourceforge.net/projects/omegat-plugins)
-
-  - Three percentages are displayed in the match pane, corresponding to the three 
-steps of matching:
-1 Using stemming (if a tokenizer is used)
-2 Without stemming
-3 Taking everything into account (tags, numbers, punctuation)
 
   - Japanese localisation updated to 2.0 (UI)
   - Basque localisation updated to 2.0 (UI)
@@ -212,60 +160,18 @@ can be applied or not with a new option in Options/Font.
   - French localisation updated to 2.0 (UI)
 
 ----------------------------------------------------------------------
- OmegaT 1.8.1 update 4 Changes
-----------------------------------------------------------------------
-1.8.1 update 4 vs. 1.8.1 update 3
-
-   0 Enhancement
-   3 Bugfixes
-----------------------------------------------------------------------
-1.8.1 update 4
-
-  Bug fixes:
-
-  - XML, stylesheet declaration removed from target
-  http://sourceforge.net/support/tracker.php?aid=1677412
-  
-  - XML, Processing Instructions removed from target document
-  http://sourceforge.net/support/tracker.php?aid=1662202  
-
-  - Hunspell and OmegaT could crash if a dictionary did not exist for
-a project's language
-
-----------------------------------------------------------------------
- OmegaT 1.8.1 update 3 Changes
+ OmegaT 1.8.1 update 2 Changes
 ----------------------------------------------------------------------
 1.8.1 update 3 vs. 1.8.1 update 2
 
-   4 Enhancements
-   3 Bugfixes
+   0 Enhancement
+   1 Bugfix
 ----------------------------------------------------------------------
 1.8.1 update 3
  
-  Implemented requests:
-
-  - Add keyboard shortcuts in Search dialog
-  http://sourceforge.net/support/tracker.php?aid=1811065
-  (Effective in English and in French, other translations must be 
-   updated. As for all dialogs, dialog shortcuts are not available on a Mac.)
-
-  Other enhancements:
-
-  - New Welsh localisation (UI, readme, instant start)
-  - czech localisation updated to 1.8 (UI, readme, instant start, documentation)
-  - Hunspell for Mac and Linux-i386 is updated to 1.2.8
-  - Hunspell for Windows is updated to 1.2.7
-
   Bug fixes:
-
   - Tags are counted as characters in statistics
   http://sourceforge.net/support/tracker.php?aid=1910909 
-
-  - French dictionary cannot be downloaded and installed
-  http://sourceforge.net/support/tracker.php?aid=2138846  
-
-  - Linux: Exception on reading omegat/learned_words.txt
-  http://sourceforge.net/support/tracker.php?aid=2657589
 
 ----------------------------------------------------------------------
  OmegaT 1.8.1 update 2 Changes

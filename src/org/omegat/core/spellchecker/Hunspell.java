@@ -3,8 +3,7 @@
           with fuzzy matching, translation memory, keyword search, 
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2007 Zoltan Bartko
-               2009 Didier Briel
+ Copyright (C) 2007 - Zoltan Bartko - bartkozoltan@bartkozoltan.com
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -33,8 +32,7 @@ import com.sun.jna.ptr.PointerByReference;
  * An interface with the Hunspell (http://hunspell.sourceforge.net)
  * spell checking library.
  *
- * @author Zoltan Bartko bartkozoltan@bartkozoltan.com
- * @author Didier Briel
+ * @author bartkoz
  */
 public interface Hunspell extends Library {
     
@@ -75,11 +73,4 @@ public interface Hunspell extends Library {
      * put a word into the custom dictionary
      */
     public int Hunspell_put_word(Pointer pHunspell, byte[] word);    
-    /**
-     * put a word into the custom dictionary
-     * same function as put_word, renamed as of Hunspell 1.2
-     * (01/11/2007)
-     */  
-    public int Hunspell_add(Pointer pHunspell, byte[] word);
-        
 }

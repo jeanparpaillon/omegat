@@ -4,8 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
-               2008 Martin Fleurke, Alex Buloichik, Didier Briel
-               2009 Didier Briel
+               2008 Martin Fleurke
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -449,10 +448,6 @@ class Handler extends DefaultHandler implements LexicalHandler, DeclHandler
     {
         currEntry().add(new Comment(comment));
     }
-    private void queueProcessingInstruction(String data, String target){
-        currEntry().add(new ProcessingInstruction(data, target));
-    }
-
     private void queueDTD(DTD dtd)
     {
         currEntry().add(dtd);
@@ -666,14 +661,6 @@ class Handler extends DefaultHandler implements LexicalHandler, DeclHandler
         queueComment(new String(ch, start, length));
     }
 
-    /** Receive notification of an XML processing instruction
-     * anywhere in the document.
-     */
-    public void processingInstruction(String target, String data) throws SAXException {
-        if (inDTD)
-            return;
-        queueProcessingInstruction(target, data);
-    }
     /** Receive notification of the beginning of the document. */
     public void startDocument() throws SAXException
     {

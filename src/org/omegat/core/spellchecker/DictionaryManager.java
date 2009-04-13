@@ -3,8 +3,7 @@
           with fuzzy matching, translation memory, keyword search, 
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2007 Zoltan Bartko 
-               2009 Didier Briel
+ Copyright (C) 2007 - Zoltan Bartko - bartkozoltan@bartkozoltan.com
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -38,8 +37,7 @@ import org.omegat.util.StaticUtils;
 
 /**
  * Dictionary manager. Spell checking dictionaries' utility functions.
- * @author Zoltan Bartko - bartkozoltan@bartkozoltan.com
- * @author Didier Briel
+ * @author bartkoz
  */
 public class DictionaryManager {
     
@@ -240,14 +238,6 @@ public class DictionaryManager {
         
         StaticUtils.downloadFileToDisk(from, to);
         
-        // Dirty hack for the French dictionary. Since it is named
-        // fr_FR_1-3-2.zip, we remove the "_1-3-2" portion
-        // [ 2138846 ] French dictionary cannot be downloaded and installed
-        int pos;
-        if ( (pos = langCode.indexOf("_1-3-2", 0)) != -1 ){
-            langCode = langCode.substring(0, pos);
-        }
-
         List<String> filenames = new ArrayList<String>();
         
         filenames.add(langCode + OConsts.SC_AFFIX_EXTENSION);
