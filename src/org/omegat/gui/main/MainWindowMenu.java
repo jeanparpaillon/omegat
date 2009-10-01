@@ -195,7 +195,6 @@ public class MainWindowMenu implements ActionListener {
                 .add(viewDisplaySegmentSourceCheckBoxMenuItem = createCheckboxMenuItem("MW_VIEW_MENU_DISPLAY_SEGMENT_SOURCES"));
 
         toolsMenu.add(toolsValidateTagsMenuItem = createMenuItem("TF_MENU_TOOLS_VALIDATE"));
-        toolsMenu.add(toolsShowStatisticsMenuItem = createMenuItem("TF_MENU_TOOLS_STATISTICS"));
 
         optionsMenu.add(optionsTabAdvanceCheckBoxMenuItem = createCheckboxMenuItem("TF_MENU_DISPLAY_ADVANCE"));
         optionsMenu
@@ -353,7 +352,7 @@ public class MainWindowMenu implements ActionListener {
                 gotoMenu, gotoNextSegmentMenuItem, gotoNextUntranslatedMenuItem, gotoPreviousSegmentMenuItem,
                 gotoSegmentMenuItem,
 
-                viewFileListMenuItem, toolsValidateTagsMenuItem, toolsShowStatisticsMenuItem };
+                viewFileListMenuItem, toolsValidateTagsMenuItem };
 
         for (JMenuItem item : itemsToSwitchOff) {
             item.setEnabled(!isProjectOpened);
@@ -428,7 +427,6 @@ public class MainWindowMenu implements ActionListener {
     JMenuItem titleCaseMenuItem;
     JMenu toolsMenu;
     JMenuItem toolsValidateTagsMenuItem;
-    JMenuItem toolsShowStatisticsMenuItem;
     JMenuItem upperCaseMenuItem;
     JCheckBoxMenuItem viewDisplaySegmentSourceCheckBoxMenuItem;
     JMenuItem viewFileListMenuItem;

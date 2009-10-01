@@ -202,23 +202,39 @@ public class FindMatchesThread extends Thread {
             return;
         }
 
-        int similarityStem = FuzzyMatcher.calcSimilarity(distance, strTokensStem, candTokens);
+        int similarityStem = calcSimilarity(strTokensStem, candTokens);
 
         if (similarityStem < OConsts.FUZZY_MATCH_THRESHOLD)
             return;
 
         Token[] candTokensNoStem = Core.getTokenizer().tokenizeWords(
                 candEntry.getSrcText(), ITokenizer.StemmingMode.NONE);
-        int similarityNoStem = FuzzyMatcher.calcSimilarity(distance, strTokensNoStem, candTokensNoStem);
+        int similarityNoStem = calcSimilarity(strTokensNoStem, candTokensNoStem);
 
         if (haveChanceToAdd(similarityStem, similarityNoStem)) {
             Token[] candTokensAll = Core.getTokenizer().tokenizeAllExactly(
                     candEntry.getSrcText());
-            int simAdjusted = FuzzyMatcher.calcSimilarity(distance, strTokensAll, candTokensAll);
+            int simAdjusted = calcSimilarity(strTokensAll, candTokensAll);
 
             addNearString(candEntry, similarityStem, similarityNoStem,
                     simAdjusted, null, tmxName);
         }
+    }
+    
+    /**
+     * Calculate similarity for tokens arrays(percent).
+     * 
+     * @param str
+     *                original string tokens
+     * @param cand
+     *                candidate string tokens
+     * @return similarity in percents
+     */
+    protected int calcSimilarity(final Token[] str, final Token cand[]) {
+        int ld = distance.compute(str, cand);
+        int similarity = (100 * (Math.max(str.length, cand.length) - ld))
+                / Math.max(str.length, cand.length);
+        return similarity;
     }
 
     /**

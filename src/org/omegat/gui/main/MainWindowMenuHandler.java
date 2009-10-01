@@ -43,7 +43,6 @@ import org.omegat.gui.filters2.FiltersCustomizer;
 import org.omegat.gui.help.HelpFrame;
 import org.omegat.gui.search.SearchWindow;
 import org.omegat.gui.segmentation.SegmentationCustomizer;
-import org.omegat.gui.stat.StatisticsWindow;
 import org.omegat.util.FileUtil;
 import org.omegat.util.Language;
 import org.omegat.util.Log;
@@ -454,11 +453,6 @@ public class MainWindowMenuHandler {
     public void toolsValidateTagsMenuItemActionPerformed() {
         Core.getTagValidation().validateTags();
     }
-    
-    public void toolsShowStatisticsMenuItemActionPerformed() {
-        new StatisticsWindow().setVisible(true);
-    }
-    
 
     public void optionsTabAdvanceCheckBoxMenuItemActionPerformed() {
         Core.getEditor().getSettings().setUseTabForAdvance(

@@ -5,7 +5,7 @@
 
  Copyright (C) 2000-2006 Keith Godfrey, Maxym Mykhalchuk, and Henry Pijffers
                2007 Zoltan Bartko
-               2009 Didier Briel, Alex Buloichik
+               2009 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -36,21 +36,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.omegat.core.Core;
 import org.omegat.core.data.ProjectProperties;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.StringEntry;
-import org.omegat.core.data.TransMemory;
-import org.omegat.core.matching.FuzzyMatcher;
-import org.omegat.core.matching.ISimilarityCalculator;
-import org.omegat.core.matching.ITokenizer;
 import org.omegat.core.matching.Tokenizer;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.PatternConsts;
 import org.omegat.util.StaticUtils;
-import org.omegat.util.StringUtil;
-import org.omegat.util.Token;
 
 /**
  * Save project statistic into text file.
@@ -60,7 +53,6 @@ import org.omegat.util.Token;
  * @author Maxym Mykhalchuk
  * @author Zoltan Bartko (bartkozoltan@bartkozoltan.com)
  * @author Didier Briel
- * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public class Statistics {
     /**
@@ -225,60 +217,6 @@ public class Statistics {
         }
     }
 
-    /**
-     * Calculate max similarity percent for one entry.
-     * 
-     * @param ste source entry
-     * @param distanceCalculator calculator
-     * @param allEntries all entries in project
-     * @return max similarity percent
-     */
-    public static int getMaxSimilarityPercent(final SourceTextEntry ste,
-            final ISimilarityCalculator distanceCalculator,
-            final List<SourceTextEntry> allEntries) {
-        if (!StringUtil.isEmpty(ste.getTranslation())) {
-            // segment has translation - should be calculated as
-            // "Exact matched"
-            return Integer.MAX_VALUE;
-        }
-
-        Token[] strTokensStem = Core.getTokenizer().tokenizeAllExactly(
-                ste.getSrcText());
-        int maxSimilarity = 0; // not matched - 0% yet
-
-        /* Travel by project entries. */
-        // 'for(int i;;)' much faster than 'for(:)'
-        for (int i = 0; i < allEntries.size(); i++) {
-            SourceTextEntry cand = allEntries.get(i);
-            if (cand == ste) {
-                // source entry
-                continue;
-            }
-            if (StringUtil.isEmpty(cand.getTranslation())) {
-                // target without translation - skip
-                continue;
-            }
-            Token[] candTokens = Core.getTokenizer().tokenizeAllExactly(
-                    cand.getSrcText());
-            int newSimilarity = FuzzyMatcher.calcSimilarity(distanceCalculator,
-                    strTokensStem, candTokens);
-            maxSimilarity = Math.max(maxSimilarity, newSimilarity);
-        }
-
-        /* Travel by TMs. */
-        List<TransMemory> tmList = Core.getProject().getTransMemory();
-        // 'for(int i;;)' much faster than 'for(:)'
-        for (int i = 0; i < tmList.size(); i++) {
-            TransMemory tm = tmList.get(i);
-            Token[] candTokens = Core.getTokenizer().tokenizeAllExactly(
-                    tm.source);
-            int newSimilarity = FuzzyMatcher.calcSimilarity(distanceCalculator,
-                    strTokensStem, candTokens);
-            maxSimilarity = Math.max(maxSimilarity, newSimilarity);
-        }
-        return maxSimilarity;
-    }
-
     /** Computes the number of characters excluding spaces in a string. */
     private static int numberOfCharactersWithoutSpaces(String str) {
         int chars = 0;
@@ -290,7 +228,7 @@ public class Statistics {
     }
 
     /** Computes the number of words in a string. */
-    public static int numberOfWords(String str) {
+    private static int numberOfWords(String str) {
         int len = str.length();
         if (len == 0)
             return 0;
