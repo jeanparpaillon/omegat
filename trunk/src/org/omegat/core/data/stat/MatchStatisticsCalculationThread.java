@@ -30,22 +30,18 @@ import org.omegat.core.Core;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.matching.ISimilarityCalculator;
 import org.omegat.core.matching.LevenshteinDistance;
+import org.omegat.core.threads.LongProcessThread;
 
 /**
  * Thread for calculate match statistics.
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  */
-public class MatchStatisticsCalculationThread extends Thread {
+public class MatchStatisticsCalculationThread extends LongProcessThread {
     private Callback callback;
-    private boolean isStopped = false;
 
     public MatchStatisticsCalculationThread(Callback callback) {
         this.callback = callback;
-    }
-
-    public void fin() {
-        isStopped = true;
     }
 
     public void run() {
