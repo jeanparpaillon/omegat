@@ -25,7 +25,7 @@
 package org.omegat.filters2;
 
 /**
- * Callback for processing all entries for filter.
+ * Callback for parse files.
  * 
  * @author Alex Buloichik <alex73mail@gmail.com>
  */
