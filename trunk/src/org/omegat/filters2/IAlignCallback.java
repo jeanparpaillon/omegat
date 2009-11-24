@@ -33,10 +33,12 @@ public interface IAlignCallback {
     /**
      * New found aligned data.
      * 
+     * @param id
+     *            entry id
      * @param source
      *            source text
      * @param translation
      *            translated text
      */
-    void addTranslation(String source, String translation);
+    void addTranslation(String id, String source, String translation);
 }
