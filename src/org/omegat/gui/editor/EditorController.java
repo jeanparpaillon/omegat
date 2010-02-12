@@ -8,6 +8,7 @@
                2007 Zoltan Bartko
                2008 Andrzej Sawula, Alex Buloichik
                2009 Didier Briel
+               2010 Wildrich Fourie
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -57,7 +58,8 @@ import org.omegat.core.events.IEntryEventListener;
 import org.omegat.core.events.IFontChangedEventListener;
 import org.omegat.core.events.IProjectEventListener;
 import org.omegat.core.statistics.StatisticsInfo;
-import org.omegat.gui.editor.mark.Mark;
+import org.omegat.gui.glossary.GlossaryEntry;
+import org.omegat.gui.glossary.TransTipsUnderliner;
 import org.omegat.gui.help.HelpFrame;
 import org.omegat.gui.main.DockableScrollPane;
 import org.omegat.gui.main.MainWindow;
@@ -86,6 +88,7 @@ import org.omegat.util.gui.UIThreadsUtil;
  * @author Andrzej Sawula
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Didier Briel
+ * @author Wildrich Fourie
  */
 public class EditorController implements IEditor {
 
@@ -98,10 +101,6 @@ public class EditorController implements IEditor {
 
     /** Editor instance. */
     protected final EditorTextArea3 editor;
-
-    /** Class for process marks for editor. */
-    protected MarkerController markerController;
-
     private String introPaneTitle, emptyProjectPaneTitle;
     private JTextPane introPane, emptyProjectPane;
     protected final MainWindow mw;
@@ -113,11 +112,13 @@ public class EditorController implements IEditor {
     protected int displayedFileIndex, previousDisplayedFileIndex;
     /** Current active segment in current file. */
     protected int displayedEntryIndex;
-    
+
     /** Object which store history of moving by segments. */
     private SegmentHistory history = new SegmentHistory();
 
     protected final EditorSettings settings;
+
+    protected final SpellCheckerThread spellCheckerThread;
 
     protected Font font, fontb, fonti, fontbi;
 
@@ -133,8 +134,6 @@ public class EditorController implements IEditor {
 
         editor = new EditorTextArea3(this);
         setFont(Core.getMainWindow().getApplicationFont());
-        
-        markerController = new MarkerController(this);
 
         pane = new DockableScrollPane("EDITOR", " ", editor, false);
         pane.setComponentOrientation(ComponentOrientation.getOrientation(Locale
@@ -147,9 +146,12 @@ public class EditorController implements IEditor {
 
         settings = new EditorSettings(this);
 
+        spellCheckerThread = new SpellCheckerThread();
+        spellCheckerThread.start();
+
         CoreEvents.registerProjectChangeListener(new IProjectEventListener() {
             public void onProjectChanged(PROJECT_CHANGE_TYPE eventType) {
-                markerController.reset(0);
+                spellCheckerThread.resetCache();
 
                 SHOW_TYPE showType;
                 switch (eventType) {
@@ -180,7 +182,7 @@ public class EditorController implements IEditor {
         // register entry changes callback
         CoreEvents.registerEntryEventListener(new IEntryEventListener() {
             public void onNewFile(String activeFileName) {
-                markerController.reset(0);
+                spellCheckerThread.resetCache();
 
                 updateState(SHOW_TYPE.NO_CHANGE);
             }
@@ -399,7 +401,7 @@ public class EditorController implements IEditor {
      */
     protected void loadDocument() {
         UIThreadsUtil.mustBeSwingThread();
-        
+
         // Currently displayed file
         IProject.FileInfo file = Core.getProject().getProjectFiles().get(
                 displayedFileIndex);
@@ -431,25 +433,17 @@ public class EditorController implements IEditor {
         doc.addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
                 showLengthMessage();
-                onTextChanged();
             }
 
             public void insertUpdate(DocumentEvent e) {
                 showLengthMessage();
-                onTextChanged();
             }
 
             public void removeUpdate(DocumentEvent e) {
                 showLengthMessage();
-                onTextChanged();
             }
         });
 
-        markerController.reset(m_docSegList.length);
-        
-        // call all markers
-        markerController.process(m_docSegList);
-        
         editor.repaint();
     }
 
@@ -471,13 +465,7 @@ public class EditorController implements IEditor {
         if (!Core.getProject().isProjectLoaded())
             return;
 
-        // forget about old marks
-        markerController.resetEntryMarks(displayedEntryIndex);
-
         m_docSegList[displayedEntryIndex].createSegmentElement(true);
-
-        // then add new marks
-        markerController.process(displayedEntryIndex, m_docSegList[displayedEntryIndex]);
 
         editor.cancelUndo();
 
@@ -506,7 +494,7 @@ public class EditorController implements IEditor {
             CoreEvents.fireEntryNewFile(Core.getProject().getProjectFiles()
                     .get(displayedFileIndex).filePath);
         }
-        
+
         editor.repaint();
 
         // fire event about new segment activated
@@ -524,18 +512,6 @@ public class EditorController implements IEditor {
             String lMsg = " " + ste.getSrcText().length() + "/"
                     + trans.length() + " ";
             Core.getMainWindow().showLengthMessage(lMsg);
-        }
-    }
-    
-    /**
-     * Called on the text changed in document. Required for recalculate marks
-     * for active segment.
-     */
-    void onTextChanged() {
-        Document3 doc = editor.getOmDocument();
-        if (doc.isEditMode()) {
-            m_docSegList[displayedEntryIndex].onActiveEntryChanged();
-            markerController.process(displayedEntryIndex, m_docSegList[displayedEntryIndex]);
         }
     }
 
@@ -660,9 +636,6 @@ public class EditorController implements IEditor {
             return;
         }
 
-        // forget about old marks
-        markerController.resetEntryMarks(displayedEntryIndex);
-
         String newTrans = doc.extractTranslation();
         doc.stopEditMode();
 
@@ -701,10 +674,6 @@ public class EditorController implements IEditor {
                 }
             }
         }
-        
-        // then add new marks
-        markerController.process(displayedEntryIndex, m_docSegList[displayedEntryIndex]);
-
         editor.cancelUndo();
     }
 
@@ -1193,36 +1162,49 @@ public class EditorController implements IEditor {
         // Default to English, if no translation exists
         return "en";
     }
-    
-    /**
-     * Calls markers for reprocess active entry.
-     */
-    void remarkOneMarker(final String markerClassName) {
-        int mi = markerController.getMarkerIndex(markerClassName);
-        markerController.process(m_docSegList, mi);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void markActiveEntrySource(
-            final SourceTextEntry requiredActiveEntry, final List<Mark> marks,
-            final String markerClassName) {
-        UIThreadsUtil.mustBeSwingThread();
-        
-        for (Mark m : marks) {
-            if (m.entryPart != Mark.ENTRY_PART.SOURCE) {
-                throw new RuntimeException("Mark must be for source only");
+
+    /**{@inheritDoc}*/
+    public void highlightTransTips(List<GlossaryEntry> entries)
+    {
+        if(!entries.isEmpty())
+        {
+            TransTipsUnderliner ttu =
+                    new TransTipsUnderliner(((EditorController)Core.getEditor()).editor,
+                    java.awt.Color.blue);
+
+            // Get the index of the current segment in the whole document
+            String sourceText = Core.getEditor().getCurrentEntry().getSrcText();
+            sourceText = sourceText.toLowerCase();
+            // WordSearch Variables
+            int wsStart = 0;
+            int wsEnd = 0;
+            try
+            {
+                Document3 xldoc = ((EditorController)Core.getEditor()).editor.getOmDocument();
+                String allText = xldoc.getText(0, xldoc.getLength());
+                wsStart = allText.toLowerCase().indexOf(sourceText);
+                wsEnd = wsStart + sourceText.length();
+            }
+            catch (Exception ex) { /* Unthrowable */ }
+
+            for(GlossaryEntry ent : entries)
+            {
+                String nowEntry = ent.getSrcText();
+                // Double check
+                if(sourceText.toLowerCase().contains(nowEntry.toLowerCase()))
+                {
+                    int startIndex = 0;
+                    int lastIndex = sourceText.toLowerCase().lastIndexOf(nowEntry.toLowerCase());
+
+                    do
+                    {
+                        startIndex = sourceText.toLowerCase().indexOf(nowEntry.toLowerCase(), startIndex);
+                        int len = nowEntry.length();
+                        ttu.search(nowEntry, wsStart, wsEnd);
+                        startIndex += len;
+                    } while(startIndex < lastIndex);
+                }
             }
         }
-
-        SourceTextEntry realActive = m_docSegList[displayedEntryIndex].ste;
-        if (realActive != requiredActiveEntry) {
-            return;
-        }
-
-        int mi = markerController.getMarkerIndex(markerClassName);
-        markerController.setEntryMarks(displayedEntryIndex,
-                m_docSegList[displayedEntryIndex], marks, mi);
     }
 }

@@ -101,7 +101,7 @@ public abstract class EntryInfoSearchThread<T> extends Thread {
 				if (ferror != null) {
 				    pane.setError(ferror);
 				} else {
-				    pane.setFoundResult(currentlyProcessedEntry, fresult);
+				    pane.setFoundResult(fresult);
 				}
 			}
 		});

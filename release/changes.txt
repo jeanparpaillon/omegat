@@ -1,16 +1,4 @@
 ----------------------------------------------------------------------
- OmegaT 2.1.2 update 1
-----------------------------------------------------------------------
-  1 Enhancement
-  0 Bugfix
-----------------------------------------------------------------------
-2.1.2 update 1 vs. 2.1.2
-
-  Other enhancements:
-  
-  - Windows Resources (RC) file filter
-
-----------------------------------------------------------------------
  OmegaT 2.1.2 
 ----------------------------------------------------------------------
  15 Enhancements
@@ -143,23 +131,6 @@ as a repetition in Match Statistics
 
   - Display Statistics in a window
   http://sourceforge.net/support/tracker.php?aid=2876217 
-
-----------------------------------------------------------------------
- OmegaT 2.0.5 update 3
-  1 Enhancement
-  2 Bugfixes
-----------------------------------------------------------------------
-2.0.5 update 3 vs. 2.0.5 update 2
-
-  Implemented requests:
-
-  - Segmentation rule for header number and the header body
-  http://sourceforge.net/support/tracker.php?aid=2948997
-
-  Bug Fixes:
-
-  - References to Java 1.4 removed in OmegaT.l4J.ini
-  - Various corrections in the manual
 
 ----------------------------------------------------------------------
  OmegaT 2.0.5 update 2

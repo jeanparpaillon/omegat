@@ -29,7 +29,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.text.AttributeSet;
 
 import org.omegat.core.Core;
-import org.omegat.core.spellchecker.SpellCheckerMarker;
 import org.omegat.util.Preferences;
 import org.omegat.util.gui.Styles;
 import org.omegat.util.gui.UIThreadsUtil;
@@ -196,9 +195,8 @@ public class EditorSettings {
         this.autoSpellChecking = autoSpellChecking;
 
         if (Core.getProject().isProjectLoaded()) {
-         //   parent.loadDocument();
+            parent.loadDocument();
             parent.activateEntry();
-            parent.remarkOneMarker(SpellCheckerMarker.class.getName());
         }
     }
 }

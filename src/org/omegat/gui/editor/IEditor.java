@@ -4,6 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2008 Alex Buloichik
+               2010 Wildrich Fourie
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -25,9 +26,8 @@
 package org.omegat.gui.editor;
 
 import java.util.List;
-
 import org.omegat.core.data.SourceTextEntry;
-import org.omegat.gui.editor.mark.Mark;
+import org.omegat.gui.glossary.GlossaryEntry;
 
 /**
  * Interface for access to editor functionality.
@@ -35,6 +35,7 @@ import org.omegat.gui.editor.mark.Mark;
  * Almost all methods must be called from UI thread.
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
+ * @author Wildrich Fourie
  */
 public interface IEditor {
     enum CHANGE_CASE_TO {
@@ -61,13 +62,14 @@ public interface IEditor {
      * Can be called from any thread.
      */
     SourceTextEntry getCurrentEntry();
-
+    
     /**
      * Get current active entry number.
      * 
      * Can be called from any thread.
      */
     int getCurrentEntryNumber();
+    
 
     /**
      * Activate entry for edit.
@@ -82,10 +84,9 @@ public interface IEditor {
      * Must be called only from UI thread.
      */
     void commitAndDeactivate();
-
+    
     /**
-     * Commits the translation and leave entry activated. Translation will be
-     * saved.
+     * Commits the translation and leave entry activated. Translation will be saved.
      * 
      * Must be called only from UI thread.
      */
@@ -119,7 +120,7 @@ public interface IEditor {
      *            file index in project
      */
     void gotoFile(int fileIndex);
-
+    
     /**
      * Goto entry with specified number.
      * 
@@ -129,7 +130,7 @@ public interface IEditor {
      *            Must be called only from UI thread.
      */
     void gotoEntry(int entryNum);
-
+    
     /**
      * Set current focus to editor.
      */
@@ -139,10 +140,10 @@ public interface IEditor {
      * Change case of the selected text or if none is selected, of the current
      * word.
      * 
-     * @param newCase
-     *            : lower, title, upper or cycle
-     * 
-     *            Must be called only from UI thread.
+     * @param newCase :
+     *                lower, title, upper or cycle
+     *                
+     * Must be called only from UI thread.
      */
     void changeCase(CHANGE_CASE_TO newCase);
 
@@ -179,44 +180,36 @@ public interface IEditor {
      * 
      * @return interface for read and change editor settings
      * 
-     *         Can be called from any thread.
+     * Can be called from any thread.
      */
     EditorSettings getSettings();
-
+    
     /**
      * Undo editing.
      * 
      * Must be called only from UI thread.
      */
     void undo();
-
+    
     /**
      * Redo editing.
      * 
      * Must be called only from UI thread.
      */
     void redo();
-
+    
     /**
      * Get currently selected text.
      * 
      * @return selected text
      * 
-     *         Must be called only from UI thread.
+     * Must be called only from UI thread.
      */
     String getSelectedText();
 
     /**
-     * All plugins can call this method for mark something in active entry.
-     * 
-     * @param requiredActiveEntry
-     *            entry which should be active. If user moved to other entry,
-     *            then marks will be skipped
-     * @param marks
-     *            list of marks
-     * @param markerClassName
-     *            marker's class name
+     * Underlines the words in the editor that has glossary matches.
+     * @param entries List&lt;GlossaryEntry&gt;
      */
-    void markActiveEntrySource(SourceTextEntry requiredActiveEntry, List<Mark> marks,
-            String markerClassName);
+    public void highlightTransTips(List<GlossaryEntry> entries);    
 }

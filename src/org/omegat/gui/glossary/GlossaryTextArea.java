@@ -29,14 +29,12 @@ package org.omegat.gui.glossary;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.omegat.core.Core;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.StringEntry;
 import org.omegat.gui.common.EntryInfoPane;
-import org.omegat.gui.editor.mark.Mark;
 import org.omegat.gui.main.DockableScrollPane;
 import org.omegat.util.OStrings;
 import org.omegat.util.gui.UIThreadsUtil;
@@ -52,7 +50,7 @@ import org.omegat.util.gui.UIThreadsUtil;
 public class GlossaryTextArea extends EntryInfoPane<List<GlossaryEntry>> {
     /** Glossary manager instance. */
     protected final GlossaryManager manager = new GlossaryManager(this);
-    
+
     /**
      * Currently processed entry. Used to detect if user moved into new entry.
      * In this case, new find should be started.
@@ -110,15 +108,12 @@ public class GlossaryTextArea extends EntryInfoPane<List<GlossaryEntry>> {
      * Sets the list of glossary entries to show in the pane. Each element of
      * the list should be an instance of {@link GlossaryEntry}.
      */
-    protected void setFoundResult(SourceTextEntry en, List<GlossaryEntry> entries) {
+    protected void setFoundResult(List<GlossaryEntry> entries) {
         UIThreadsUtil.mustBeSwingThread();
 
         // If the TransTips is enabled then underline all the matched glossary entries
-        if(org.omegat.util.Preferences.isPreference(org.omegat.util.Preferences.TRANSTIPS)) {
-            // TODO move marks construction into search thread
-            highlightTransTips(en, entries);
-        }
-        
+        if(org.omegat.util.Preferences.isPreference(org.omegat.util.Preferences.TRANSTIPS))
+            Core.getEditor().highlightTransTips(entries);
         nowEntries = entries;
 
         StringBuffer buf = new StringBuffer();
@@ -136,24 +131,6 @@ public class GlossaryTextArea extends EntryInfoPane<List<GlossaryEntry>> {
         setText("");
     }
 
-    /**{@inheritDoc}*/
-    public void highlightTransTips(SourceTextEntry en, List<GlossaryEntry> entries)
-    {
-        if(!entries.isEmpty())
-        {
-            List<Mark> marks = new ArrayList<Mark>();
-            // Get the index of the current segment in the whole document
-            String sourceText = en.getSrcText();
-            sourceText = sourceText.toLowerCase();
-            
-            for (GlossaryEntry ent : entries) {
-                String nowEntry = ent.getSrcText();
-                TransTipsUnderliner.search(en.getSrcText(), nowEntry, marks);
-            }
-            Core.getEditor().markActiveEntrySource(en, marks,
-                    TransTipsMarker.class.getName());
-        }
-    }
 
     /**
      * MouseListener for the GlossaryTextArea

@@ -101,13 +101,10 @@ public abstract class EntryInfoPane<T> extends JTextPane implements
     /**
      * Callback from search thread.
      * 
-     * @param processedEntry
-     *            entry which produce data
      * @param data
      *            found data
      */
-    protected abstract void setFoundResult(SourceTextEntry processedEntry,
-            T data);
+    protected abstract void setFoundResult(T data);
 
     /**
      * Callback from search thread if error occured.

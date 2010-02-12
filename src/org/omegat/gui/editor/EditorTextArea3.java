@@ -61,7 +61,6 @@ import javax.swing.undo.UndoManager;
 
 import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
-import org.omegat.core.spellchecker.SpellCheckerMarker;
 import org.omegat.gui.glossary.GlossaryEntry;
 import org.omegat.util.Log;
 import org.omegat.util.OConsts;
@@ -535,8 +534,11 @@ public class EditorTextArea3 extends JEditorPane {
         } else {
             Core.getSpellChecker().ignoreWord(word);
         }
-        
-        controller.remarkOneMarker(SpellCheckerMarker.class.getName());
+
+        controller.spellCheckerThread.resetCache();
+
+        // redraw segments
+        repaint();
     }
 
      // Creates the Cut, Copy and Paste menu items

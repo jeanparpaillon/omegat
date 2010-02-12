@@ -42,17 +42,13 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.dts.spell.dictionary.OpenOfficeSpellDictionary;
 import org.dts.spell.dictionary.SpellDictionary;
 import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
-import org.omegat.core.data.SourceTextEntry;
-import org.omegat.core.events.IEntryEventListener;
 import org.omegat.core.events.IProjectEventListener;
 import org.omegat.util.Log;
 import org.omegat.util.OConsts;
@@ -91,11 +87,6 @@ public class SpellChecker implements ISpellChecker {
     /** the list of learned (valid) words */
     private List<String> learnedList = new ArrayList<String>();
     
-    /** Cache of correct words. */
-    private final Set<String> correctWordsCache = new HashSet<String>();
-    /** Cache of incorrect words. */
-    private final Set<String> incorrectWordsCache = new HashSet<String>();
-
     /** the pointer to the hunspell class */
     private Pointer pHunspell = null;
     
@@ -145,15 +136,6 @@ public class SpellChecker implements ISpellChecker {
                     destroy();
                     break;
                 }
-                resetCache();
-            }
-        });
-        CoreEvents.registerEntryEventListener(new IEntryEventListener() {
-            public void onNewFile(String activeFileName) {
-                resetCache();
-            }
-
-            public void onEntryActivated(SourceTextEntry newEntry) {
             }
         });
     }
@@ -264,13 +246,6 @@ public class SpellChecker implements ISpellChecker {
 
     }
     
-    protected void resetCache() {
-        synchronized (this) {
-            incorrectWordsCache.clear();
-            correctWordsCache.clear();
-        }
-    }
-    
     /**
      * Save the word lists to disk
      */
@@ -339,45 +314,23 @@ public class SpellChecker implements ISpellChecker {
      * Otherwise false.
      */
     public boolean isCorrect(String word) {
-        // check in cache first
-        synchronized (this) {
-            if (incorrectWordsCache.contains(word)) {
-                return false;
-            } else if (correctWordsCache.contains(word)) {
-                return true;
-            }
-        }
-        
-        boolean isCorrect;
         
         // if it is valid (learned), it is ok
-        if (learnedList.contains(word) || ignoreList.contains(word)) {
-            isCorrect = true;
-        } else if (pHunspell != null) {
-            isCorrect = false;
+        if (learnedList.contains(word) || ignoreList.contains(word))
+            return true;
+        if (pHunspell != null) {
             try {
-                if (0 != hunspell
-                        .Hunspell_spell(pHunspell, prepareString(word))) {
-                    isCorrect = true;
-                }
+                if (0 != hunspell.Hunspell_spell(pHunspell, prepareString(word)))
+                    return true;
             } catch (UnsupportedEncodingException ex) {
                 Log.log("Unsupported encoding " + encoding);
             }
+            return false;
         } else if (jmyspell != null) {
-            isCorrect = jmyspell.isCorrect(word);
+            return jmyspell.isCorrect(word);
         } else {
-            isCorrect = true;
+            return true;
         }
-        
-        // remember in cache
-        synchronized (this) {
-            if (isCorrect) {
-                correctWordsCache.add(word);
-            } else {
-                incorrectWordsCache.add(word);
-            }
-        }
-        return isCorrect;
     }
     
     /**
@@ -449,10 +402,6 @@ public class SpellChecker implements ISpellChecker {
     public void ignoreWord(String word) {
         if (!ignoreList.contains(word)) {
             ignoreList.add(word);
-            synchronized (this) {
-                incorrectWordsCache.remove(word);
-                correctWordsCache.add(word);
-            }
         }
     }
     
@@ -468,10 +417,6 @@ public class SpellChecker implements ISpellChecker {
                 } catch (UnsupportedEncodingException ex) {
                     Log.log("Unsupported encoding " + encoding);
                 }            
-            }
-            synchronized (this) {
-                incorrectWordsCache.remove(word);
-                correctWordsCache.add(word);
             }
         }
     }
