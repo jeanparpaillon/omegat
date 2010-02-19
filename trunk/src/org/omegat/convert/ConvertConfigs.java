@@ -27,6 +27,7 @@ package org.omegat.convert;
 import java.io.File;
 
 import org.omegat.convert.v20to21.Convert20to21;
+import org.omegat.gui.main.MainWindowUI;
 import org.omegat.util.Log;
 import org.omegat.util.StaticUtils;
 
@@ -43,6 +44,16 @@ public class ConvertConfigs {
                     + "filters.conf");
             try {
                 Convert20to21.convertFiltersConfig(oldFilters, newFilters);
+            } catch (Exception ex) {
+                Log.log(ex);
+            }
+        }
+
+        File newUI = new File(StaticUtils.getConfigDir()
+                + MainWindowUI.UI_LAYOUT_FILE);
+        if (!newUI.exists()) {
+            try {
+                ConvertTo213.convertUIConfig(newUI);
             } catch (Exception ex) {
                 Log.log(ex);
             }
