@@ -5,7 +5,6 @@
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2010 Didier Briel
-               2012 Alex Buloichick, Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -29,6 +28,7 @@ package org.omegat.gui.dialogs;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -36,23 +36,24 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.KeyStroke;
+import org.omegat.util.Log;
 
 import org.omegat.util.OStrings;
+import org.omegat.util.Preferences;
 
 /**
  * 
  * @author Didier Briel
- * @author Alex Buloichik (alex73mail@gmail.com)
  */
 @SuppressWarnings("serial")
-public class UserPassDialog extends JDialog {
+public class ProxyLoginDialog extends JDialog {
     /** A return status code - returned if Cancel button has been pressed */
     public static final int RET_CANCEL = 0;
     /** A return status code - returned if OK button has been pressed */
     public static final int RET_OK = 1;
 
     /** Creates new form WorkflowOptionsDialog */
-    public UserPassDialog(Frame parent) {
+    public ProxyLoginDialog(Frame parent) {
         super(parent, true);
 
         // HP
@@ -70,6 +71,18 @@ public class UserPassDialog extends JDialog {
         initComponents();
 
         getRootPane().setDefaultButton(okButton);
+
+        String encodedUser = (Preferences.getPreference(Preferences.PROXY_USER_NAME));
+        String encodedPassword = (Preferences.getPreference(Preferences.PROXY_PASSWORD));
+
+        sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
+        try {
+            userText.setText(new String(dec.decodeBuffer(encodedUser)));
+            passwordField.setText(new String(dec.decodeBuffer(encodedPassword)));
+        } catch (IOException ex) {
+            Log.logErrorRB("LOG_DECODING_ERROR");
+            Log.log(ex);
+        }
 
         invalidate();
         pack();
@@ -90,6 +103,7 @@ public class UserPassDialog extends JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        ourButtonGroup = new javax.swing.ButtonGroup();
         descriptionTextArea = new javax.swing.JTextArea();
         userLabel = new javax.swing.JLabel();
         userText = new javax.swing.JTextField();
@@ -99,6 +113,7 @@ public class UserPassDialog extends JDialog {
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
 
+        setTitle(OStrings.getString("PROXY_LOGIN_DIALOG")); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -110,6 +125,7 @@ public class UserPassDialog extends JDialog {
         descriptionTextArea.setEditable(false);
         descriptionTextArea.setFont(new JLabel().getFont());
         descriptionTextArea.setLineWrap(true);
+        descriptionTextArea.setText(OStrings.getString("PROXY_LOGIN_DESCRIPTION")); // NOI18N
         descriptionTextArea.setWrapStyleWord(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -121,7 +137,7 @@ public class UserPassDialog extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         getContentPane().add(descriptionTextArea, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(userLabel, OStrings.getString("LOGIN_USER")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(userLabel, OStrings.getString("PROXY_LOGIN_USER")); // NOI18N
         userLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -140,7 +156,7 @@ public class UserPassDialog extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         getContentPane().add(userText, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(passwordLabel, OStrings.getString("LOGIN_PASSWORD")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(passwordLabel, OStrings.getString("PROXY_LOGIN_PASSWORD")); // NOI18N
         passwordLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -149,6 +165,8 @@ public class UserPassDialog extends JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(4, 16, 4, 4);
         getContentPane().add(passwordLabel, gridBagConstraints);
+
+        passwordField.setText("jPasswordField1");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 6;
@@ -190,6 +208,13 @@ public class UserPassDialog extends JDialog {
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_okButtonActionPerformed
     {
+        sun.misc.BASE64Encoder enc = new sun.misc.BASE64Encoder();
+        String encodeduser = enc.encode(userText.getText().getBytes());
+        String encodedPassword = enc.encode(new String(passwordField.getPassword()).getBytes());
+
+        Preferences.setPreference(Preferences.PROXY_USER_NAME, encodeduser);
+        Preferences.setPreference(Preferences.PROXY_PASSWORD, encodedPassword);
+
         doClose(RET_OK);
     }// GEN-LAST:event_okButtonActionPerformed
 
@@ -212,13 +237,14 @@ public class UserPassDialog extends JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    public javax.swing.JTextArea descriptionTextArea;
+    private javax.swing.JTextArea descriptionTextArea;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton okButton;
-    public javax.swing.JPasswordField passwordField;
+    private javax.swing.ButtonGroup ourButtonGroup;
+    private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel passwordLabel;
     private javax.swing.JLabel userLabel;
-    public javax.swing.JTextField userText;
+    private javax.swing.JTextField userText;
     // End of variables declaration//GEN-END:variables
 
     private int returnStatus = RET_CANCEL;

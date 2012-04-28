@@ -31,7 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.omegat.core.Core;
-import org.omegat.core.KnownException;
 import org.omegat.core.data.IProject;
 
 /**
@@ -44,7 +43,7 @@ import org.omegat.core.data.IProject;
 public class SaveThread extends Thread implements IAutoSave {
     private static final Logger LOGGER = Logger.getLogger(SaveThread.class.getName());
 
-    private static final int SAVE_DURATION = 3 * 60 * 1000; // 3 minutes;
+    private static final int SAVE_DURATION = 10 * 60 * 1000; // 10 minutes;
 
     private boolean needToSaveNow;
     private boolean enabled;
@@ -79,14 +78,10 @@ public class SaveThread extends Thread implements IAutoSave {
                     // Wait finished by time and autosaving enabled.
                     IProject dataEngine = Core.getProject();
                     LOGGER.fine("Start project save from SaveThread");
-                    try {
-                        dataEngine.saveProject();
-                        Core.getMainWindow().showStatusMessageRB("ST_PROJECT_AUTOSAVED",
-                                DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date()));
-                    } catch (KnownException ex) {
-                        Core.getMainWindow().showStatusMessageRB(ex.getMessage(), ex.getParams());
-                    }
+                    dataEngine.saveProject();
                     LOGGER.fine("Finish project save from SaveThread");
+                    Core.getMainWindow().showStatusMessageRB("ST_PROJECT_AUTOSAVED",
+                            DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date()));
                 }
             }
         } catch (InterruptedException ex) {

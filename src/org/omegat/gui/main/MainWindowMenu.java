@@ -193,7 +193,6 @@ public class MainWindowMenu implements ActionListener, IMainMenu {
         mainMenu.add(helpMenu = createMenu("TF_MENU_HELP"));
 
         projectMenu.add(projectNewMenuItem = createMenuItem("TF_MENU_FILE_CREATE"));
-        projectMenu.add(projectTeamNewMenuItem = createMenuItem("TF_MENU_FILE_TEAM_CREATE"));
         projectMenu.add(projectOpenMenuItem = createMenuItem("TF_MENU_FILE_OPEN"));
         projectMenu.add(projectImportMenuItem = createMenuItem("TF_MENU_FILE_IMPORT"));
         projectMenu.add(projectWikiImportMenuItem = createMenuItem("TF_MENU_WIKI_IMPORT"));
@@ -490,7 +489,7 @@ public class MainWindowMenu implements ActionListener, IMainMenu {
      *            project open status: true if opened, false if closed
      */
     private void onProjectStatusChanged(final boolean isProjectOpened) {
-        JMenuItem[] itemsToSwitchOff = new JMenuItem[] { projectNewMenuItem, projectTeamNewMenuItem, projectOpenMenuItem };
+        JMenuItem[] itemsToSwitchOff = new JMenuItem[] { projectNewMenuItem, projectOpenMenuItem };
 
         JMenuItem[] itemsToSwitchOn = new JMenuItem[] { projectImportMenuItem, projectWikiImportMenuItem,
                 projectReloadMenuItem, projectCloseMenuItem, projectSaveMenuItem, projectEditMenuItem,
@@ -531,10 +530,6 @@ public class MainWindowMenu implements ActionListener, IMainMenu {
 
     public JMenu getGlossaryMenu() {
         return optionsGlossaryMenu;
-    }
-
-    public JMenu getProjectMenu() {
-        return projectMenu;
     }
 
     JMenuItem cycleSwitchCaseMenuItem;
@@ -597,7 +592,6 @@ public class MainWindowMenu implements ActionListener, IMainMenu {
     JMenuItem projectImportMenuItem;
     JMenu projectMenu;
     JMenuItem projectNewMenuItem;
-    JMenuItem projectTeamNewMenuItem;
     JMenuItem projectOpenMenuItem;
     JMenuItem projectReloadMenuItem;
     JMenuItem projectSaveMenuItem;

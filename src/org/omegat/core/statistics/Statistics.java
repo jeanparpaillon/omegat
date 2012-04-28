@@ -79,11 +79,9 @@ public class Statistics {
             final ISimilarityCalculator distanceCalculator, final List<SourceTextEntry> allEntries,
             final Map<String, Token[]> tokensCache, final Set<String> alreadyProcessed) {
 
-        final IProject project = Core.getProject();
-
         boolean isFirst = alreadyProcessed.add(ste.getSrcText());
 
-        if (project.getTranslationInfo(ste).isTranslated()) {
+        if (Core.getProject().getTranslationInfo(ste).isTranslated()) {
             // segment has translation - should be calculated as
             // "Exact matched"
             return PERCENT_EXACT_MATCH;
@@ -108,7 +106,7 @@ public class Statistics {
                 // source entry
                 continue;
             }
-            TMXEntry te = project.getTranslationInfo(cand);
+            TMXEntry te = Core.getProject().getTranslationInfo(cand);
             if (!te.isTranslated()) {
                 // target without translation - skip
                 continue;
@@ -119,30 +117,24 @@ public class Statistics {
         }
 
         /* Travel by default orphaned. */
-        project.iterateByDefaultTranslations(new IProject.DefaultTranslationsIterator() {
+        Core.getProject().iterateByOrphanedDefaultTranslations(new IProject.DefaultTranslationsIterator() {
             public void iterate(String source, TMXEntry en) {
-                if (project.isOrphaned(source)) {
-                    Token[] candTokens = tokenizeExactlyWithCache(tokensCache, en.source);
-                    int newSimilarity = FuzzyMatcher.calcSimilarity(distanceCalculator, strTokensStem,
-                            candTokens);
-                    maxSimilarity.value = Math.max(maxSimilarity.value, newSimilarity);
-                }
+                Token[] candTokens = tokenizeExactlyWithCache(tokensCache, en.source);
+                int newSimilarity = FuzzyMatcher.calcSimilarity(distanceCalculator, strTokensStem, candTokens);
+                maxSimilarity.value = Math.max(maxSimilarity.value, newSimilarity);
             }
         });
         /* Travel by alternative orphaned. */
-        project.iterateByMultipleTranslations(new IProject.MultipleTranslationsIterator() {
+        Core.getProject().iterateByOrphanedMultipleTranslations(new IProject.MultipleTranslationsIterator() {
             public void iterate(EntryKey source, TMXEntry en) {
-                if (project.isOrphaned(source)) {
-                    Token[] candTokens = tokenizeExactlyWithCache(tokensCache, en.source);
-                    int newSimilarity = FuzzyMatcher.calcSimilarity(distanceCalculator, strTokensStem,
-                            candTokens);
-                    maxSimilarity.value = Math.max(maxSimilarity.value, newSimilarity);
-                }
+                Token[] candTokens = tokenizeExactlyWithCache(tokensCache, en.source);
+                int newSimilarity = FuzzyMatcher.calcSimilarity(distanceCalculator, strTokensStem, candTokens);
+                maxSimilarity.value = Math.max(maxSimilarity.value, newSimilarity);
             }
         });
 
         /* Travel by TMs. */
-        for (ExternalTMX tmFile : project.getTransMemories().values()) {
+        for (ExternalTMX tmFile : Core.getProject().getTransMemories().values()) {
             for (int i = 0; i < tmFile.getEntries().size(); i++) {
                 TMXEntry tm = tmFile.getEntries().get(i);
                 Token[] candTokens = tokenizeExactlyWithCache(tokensCache, tm.source);

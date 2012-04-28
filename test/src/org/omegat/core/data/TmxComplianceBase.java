@@ -128,7 +128,7 @@ public abstract class TmxComplianceBase extends TestCase {
         final ProjectTMX tmx = new ProjectTMX(props, new File("test/data/tmx/TMXComplianceKit/" + fileTMX),
                 orphanedCallback, new HashMap<EntryKey, TMXEntry>());
         if (tmxPatch != null) {
-            tmx.defaults.putAll(tmxPatch);
+            tmx.translationDefault.putAll(tmxPatch);
         }
 
         FilterContext fc = new FilterContext(props);
@@ -187,10 +187,10 @@ public abstract class TmxComplianceBase extends TestCase {
         ProjectTMX tmx = new ProjectTMX(props, outFile, orphanedCallback, new TreeMap<EntryKey, TMXEntry>());
 
         for (Map.Entry<String, TMXEntry> en : callback.data.entrySet()) {
-            tmx.defaults.put(en.getKey(), en.getValue());
+            tmx.translationDefault.put(en.getKey(), en.getValue());
         }
 
-        tmx.exportTMX(props, outFile, false, false, true);
+        tmx.save(props, outFile, false, false, true);
     }
 
     protected Set<String> readTmxSegments(File tmx) throws Exception {

@@ -30,15 +30,12 @@
 
 package org.omegat.gui.main;
 
-import java.io.IOException;
-
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.jdesktop.swingworker.SwingWorker;
 import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
-import org.omegat.core.KnownException;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
 import org.omegat.core.spellchecker.ISpellChecker;
@@ -46,10 +43,10 @@ import org.omegat.filters2.master.FilterMaster;
 import org.omegat.gui.dialogs.AboutDialog;
 import org.omegat.gui.dialogs.ExternalTMXMatchesDialog;
 import org.omegat.gui.dialogs.FontSelectionDialog;
+import org.omegat.gui.dialogs.ProxyLoginDialog;
 import org.omegat.gui.dialogs.SpellcheckerConfigurationDialog;
 import org.omegat.gui.dialogs.TagValidationOptionsDialog;
 import org.omegat.gui.dialogs.TeamOptionsDialog;
-import org.omegat.gui.dialogs.UserPassDialog;
 import org.omegat.gui.dialogs.ViewOptionsDialog;
 import org.omegat.gui.dialogs.WorkflowOptionsDialog;
 import org.omegat.gui.editor.EditorSettings;
@@ -67,9 +64,6 @@ import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
-
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 /**
  * Handler for main menu items.
@@ -100,17 +94,10 @@ public class MainWindowMenuHandler {
     }
 
     /**
-     * Create new team project.
-     */
-    public void projectTeamNewMenuItemActionPerformed() {
-        ProjectUICommands.projectTeamCreate();
-    }
-
-    /**
      * Open project.
      */
     public void projectOpenMenuItemActionPerformed() {
-        ProjectUICommands.projectOpen(null);
+        ProjectUICommands.projectOpen();
     }
 
     /**
@@ -207,11 +194,7 @@ public class MainWindowMenuHandler {
                     // Save the list of learned and ignore words
                     ISpellChecker sc = Core.getSpellChecker();
                     sc.saveWordLists();
-                    try {
-                        Core.getProject().saveProject();
-                    } catch (KnownException ex) {
-                        // hide exception on shutdown
-                    }
+                    Core.getProject().saveProject();
                 }
 
                 CoreEvents.fireApplicationShutdown();
@@ -772,35 +755,13 @@ public class MainWindowMenuHandler {
         new AboutDialog(mainWindow).setVisible(true);
     }
 
-    /**
+   /**
      * Displays the dialog to set login and password for proxy.
      */
     public void optionsViewOptionsMenuLoginItemActionPerformed() {
-        UserPassDialog proxyOptions = new UserPassDialog(mainWindow);
 
-        String encodedUser = (Preferences.getPreference(Preferences.PROXY_USER_NAME));
-        String encodedPassword = (Preferences.getPreference(Preferences.PROXY_PASSWORD));
-
-        BASE64Decoder dec = new BASE64Decoder();
-        try {
-            proxyOptions.userText.setText(new String(dec.decodeBuffer(encodedUser)));
-            proxyOptions.passwordField.setText(new String(dec.decodeBuffer(encodedPassword)));
-        } catch (IOException ex) {
-            Log.logErrorRB("LOG_DECODING_ERROR");
-            Log.log(ex);
-        }
-
-        proxyOptions.setTitle(OStrings.getString("PROXY_LOGIN_DIALOG")); // NOI18N
-        proxyOptions.descriptionTextArea.setText(OStrings.getString("PROXY_LOGIN_DESCRIPTION"));
+        ProxyLoginDialog proxyOptions = new ProxyLoginDialog(mainWindow);
         proxyOptions.setVisible(true);
-
-        if (proxyOptions.getReturnStatus() == UserPassDialog.RET_OK) {
-            BASE64Encoder enc = new BASE64Encoder();
-            encodedUser = enc.encode(proxyOptions.userText.getText().getBytes());
-            encodedPassword = enc.encode(new String(proxyOptions.passwordField.getPassword()).getBytes());
-
-            Preferences.setPreference(Preferences.PROXY_USER_NAME, encodedUser);
-            Preferences.setPreference(Preferences.PROXY_PASSWORD, encodedPassword);
-        }
     }
+
 }

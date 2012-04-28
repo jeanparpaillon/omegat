@@ -33,7 +33,6 @@ import java.util.Map;
 import org.omegat.core.matching.ITokenizer;
 import org.omegat.core.segmentation.SRX;
 import org.omegat.core.statistics.StatisticsInfo;
-import org.omegat.core.team.IRemoteRepository;
 import org.omegat.filters2.TranslationException;
 import org.omegat.filters2.master.FilterMaster;
 
@@ -48,10 +47,6 @@ public class NotLoadedProject implements IProject {
     }
 
     public void closeProject() {
-    }
-    
-    public IRemoteRepository getRepository() {
-        return null;
     }
 
     public void decreaseTranslated() {
@@ -75,12 +70,10 @@ public class NotLoadedProject implements IProject {
     public void iterateByMultipleTranslations(MultipleTranslationsIterator it) {
     }
 
-    public boolean isOrphaned(String source) {
-        return false;
+    public void iterateByOrphanedDefaultTranslations(DefaultTranslationsIterator it) {
     }
 
-    public boolean isOrphaned(EntryKey entry) {
-        return false;
+    public void iterateByOrphanedMultipleTranslations(MultipleTranslationsIterator it) {
     }
 
     public Map<String, ExternalTMX> getTransMemories() {

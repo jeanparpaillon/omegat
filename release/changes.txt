@@ -1,18 +1,4 @@
 ----------------------------------------------------------------------
- OmegaT 2.6.0
-----------------------------------------------------------------------
-   1 Enhancement
-   0 Bug fix
-   0 Localisation update
-----------------------------------------------------------------------
-2.6.0 vs. 2.5.3 
-
-  Implemented requests:
-
-  - Online team projects
-  http://sourceforge.net/support/tracker.php?aid=3513384
-
-----------------------------------------------------------------------
  OmegaT 2.5.3
 ----------------------------------------------------------------------
    3 Enhancements
@@ -468,20 +454,6 @@ is saved.
   - Dutch localisation updated to 2.5 (UI)
 
 ----------------------------------------------------------------------
- OmegaT 2.3.0 update 8
-----------------------------------------------------------------------
-   1 Enhancement
-   0 Bug fix
-   0 Localisation update
-----------------------------------------------------------------------
-2.3.0 update 8 vs. 2.3.0 update 7
-
-  Implemented requests:
-
-  - Recognize single quotes in ENTITY of DTD file filter
-  http://sourceforge.net/support/tracker.php?aid=3520305
-
-----------------------------------------------------------------------
  OmegaT 2.3.0 update 7
 ----------------------------------------------------------------------
    1 Enhancement
@@ -490,7 +462,7 @@ is saved.
 ----------------------------------------------------------------------
 2.3.0 update 7 vs. 2.3.0 update 6
 
-  Implemented requests:
+  Other enhancements:
 
   - Segmentation rules for Italian
   http://sourceforge.net/support/tracker.php?aid=3497206
