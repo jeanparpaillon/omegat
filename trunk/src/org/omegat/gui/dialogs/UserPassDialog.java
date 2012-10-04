@@ -98,8 +98,8 @@ public class UserPassDialog extends JDialog {
         jPanel1 = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        cbReadOnly = new javax.swing.JCheckBox();
 
+        setTitle(OStrings.getString("PROXY_LOGIN_DIALOG")); // NOI18N
         setMinimumSize(new java.awt.Dimension(250, 200));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -112,6 +112,7 @@ public class UserPassDialog extends JDialog {
         descriptionTextArea.setEditable(false);
         descriptionTextArea.setFont(new JLabel().getFont());
         descriptionTextArea.setLineWrap(true);
+        descriptionTextArea.setText(OStrings.getString("PROXY_LOGIN_DESCRIPTION")); // NOI18N
         descriptionTextArea.setWrapStyleWord(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -184,17 +185,6 @@ public class UserPassDialog extends JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         getContentPane().add(jPanel1, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(cbReadOnly, OStrings.getString("VCS_READONLY")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 50;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-        getContentPane().add(cbReadOnly, gridBagConstraints);
-
         pack();
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         java.awt.Dimension dialogSize = getSize();
@@ -225,7 +215,6 @@ public class UserPassDialog extends JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    public javax.swing.JCheckBox cbReadOnly;
     public javax.swing.JTextArea descriptionTextArea;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton okButton;
