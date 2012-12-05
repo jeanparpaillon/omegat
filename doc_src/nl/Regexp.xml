@@ -2,7 +2,7 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "../../../docbook-xml-4.5/docbookx.dtd">
 <chapter id="chapter.regexp">
   <title>Reguliere uitdrukkingen<indexterm class="singular">
-      <primary>Reguliere uitdrukkingen</primary> <seealso>segmentatie</seealso> <seealso>zoeken</seealso>
+      <primary>Reguliere uitdrukkingen</primary> <seealso>Segmentatie</seealso> <seealso>Zoeken</seealso>
     </indexterm></title>
 
   <para>De reguliere uitdrukkingen (of afgekort regex) die worden gebruikt in zoekacties en segmentatieregels zijn die welke worden ondersteund door Java. Als u meer specifieke informatie nodig heeft raadpleeg dan <ulink url="http://download.oracle.com/javase/1.5.0/docs/api/java/util/regex/Pattern.html">documentatie voor Java Regex</ulink>. Bekijk de aanvullende verwijzingen en voorbeelden hieronder.</para>
@@ -538,7 +538,7 @@
           <row>
             <entry>\s+a\s+[aeiou]</entry>
 
-            <entry>Engels:  woorden, beginnend met een klinker, zouden moeten worden voorafgegaan door &quot;an&quot;, niet &quot;a&quot;</entry>
+            <entry>Engels: woorden, beginnend met een klinker, zouden moeten worden voorafgegaan door &quot;an&quot;, niet &quot;a&quot;</entry>
           </row>
 
           <row>

@@ -55,7 +55,7 @@
           </indexterm>Afbreekregel</term>
 
         <listitem>
-          <para>Verdeelt de brontekst in segmenten. Voorbeeld: &quot;<emphasis>Begrijpt u dat? Ik was er niet zeker van.</emphasis>&quot; zou moeten worden gescheiden in twee segmenten.  Wat betekent dat er een afbreekregel zou moeten zijn voor &quot;?&quot;, indien die wordt gevolgd door spaties en een woord met een hoofdletter. Selecteer het keuzevak Afbreken/Uitzondering om een regel te definiëren als een Afbreekregel.</para>
+          <para>Verdeelt de brontekst in segmenten. Voorbeeld: &quot;<emphasis>Begrijpt u dat? Ik was er niet zeker van.</emphasis>&quot; zou moeten worden gescheiden in twee segmenten. Wat betekent dat er een afbreekregel zou moeten zijn voor &quot;?&quot;, indien die wordt gevolgd door spaties en een woord met een hoofdletter. Selecteer het keuzevak Afbreken/Uitzondering om een regel te definiëren als een Afbreekregel.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -94,7 +94,7 @@
 
     <para>Klik op <emphasis role="bold">Toevoegen</emphasis> in het bovenste gedeelte van het dialoogvenster, om een lege verzameling van regels te maken voor een nieuw taalpatroon. Een lege regel zal aan de onderzijde van de bovenste tabel verschijnen (u moet misschien naar beneden scrollen om die te zien). Wijzig de naam van de regelverzameling en het taalpatroon naar die van de betrokken taal en de code daarvan (zie <xref linkend="appendix.languages"/> voor een lijst van taalcodes). De syntaxis van het taalpatroon komt overeen met de syntaxis voor reguliere uitdrukkingen. Als uw regelverzameling een taal/land-paar betreft raden wij u aan om het naar boven te verplaatsen met de knop <emphasis role="bold">Naar boven</emphasis>.</para>
 
-    <para>Voeg de patronen <emphasis role="bold">Voor</emphasis> en<emphasis role="bold"> Na</emphasis> toe. Het wordt aangeraden om programma's te gebruiken die het mogelijk maken de effecten direct te zien om de syntaxis en de toepasbaarheid te controleren. Zie het hoofdstuk over <link linkend="chapter.regexp">Reguliere uitdrukkingen</link>. Een goed startpunt zullen altijd de bestaande regels zijn.</para>
+    <para>Voeg de patronen <emphasis role="bold">Voor</emphasis> en<emphasis role="bold"> Na</emphasis> toe. Het wordt aangeraden om programma's te gebruiken die het mogelijk maken de effecten direct te zien om de syntaxis en de toepasbaarheid te controleren. Bekijk het hoofdstuk over <link linkend="chapter.regexp">Reguliere uitdrukkingen</link>. Een goed startpunt zullen altijd de bestaande regels zijn.</para>
   </section>
 
   <section id="few.simple.examples">
