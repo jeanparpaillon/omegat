@@ -2,7 +2,7 @@
 ----------------------------------------------------------------------
    0 Enhancement
    0 Bug fix
-   3 Localisation updates
+   4 Localisation updates
 ----------------------------------------------------------------------
 2.5.5 update 4 vs. 2.5.5 update 3
 
@@ -11,6 +11,7 @@
   - Dutch localization updated to 2.5.5 (UI, documentation, readme)
   - Russian localization updated to 2.5.5 (UI, documentation, readme)
   - Czech localization updated to 2.5 (documentation, backported from 2.6)
+  - Indonesian Instant start added
 
 ----------------------------------------------------------------------
  OmegaT 2.5.5 update 3
