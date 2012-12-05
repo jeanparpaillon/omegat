@@ -1,10 +1,16 @@
  OmegaT 2.5.5 update 4
 ----------------------------------------------------------------------
-   0 Enhancement
+   1 Enhancement
    0 Bug fix
    4 Localisation updates
 ----------------------------------------------------------------------
 2.5.5 update 4 vs. 2.5.5 update 3
+
+  Other enhancements:
+
+  - Swedish segmentation rules
+  - French segmentation rules
+  - Japanese segmentation rules modifications
 
   Localisation updates:
 
