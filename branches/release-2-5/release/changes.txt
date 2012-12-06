@@ -10,6 +10,7 @@
 
   - Swedish segmentation rules
   - French segmentation rules
+  - Finnish segmentation rules
   - Japanese segmentation rules modifications
 
   Localisation updates:
