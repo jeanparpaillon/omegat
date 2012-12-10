@@ -999,7 +999,7 @@ public class FilterVisitor extends NodeVisitor {
     private int lookupEntity(String entity) {
         for (int i = 0; i < ENTITIES.length; i++) {
             Object[] ONENT = ENTITIES[i];
-            if (entity.toLowerCase().equals(ONENT[0]))
+            if (entity.equals(ONENT[0]))
                 return ((Integer) ONENT[1]).intValue();
         }
         return -1;
