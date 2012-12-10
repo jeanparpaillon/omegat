@@ -4,7 +4,7 @@
    1 Bug fix
    0 Localisation update
 ----------------------------------------------------------------------
-2.5.5 update 4 vs. 2.5.5 update 3
+2.5.5 update 5 vs. 2.5.5 update 4
 
   Bug fixes:
 
