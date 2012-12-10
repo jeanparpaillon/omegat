@@ -1,3 +1,17 @@
+ OmegaT 2.5.5 update 5
+----------------------------------------------------------------------
+   0 Enhancement
+   1 Bug fix
+   0 Localisation update
+----------------------------------------------------------------------
+2.5.5 update 4 vs. 2.5.5 update 3
+
+  Bug fixes:
+
+  - HTML filter: HTML entities in uppercase (e.g., &COPY;) were not
+recognised
+
+----------------------------------------------------------------------
  OmegaT 2.5.5 update 4
 ----------------------------------------------------------------------
    4 Enhancements
