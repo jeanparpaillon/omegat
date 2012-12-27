@@ -16,7 +16,7 @@
   Localisation updates:
 
   - Dutch localization updated to 2.5.5 (UI, documentation, readme)
-  - Russian localization updated to 2.5.5 (UI, documentation, readme)
+  - Russian localization updated to 2.5.5 update 3 (UI, documentation, readme)
   - Czech localization updated to 2.5 (documentation, backported from 2.6)
   - Indonesian Instant start added
 
