@@ -50,7 +50,7 @@
 
 - Текстовые фалы (plain text)
 
-  - тексты ASCII (.txt и т.п. )
+  - тексты ASCII (.txt и т. п. )
   - кодированный текст (*.UTF8)
   - пакеты Java resource (*.properties);
   - файлы PO (*.po)
