@@ -918,7 +918,7 @@
               <entry><guimenuitem>Tag Validation...</guimenuitem></entry>
 
               <entry>For programmers: Allows you to configure the Tag
-              Validator options to check also programming (%...)
+              Validator options to also check programming (%...)
               variables.</entry>
             </row>
 

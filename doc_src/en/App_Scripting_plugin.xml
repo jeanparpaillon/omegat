@@ -118,20 +118,32 @@
     for instance scans through all the segments in all files in the current
     project:</para>
 
-    <programlisting>          files = project.projectFiles;
-          for (i in 0 ..&lt; files.size())
-          {
-              for (j in 0 ..&lt; files[i].entries.size())
-              {
-                   currsegment = files[i].entries[j];
-                   source = currsegment.getSrcText();
-                   if (project.getTranslationInfo(ste))
-                   target = project.getTranslationInfo(currsegment).translation;
-              }     
-              else
-              {
-                  target = null;
-              }
-          }</programlisting>
+    <para><parameter>files = project.projectFiles;</parameter></para>
+
+    <para><parameter>for (i in 0 ..&lt; files.size())</parameter></para>
+
+    <para><parameter>{</parameter></para>
+
+    <para><parameter> for (j in 0 ..&lt;
+    files[i].entries.size())</parameter></para>
+
+    <para><parameter> {</parameter></para>
+
+    <para><parameter> currsegment = files[i].entries[j];</parameter></para>
+
+    <para><parameter> source = currsegment.getSrcText();</parameter></para>
+
+    <para><parameter> if (project.getTranslationInfo(ste))</parameter></para>
+
+    <para><parameter> target =
+    project.getTranslationInfo(currsegment).translation;</parameter></para>
+
+    <para><parameter> else</parameter></para>
+
+    <para><parameter> target = null;</parameter></para>
+
+    <para><parameter> }</parameter></para>
+
+    <para><parameter>}</parameter></para>
   </section>
 </appendix>
