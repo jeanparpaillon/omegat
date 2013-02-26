@@ -1,7 +1,7 @@
  OmegaT 2.5.5 update 5
 ----------------------------------------------------------------------
    1 Enhancement
-   0 Bug fix
+   1 Bug fix
    0 Localisation update
 ----------------------------------------------------------------------
 2.5.5 update 5 vs. 2.5.5 update 4
@@ -9,6 +9,11 @@
   Other enhancements:
 
   - .dotx has been added as a default extension in the Open XML filter
+
+  Bug fixes:
+
+  - Launcher issue on linux with space in folder name
+  http://sourceforge.net/support/tracker.php?aid=3605953
 
  OmegaT 2.5.5 update 4
 ----------------------------------------------------------------------
