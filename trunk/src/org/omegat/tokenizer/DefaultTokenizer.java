@@ -25,7 +25,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************************************/
 
-package org.omegat.core.matching;
+package org.omegat.tokenizer;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ import org.omegat.util.Token;
  * @author Zoltan Bartko - bartkozoltan@bartkozoltan.com
  * @author Alex Buloichik
  */
-public class Tokenizer implements ITokenizer {
+public class DefaultTokenizer implements ITokenizer {
 
     /**
      * Contains a list of tokens for each *unique* string. By not storing a list
@@ -59,7 +59,7 @@ public class Tokenizer implements ITokenizer {
 
     private static final Token[] EMPTY_TOKENS_LIST = new Token[0];
 
-    public Tokenizer() {
+    public DefaultTokenizer() {
         CoreEvents.registerProjectChangeListener(new IProjectEventListener() {
             public void onProjectChanged(PROJECT_CHANGE_TYPE eventType) {
                 if (eventType == PROJECT_CHANGE_TYPE.CLOSE) {

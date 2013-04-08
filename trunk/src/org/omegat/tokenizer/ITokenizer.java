@@ -4,6 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2008 Alex Buloichik
+               2013 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -23,7 +24,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************************************/
 
-package org.omegat.core.matching;
+package org.omegat.tokenizer;
 
 import org.omegat.util.Token;
 
@@ -31,11 +32,17 @@ import org.omegat.util.Token;
  * Interface for tokenize string engine.
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
+ * @author Aaron Madlon-Kay
  */
 public interface ITokenizer {
     enum StemmingMode {
         NONE, MATCHING, GLOSSARY
-    };
+    }
+
+    /** CLI parameter to specify source tokenizer */
+    static final String CLI_PARAM_SOURCE = "ITokenizer";
+    /** CLI parameter to specify target tokenizer */
+    static final String CLI_PARAM_TARGET = "ITokenizerTarget";
 
     /**
      * Breaks a string into word-only tokens. Numbers, tags, and other non-word

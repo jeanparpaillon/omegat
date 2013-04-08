@@ -23,7 +23,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************************************/
 
-package org.omegat.core.matching;
+package org.omegat.tokenizer;
 
 import java.text.BreakIterator;
 import java.util.LinkedList;
