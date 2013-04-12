@@ -44,6 +44,7 @@ import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.LFileCopy;
 import org.openide.awt.Mnemonics;
+import org.omegat.util.FileUtil;
 
 /**
  * Dialog showing GNU Public License.
@@ -83,7 +84,7 @@ public class LicenseDialog extends javax.swing.JDialog {
         licenseTextPane = new javax.swing.JTextPane();
 
         setTitle(OStrings.getString("LICENSEDIALOG_TITLE"));
-        setResizable(false);
+        setResizable(true);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -120,7 +121,7 @@ public class LicenseDialog extends javax.swing.JDialog {
                 .setText("===================================================\n\n"
                         + OStrings.getString("LICENSEDIALOG_PREFACE")
                         + "\n\n===================================================\n\n"
-                        + loadLicense());
+                        + FileUtil.loadTextFileFromDoc(OConsts.LICENSE_FILE));
         scroll.setViewportView(licenseTextPane);
 
         getContentPane().add(scroll, java.awt.BorderLayout.CENTER);
