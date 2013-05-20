@@ -27,7 +27,6 @@ package org.omegat.util.gui;
 
 import java.awt.Component;
 
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
@@ -45,16 +44,14 @@ public class TokenizerComboBoxRenderer extends BasicComboBoxRenderer {
             boolean isSelected, // is the cell selected
             boolean cellHasFocus) // the list and the cell have the focus
     {
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
-                cellHasFocus);
         if (value instanceof Class<?>) {
             Class<?> cls = (Class<?>) value;
-            label.setText(cls.getSimpleName());
+            setText(cls.getSimpleName());
         } else if (value instanceof String) {
-            label.setText((String) value);
+            setText((String) value);
         } else {
             throw new RuntimeException("Unsupported type in tokenizer combobox");
         }
-        return label;
+        return this;
     }
 }
