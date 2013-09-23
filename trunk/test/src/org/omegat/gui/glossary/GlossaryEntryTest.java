@@ -34,12 +34,12 @@ import org.omegat.core.TestCore;
  */
 public class GlossaryEntryTest extends TestCore {
     public void testRead() throws Exception {
-        GlossaryEntry a = new GlossaryEntry("", "", "");
-        GlossaryEntry b = new GlossaryEntry("", "", "");
+        GlossaryEntry a = new GlossaryEntry("", "", "", false);
+        GlossaryEntry b = new GlossaryEntry("", "", "", false);
         assertEquals(a, b);
 
-        GlossaryEntry c = new GlossaryEntry("src", "", "");
-        GlossaryEntry d = new GlossaryEntry("src", "", "");
+        GlossaryEntry c = new GlossaryEntry("src", "", "", false);
+        GlossaryEntry d = new GlossaryEntry("src", "", "", false);
         assertEquals(c, d);
 
         List<GlossaryEntry> list = new ArrayList<GlossaryEntry>();
