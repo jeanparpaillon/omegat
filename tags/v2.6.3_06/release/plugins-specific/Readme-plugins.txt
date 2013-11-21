@@ -1,1 +1,0 @@
-This is the folder in which OmegaT plugins are installed.
