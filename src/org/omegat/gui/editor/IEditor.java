@@ -6,24 +6,22 @@
  Copyright (C) 2008-2010 Alex Buloichik
                2011 Alex Buloichik, Didier Briel
                2012 Guido Leenders, Didier Briel
-               2013 Zoltan Bartko, Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.editor;
@@ -41,7 +39,6 @@ import org.omegat.gui.editor.mark.Mark;
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Didier Briel
  * @author Guido Leenders
- * @author Aaron Madlon-Kay
  */
 public interface IEditor {
     enum CHANGE_CASE_TO {
@@ -145,13 +142,6 @@ public interface IEditor {
     void nextUntranslatedEntry();
 
     /**
-     * Move to next translated entry.
-     * 
-     * Must be called only from UI thread.
-     */
-    void nextTranslatedEntry();
-    
-    /**
      * Goto first entry in specified file.
      * 
      * @param fileIndex
@@ -168,28 +158,6 @@ public interface IEditor {
      *            Must be called only from UI thread.
      */
     void gotoEntry(int entryNum);
-
-    /**
-     * Goto entry with specified number while avoiding clobbering the tag fixes.
-     * 
-     * @param fixedEntry
-     *            entry number, starts from 1
-     * @param fixedSource
-     *            The source of the entry that was fixed
-     * 
-     *            Must be called only from UI thread.
-     */
-    void gotoEntryAfterFix(int fixedEntry, String fixedSource);
-
-    /**
-     * Refresh the current editor view while avoiding clobbering any tag fixes.
-     * 
-     * @param fixedEntries
-     *            A list of all entries that were altered
-     * 
-     *            Must be called only from UI thread.
-     */
-    void refreshViewAfterFix(List<Integer> fixedEntries);
 
     /**
      * Set current focus to editor.
@@ -213,14 +181,6 @@ public interface IEditor {
      * Must be called only from UI thread.
      */
     void replaceEditText(String text);
-
-    /**
-     * Replaces the entire edit area with a given text and mark for to be
-     * changed by translator, i.e. background of segment should be marked
-     * 
-     * Must be called only from UI thread.
-     */
-    void replaceEditTextAndMark(String text);
 
     /**
      * Defines the current translation as empty.
@@ -327,14 +287,4 @@ public interface IEditor {
      * Removes the current filter.
      */
     void removeFilter();
-
-    /**
-     * Returns current translation or null.
-     */
-    String getCurrentTranslation();
-
-    /**
-     * Perform any necessary actions for window deactivation.
-     */
-    void windowDeactivated();
 }

@@ -5,24 +5,22 @@
 
  Copyright (C) 2010 Alex Buloichik
                2012 Thomas Cordonnier
-               2013 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 package org.omegat.util;
 
@@ -61,9 +59,6 @@ import org.xml.sax.SAXException;
 /**
  * Helper for read TMX files, using StAX.
  * 
- * TMX 1.4b specification:
- * http://www.gala-global.org/oscarStandards/tmx/tmx14b.html
- * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public class TMXReader2 {
@@ -95,7 +90,8 @@ public class TMXReader2 {
     StringBuilder noteContent = new StringBuilder();
     StringBuilder segContent = new StringBuilder();
     StringBuilder segInlineTag = new StringBuilder();
-    InlineTagHandler inlineTagHandler = new InlineTagHandler();
+    // map of 'i' attributes to tag numbers
+    Map<String, Integer> pairTags = new TreeMap<String, Integer>();
 
     public TMXReader2() {
         factory = XMLInputFactory.newInstance();
@@ -118,10 +114,6 @@ public class TMXReader2 {
         dateFormat2.setTimeZone(TimeZone.getTimeZone("UTC"));
         dateFormatOut = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH);
         dateFormatOut.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
-
-    public boolean isParagraphSegtype() {
-        return isParagraphSegtype;
     }
 
     /**
@@ -380,16 +372,18 @@ public class TMXReader2 {
     protected void parseSegExtLevel2() throws Exception {
         segContent.setLength(0);
         segInlineTag.setLength(0);
-        inlineTagHandler.reset();
+        pairTags.clear();
 
+        int tagNumber = 0;
         int inlineLevel = 0;
-        StartElement currentElement;
+        String currentI = null;
+        String currentPos = null;
+
         while (true) {
             XMLEvent e = xml.nextEvent();
             switch (e.getEventType()) {
             case XMLEvent.START_ELEMENT:
                 StartElement eStart = e.asStartElement();
-                currentElement = eStart;
                 if ("hi".equals(eStart.getName().getLocalPart())) {
                     // tag should be skipped
                     break;
@@ -397,22 +391,15 @@ public class TMXReader2 {
                 inlineLevel++;
                 segInlineTag.setLength(0);
                 if ("bpt".equals(eStart.getName().getLocalPart())) {
-                    inlineTagHandler.startBPT(getAttributeValue(eStart, "i"));
-                    inlineTagHandler.setTagShortcutLetter(StringUtil.getFirstLetterLowercase(getAttributeValue(eStart,
-                            "type")));
+                    currentI = getAttributeValue(eStart, "i");
+                    pairTags.put(currentI, tagNumber);
+                    tagNumber++;
                 } else if ("ept".equals(eStart.getName().getLocalPart())) {
-                    inlineTagHandler.startEPT(getAttributeValue(eStart, "i"));
+                    currentI = getAttributeValue(eStart, "i");
                 } else if ("it".equals(eStart.getName().getLocalPart())) {
-                    inlineTagHandler.startOTHER();
-                    inlineTagHandler.setOtherTagShortcutLetter(StringUtil.getFirstLetterLowercase(getAttributeValue(eStart,
-                            "type")));
-                    inlineTagHandler.setCurrentPos(getAttributeValue(eStart, "pos"));
-                } else if ("ph".equals(eStart.getName().getLocalPart())) {
-                    inlineTagHandler.startOTHER();
-                    inlineTagHandler.setOtherTagShortcutLetter(StringUtil.getFirstLetterLowercase(getAttributeValue(eStart,
-                            "type")));
+                    currentPos = getAttributeValue(eStart, "pos");
                 } else {
-                    inlineTagHandler.startOTHER();
+                    currentI = null;
                 }
                 break;
             case XMLEvent.END_ELEMENT:
@@ -427,47 +414,27 @@ public class TMXReader2 {
                 }
                 boolean slashBefore = false;
                 boolean slashAfter = false;
-                char tagName = StringUtil.getFirstLetterLowercase(segInlineTag);
+                char tagName = getFirstLetter(segInlineTag);
                 Integer tagN;
                 if ("bpt".equals(eEnd.getName().getLocalPart())) {
-                    if (tagName != 0) {
-                        inlineTagHandler.setTagShortcutLetter(tagName);
-                    } else {
-                        tagName = inlineTagHandler.getTagShortcutLetter();
-                    }
-                    tagN = inlineTagHandler.endBPT();
+                    tagN = pairTags.get(currentI);
                 } else if ("ept".equals(eEnd.getName().getLocalPart())) {
                     slashBefore = true;
-                    tagName = inlineTagHandler.getTagShortcutLetter();
-                    tagN = inlineTagHandler.endEPT();
+                    tagN = pairTags.get(currentI);
                 } else if ("it".equals(eEnd.getName().getLocalPart())) {
-                    if (tagName != 0) {
-                        inlineTagHandler.setOtherTagShortcutLetter(tagName);
-                    } else {
-                        tagName = inlineTagHandler.getOtherTagShortcutLetter();
-                    }
-                    tagN = inlineTagHandler.endOTHER();
-                    if ("end".equals(inlineTagHandler.getCurrentPos())) {
+                    tagN = tagNumber;
+                    if ("end".equals(currentPos)) {
                         slashBefore = true;
-                    }
-                } else if ("ph".equals(eEnd.getName().getLocalPart())) {
-                    if (tagName != 0) {
-                        inlineTagHandler.setOtherTagShortcutLetter(tagName);
                     } else {
-                        tagName = inlineTagHandler.getOtherTagShortcutLetter();
-                    }
-                    tagN = inlineTagHandler.endOTHER();
-                    if (useSlash) {
-                        slashAfter = true;
+                        if (useSlash) {
+                            slashAfter = true;
+                        }
                     }
                 } else {
-                    tagN = inlineTagHandler.endOTHER();
+                    tagN = tagNumber;
                     if (useSlash) {
                         slashAfter = true;
                     }
-                }
-                if (tagName == 0) {
-                    tagName = 'f';
                 }
                 if (tagN == null) {
                     // check error of TMX reading
@@ -509,6 +476,19 @@ public class TMXReader2 {
                 break;
             }
         }
+    }
+
+    protected static char getFirstLetter(StringBuilder s) {
+        char f = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isLetter(s.charAt(i))) {
+                f = Character.toLowerCase(s.charAt(i));
+                break;
+            }
+        }
+
+        return f != 0 ? f : 'f';
     }
 
     /**

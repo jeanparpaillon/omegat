@@ -1,7 +1,7 @@
-﻿@@TRANSLATION_NOTICE@@
+@@TRANSLATION_NOTICE@@
 
 ==============================================================================
-  OmegaT 3.0, Read Me file
+  OmegaT 2.0, Read Me file
 
   1.  Information about OmegaT
   2.  What is OmegaT?
@@ -278,7 +278,6 @@ Code has been contributed by
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
@@ -317,6 +316,8 @@ OmegaT uses the following libraries:
   JNA by Todd Fast, Timothy Wall and others (LGPL License)
   Swing-Layout 1.0.2 (LGPL License)
   Jmyspell 2.1.4 (LGPL License)
+  JAXB (GPLv2 + classpath exception)
+  SJXP 1.0.2 (GPL v2)
   SVNKit 1.7.5 (TMate License)
   Sequence Library (Sequence Library License)
   ANTLR 3.4 (ANTLR 3 license)
@@ -325,18 +326,6 @@ OmegaT uses the following libraries:
   JSch (JSch License)
   Base64 (public domain)
   Diff (GPL)
-  orion-ssh2-214 (Orion SSH for Java license)
-  lucene-*.jar (Apache License 2.0)
-  The English tokenizers (org.omegat.tokenizer.SnowballEnglishTokenizer and
-  org.omegat.tokenizer.LuceneEnglishTokenizer) use stop words from Okapi
-(http://okapi.sourceforge.net) (LGPL license)
-  tinysegmenter.jar (Modified BSD license)
-  commons-*.jar (Apache License 2.0)
-  jWordSplitter (Apache License 2.0)
-  LanguageTool.jar (LGPL license)
-  morfologik-*.jar (Morfologik license)
-  segment-1.4.1.jar (Segment license)
-  pdfbox-app-1.8.1.jar (Apache License 2.0)
 
 ==============================================================================
  5.  Is OmegaT bugging you? Do you need help?

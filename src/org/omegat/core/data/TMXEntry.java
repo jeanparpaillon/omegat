@@ -5,24 +5,22 @@
 
  Copyright (C) 2010 Alex Buloichik
                2012 Guido Leenders, Thomas Cordonnier
-               2013 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.data;
@@ -36,35 +34,30 @@ import java.util.Map;
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Guido Leenders
- * @author Aaron Madlon-Kay
  */
 public class TMXEntry {
     public final String source;
     public final String translation;
     public final String changer;
     public final long changeDate;
-    public final String creator;
-    public final long creationDate;
     public final String note;
     public final boolean defaultTranslation;
     public final Map<String,String> properties;
 
-    public TMXEntry(String source, String translation, String changer, long changeDate,
-            String creator, long creationDate, String note, boolean defaultTranslation,
-            Map<String,String> properties) {
+    public TMXEntry(String source, String translation, String changer, long changeDate, String note,
+            boolean defaultTranslation, Map<String,String> properties) {
         this.source = source;
         this.translation = translation;
         this.changer = changer;
         this.changeDate = changeDate;
-        this.creator = creator;
-        this.creationDate = creationDate;
         this.note = note;
         this.defaultTranslation = defaultTranslation;
         this.properties = properties;
     }
 
-    public TMXEntry(String source, String translation, boolean defaultTranslation) {
-        this(source, translation, null, 0, null, 0, null, defaultTranslation, null);
+    public TMXEntry(String source, String translation, String changer, long changeDate, String note,
+            boolean defaultTranslation) {
+        this (source, translation, changer, changeDate, note, defaultTranslation, null);
     }
 	
     public boolean isTranslated() {

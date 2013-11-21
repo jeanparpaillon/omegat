@@ -5,32 +5,30 @@
 
  Copyright (C) 2000-2006 Keith Godfrey, Maxym Mykhalchuk, and Henry Pijffers
                2007 Didier Briel, Zoltan Bartko, Alex Buloichik
-               2008-2011 Didier Briel
+               2008 - 2011 Didier Briel
                2012 Martin Fleurke, Didier Briel
-               2013 Aaron Madlon-Kay, Zoltan Bartko, Didier Briel, Alex Buloichik
+               2013 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
 
 import java.awt.GraphicsEnvironment;
-import java.awt.event.KeyEvent;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,20 +39,13 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.Collator;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Locale;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.omegat.core.data.ProtectedPart;
 
 /**
  * Static functions taken from CommandThread to reduce file size.
@@ -90,13 +81,6 @@ public class StaticUtils {
     private final static String SCRIPT_DIR = "script";
 
     /**
-     * Char which should be used instead protected parts. It should be
-     * non-letter char, to be able to have correct words counter.
-     */
-    public static final char TAG_REPLACEMENT_CHAR = '\b';
-    public static final String TAG_REPLACEMENT = "\b";
-
-    /**
      * Contains the location of the directory containing the configuration
      * files.
      */
@@ -110,30 +94,13 @@ public class StaticUtils {
 
     /**
      * Builds a list of format tags within the supplied string. Format tags are
-     * 'protected parts' and OmegaT style tags: &lt;xx02&gt; or &lt;/yy01&gt;.
+     * OmegaT style tags: &lt;xx02&gt; or &lt;/yy01&gt;.
      */
-    public static void buildTagList(String str, ProtectedPart[] protectedParts, List<String> tagList) {
-        List<TagOrder> tags = new ArrayList<TagOrder>();
-        if (protectedParts != null) {
-            for (ProtectedPart pp : protectedParts) {
-                int pos = -1;
-                while ((pos = str.indexOf(pp.getTextInSourceSegment(), pos + 1)) >= 0) {
-                    tags.add(new TagOrder(pos, pp.getTextInSourceSegment()));
-                }
-            }
-        }
-
-        if (tags.isEmpty()) {
-            return;
-        }
-        Collections.sort(tags, new Comparator<TagOrder>() {
-            @Override
-            public int compare(TagOrder o1, TagOrder o2) {
-                return o1.pos - o2.pos;
-            }
-        });
-        for (TagOrder t : tags) {
-            tagList.add(t.tag);
+    public static void buildTagList(String str, List<String> tagList) {
+        Pattern placeholderPattern = PatternConsts.OMEGAT_TAG;
+        Matcher placeholderMatcher = placeholderPattern.matcher(str);
+        while (placeholderMatcher.find()) {
+            tagList.add(placeholderMatcher.group(0));
         }
     }
 
@@ -142,7 +109,7 @@ public class StaticUtils {
      * OmegaT style tags: &lt;xx02&gt; or &lt;/yy01&gt;.
      * @return a string containing the tags
      */
-    public static String buildTagListForRemove(String str) {
+    public static String buildTagList(String str) {
         String res = "";
         Pattern placeholderPattern = PatternConsts.OMEGAT_TAG;
         Matcher placeholderMatcher = placeholderPattern.matcher(str);
@@ -150,31 +117,6 @@ public class StaticUtils {
             res += placeholderMatcher.group(0);
         }
         return res;
-    }
-
-    /**
-     * Check if specified key pressed.
-     *
-     * @param e
-     *            pressed key event
-     * @param code
-     *            required key code
-     * @param modifiers
-     *            required modifiers
-     * @return true if checked key pressed
-     */
-    public static boolean isKey(KeyEvent e, int code, int modifiers) {
-        return e.getKeyCode() == code && e.getModifiers() == modifiers;
-    }
-
-    static class TagOrder {
-        final int pos;
-        final String tag;
-
-        public TagOrder(int pos, String tag) {
-            this.pos = pos;
-            this.tag = tag;
-        }
     }
 
     /**
@@ -255,22 +197,34 @@ public class StaticUtils {
     }
 
     /**
+     * Lists all OmegaT-style tags and other placeholders within the supplied string. Everything that
+     * looks like <code>&lt;xx0&gt;</code>, <code>&lt;yy1/&gt;</code> or
+     * <code>&lt;/zz2&gt;</code>, or other placeholder (according to tag-validation options) is considered to probably be a tag.
+     *
+     * @return a string containing the tags, and with
+     *         a space between tags if there is text between them.
+     */
+    public static String buildPaintPlaceholderList(String str) {
+        String res = "";
+
+        Pattern placeholderPattern = PatternConsts.getPlaceholderPattern();
+        Matcher placeholderMatcher = placeholderPattern.matcher(str);
+        int last=0;
+        while (placeholderMatcher.find()) {
+            int rs = placeholderMatcher.start();
+            if (rs != last && last !=0) { // We don't insert a space before the first tag
+                res += " ";
+            }
+            res += placeholderMatcher.group(0);
+            last = placeholderMatcher.end();
+        }
+        return res;
+    }
+
+    /**
      * Returns a list of all files under the root directory by absolute path.
      */
     public static void buildFileList(List<String> lst, File rootDir, boolean recursive) {
-        internalBuildFileList(lst, rootDir, recursive);
-
-        // Get the local collator and set its strength to PRIMARY
-        final Collator localCollator = Collator.getInstance(Locale.getDefault());
-        localCollator.setStrength(Collator.PRIMARY);
-        Collections.sort(lst, new Comparator<String>() {
-            public int compare(String o1, String o2) {
-                return localCollator.compare(o1, o2);
-            }
-        });
-    }
-
-    private static void internalBuildFileList(List<String> lst, File rootDir, boolean recursive) {
         // read all files in current directory, recurse into subdirs
         // append files to supplied list
         File flist[] = null;
@@ -505,13 +459,11 @@ public class StaticUtils {
      * is being determined, an empty string will be returned, resulting in the
      * current working directory being used.
      *
-     * Windows XP : &lt;Documents and Settings&gt;>\&lt;User name&gt;\Application Data\OmegaT
-     * Windows Vista : User\&lt;User name&gt;\AppData\Roaming 
-     * Linux: &lt;User Home&gt;/.omegat 
-     * Solaris/SunOS: &lt;User Home&gt;/.omegat
-     * FreeBSD: &lt;User Home&gt;/.omegat 
-     * Mac OS X: &lt;User Home&gt;/Library/Preferences/OmegaT 
-     * Other: User home directory
+     * Windows XP : <Documents and Settings>\<User name>\Application Data\OmegaT
+     * Windows Vista : User\<User name>\AppData\Roaming Linux: <User
+     * Home>/.omegat Solaris/SunOS: <User Home>/.omegat FreeBSD: <User
+     * Home>/.omegat Mac OS X: <User Home>/Library/Preferences/OmegaT Other:
+     * User home directory
      *
      * @return The full path of the directory containing the OmegaT
      *         configuration files, including trailing path separator.
@@ -565,21 +517,18 @@ public class StaticUtils {
 
         // check for Windows versions
         if (os.startsWith("Windows")) {
-            String appData = null;
-
+            // Trying to locate "Application Data" for 2000 and XP
+            // C:\Documents and Settings\<User>\Application Data
             // We do not use %APPDATA%
-            // Trying first Vista/7, because "Application Data" exists also as virtual folder, 
-            // so we would not be able to differentiate with 2000/XP otherwise
-            File appDataFile = new File(home, "AppData\\Roaming");
-            if (appDataFile.exists()) {
+            File appDataFile = new File(home, "Application Data");
+            String appData = null;
+            if (appDataFile.exists())
                 appData = appDataFile.getAbsolutePath();
-            } else {
-                // Trying to locate "Application Data" for 2000 and XP
-                // C:\Documents and Settings\<User>\Application Data
-                appDataFile = new File(home, "Application Data");
-                if (appDataFile.exists()) {
-                    appData = appDataFile.getAbsolutePath();
-                }
+            else // No "Application Data", we're trying Vista
+            {
+                File appDataFileVista = new File(home, "AppData\\Roaming");
+                if (appDataFileVista.exists())
+                    appData = appDataFileVista.getAbsolutePath();
             }
 
             if ((appData != null) && (appData.length() > 0)) {
@@ -694,46 +643,13 @@ public class StaticUtils {
         }
 
         return os.equals("Mac OS X");
+
     }
 
     /**
-     * Find some protected parts defined in Tag Validation Options dialog: printf variables, java
-     * MessageFormat patterns, user defined cusom tags.
-     * 
-     * These protected parts shouldn't affect statistic but just be displayed in gray in editor and take part
-     * in tag validation.
+     * Strips all XML tags (converts to plain text).
      */
-    public static List<ProtectedPart> applyCustomProtectedParts(String source,
-            Pattern protectedPartsPatterns, List<ProtectedPart> protectedParts) {
-        List<ProtectedPart> result;
-        if (protectedParts != null) {
-            // Remove already define protected parts first for prevent intersection
-            for (ProtectedPart pp : protectedParts) {
-                source = source.replace(pp.getTextInSourceSegment(), StaticUtils.TAG_REPLACEMENT);
-            }
-            result = protectedParts;
-        } else {
-            result = new ArrayList<ProtectedPart>();
-        }
-
-        Matcher placeholderMatcher = protectedPartsPatterns.matcher(source);
-        while (placeholderMatcher.find()) {
-            ProtectedPart pp = new ProtectedPart();
-            pp.setTextInSourceSegment(placeholderMatcher.group());
-            pp.setDetailsFromSourceFile(placeholderMatcher.group());
-            pp.setReplacementWordsCountCalculation(placeholderMatcher.group());
-            pp.setReplacementUniquenessCalculation(placeholderMatcher.group());
-            pp.setReplacementMatchCalculation(placeholderMatcher.group());
-            result.add(pp);
-        }
-        return result;
-    }
-
-    /**
-     * Strips all XML tags (converts to plain text). Tags detected only by
-     * pattern. Protected parts are not used.
-     */
-    public static String stripXmlTags(String xml) {
+    public static String stripTags(String xml) {
         return PatternConsts.OMEGAT_TAG.matcher(xml).replaceAll("");
     }
 
@@ -981,7 +897,6 @@ public class StaticUtils {
                 out.close();
             }
         }
-        jar.close();
     }
 
     /**
@@ -1011,116 +926,4 @@ public class StaticUtils {
         return new String(result);
     }
 
-    /**
-     * Reconstruct a tag from its {@link TagInfo}.
-     * 
-     * @param info
-     *            Description of tag
-     * @return Reconstructed original tag
-     */
-    public static String getOriginalTag(TagInfo info) {
-        switch (info.type) {
-        case START:
-            return String.format("<%s>", info.name);
-        case END:
-            return String.format("</%s>", info.name);
-        case SINGLE:
-            return String.format("<%s/>", info.name);
-        }
-        return null;
-    }
-
-    /**
-     * Sort tags by order of their appearance in a reference string.
-     */
-    public static class TagComparator implements Comparator<String> {
-
-        private final String source;
-
-        public TagComparator(String source) {
-            super();
-            this.source = source;
-        }
-
-        public int compare(String tag1, String tag2) {
-            // Check for equality
-            if (tag1.equals(tag2)) {
-                return 0;
-            }
-            // Check to see if one tag encompases the other
-            if (tag1.startsWith(tag2)) {
-                return -1;
-            } else if (tag2.startsWith(tag1)) {
-                return 1;
-            }
-            // Check which tag comes first
-            int index1 = source.indexOf(tag1);
-            int index2 = source.indexOf(tag2);
-            if (index1 == index2) {
-                int len1 = tag1.length();
-                int len2 = tag2.length();
-                if (len1 > len2) {
-                    return -1;
-                } else if (len2 > len1) {
-                    return 1;
-                } else {
-                    return tag1.compareTo(tag2);
-                }
-            }
-            return index1 > index2 ? 1 : -1;
-        }
-    }
-
-    /**
-     * Parse a command line string into arguments, interpreting
-     * double and single quotes as Bash does.
-     * @param cmd Command string
-     * @return Array of arguments
-     */
-    public static String[] parseCLICommand(String cmd) {
-        cmd = cmd.trim();
-        if (cmd.length() == 0) return new String[] { "" };
-        
-        StringBuilder arg = new StringBuilder();
-        List<String> result = new ArrayList<String>();
-        
-        final char noQuote = '\0';
-        char currentQuote = noQuote;
-        for (int i = 0; i < cmd.length(); i++) {
-            char c = cmd.charAt(i);
-            if (c == currentQuote) {
-                currentQuote = noQuote;
-            } else if (c == '"' && currentQuote == noQuote) {
-                currentQuote = '"';
-            } else if (c == '\'' && currentQuote == noQuote) {
-                currentQuote = '\'';
-            } else if (c == '\\' && i + 1 < cmd.length()) {
-                char next = cmd.charAt(i + 1);
-                if ((currentQuote == noQuote && Character.isWhitespace(next))
-                        || (currentQuote == '"' && next == '"')) {
-                    arg.append(next);
-                    i++;
-                } else {
-                    arg.append(c);
-                }
-            } else {
-                if (Character.isWhitespace(c) && currentQuote == noQuote) {
-                    if (arg.length() > 0) {
-                        result.add(arg.toString());
-                        arg = new StringBuilder();
-                    } else {
-                        // Discard
-                    }
-                } else {
-                    arg.append(c);
-                }
-            }
-        }
-        // Catch last arg
-        if (arg.length() > 0) {
-            result.add(arg.toString());
-        }
-        return result.toArray(new String[0]);
-    }
-    
 } // StaticUtils

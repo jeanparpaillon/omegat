@@ -13,7 +13,7 @@
     <section id="tmx.files.location.and.purpose">
       <title>mappen tmx - locatie en doel</title>
 
-      <para>Projecten van <application>OmegaT</application> kunnen bestanden voor vertaalgeheugens bevatten - dit zijn bestanden met de extensie tmx - op vijf verschillende plaatsen:</para>
+      <para>Projecten van <application>OmegaT</application> kunnen bestanden voor vertaalgeheugens bevatten - dit zijn bestanden met de extensie tmx - op vier verschillende plaatsen:</para>
 
       <variablelist>
         <varlistentry>
@@ -113,7 +113,7 @@
           <primary>Vertaalgeheugens</primary> <secondary>back-up</secondary>
         </indexterm></title>
 
-      <para>Tijdens het vertalen van uw bestanden slaat <application>OmegaT</application> uw werk doorlopend op in <filename>project_save.tmx</filename> in de submap /<filename>omegat</filename> van het project.</para>
+      <para>Tijdens het vertalen van uw bestanden slaat <application>OmegaT</application> uw werk op in <filename>project_save.tmx</filename> in de submap /<filename>omegat</filename> van het project.</para>
 
       <para><application>OmegaT</application> maakt ook, elke keer als een project wordt geopend of herladen, een back-up van het vertaalgeheugen in <filename>project_save.tmx.JAARMMDDUUMM.bak</filename> in dezelfde submap. JAAR is 4-getallen jaar, MM is een maand, DD dag van de maand, UU en MM zijn uren en minuten van wanneer het vorige vertaalgeheugen werd opgeslagen.</para>
 
@@ -285,7 +285,7 @@
 
       <para>De oplossing in ons voorbeeld is om het bestaande vertaalgeheugen te kopiëren naar de submap tm en ze te hernoemen naar ZH_CN.tmx om de doeltaal van de tmx aan te geven. De vertaler zal Engelse vertalingen te zien krijgen voor bronsegmenten in Nederlands en die gebruiken om de Chinese vertaling te maken.</para>
 
-      <para><emphasis role="bold">Belangrijk: </emphasis>de ondersteunende TMX moet worden hernoemd naar XX_YY.tmx, waar XX_YY de doeltaal van de tmx is, bijvoorbeeld naar ZH_CN.tmx in het voorbeeld hierboven. De brontalen voor project en TMX zouden natuurlijk identiek moeten zijn - NL in ons voorbeeld. Onthoud dat slechts één TMX voor een bepaald paar van talen mogelijk is, dus als er meerdere vertaalgeheugens bij betrokken zouden zijn, zou u ze allemaal moeten samenvoegen in de XX_YY.tmx.</para>
+      <para><emphasis role="bold">Belangrijk: </emphasis>de ondersteunende TMX moet worden hernoemd naar XX_YY.tmx, waar XX_YY de doeltaal van de tmx is, bijvoorbeeld naar ZH_CN.tmx in het voorbeeld hierboven. De brontalen voor project en TMX zouden natuurlijk identiek moeten zijn - NL in ons voorbeeld. Onthoud dat slechts één TMX voo een bepaald paar van talen mogelijk is, dus als er meerdere vertaalgeheugens bij betrokken zouden zijn, zou u ze allemaal moeten samenvoegen in de XX_YY.tmx.</para>
     </section>
   </section>
 

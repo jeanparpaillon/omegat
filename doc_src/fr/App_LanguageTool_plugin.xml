@@ -28,12 +28,8 @@
   <section>
     <title>Installation et Utilisation</title>
 
-    <para>L'extension LanguageTool est incluse dans OmegaT Elle sera utilisée automatiquement par OmegaT si <guimenuitem>Options &gt; Vérifier automatiquement l'orthographe</guimenuitem> est coché. L'application des règles (le cas échéant) dépendra de la langue source et de la langue cible du projet. Lorsqu'une règle activée n'est pas respectée, la phrase correspondante est soulignée en bleue dans l'Éditeur (voir <emphasis>also</emphasis>et <emphasis>I didn't do nothing</emphasis> dans l'image ci-dessus). Lorsque le curseur de la souris passe au-dessus de la phrase soulignée, une explication apparaît.</para>
-    
-	<warning>
-		<title>Incompatibilités</title>
-		<para>LanguageTool ne fonctionnera pas correctement si une ancienne version se trouve dans le dossier /plugin. Retirer LanguageTool du dossier /plugin avant de lancer OmegaT.</para>
-	</warning>
+    <para>L'extension LanguageTool pour OmegaT peut être téléchargée depuis <ulink url="http://sourceforge.net/projects/omegat-plugins/files">le site de téléchargement d'extensions OmegaT</ulink>. Décompressez les fichiers et mettez-les tous dans le dossier « plugins »  situé dans le dossier d'installation d'OmegaT, c'est-à-dire dans le dossier contenant OmegaT.jar. S'il n'existe pas, commencez par créer le dossier « plugins ».</para>
 
+    <para>Une fois installée, l'extension sera utilisée automatiquement par OmegaT si <guimenuitem>Options &gt; Vérifier automatiquement l'orthographe</guimenuitem> est coché. L'application des règles (le cas échéant) dépendra de la langue source et de la langue cible du projet. Lorsqu'une règle activée n'est pas respectée, la phrase correspondante est soulignée en bleue dans l'Éditeur (voir <emphasis>also</emphasis>et <emphasis>I didn't do nothing</emphasis> dans l'image ci-dessus). Lorsque le curseur de la souris passe au-dessus de la phrase soulignée, une explication apparaît.</para>
   </section>
 </appendix>

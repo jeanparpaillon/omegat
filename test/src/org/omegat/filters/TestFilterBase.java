@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters;
@@ -29,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,16 +46,15 @@ import org.omegat.core.TestCore;
 import org.omegat.core.data.EntryKey;
 import org.omegat.core.data.IProject;
 import org.omegat.core.data.ProjectProperties;
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.core.data.RealProject;
 import org.omegat.core.data.SourceTextEntry;
+import org.omegat.core.data.TMXEntry;
 import org.omegat.filters2.AbstractFilter;
 import org.omegat.filters2.FilterContext;
 import org.omegat.filters2.IAlignCallback;
 import org.omegat.filters2.IFilter;
 import org.omegat.filters2.IParseCallback;
 import org.omegat.filters2.ITranslateCallback;
-import org.omegat.filters2.master.FilterMaster;
 import org.omegat.util.LFileCopy;
 import org.omegat.util.Language;
 import org.omegat.util.TMXReader2;
@@ -77,7 +76,6 @@ public abstract class TestFilterBase extends TestCore {
         super.setUp();
 
         Core.initializeConsole(new TreeMap<String, String>());
-        Core.setFilterMaster(new FilterMaster(FilterMaster.createDefaultFiltersConfig()));
 
         outFile = new File("build/testdata/OmegaT_test-" + getClass().getName() + "-" + getName());
         outFile.getParentFile().mkdirs();
@@ -89,13 +87,15 @@ public abstract class TestFilterBase extends TestCore {
         filter.parseFile(new File(filename), new TreeMap<String, String>(), context, new IParseCallback() {
             public void addEntry(String id, String source, String translation, boolean isFuzzy,
                     String comment, IFilter filter) {
-                addEntry(id, source, translation, isFuzzy, comment, null, filter, null);
+                addEntry(id, source, translation, isFuzzy, comment, null, filter);
             }
-
-            public void addEntry(String id, String source, String translation, boolean isFuzzy, String comment,
-                    String path, IFilter filter, List<ProtectedPart> protectedParts) {
+            public void addEntry(String id, String source, String translation, boolean isFuzzy,
+                    String comment, String path, IFilter filter) {
                 if (source.length() > 0)
                     result.add(source);
+            }
+
+            public void addFileTMXEntry(String source, String translation) {
             }
 
             public void linkPrevNextSegments() {
@@ -112,13 +112,15 @@ public abstract class TestFilterBase extends TestCore {
         filter.parseFile(new File(filename), options, context, new IParseCallback() {
             public void addEntry(String id, String source, String translation, boolean isFuzzy,
                     String comment, IFilter filter) {
-                addEntry(id, source, translation, isFuzzy, comment, null, filter, null);
+                addEntry(id, source, translation, isFuzzy, comment, null, filter);
             }
-
-            public void addEntry(String id, String source, String translation, boolean isFuzzy, String comment,
-                    String path, IFilter filter, List<ProtectedPart> protectedParts) {
+            public void addEntry(String id, String source, String translation, boolean isFuzzy,
+                    String comment, String path, IFilter filter) {
                 if (source.length() > 0)
                     result.add(source);
+            }
+
+            public void addFileTMXEntry(String source, String translation) {
             }
 
             public void linkPrevNextSegments() {
@@ -134,11 +136,10 @@ public abstract class TestFilterBase extends TestCore {
         filter.parseFile(new File(filename), new TreeMap<String, String>(), context, new IParseCallback() {
             public void addEntry(String id, String source, String translation, boolean isFuzzy,
                     String comment, IFilter filter) {
-                addEntry(id, source, translation, isFuzzy, comment, null, filter, null);
+                addEntry(id, source, translation, isFuzzy, comment, null, filter);
             }
-
-            public void addEntry(String id, String source, String translation, boolean isFuzzy, String comment,
-                    String path, IFilter filter, List<ProtectedPart> protectedParts) {
+            public void addEntry(String id, String source, String translation, boolean isFuzzy,
+                    String comment, String path, IFilter filter) {
                 String segTranslation = isFuzzy ? null : translation;
                 result.put(source, segTranslation);
                 if (translation != null) {
@@ -164,10 +165,10 @@ public abstract class TestFilterBase extends TestCore {
         filter.parseFile(new File(filename), options, context, new IParseCallback() {
             public void addEntry(String id, String source, String translation, boolean isFuzzy,
                     String comment, IFilter filter) {
-                addEntry(id, source, translation, isFuzzy, comment, null, filter, null);
+                addEntry(id, source, translation, isFuzzy, comment, null, filter);
             }
             public void addEntry(String id, String source, String translation, boolean isFuzzy,
-                    String comment, String path, IFilter filter, List<ProtectedPart> protectedParts) {
+                    String comment, String path, IFilter filter) {
                 if (source.length() == 0) {
                     return;
                 }
@@ -179,6 +180,9 @@ public abstract class TestFilterBase extends TestCore {
                 e.comment = comment;
                 e.path = path;
                 result.add(e);
+            }
+
+            public void addFileTMXEntry(String source, String translation) {
             }
 
             public void linkPrevNextSegments() {
@@ -316,16 +320,6 @@ public abstract class TestFilterBase extends TestCore {
                 .getKey());
         assertEquals(comment, fi.entries.get(fiCount).getComment());
         fiCount++;
-    }
-
-    protected SourceTextEntry checkMultiNoPrevNext(String sourceText, String id, String path, String comment) {
-        SourceTextEntry ste = fi.entries.get(fiCount);
-        assertEquals(path, ste.getKey().path);
-        assertEquals(id, ste.getKey().id);
-        assertEquals(sourceText, ste.getKey().sourceText);
-        assertEquals(comment, ste.getComment());
-        fiCount++;
-        return ste;
     }
 
     protected void skipMulti() {

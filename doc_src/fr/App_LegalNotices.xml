@@ -16,7 +16,7 @@
 
     <para><emphasis role="bold">Distribution et modifications</emphasis></para>
 
-    <para>La documentation constitue un document libre ; vous pouvez la redistribuer ou la modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit selon la version 3 de la Licence, soit (si vous préférez) selon n'importe quelle version ultérieure.</para>
+    <para>La documentation constitue un document libre ; vous pouvez la redistribuer et/ou la modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit selon la version 2 de la Licence, soit (si vous préférez) selon n'importe quelle version ultérieure.</para>
 
     <para><emphasis role="bold">Garantie</emphasis></para>
 
@@ -30,11 +30,11 @@
 
     <para><emphasis role="bold">Copyright</emphasis></para>
 
-    <para><emphasis role="bold"><application>OmegaT</application></emphasis> est protégé par le copyright © 2000-2013 Keith Godfrey, Zoltan Bartko, Volker Berlin, Didier Briel, Kim Bruning, Alex Buloichik, Thomas Cordonnier, Sandra Jean Chua, Martin Fleurke, Wildrich Fourie, Phillip Hall, Jean-Christophe Helary, Thomas Huriaux, Hans-Peter Jacobs, Kyle Katarn, Ibai Lakunza Velasco, Guido Leenders, Aaron Madlon-Kay, Fabián Mandelbaum, John Moran, Maxym Mykhalchuk, Arno Peters, Henry Pijffers, Briac Pilpré, Tiago Saboga, Andrzej Sawuła, Benjamin Siband, Yu Tang, Rashid Umarov, Antonio Vilei, Martin Wunderlich et Michael Zakharov.</para>
+    <para><emphasis role="bold"><application>OmegaT</application></emphasis> est protégé par le copyright © 2000-2013 Keith Godfrey, Zoltan Bartko, Volker Berlin, Didier Briel, Kim Bruning, Alex Buloichik, Thomas Cordonnier, Sandra Jean Chua, Martin Fleurke, Wildrich Fourie, Phillip Hall, Jean-Christophe Helary, Thomas Huriaux, Hans-Peter Jacobs, Ibai Lakunza Velasco, Guido Leenders, Aaron Madlon-Kay, Fabián Mandelbaum, John Moran, Maxym Mykhalchuk, Arno Peters, Henry Pijffers, Briac Pilpré, Tiago Saboga, Andrzej Sawuła, Benjamin Siband, Yu Tang, Rashid Umarov, Antonio Vilei, Martin Wunderlich and Michael Zakharov.</para>
 
     <para><emphasis role="bold">Distribution et modifications</emphasis></para>
 
-    <para><emphasis role="bold">OmegaT</emphasis> est un logiciel libre ; vous pouvez le redistribuer ou le modifier selon les termes de la Licence Publique Générale GNU telle qu'elle est publiée par la Free Software Foundation ; soit selon la version 3 de la Licence, soit (si vous préférez) selon n'importe quelle version ultérieure.</para>
+    <para><emphasis role="bold">OmegaT</emphasis> est un logiciel libre ; vous pouvez le redistribuer et/ou le modifier selon les termes de la Licence Publique Générale GNU telle qu'elle est publiée par la Free Software Foundation ; soit selon la version 2 de la Licence, soit (si vous préférez) selon n'importe quelle version ultérieure.</para>
 
     <para><emphasis role="bold">Garantie</emphasis></para>
 

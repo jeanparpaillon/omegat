@@ -7,24 +7,22 @@
                2008 Didier Briel, Alex Buloichik
                2009 Didier Briel
                2012 Didier Briel, Aaron Madlon-Kay
-               2013 Aaron Madlon-Kay, Guido Leenders
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
@@ -41,7 +39,6 @@ import javax.xml.bind.Marshaller;
 import org.omegat.core.data.ProjectProperties;
 import org.omegat.core.segmentation.SRX;
 import org.omegat.filters2.TranslationException;
-import org.omegat.filters2.master.PluginUtils;
 
 /**
  * Class that reads and saves project definition file.
@@ -51,7 +48,6 @@ import org.omegat.filters2.master.PluginUtils;
  * @author Didier Briel
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Aaron Madlon-Kay
- * @author Guido Leenders
  */
 public class ProjectFileStorage {
 
@@ -121,9 +117,6 @@ public class ProjectFileStorage {
         result.setSourceLanguage(om.getProject().getSourceLang());
         result.setTargetLanguage(om.getProject().getTargetLang());
 
-        result.setSourceTokenizer(loadTokenizer(om.getProject().getSourceTok(), result.getSourceLanguage()));
-        result.setTargetTokenizer(loadTokenizer(om.getProject().getTargetTok(), result.getTargetLanguage()));
-        
         if (om.getProject().isSentenceSeg() != null) {
             result.setSentenceSegmentingEnabled(om.getProject().isSentenceSeg());
         }
@@ -186,8 +179,6 @@ public class ProjectFileStorage {
                 computeRelativePath(m_root, props.getDictRoot(), OConsts.DEFAULT_DICT));
         om.getProject().setSourceLang(props.getSourceLanguage().toString());
         om.getProject().setTargetLang(props.getTargetLanguage().toString());
-        om.getProject().setSourceTok(props.getSourceTokenizer().getCanonicalName());
-        om.getProject().setTargetTok(props.getTargetTokenizer().getCanonicalName());
         om.getProject().setSentenceSeg(props.isSentenceSegmentingEnabled());
         om.getProject().setSupportDefaultTranslations(props.isSupportDefaultTranslations());
         om.getProject().setRemoveTags(props.isRemoveTags());
@@ -267,57 +258,22 @@ public class ProjectFileStorage {
             File abs = new File(absolutePath).getCanonicalFile();
             File root = new File(m_root).getCanonicalFile();
             String prefix = new String();
-            //
-            // Try to derive the absolutePath as a relative path
-            // from root.
-            // First test whether the exact match is possible.
-            // Then on each try, one folder is moved up from the root.
-            //
-            // Currently, maximum MAX_PARENT_DIRECTORIES_ABS2REL levels up.
-            // More than these directory levels different seems to be that the paths
-            // were not intended to be related.
-            //
-            for (int i = 0; i <= OConsts.MAX_PARENT_DIRECTORIES_ABS2REL; i++) {
-                //
+            for (int i = 0; i < 2; i++) {
                 // File separator added to prevent "/MyProject EN-FR/"
-                // to be understood as being inside "/MyProject/" [1879571]
-                //
-                 if ((abs.getPath() + File.separator).startsWith(root.getPath() + File.separator)) {
-                     res = prefix + abs.getPath().substring(root.getPath().length());
-                     if (res.startsWith(File.separator))
+                // to be undesrtood as being inside "/MyProject/" [1879571]
+                if ((abs.getPath() + File.separator).startsWith(root.getPath() + File.separator)) {
+                    res = prefix + abs.getPath().substring(root.getPath().length());
+                    if (res.startsWith(File.separator))
                         res = res.substring(1);
                     break;
                 } else {
                     root = root.getParentFile();
                     prefix += File.separator + "..";
-                    //
-                    // There are no more parent paths.
-                    //
-                    if (root == null) {
-                      break;
-                    }
                 }
             }
             return res.replace(File.separatorChar, '/');
         } catch (IOException e) {
             return absolutePath.replace(File.separatorChar, '/');
         }
-    }
-    
-    /**
-     * Load a tokenizer class from its canonical name.
-     * @param className Name of tokenizer class
-     * @return Class object of specified tokenizer, or of fallback tokenizer
-     * if the specified one could not be loaded for whatever reason.
-     */
-    private static Class<?> loadTokenizer(String className, Language fallback) {
-        if (className != null && className.length() > 0) {
-            try {
-                return ProjectFileStorage.class.getClassLoader().loadClass(className);
-            } catch (ClassNotFoundException e) {
-                Log.log(e.toString());
-            }
-        }
-        return PluginUtils.getTokenizerClassForLanguage(fallback);
     }
 }

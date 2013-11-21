@@ -1,7 +1,7 @@
-@@TRANSLATION_NOTICE@@
+Перевод на русский язык: © Андрей Кутузов, Андрей Сербовец, Павел Марьянов, Михаил Васильев 2013.
 
 ==============================================================================
-  ОмегаТ 3.0, файл Read Me
+  ОмегаТ 2.0, файл Read Me
 
   1.  Об ОмегаТ
   2.  Что собой представляет ОмегаТ?
@@ -215,7 +215,6 @@ omegat.kaptn
   Jean-Christophe Helary;
   Thomas Huriaux;
   Hans-Peter Jacobs;
-  Kyle Katarn;
   Ibai Lakunza Velasco;
   Guido Leenders;
   Aaron Madlon-Kay;
@@ -253,6 +252,8 @@ omegat.kaptn
   JNA. Авторы: Todd Fast, Timothy Wall и другие (лицензия LGPL)
   Swing-Layout 1.0.2 (лицензия LGPL)
   Jmyspell 2.1.4 (лицензия LGPL)
+  JAXB (лицензия GPLv2 + classpath exception)
+  SJXP 1.0.2 (лицензия GPLv2)
   SVNKit 1.3.7 (лицензия TMate)
   Sequence Library (лицензия Sequence Library)
   ANTLR 3.4 (лицензия ANTLR 3)
@@ -261,8 +262,6 @@ omegat.kaptn
   JSch (лицензия JSch)
   Base64 (общественное достояние)
   Diff (лицензия GPL)
-  JSAP (лицензия LGPL)
-  orion-ssh2-214 (лицензия Orion SSH для Java)
 
 ==============================================================================
  5.  ОмегаТ работает неправильно? Нужна помощь?

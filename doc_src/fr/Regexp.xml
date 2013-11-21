@@ -5,7 +5,7 @@
       <primary>Expressions régulières</primary> <seealso>Segmentation</seealso> <seealso>Recherche</seealso>
     </indexterm></title>
 
-  <para>Les expressions régulières (ou regex) utilisées dans les recherches et les règles de segmentation sont celles prises en charge par Java.. Pour avoir accès à des informations spécifiques, consultez la <ulink url="http://download.oracle.com/javase/1.6.0/docs/api/java/util/regex/Pattern.html">documentation Java Regex </ulink>. Voir les références supplémentaires et les exemples ci-dessous :</para>
+  <para>Les expressions régulières (ou regex) utilisées dans les recherches et les règles de segmentation sont celles prises en charge par Java.. Pour avoir accès à des informations spécifiques, consultez la <ulink url="http://download.oracle.com/javase/1.5.0/docs/api/java/util/regex/Pattern.html">documentation Java Regex </ulink>. Voir les références supplémentaires et les exemples ci-dessous :</para>
 
   <note>
     <para>Ce chapitre est destiné aux utilisateurs confirmés qui éprouvent le besoin de définir leurs propres règles de segmentation et de concevoir des éléments de recherche clé plus complexes et plus puissants.</para>
@@ -191,13 +191,13 @@
         <row>
           <entry>\p{InGreek}</entry>
 
-          <entry>Un caractère à l'intérieur du bloc grec (<ulink url="http://download.oracle.com/javase/1.6.0/docs/api/java/util/regex/Pattern.html#ubc"> bloc</ulink> simple)</entry>
+          <entry>Un caractère à l'intérieur du bloc grec (<ulink url="http://download.oracle.com/javase/1.5.0/docs/api/java/util/regex/Pattern.html#ubc"> bloc</ulink> simple)</entry>
         </row>
 
         <row>
           <entry>\p{Lu}</entry>
 
-          <entry>Une lettre en majuscules (simple <ulink url="http://download.oracle.com/javase/1.6.0/docs/api/java/util/regex/Pattern.html#ubc"> category</ulink>)</entry>
+          <entry>Une lettre en majuscules (simple <ulink url="http://download.oracle.com/javase/1.5.0/docs/api/java/util/regex/Pattern.html#ubc"> category</ulink>)</entry>
         </row>
 
         <row>

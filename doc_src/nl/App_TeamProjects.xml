@@ -103,13 +103,13 @@
 
       <para>Projecten kunnen worden beheerd overeenkomstig uw stijl en wensen voor de ontwikkeling. Soortgelijk als in het geval van projecten van OmegaT zult u verschillende opslagplaatsen nodig hebben voor verschillende paren van talen. Binnen een bepaald paar van talen is het het beste om verschillende onderwerpen en/of cliënten ook als afzonderlijke opslagplaatsen te houden. Het alternatief is om één enkele opslagplaats te hebben met submappen <literal>Project1</literal>, <literal>Project2</literal>, etc. en het algemene materiaal te delen via de mappen <literal>tm</literal>, <literal>glossary</literal> en <literal>dictionary</literal>.</para>
 
-      <para>Voor het hier weergegeven voorbeeld besloten we tot het enkele project in OmegaT - één enkele opslagplaats om redenen van eenvoud.</para>
+      <para>Voor het hier weergegeven voorbeeld besloten we tot het enkele project in OmegaT - één enkele opslagplaats om redenen van eenvoud. .</para>
     </section>
 
     <section>
       <title>Importeren van het project naar de opslagplaats van SVN - Windows</title>
 
-      <para>Op dit moment is de opslagplaats leeg. U maakt eerst een lege map voor de cliënt aan op uw schijf. Maak een lege map waar u uw project zult bewaren en klik er met rechts op. Selecteer<guilabel> TortoiseSVN &gt; Checkout.</guilabel> Het volgende dialoogvenster verschijnt:</para>
+      <para>Op dit moment is de opslagplaats leeg. U maakt eerst een lege map voor de cliënt aan op uw schijf. 1Maak een lege map waar u uw project zult bewaren en klik er met rechts op. Selecteer<guilabel> TortoiseSVN &gt; Checkout.</guilabel> Het volgende dialoogvenster verschijnt:</para>
  
       <mediaobject>
         <imageobject role="html">

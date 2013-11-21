@@ -3,37 +3,33 @@
           with fuzzy matching, translation memory, keyword search, 
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2010-2013 Alex Buloichik
+ Copyright (C) 2010 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.editor;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
-import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Highlighter;
-import javax.swing.text.Position;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 import org.omegat.core.Core;
 import org.omegat.filters2.master.PluginUtils;
@@ -47,17 +43,23 @@ import org.omegat.util.gui.UIThreadsUtil;
 /**
  * Class for manage marks and controll all markers.
  * 
- * All markers for inactive segment usually executed in background threads(one
- * thread for one marker class), but markers for active segment executed in UI
- * thread immediately.
- * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public class MarkerController {
     private final EditorController ec;
 
+    /**
+     * Array of displayed marks. <br/>
+     * 1st dimension - displayed entries,<br/>
+     * 2nd dimension - marker,<br/>
+     * 3rd dimension - marks
+     */
+    private MarkInfo[][][] marks;
+
     /** List of marker's class names. */
     private final String[] markerNames;
+
+    private final HighlightPainter[] painters;
 
     /** Threads for each marker. */
     protected final CalcMarkersThread[] markerThreads;
@@ -83,9 +85,11 @@ public class MarkerController {
 
         markerThreads = new CalcMarkersThread[ms.size()];
         markerNames = new String[ms.size()];
+        painters = new HighlightPainter[ms.size()];
         for (int i = 0; i < ms.size(); i++) {
             IMarker m = ms.get(i);
             markerNames[i] = m.getClass().getName();
+            painters[i] = m.getPainter();
             markerThreads[i] = new CalcMarkersThread(this, m, i);
             markerThreads[i].start();
         }
@@ -108,97 +112,82 @@ public class MarkerController {
     }
 
     /**
-     * Remove all marks for all entries.
+     * Reset all marks for all entries.
      * 
      * @param newEntriesCount
      *            count of newly displayed entries
      */
-    void removeAll() {
+    void reset(int newEntriesCount) {
         UIThreadsUtil.mustBeSwingThread();
 
         for (CalcMarkersThread th : markerThreads) {
             th.reset();
         }
 
-        synchronized (outputQueue) {
-            outputQueue.clear();
-        }
-
         highlighter.removeAllHighlights();
+        marks = new MarkInfo[newEntriesCount][][];
+        for (int i = 0; i < marks.length; i++) {
+            marks[i] = new MarkInfo[markerNames.length][];
+        }
     }
 
     /**
-     * Remove marks for one segment for one marker.
+     * Reset marks for specified entry.
+     * 
+     * @param entryIndex
+     *            entry index
      */
-    void remove(SegmentBuilder sb, int makerIndex) {
-        UIThreadsUtil.mustBeSwingThread();
-
-        if (sb.marks == null) {
+    void resetEntryMarks(int entryIndex) {
+        MarkInfo[][] m;
+        try {
+            m = marks[entryIndex];
+        } catch (IndexOutOfBoundsException ex) {
             return;
         }
-
-        MarkInfo[] me = sb.marks[makerIndex];
-        if (me != null) {
-            for (int j = 0; j < me.length; j++) {
-                if (me[j] != null && me[j].highlight != null) {
-                    highlighter.removeHighlight(me[j].highlight);
+        for (int i = 0; i < m.length; i++) {
+            MarkInfo[] me = m[i];
+            if (me != null) {
+                for (int j = 0; j < me.length; j++) {
+                    highlighter.removeHighlight(me[j].underscore);
                 }
             }
-            sb.marks[makerIndex] = null;
+            marks[entryIndex][i] = null;
         }
     }
 
     /**
-     * Reprocess all entries for one marker only. Usually used for spell
-     * checking or one marker state changes.
+     * Add entries list to processing queue. Used on display new file.
      */
-    public void reprocess(SegmentBuilder[] entryBuilders, int markerIndex) {
-        UIThreadsUtil.mustBeSwingThread();
-
-        if (entryBuilders == null) {
-            return;
+    public void process(SegmentBuilder[] entryBuilders) {
+        for (CalcMarkersThread th : markerThreads) {
+            th.add(entryBuilders);
         }
-        
-        for (SegmentBuilder sb : entryBuilders) {
-            remove(sb, markerIndex);
+    }
+
+    /**
+     * Remove all marks for specified marker and add entries list to processing
+     * queue for one marker only. Used for recheck displayed file against one
+     * marker.
+     */
+    public void process(SegmentBuilder[] entryBuilders, int markerIndex) {
+        for (int i = 0; i < marks.length; i++) {
+            MarkInfo[] me = marks[i][markerIndex];
+            if (me != null) {
+                for (int j = 0; j < me.length; j++) {
+                    highlighter.removeHighlight(me[j].underscore);
+                }
+            }
+            marks[i][markerIndex] = null;
         }
         markerThreads[markerIndex].add(entryBuilders);
     }
 
     /**
-     * Reprocess one entry immediately, in current thread. Usually used for
-     * active entry.
+     * Add entry to processign queue. Used on one entry changed.
      */
-    public void reprocessImmediately(SegmentBuilder entryBuilder) {
-        UIThreadsUtil.mustBeSwingThread();
-
-        entryBuilder.resetTextAttributes();
-
-        List<EntryMarks> evs = new ArrayList<EntryMarks>();
-        for (int i = 0; i < markerNames.length; i++) {
-            remove(entryBuilder, i);
-            try {
-                EntryMarks ev = new EntryMarks(entryBuilder, entryBuilder.getDisplayVersion(), i);
-                ev.result = markerThreads[i].marker.getMarksForEntry(ev.ste, ev.sourceText, ev.translationText,
-                        ev.isActive);
-                if (ev.result != null) {
-                    evs.add(ev);
-                }
-            } catch (Throwable ex) {
-                Log.log(ex);
-            }
-        }
-        marksOutput(evs);
-    }
-
-    /**
-     * Process all segment for all markers.
-     */
-    public void process(SegmentBuilder[] entryBuilders) {
-        UIThreadsUtil.mustBeSwingThread();
-
+    public void process(int entryIndex, SegmentBuilder entryBuilder) {
         for (CalcMarkersThread th : markerThreads) {
-            th.add(entryBuilders);
+            th.add(entryIndex, entryBuilder);
         }
     }
 
@@ -210,27 +199,24 @@ public class MarkerController {
      * @return
      */
     public String getToolTips(int entryIndex, int pos) {
-        UIThreadsUtil.mustBeSwingThread();
-
-        if (entryIndex >= ec.m_docSegList.length) {
+        if (entryIndex < 0 || entryIndex >= marks.length) {
             return null;
         }
-        MarkInfo[][] m = ec.m_docSegList[entryIndex].marks;
-        if (m == null) {
+        if (marks[entryIndex] == null) {
             return null;
         }
         StringBuilder res = new StringBuilder();
-        for (int i = 0; i < m.length; i++) {
-            if (m[i] == null) {
+        for (int i = 0; i < marks[entryIndex].length; i++) {
+            if (marks[entryIndex][i] == null) {
                 continue;
             }
-            for (MarkInfo t : m[i]) {
+            for (MarkInfo t : marks[entryIndex][i]) {
                 if (t != null && t.tooltip != null) {
-                    if (t.tooltip.p0.getOffset() <= pos && t.tooltip.p1.getOffset() >= pos) {
+                    if (t.underscore.getStartOffset() <= pos && t.underscore.getEndOffset() >= pos) {
                         if (res.length() > 0) {
                             res.append("<br>");
                         }
-                        res.append(t.tooltip.text);
+                        res.append(t.tooltip);
                     }
                 }
             }
@@ -244,112 +230,66 @@ public class MarkerController {
         return "<html>" + r + "</html>";
     }
 
-    private final Queue<EntryMarks> outputQueue = new LinkedList<EntryMarks>();
-
-    public void queueMarksOutput(EntryMarks ev) {
-        synchronized (outputQueue) {
-            // output marks
-            outputQueue.add(ev);
-            outputQueue.notifyAll();
-        }
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                List<EntryMarks> evs = new ArrayList<EntryMarks>();
-                synchronized (outputQueue) {
-                    while (true) {
-                        EntryMarks ev = outputQueue.poll();
-                        if (ev == null) {
-                            break;
-                        }
-                        evs.add(ev);
-                    }
-                }
-                marksOutput(evs);
+    /**
+     * Set marks for specified entry and marker.
+     */
+    public void setEntryMarks(int entryIndex, SegmentBuilder sb, List<Mark> newMarks, int markerIndex) {
+        // remove old marks for specified entry and marker
+        MarkInfo[][] markInfo = marks[entryIndex];
+        MarkInfo[] me = markInfo[markerIndex];
+        if (me != null) {
+            for (int j = 0; j < me.length; j++) {
+                highlighter.removeHighlight(me[j].underscore);
             }
-        });
+        }
+        marks[entryIndex][markerIndex] = null;
+
+        if (newMarks == null || newMarks.isEmpty()) {
+            // there is no marks
+            return;
+        }
+        MarkInfo[] nm = new MarkInfo[newMarks.size()];
+        int sourceStartOffset = sb.getStartSourcePosition();
+        int translationStartOffset;
+        if (sb.isActive()) {
+            translationStartOffset = ec.editor.getOmDocument().getTranslationStart();
+        } else {
+            translationStartOffset = sb.getStartTranslationPosition();
+        }
+        for (int i = 0; i < newMarks.size(); i++) {
+            Mark m = newMarks.get(i);
+            int startOffset = m.entryPart == Mark.ENTRY_PART.SOURCE ? sourceStartOffset
+                    : translationStartOffset;
+            try {
+                nm[i] = new MarkInfo();
+                nm[i].underscore = (Highlighter.Highlight) highlighter.addHighlight(startOffset
+                        + m.startOffset, startOffset + m.endOffset, painters[markerIndex]);
+                nm[i].tooltip = m.toolTipText;
+            } catch (BadLocationException ex) {
+                Log.log(ex);
+            }
+        }
+        marks[entryIndex][markerIndex] = nm;
     }
 
     /**
-     * Output marks.
+     * Check if entry changed.
      */
-    private void marksOutput(List<EntryMarks> evs) {
-        UIThreadsUtil.mustBeSwingThread();
-
-        if (evs.isEmpty()) {
-            return;
-        }
-        Document3 doc = ec.editor.getOmDocument();
-        doc.trustedChangesInProgress = true;
+    public boolean isEntryChanged(EntryMarks ev) {
+        SegmentBuilder ssb;
         try {
-            for (int i = 0; i < evs.size(); i++) {
-                EntryMarks ev = evs.get(i);
-                if (!ev.isSegmentChanged()) {
-                    remove(ev.builder, ev.markerIndex);
-                    try {
-                        if (ev.builder.marks == null) {
-                            ev.builder.marks = new MarkInfo[markerNames.length][];
-                        }
-                        ev.builder.marks[ev.markerIndex] = new MarkInfo[ev.result.size()];
-                        for (int j = 0; j < ev.result.size(); j++) {
-                            MarkInfo nm = new MarkInfo(ev.result.get(j), ev.builder, doc, highlighter);
-                            ev.builder.marks[ev.markerIndex][j] = nm;
-                        }
-                    } catch (BadLocationException ex) {
-                    }
-                }
-            }
-        } finally {
-            doc.trustedChangesInProgress = false;
+            ssb = ec.m_docSegList[ev.entryIndex];
+        } catch (Exception e) {
+            return true;
         }
+        return ssb != ev.builder || ssb.getDisplayVersion() != ev.entryVersion;
     }
 
     /**
      * Class for store info about displayed mark.
      */
     protected static class MarkInfo {
-        Highlighter.Highlight highlight;
-        Tooltip tooltip;
-
-        public MarkInfo(Mark m, SegmentBuilder sb, Document3 doc, Highlighter highlighter) throws BadLocationException {
-            if (m.entryPart == Mark.ENTRY_PART.SOURCE && sb.getSourceText() == null) {
-                return;
-            }
-
-            int sourceStartOffset = sb.getStartSourcePosition();
-            int translationStartOffset;
-            if (sb.isActive()) {
-                translationStartOffset = doc.getTranslationStart();
-            } else {
-                translationStartOffset = sb.getStartTranslationPosition();
-            }
-            int startOffset;
-            if (m.entryPart == Mark.ENTRY_PART.SOURCE) {
-                startOffset = sourceStartOffset;
-            } else {
-                startOffset = translationStartOffset;
-            }
-            if (m.painter != null) {
-                highlight = (Highlighter.Highlight) highlighter.addHighlight(startOffset + m.startOffset, startOffset
-                        + m.endOffset, m.painter);
-            }
-            if (m.toolTipText != null) {
-                tooltip = new Tooltip(doc, startOffset + m.startOffset, startOffset + m.endOffset, m.toolTipText);
-            }
-            if (m.attributes != null) {
-                doc.setCharacterAttributes(startOffset + m.startOffset, m.endOffset - m.startOffset, m.attributes,
-                        false);
-            }
-        }
-    }
-
-    protected static class Tooltip {
-        Position p0, p1;
-        String text;
-
-        public Tooltip(Document3 doc, int start, int end, String text) throws BadLocationException {
-            p0 = doc.createPosition(start);
-            p1 = doc.createPosition(end);
-            this.text = text;
-        }
+        Highlighter.Highlight underscore;
+        String tooltip;
     }
 }

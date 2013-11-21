@@ -8,42 +8,34 @@
                2009 Didier Briel
                2010 Antonio Vilei
                2011 Didier Briel
-               2013 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.filters3.Attributes;
-import org.omegat.filters3.Element;
-import org.omegat.filters3.Tag;
-import org.omegat.filters3.Text;
 import org.omegat.util.MultiMap;
-import org.omegat.util.StaticUtils;
 import org.xml.sax.InputSource;
 
 /**
@@ -52,7 +44,6 @@ import org.xml.sax.InputSource;
  * @author Maxym Mykhalchuk
  * @author Martin Fleurke
  * @author Didier Briel
- * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public class DefaultXMLDialect implements XMLDialect {
     /** The set of defined paragraph tags. */
@@ -67,13 +58,6 @@ public class DefaultXMLDialect implements XMLDialect {
     public void defineParagraphTags(String[] tags) {
         for (String tag : tags)
             defineParagraphTag(tag);
-    }
-
-    /** The set of defined content based tags. */
-    private Map<String, Tag.Type> contentBasedTags = new HashMap<String, Tag.Type>();
-
-    public void defineContentBasedTag(String tag, Tag.Type type) {
-        contentBasedTags.put(tag, type);
     }
 
     /** The set of defined tags that surround preformatted text. */
@@ -224,13 +208,6 @@ public class DefaultXMLDialect implements XMLDialect {
     }
 
     /**
-     * Returns the set of content based tags.
-     */
-    public Map<String, Tag.Type> getContentBasedTags() {
-        return contentBasedTags;
-    }
-
-    /**
      * Returns the set of tags that surround preformatted text.
      * <p>
      * Each entry in a set should be a String class.
@@ -284,10 +261,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * @return <code>true</code> or <code>false</code>
      */
     public Boolean validateIntactTag(String tag, Attributes atts) {
-        return false;
-    }
-
-    public Boolean validateContentBasedTag(String tag, Attributes atts) {
         return false;
     }
 
@@ -451,25 +424,4 @@ public class DefaultXMLDialect implements XMLDialect {
         forceSpacePreserving = onOff;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String constructShortcuts(List<Element> elements, List<ProtectedPart> protectedParts) {
-        protectedParts.clear();
-        StringBuilder r = new StringBuilder();
-        for (Element el : elements) {
-            String shortcut = el.toShortcut();
-            r.append(shortcut);
-            if (!(el instanceof Text)) {
-                ProtectedPart pp = new ProtectedPart();
-                pp.setTextInSourceSegment(shortcut);
-                pp.setDetailsFromSourceFile(el.toOriginal());
-                pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
-                pp.setReplacementUniquenessCalculation(StaticUtils.TAG_REPLACEMENT);
-                pp.setReplacementMatchCalculation(StaticUtils.TAG_REPLACEMENT);
-                protectedParts.add(pp);
-            }
-        }
-        return r.toString();
-    }
 }

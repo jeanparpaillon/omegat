@@ -1,44 +1,48 @@
-Le  traduction presente es le labor de Carmelo Serraino, derecto de autor© 2012, 2013.
+This translation is the work of Carmelo Serraino, copyright©2013.
 
 ==============================================================================
-  File lege me de OmegaT 3.0
+  OmegaT 2.0, File lege me
 
-  1.  Information re OmegaT
+  1.  Information circa OmegaT
   2.  Quod es OmegaT?
   3.  Installar OmegaT
   4.  Contribuentes a OmegaT
-  5.  Esque OmegaT es te importunante? Esque tu necessita adjuta?
+  5.  Esque OmegaT ha te importunate? Esque tu necessita adjuta?
   6.  Detalios del edition
 
 ==============================================================================
-  1.  Information re OmegaT
+  1.  Information circa OmegaT
 
 
 On pote trovar le plus actual informationes circa OmegaT a
       http://www.omegat.org/
 
-Supporto del usator, al gruppo del usator  Yahoo (multilingual), ubi on pote recercar in le archivos sin abonamento
-     http://tech.groups.yahoo.com/group/OmegaT/
+User support, at the Yahoo user group (multilingual), where the archives are
+searchable without subscription:
+     http://groups.yahoo.com/group/OmegaT/
 
 Demandas pro augmentationes (in anglese), in le sito SourceForge:
-     https://sourceforge.net/p/omegat/feature-requests/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520350
 
 Reportos de defecto (in anglese), in le sito SourceForge:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
 ==============================================================================
   2.  Quod es OmegaT?
 
-OmegaT es un application pro traduction adjutate ab computator (CAT). Illo es gratuite, id es tu non habe a pagar alco pro poter usar lo, mesmo pro uso professional, e tu es libere de modificar lo o de distribuer lo a condition que tu respecta le licentia del usator.
+OmegaT es un instrumento pro traduction adjutate ab computator (CAT). It is free, that is you 
+don't have to pay anything to be able to use it, even for professional use, 
+and you are free to modify it and/or re-distribute it as long as you respect 
+the user license.
 
 Le principal characteristicas de OmegaT's es:
   - capacitate de execution sur qualcunque systema operative que supporta Java
-  - empleo de qualcunque file TMX valide como un referentia de traduction
+  - empleo de qualcunque file TMX valide como referentia de traduction
   - flexibile segmentation del phrases (usante un methodo SRX-simile)
   - recercas in le projecto e in le memorias de traduction de referentia
   - recercas de files in formatos supportate in qualcunque classificator 
-  - concordantia partial
-  - argute maneamento de projectos includente complexe hierarchias de plica
+  - concordantia confuse
+  - argute maneamento de projectos includente complexe hierarchias de classificatores
   - supporto pro le glossarios (controlos del terminologia) 
   - supporto al volo pro le correctores orthographic OpenSource
   - supporto pro dictionarios StarDict
@@ -50,23 +54,23 @@ OmegaT supporta le formatos de file sequente:
 
 - formato de file in texto plan
 
-  - Texto ASCII (.txt, etc.)
-  - Texto codificate (*.UTF8)
-  - Pacchettos  ressource Java (*.properties)
-  - Files PO (*.po)
-  - Files INI (key=value) (*.ini)
-  - Files DTD (*.DTD)
-  - Files DocuWiki (*.txt)
-  - Files titulo SubRip (*.srt)
+  - texto ASCII (.txt, etc.)
+  - texto codificate (*.UTF8)
+  - pacchettos  ressource Java (*.properties)
+  - files PO (*.po)
+  - files INI (key=value) (*.ini)
+  - files DTD (*.DTD)
+  - files DocuWiki (*.txt)
+  - files titulo SubRip (*.srt)
   - Magento CE Locale CSV (*.csv)
 
-- Formatos del file in texto con tags
+- formato del file in texto etiquettate
 
-  - Formatos OpenOffice.org / OpenDocument (*.odt, *.ott, *.ods, *.ots, *.odp, *.otp)
-  - Formatos Microsoft Open XML (*.docx, *.xlsx, *.pptx)
-  - Formatos (X)HTML (*.html, *.xhtml,*.xht)
-  - Compilator de adjuta HTML (*.hhc, *.hhk)
-  - Formato DocBook (*.xml)
+  - OpenOffice.org / OpenDocument (*.odt, *.ott, *.ods, *.ots, *.odp, *.otp)
+  - Microsoft Open XML (*.docx, *.xlsx, *.pptx)
+  - (X)HTML (*.html, *.xhtml,*.xht)
+  - HTML Help Compiler (*.hhc, *.hhk)
+  - DocBook (*.xml)
   - Monolingual XLIFF (*.xlf, *.xliff, *.sdlxliff)
   - QuarkXPress CopyFlowGold (*.tag, *.xtg)
   - Files ResX (*.resx)
@@ -74,100 +78,166 @@ OmegaT supporta le formatos de file sequente:
   - LaTex (*.tex, *.latex)
   - Files Help (*.xml) e Manual (*.hmxp)
   - Typo3 LocManager (*.xml)
-  - Localisation WiX (*.wxl)
+  - WiX localisation (*.wxl)
   - Iceni Infix (*.xml)
-  - Exportation Flash XML (*.xml)
+  - exportation Flash XML (*.xml)
   - Wordfast TXML (*.txml)
   - Camtasia pro Windows (*.camproj)
   - Visio (*.vxd)
 
 OmegaT pote esser personalisate pro supportar anque altere formatos de file.
 
-OmegaT analysara automaticamente anque le plus complexe hierarchias de plicas de origine pro acceder omne files supportate, e producer le plicas final con exactemente le mesme structura, includente etiam le copias de omne files non supportate..
+OmegaT will automatically parse even the most complex source folder
+hierarchies, to access all the supported files, and produce a target folder
+with exactly the same structure, including copies of any non-supported files.
 
-Pro un parve instruction de rapide initio, que tu lancea OmegaT e lege le "Initio instantanee" monstrate.
+For a quick-start tutorial, launch OmegaT and read the displayed Instant Start 
+Tutorial.
 
-Le manual del usator es in le pacchetto que tu ha justo discargate, tu pote lo acceder ab le menu adjuta post le initio del OmegaT
+The user manual is in the package you just downloaded, you can access it from
+the [Help] menu after starting OmegaT.
 
 ==============================================================================
  3. Installar OmegaT
 
 3.1 General
-Pro exequer, OmegaT necessita que le Java Runtime Environment (JRE) es installate sur tu computator. Le pacchettos OmegaT que include le ambiente Runtime de Java (Java Runtime Environment o JRE), es ora disponibile pro salvar le usatores del difficultate de seliger e installar lo 
+In order to run, OmegaT requires the Java Runtime Environment (JRE) version 
+1.5 or higher to be installed on your system. OmegaT packages which include
+the Java Runtime Environment are now available to save users the trouble of 
+selecting, obtaining and installing it. 
 
-Si tu ja ha Java, un maniera pro installar le actual version de OmegaT es usar Java Web Start. 
-Pro ce fin, discarga le sequente file e pois exeque lo:
+If you have already Java, one way to install the current version of 
+OmegaT is to use Java Web Start. 
+Pro ce fin discarga le sequente file e pois lo exeque:
 
    http://omegat.sourceforge.net/webstart/OmegaT.jnlp
 
-Illo installara le ambiente correcte pro tu computator e le mesme application al prime lanceamento. Le ulterior appellos non habe necessitate de connexion in interrete.
+It will install the correct environment for your computer and the application 
+itself on the first run. Le ulterior appellos non habe necessitate de connexion a Interrete.
 
-Durante le installation, dependente de tu systema operative, tu pote reciper plure advertimentos de securitate. Le certificato es firmate per "Didier Briel". 
-Le permissiones que tu da a iste version (le qual pote esser describite como un "accesso sin restriction al computator") es identic al permissiones que tu assigna al version local, como installate per un procedura, describite depost: illes permitte un accesso al disco dur de tu computator. Subsequente clicca sur OmegaT.jnlp controlara pro alicun renovationes, si tu ha le connexion a interrete, e installara illos que habe,
-e deinde lancear OmegaT.. 
+During the installation, depending on your operating system, you may receive 
+several security warnings. Le certificato es firmate per "Didier Briel". 
+The permissions you give to this version (which might be mentioned as an 
+"unrestricted access to the computer") are identical  to permissions you give 
+to the local version, as installed by a procedure, described later: they allow 
+an access to the hard drive of the computer. Subsequent clicks on  OmegaT.jnlp 
+will check for any upgrades, if you are online, install them if there are any, 
+and then start OmegaT. 
 
-Le alternative manieras e medios pro discargar e installar OmegaT es monstrate in sequito. 
+The alternative ways and means of dowloading and installing OmegaT are
+shown below. 
 
-Usatores de Windows e Linux: si tu es confidente que sur tu systema es jam installate un convenibile version del JRE, tu pote discargar e installar un version sin le JRE de OmegaT (isto es indicate in le nomine del version,"Without_JRE"). 
-Si tu ha alicun dubita, nos recommenda que tu usa le version supplite con JRE. Isto es secur, depois que si un JRE es jam installate sur tu systema, iste version non interferera con illo.
+Windows and Linux users: if you are confident that your system already has a 
+suitable version of the JRE installed, you can install the version of OmegaT 
+without the JRE (this is indicated in the name of the version,"Without_JRE"). 
+If you are in any doubt, we recommend that you use the version supplied with 
+JRE. This is safe, since even if the JRE is already installed on your system, 
+this version will not interfere with it.
 
-Usatores de Linux: OmegaT currera super le open-implementation source Java impaccate con multe distributiones de Linux (per exemplo, Ubuntu), ma tu pote haber experientia de defectos, problemas de monstra o characteristicas perdite. Nos recommenda que tu discarga e installa anque le ambiente Oracle Java Runtime (JRE) o le pacchetto OmegaT impacchettate con le pacco JRE (le .tar.bz2) marcate "Linux". Si tu  installa un version de Java al nivello de systema, tu debe o assecurar te que illo es in tu percurso de lanceamento, o lancear lo explicitemente quando tu lanceara OmegaT. Si tu non es molto familiar con Linux, nos te recommenda pro seliger un version de OmegaT con le JRE includite. Isto es secur, proque iste "local" JRE non interferera con necun altere JRE installate in tu systema.
+Linux users: 
+OmegaT will run on the open-implementation source Java 
+packaged with many Linux distributions (for example, Ubuntu), but you may
+experience bugs, display problems or missing features. We therefore recommend
+that you download and install either the Oracle Java Runtime Environment (JRE) 
+or the OmegaT package bundled with JRE (the .tar.bz2) bundle marked 
+"Linux"). If you install a version of Java at system level, you must either 
+ensure that it is in your launch path, or call it explicitly when launching 
+OmegaT. If you are not very familiar with Linux, we therefore recommend 
+that you install an OmegaT version with JRE included. This is safe, 
+since this "local" JRE will not interfere with any other JRE installed 
+on your system.
 
-Usatores de Mac: Le JRE es ja installate sur Mac OS X ante que Mac OS X 10.7 (Lion).  Le usatores de Lion essera suggerite ab le systema quando isto prime lanceara un application que necessita Java e le systema eventualmente discargara lo e installara lo automaticamente.
+Mac users: 
+The JRE is already installed on Mac OS X before Mac OS X 10.7 
+(Lion). Lion users will be prompted by the system when they first launch 
+an application that requires Java and the system will eventually 
+automatically download and install it.
 
-Linux sur systemas PowerPC: Le usatores debera discargar le JRE de IBM, pois que Sun non provide un JRE pro systemas PPC. Discarga in iste caso ex:
+Linux on PowerPC systems: 
+Users will need to download IBM's JRE, as Sun does 
+not provide a JRE for PPC systems. Discarga in iste caso ab:
 
     http://www.ibm.com/developerworks/java/jdk/linux/download.html 
 
 
 3.2 Installation
-* Usatores de Windows: Simplemente lancea le programma de installation. Si tu vole, le programma de installation pote crear vias breve pro lancear OmegaT.
+* Windows users: 
+Simply launch the installation program. If you wish, the 
+installation program can create shortcuts to launch OmegaT.
 
-* usatores de Linux:
-Pone le archivo in qualcunque commode classificator e lo discassa; OmegaT es alora preste a esser lanceate Comocunque tu pote obtener un installation plus nette e plus facile usante le script de installation (linux-install.sh). Pro usar ce script, displica un fenestra terminal (consola), cambia le plica in le plica continente le script OmegaT.jar e linux-install.sh, e exeque le script con ./linux-install.sh.
+* Linux users:
+Place the archive in any suitable folder and unpack it; OmegaT is then 
+ready to be launched. You can however obtain a neater and more user-friendly 
+installation by using the installation script (linux-install.sh). To use 
+this script, open a terminal window (console), change folder to the folder 
+containing OmegaT.jar and the linux-install.sh script, and execute the 
+script with ./linux-install.sh.
 
-* Usatores de Mac: Copia le archivo OmegaT.zip in un plica commode e discassa lo ibi pro obtener un plica que contine un file indice del documentation HTML e OmegaT.app, le file application. 
+* Mac users:
+Copy the OmegaT.zip archive to a suitable location and unpack it there 
+to obtain a folder that contains an HTML documentation index file and 
+OmegaT.app, the application file.
 
-* Altere (e.g., Solaris, FreeBSD: 
-Pro installar OmegaT, crea simplemente un plica convenibile pro OmegaT. Copia le archivo OmegaT zip o tar.bz2 in iste plica e dispacchetta lo ibi.
+* Others (e.g., Solaris, FreeBSD: 
+To install OmegaT, simply create a suitable folder for OmegaT. Copy the 
+OmegaT zip or tar.bz2 archive to this folder and unpack it there.
 
-3.3 Lancear OmegaT
-Lancea OmegaT como seque.
+3.3 Launching OmegaT
+Launch OmegaT as follows.
 
-* Usatores de Windows: 
-Si, durante le installation, tu creava un via breve sur le scriptorio,
-clicca duo vices sur iste via breve. Alternativemente, clicca duo vices sur le file
-OmegaT.exe. Si tu vide la file OmegaT ma non vide OmegaT.exe in tu administrator de files (Windows Explorer), cambia le preparationes a fin que le extensiones esserea monstrate.
+* Windows users: 
+If, during installation, you have created a shortcut on the desktop, 
+double-click on that shortcut. Alternatively, double-click on the file 
+OmegaT.exe. If you can see the file OmegaT but not OmegaT.exe in your 
+File Manager (Windows Explorer), change the settings so that file 
+extensions are displayed.
 
-* Usatores de Linux: Si tu usa le script de installation supplite, tu potera lancear OmegaT con:
-Alt+F2 e alora:
+* Linux users:
+If you used the installation script supplied, you should be able to launch OmegaT with:
+Alt+F2
+and then:
 omegat
 
-* Usatores de Mac: clicca duo vices sur le file OmegaT.app.
+* Mac users:
+Double-click on the file OmegaT.app.
 
-* A partir de tu administrator de files (omne systemas): clicca duo vices sur le file OmegaT.jar. Isto functionara solmente si le file de typo .jar es associate con Java sur tu systema.
+* From your file manager (all systems):
+Double-click on the file OmegaT.jar. This will work only if the .jar
+file type is associated with Java on your system.
 
-* A partir de tu linea de commando (omne systemas): 
-le commando pro lancear OmegaT es:
+* From the command line (all systems): 
+The command to launch OmegaT is:
 
-cd <plica ubi le file OmegaT.jar es localisate>
+cd <classificator ubi le file OmegaT.jar es localisate>
 
 <nomine e via del file executabile Java> -jar OmegaT.jar
 
 (Le file executabile Java es le file java sur Linux e java.exe sur Windows.
-Si Java es installate a nivello de systema e es in le percurso del commando, non necessita inscriber le percurso complete.)
+If Java is installed at system level and is in the command path, the full 
+path need not be entered.)
 
-Adapta vostre experientia de lanceamento de OmegaT:
+Adapta tu experientia de lancha de OmegaT:
 
-* Usatores de Windows: 
-Le programma de installation pote vos crear vias breve in le menu de initio, sur le scriptorio e in le area de lanceamento rapide. Vos pote alsi trainar manualmente le file OmegaT.exe in le menu de initio, le scriptorio o le area de lancha rapide pro ligar lo ex illac.
+* Windows users: 
+The install program can create shortcuts for you in the start 
+menu, on the desktop and in the quick launch area. You can also manually drag 
+the file OmegaT.exe to the start menu, the desktop or the quick launch area
+to link it from there.
 
-* Usatores de Linux: pro un modo plus facile de lancear OmegaT, vos pote usar le script Kaptain fornite (omegat.kaptn). Pro usar iste script vos debe in prime loco installar Kaptain. Deinde tu pote lancear le script de lanceamento de Kaptain con Alt+F2 omegat.kaptn
+* Linux users:
+For a more user-friendly way of launching OmegaT, you can use the Kaptain 
+script provided (omegat.kaptn). To use this script you must first install 
+Kaptain. You can then launch the Kaptain launch script with
+Alt+F2
+omegat.kaptn
 
-Pro magis informationes re le scripturas Kaptain e re le menu pro adder articulos e lancear icones sur Linux, refere al documento "OmegaT sur Linux".
+For more information on the Kaptain script and on adding menu items and 
+launch icons on Linux, refer to the OmegaT on Linux HowTo.
 
-Usatores de Mac: Traina le file OmegaT.app sur tu dock o sur le barra instrumento de un fenestra trovator pro esser
-habile a lancear lo ex omne position. Tu pote alsi lo appellar in le campo de recerca Spotlight.
+Mac users:
+Drag OmegaT.app to your dock or to the tool bar of a Finder window to be 
+able to launch it  from any location. You can also call it in the 
+Spotlight search field.
 
 ==============================================================================
  4. Ingagiar se in le projecto OmegaT
@@ -175,13 +245,13 @@ habile a lancear lo ex omne position. Tu pote alsi lo appellar in le campo de re
 Pro participar al disveloppamento de OmegaT, continge le disveloppatores a:
     http://lists.sourceforge.net/lists/listinfo/omegat-development
 
-Pro traducer le interfacie del usator de OmegaT, le manual del usator o altere documentos pertinente,
-lege:
+To translate OmegaT's user interface, user manual or other related documents,
+read:
       
-      http://www.omegat.org/en/howtos/localizing_omegat.php
+      http://www.omegat.org/en/translation-info.html
 
 E abona te al lista del traductores:
-      https://lists.sourceforge.net/lists/listinfo/omegat-l10n
+      http://lists.sourceforge.net/mailman/listinfo/omegat-l10n
 
 Pro contribuer in altere manieras, subscribe primo al gruppo del usuarios  a:
       http://tech.groups.yahoo.com/group/omegat/
@@ -189,10 +259,10 @@ Pro contribuer in altere manieras, subscribe primo al gruppo del usuarios  a:
 E senti lo que va in le mundo de OmegaT...
 
   OmegaT es le opera original de Keith Godfrey.
-  OmegaT es le opera original de Keith Godfrey.
+  Marc Prior es le coordinator del projecto OmegaT.
 
-Le previe contributores include:
-(ordine alphabetic)
+Previous contributors include:
+(alphabetical order)
 
 Le codice esseva contribuite ab
   Zoltan Bartko
@@ -208,7 +278,6 @@ Le codice esseva contribuite ab
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
@@ -222,7 +291,7 @@ Le codice esseva contribuite ab
   Andrzej Sawuła
   Benjamin Siband
   Yu Tang
-  Yu Tang  
+  Rashid Umarov  
   Antonio Vilei
   Martin Wunderlich
   Michael Zakharov
@@ -236,64 +305,66 @@ altere contributiones per
   Marc Prior 
   e multe, multe magis maxime adjuvante gente
 
-(si tu puta que tu ha significativemente contribuite al projecto OmegaT
-ma tu non vide tu nomine in le listas, senti te libere de nos continger.)
+(If you think you have significantly contributed to the OmegaT Project 
+but you don't see your name on the lists, feel free to contact us.)
 
 OmegaT usa le sequente librerias:
-  HTMLParser 1.6 ex Somik Raha, Derrick Oswald e alteres (Licentia LGPL)
-  MRJ Adapter 1.0.8 ex Steve Roy (Licentia LGPL)
-  VLDocking Framework 2.1.4 ex VLSolutions (Licentia CeCILL)
-  Hunspell ex László Németh e alteres (Licentia LGPL)
-  JNA ex Todd Fast, Timothy Wall e alteres (Licentia LGPL)
-  Swing-Layout 1.0.2 (Licentia LGPL)
-  Jmyspell 2.1.4 (Licentia LGPL)
-  SVNKit 1.7.5 (Licentia TMate)
-  Sequence Library (Licentia Sequence Library)
-  ANTLR 3.4 (Licentia ANTLR 3)
+  HTMLParser 1.6 by Somik Raha, Derrick Oswald and others (LGPL License)
+  MRJ Adapter 1.0.8 by Steve Roy (LGPL License)
+  VLDocking Framework 2.1.4 by VLSolutions (CeCILL License)
+  Hunspell by László Németh and others (LGPL License)
+  JNA by Todd Fast, Timothy Wall and others (LGPL License)
+  Swing-Layout 1.0.2 (LGPL License)
+  Jmyspell 2.1.4 (LGPL License)
+  JAXB (GPLv2 + classpath exception)
+  SJXP 1.0.2 (GPL v2)
+  SVNKit 1.7.5 (TMate License)
+  Sequence Library (Sequence Library License)
+  ANTLR 3.4 (ANTLR 3 license)
   SQLJet 1.1.3 (GPL v2)
-  JGit (Licentia Eclipse Distribution)
-  JSch (Licentia JSch)
-  Base64 (public dominio)
+  JGit (Eclipse Distribution License)
+  JSch (JSch License)
+  Base64 (public domain)
   Diff (GPL)
-  orion-ssh2-214 (Licentia Orion SSH pro Java)
-  lucene-*.jar (Apache License 2.0)
-  Le Tokenizers anglese (org.omegat.tokenizer.SnowballEnglishTokenizer and
-  org.omegat.tokenizer.LuceneEnglishTokenizer) usa stop words ex Okapi
-(http://okapi.sourceforge.net) (LGPL license)
-  tinysegmenter.jar (Modified BSD license)
-  TinySegmenter (dominio public)
-  jWordSplitter (Apache License 2.0)
-  LanguageTool.jar (LGPL License)
-  morfologik-*.jar (Morfologik license)
-  segment-1.4.1.jar (Segment License)
-  pdfbox-app-1.8.1.jar (Apache License 2.0)
 
 ==============================================================================
- 5.  Esque OmegaT es te importunante? Esque tu necessita adjuta?
+ 5.  Esque OmegaT ha te importunate? Esque tu necessita adjuta?
 
-Ante que tu reporta un defecto,assecura te que tu ha verificate a fundo le documentation. Lo que tu vide pote esser in vice un characteristic de OmegaT que tu ha justo discoperte. Si tu controla le bloco OmegaT e tu vide parolas como "Error", "Warning", "Exception", o "died unexpectedly" alora tu ha probabilemente discoperte un genuin problema (le log.txt es localisate in le plica del preferentias del usator, vide le manual pro su ubication)
+Before reporting a bug, make sure that you have thoroughly checked the
+documentation. What you see may instead be a characteristic of OmegaT that
+you have just discovered. If you check the OmegaT log and you see words like
+"Error", "Warning", "Exception", or "died unexpectedly" then you have probably
+discovered a genuine problem (the log.txt is located in the user preferences
+folder, see the manual for its location).
 
-Le proxime cosa a facer es confirmar lo que tu ha discoperte con altere usatores, pro tranquillisar te que isto non esseva ja reportate. Tu pote verificar le pagina de reporto defecto a SourceForge. Sol quando tu es secur que tu es le prime que ha discoperte alicun sequentia reproducibile de eventos que ha discatenate alicun cosa impreviste tu deberea archivar un reporto de defecto.
+The next thing to do is to confirm what you found with other users, to make 
+sure this has not already been reported. You can verify the bug report page at
+SourceForge too. Only when you are sure you are the first to have found some
+reproducible sequence of event that triggered something not supposed to
+happen should you file a bug report.
 
 Recorda que cata bon reporto de defecto, necessita justo tres cosas:
   - Passos pro lo reproducer
   - Lo que tu expecta vider
   - Que tu vide in vice
 
-Tu pote adder copias de files, portiones del bloco, paginas del schermo, e alicun altere cosas que tu pensa adjutara le disveloppatores a trovar e reparar tu defecto.
+You can add copies of files, portions of the log, screen shots, anything that
+you think will help the developers with finding and fixing your bug.
 
-Pro foliar le archivos del gruppo del usator, vade a:
-     http://tech.groups.yahoo.com/group/OmegaT/
+Pro foliar le archivos del gruppo del usuario, vade a:
+     http://groups.yahoo.com/group/OmegaT/
 
 Pro foliar le pagina del reporto de defecto e archivar un nove reporto de defecto si necessari, vade a:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
-Pro conservar tracia de lo que occurre a tu reporto de defecto tu pote registrar te como usator de Source Forge.
+To keep track of what is happening to your bug report you may want to register
+as a Source Forge user.
 
 ==============================================================================
 6.   Detalios del edition
 
-Per favor vide le file 'changes.txt' per un information detaliate circa le cambios in iste e omne previe editiones.
+Please see the file 'changes.txt' for detailed information about changes in
+this and all previous releases.
 
 
 ==============================================================================

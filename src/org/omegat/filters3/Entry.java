@@ -7,24 +7,22 @@
                2007 Didier Briel
                2010 Antonio Vilei
                2012 Didier Briel
-               2013 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3;
@@ -32,14 +30,8 @@ package org.omegat.filters3;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omegat.core.Core;
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.filters2.TranslationException;
-import org.omegat.filters3.xml.Handler;
-import org.omegat.filters3.xml.XMLContentBasedTag;
-import org.omegat.filters3.xml.XMLDialect;
 import org.omegat.util.PatternConsts;
-import org.omegat.util.StringUtil;
 
 /**
  * Translatable entry. Holds a list of source tags and text, translated text and
@@ -47,17 +39,8 @@ import org.omegat.util.StringUtil;
  * 
  * @author Maxym Mykhalchuk
  * @author Didier Briel
- * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public class Entry {
-    final XMLDialect xmlDialect;
-    final Handler handler;
-
-    public Entry(XMLDialect xmlDialect, Handler handler) {
-        this.xmlDialect = xmlDialect;
-        this.handler = handler;
-    }
-
     /**
      * Cleans up this entry.
      */
@@ -120,12 +103,8 @@ public class Entry {
             }
             detectTags();
             tagsDetected = true;
-            enumerateTags(getFirstGood(), getLastGood());
+            enumerateTags();
         }
-    }
-
-    public void resetTagDetected() {
-        tagsDetected = false;
     }
 
     /**
@@ -143,7 +122,7 @@ public class Entry {
             if (elem instanceof Tag) {
                 // Add this tag to the aggregated tag
                 if (aggregated == null) {
-                    aggregated = new AggregatedTag("tag", null, Tag.Type.ALONE, new Attributes());
+                    aggregated = new AggregatedTag("tag", null, Tag.TYPE_ALONE, new Attributes());
                 }
                 aggregated.add((Tag) elem);
             } else {
@@ -184,12 +163,6 @@ public class Entry {
             Element elem = get(i);
             if ((elem instanceof Text) && ((Text) elem).isMeaningful()) {
                 textStart = i;
-                break;
-            }
-        }
-        for (int i = 0; i < size(); i++) {
-            Element elem = get(i);
-            if ((elem instanceof Text) && ((Text) elem).isMeaningful()) {
                 textInstance = (Text) elem;
                 break;
             }
@@ -211,50 +184,6 @@ public class Entry {
             }
         }
 
-        // if content-based tag is inside text, then expand text into paired cntent-based tag
-        for (int i = textStart; i <= textEnd; i++) {
-            Element elem = get(i);
-            if (elem instanceof XMLContentBasedTag) {
-                XMLContentBasedTag tag = (XMLContentBasedTag) elem;
-                if (tag.getTag().equals("bpt") || tag.getTag().equals("ept")) {
-                    // find id of paired tag
-                    String id = StringUtil.nvl(tag.getAttribute("rid"), tag.getAttribute("id"),
-                            tag.getAttribute("i"));
-                    if (id == null) {
-                        continue;
-                    }
-                    // find paired tag before
-                    for (int j = textStart - 1; j >= 0; j--) {
-                        if (get(j) instanceof XMLContentBasedTag) {
-                            XMLContentBasedTag tag2 = (XMLContentBasedTag) get(j);
-                            if (tag2.getTag().equals("bpt") || tag2.getTag().equals("ept")) {
-                                // find id of paired tag
-                                String id2 = StringUtil.nvl(tag2.getAttribute("rid"),
-                                        tag2.getAttribute("id"), tag2.getAttribute("i"));
-                                if (id.equals(id2)) {
-                                    textStart = j;
-                                }
-                            }
-                        }
-                    }
-                    // find paired tag after
-                    for (int j = textEnd + 1; j < size(); j++) {
-                        if (get(j) instanceof XMLContentBasedTag) {
-                            XMLContentBasedTag tag2 = (XMLContentBasedTag) get(j);
-                            if (tag2.getTag().equals("bpt") || tag2.getTag().equals("ept")) {
-                                // find id of paired tag
-                                String id2 = StringUtil.nvl(tag2.getAttribute("rid"),
-                                        tag2.getAttribute("id"), tag2.getAttribute("i"));
-                                if (id.equals(id2)) {
-                                    textEnd = j;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         // //////////////////////////////////////////////////////////////////////
         // "first good"
         // detecting the first starting tag that has its ending in the paragraph
@@ -265,7 +194,7 @@ public class Entry {
                 continue;
 
             Tag good = (Tag) goodElem;
-            if (Tag.Type.BEGIN != good.getType())
+            if (Tag.TYPE_BEGIN != good.getType())
                 continue;
 
             // trying to test
@@ -275,9 +204,9 @@ public class Entry {
                 if (candElement instanceof Tag) {
                     Tag cand = (Tag) candElement;
                     if (cand.getTag().equals(good.getTag())) {
-                        if (Tag.Type.BEGIN == cand.getType())
+                        if (Tag.TYPE_BEGIN == cand.getType())
                             recursion++;
-                        else if (Tag.Type.END == cand.getType()) {
+                        else if (Tag.TYPE_END == cand.getType()) {
                             recursion--;
                             if (recursion == 0) {
                                 if (i > textStart)
@@ -305,7 +234,7 @@ public class Entry {
                 continue;
 
             Tag good = (Tag) goodElem;
-            if (Tag.Type.END != good.getType())
+            if (Tag.TYPE_END != good.getType())
                 continue;
 
             // trying to test
@@ -315,9 +244,9 @@ public class Entry {
                 if (candElement instanceof Tag) {
                     Tag cand = (Tag) candElement;
                     if (cand.getTag().equals(good.getTag())) {
-                        if (Tag.Type.END == cand.getType())
+                        if (Tag.TYPE_END == cand.getType())
                             recursion++;
-                        else if (Tag.Type.BEGIN == cand.getType()) {
+                        else if (Tag.TYPE_BEGIN == cand.getType()) {
                             recursion--;
                             if (recursion == 0) {
                                 if (i < textEnd)
@@ -334,82 +263,32 @@ public class Entry {
         }
         if (!found)
             lastGood = textEnd;
-
-        boolean removeTags = Core.getFilterMaster().getConfig().isRemoveTags();
-        // tags was already removed - restore they if need
-        if (!removeTags) {
-            for (int i = firstGood - 1; i >= 0; i--) {
-                Element elem = get(i);
-                if (elem instanceof Tag) {
-                    if (handler.isParagraphTag((Tag) elem)) {
-                        break;
-                    }
-                    firstGood = i;
-                }
-            }
-            for (int i = lastGood + 1; i < size(); i++) {
-                Element elem = get(i);
-                if (elem instanceof Tag) {
-                    if (handler.isParagraphTag((Tag) elem)) {
-                        break;
-                    }
-                    lastGood = i;
-                }
-            }
-        }
-
-        boolean removeSpacesAround = Core.getFilterMaster().getConfig().isRemoveSpacesNonseg();
-        // spaces was already removed - restore they if need
-        if (!removeSpacesAround) {
-            for (int i = firstGood - 1; i >= 0; i--) {
-                Element elem = get(i);
-                if (elem instanceof Tag) {
-                    if (handler.isParagraphTag((Tag) elem)) {
-                        break;
-                    }
-                }
-                if ((elem instanceof Text) && !((Text) elem).isMeaningful()) {
-                    firstGood = i;
-                }
-            }
-            for (int i = lastGood + 1; i < size(); i++) {
-                Element elem = get(i);
-                if (elem instanceof Tag) {
-                    if (handler.isParagraphTag((Tag) elem)) {
-                        break;
-                    }
-                }
-                if ((elem instanceof Text) && !((Text) elem).isMeaningful()) {
-                    lastGood = i;
-                }
-            }
-        }
     }
 
     /**
      * Enumerates tags to be properly shortcut.
      */
-    private void enumerateTags(int firstGood, int lastGood) {
+    private void enumerateTags() {
         int n = 0;
-        for (int i = firstGood; i <= lastGood; i++) {
+        for (int i = getFirstGood(); i <= getLastGood(); i++) {
             Element elem = get(i);
             if (elem instanceof Tag) {
                 Tag tag = (Tag) elem;
-                if (Tag.Type.ALONE == tag.getType() || Tag.Type.BEGIN == tag.getType()) {
+                if (Tag.TYPE_ALONE == tag.getType() || Tag.TYPE_BEGIN == tag.getType()) {
                     tag.setIndex(n);
                     n++;
-                } else if (Tag.Type.END == tag.getType()) {
+                } else if (Tag.TYPE_END == tag.getType()) {
                     tag.setIndex(-1); // indication of an error
                     // trying to lookup for appropriate starting tag
                     int recursion = 1;
-                    for (int j = i - 1; j >= firstGood; j--) {
+                    for (int j = i - 1; j >= getFirstGood(); j--) {
                         Element otherElem = get(j);
                         if (otherElem instanceof Tag) {
                             Tag other = (Tag) otherElem;
                             if (other.getTag().equals(tag.getTag())) {
-                                if (Tag.Type.END == other.getType())
+                                if (Tag.TYPE_END == other.getType())
                                     recursion++;
-                                else if (Tag.Type.BEGIN == other.getType()) {
+                                else if (Tag.TYPE_BEGIN == other.getType()) {
                                     recursion--;
                                     if (recursion == 0) {
                                         tag.setIndex(other.getIndex());
@@ -437,27 +316,23 @@ public class Entry {
      * 
      * @param tagsAggregation
      *            Whether tags of this entry can be aggregated.
-     * @param xmlDialect
-     *            dialect for processing shortcuts
-     * @param shortcutDetails
-     *            shortcuts details
      */
-    public String sourceToShortcut(boolean tagsAggregation, XMLDialect xmlDialect, List<ProtectedPart> protectedParts) {
+    public String sourceToShortcut(boolean tagsAggregation) {
+        StringBuffer buf = new StringBuffer();
+
         if (tagsAggregation != this.tagsAggregationEnabled) {
             this.tagsAggregationEnabled = tagsAggregation;
             // Each change to tags aggregation setting resets detected tags
             tagsDetected = false;
         }
 
-        if (getFirstGood() <= getLastGood()) {
-            return xmlDialect.constructShortcuts(elements.subList(getFirstGood(), getLastGood() + 1), protectedParts);
-        } else {
-            return "";
-        }
+        for (int i = getFirstGood(); i <= getLastGood(); i++)
+            buf.append(get(i).toShortcut());
+        return buf.toString();
     }
 
-    private String sourceToShortcut(XMLDialect xmlDialect, List<ProtectedPart> protectedParts) {
-        return sourceToShortcut(tagsAggregationEnabled, xmlDialect, protectedParts);
+    private String sourceToShortcut() {
+        return sourceToShortcut(tagsAggregationEnabled);
     }
 
     /**
@@ -521,9 +396,8 @@ public class Entry {
      * @throws TranslationException
      *             -- if any tag is missing or tags are ordered incorrectly.
      */
-    public void setTranslation(String translation, XMLDialect xmlDialect, List<ProtectedPart> protectedParts)
-            throws TranslationException {
-        if (!sourceToShortcut(xmlDialect, protectedParts).equals(translation)) {
+    public void setTranslation(String translation) throws TranslationException {
+        if (!sourceToShortcut().equals(translation)) {
             checkAndRecoverTags(translation);
             this.translation = translation;
         }
@@ -535,7 +409,7 @@ public class Entry {
      * {@link #setTranslation(String)} for details.
      */
     private void checkAndRecoverTags(String translation) throws TranslationException {
-        translatedEntry = new Entry(xmlDialect, handler);
+        translatedEntry = new Entry();
 
         // /////////////////////////////////////////////////////////////////////
         // recovering tags
@@ -616,6 +490,18 @@ public class Entry {
                 tag.append(c);
         }
         return res;
+    }
+
+    /**
+     * Returns shortcut string representation of the entry. E.g. for
+     * <code>Here's &lt;b&gt;bold text&lt;/b&gt;</code> should return
+     * <code>Here's &lt;b0&gt;bold text&lt;/b0&gt;</code>.
+     * // TODO: This method doesn't seem to be used
+     */
+    public String translationToShortcut() {
+        if (translation.length() == 0)
+            return sourceToShortcut();
+        return translation;
     }
 
     /**

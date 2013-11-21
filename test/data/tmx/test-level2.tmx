@@ -2,10 +2,10 @@
 <!DOCTYPE tmx SYSTEM "tmx14.dtd">
 <tmx version="1.4">
   <header
-    creationtool="Other"
+    creationtool="OmegaT"
     creationtoolversion="2.1.3"
     segtype="paragraph"
-    o-tmf="Other"
+    o-tmf="OmegaT TMX"
     adminlang="EN-US"
     srclang="en"
     datatype="plaintext"
@@ -30,23 +30,5 @@
       </tuv>
     </tu>
     
-    <tu>
-      <tuv xml:lang="en">
-        <seg>2 <it>&lt;a></it> zz <bpt i="5">&lt;t></bpt>xx<ept i="5">&lt;/c></ept></seg>
-      </tuv>
-      <tuv xml:lang="be">
-        <seg>tr</seg>
-      </tuv>
-    </tu>
-
-    <tu>
-      <tuv xml:lang="en">
-        <seg>3 <bpt i="5" type="n"/>xx<ept i="5">&lt;/z></ept></seg>
-      </tuv>
-      <tuv xml:lang="be">
-        <seg>tr</seg>
-      </tuv>
-    </tu>
-
   </body>
 </tmx>

@@ -7,24 +7,22 @@
                          Benjamin Siband, and Kim Bruning
                2007 Zoltan Bartko
                2008 Andrzej Sawula, Alex Buloichik, Didier Briel
-               2013 Yu Tang, Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.main;
@@ -51,12 +49,11 @@ import javax.swing.WindowConstants;
 
 import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
-import org.omegat.core.data.ExternalTMX;
 import org.omegat.core.events.IApplicationEventListener;
 import org.omegat.core.events.IProjectEventListener;
 import org.omegat.core.matching.NearString;
 import org.omegat.gui.filelist.ProjectFrame;
-import org.omegat.gui.search.SearchWindowController;
+import org.omegat.gui.search.SearchWindow;
 import org.omegat.util.LFileCopy;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
@@ -72,7 +69,6 @@ import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.docking.DockableState;
 import com.vlsolutions.swing.docking.DockingDesktop;
 import com.vlsolutions.swing.docking.FloatingDialog;
-import java.awt.Image;
 
 /**
  * The main window of OmegaT application (unless the application is started in
@@ -86,8 +82,6 @@ import java.awt.Image;
  * @author Zoltan Bartko - bartkozoltan@bartkozoltan.com
  * @author Andrzej Sawula
  * @author Alex Buloichik (alex73mail@gmail.com)
- * @author Yu Tang
- * @author Aaron Madlon-Kay
  */
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame implements IMainWindow {
@@ -102,7 +96,7 @@ public class MainWindow extends JFrame implements IMainWindow {
     private Font m_font;
 
     /** Set of all open search windows. */
-    private final Set<SearchWindowController> m_searches = new HashSet<SearchWindowController>();
+    private final Set<SearchWindow> m_searches = new HashSet<SearchWindow>();
 
     protected JLabel lengthLabel;
     protected JLabel progressLabel;
@@ -124,11 +118,6 @@ public class MainWindow extends JFrame implements IMainWindow {
             public void windowClosing(WindowEvent e) {
                 menu.mainWindowMenuHandler.projectExitMenuItemActionPerformed();
             }
-            @Override
-            public void windowDeactivated(WindowEvent we) {
-                Core.getEditor().windowDeactivated();
-                super.windowDeactivated(we);
-            }
         });
 
         // load default font from preferences
@@ -141,12 +130,7 @@ public class MainWindow extends JFrame implements IMainWindow {
 
         getContentPane().add(MainWindowUI.initDocking(this), BorderLayout.CENTER);
 
-        // set two icons, 16x16 and 32x32
-        final List<Image> icons = new ArrayList<Image>();
-        final String RESOURCES = "/org/omegat/gui/resources/";
-        icons.add(ResourcesUtil.getIcon(RESOURCES + "OmegaT_small.gif").getImage());
-        icons.add(ResourcesUtil.getIcon(RESOURCES + "OmegaT.gif").getImage());
-        setIconImages(icons);
+        setIconImage(ResourcesUtil.getIcon("/org/omegat/gui/resources/OmegaT_small.gif").getImage());
 
         CoreEvents.registerProjectChangeListener(new IProjectEventListener() {
             public void onProjectChanged(PROJECT_CHANGE_TYPE eventType) {
@@ -245,26 +229,23 @@ public class MainWindow extends JFrame implements IMainWindow {
         if (near != null) {
             String translation = near.translation;
             if (Preferences.isPreference(Preferences.CONVERT_NUMBERS)) {
-                translation = Core.getMatcher().substituteNumbers(Core.getEditor().getCurrentEntry().getSrcText(),
-                        near.source, near.translation);
+                translation =
+                        Core.getMatcher().substituteNumbers(
+                            Core.getEditor().getCurrentEntry().getSrcText(),
+                            Core.getMatcher().getActiveMatch().source,
+                            Core.getMatcher().getActiveMatch().translation);
             }
-            if (near.comesFrom == NearString.MATCH_SOURCE.TM
-                    && ExternalTMX.isInPath(new File(Core.getProject().getProjectProperties().getTMRoot(), "mt"),
-                            new File(near.projs[0]))) {
-                Core.getEditor().replaceEditTextAndMark(translation);
-            } else {
-                Core.getEditor().replaceEditText(translation);
-            }
+            Core.getEditor().replaceEditText(translation);        
         }
     }
 
-    protected void addSearchWindow(SearchWindowController newSearchWindow) {
+    protected void addSearchWindow(SearchWindow newSearchWindow) {
         synchronized (m_searches) {
             m_searches.add(newSearchWindow);
         }
     }
 
-    public void removeSearchWindow(SearchWindowController searchWindow) {
+    public void removeSearchWindow(SearchWindow searchWindow) {
         synchronized (m_searches) {
             m_searches.remove(searchWindow);
         }
@@ -273,7 +254,7 @@ public class MainWindow extends JFrame implements IMainWindow {
     private void closeSearchWindows() {
         synchronized (m_searches) {
             // dispose other windows
-            for (SearchWindowController sw : m_searches) {
+            for (SearchWindow sw : m_searches) {
                 sw.dispose();
             }
             m_searches.clear();

@@ -10,24 +10,22 @@
                2009 Didier Briel
                2011 Alex Buloichik, Martin Fleurke, Didier Briel
                2012 Guido Leenders, Didier Briel
-               2013 Zoltan Bartko, Alex Buloichik, Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.editor;
@@ -42,7 +40,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,29 +49,24 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
-import org.jdesktop.swingworker.SwingWorker;
 import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
 import org.omegat.core.data.EntryKey;
 import org.omegat.core.data.IProject;
 import org.omegat.core.data.IProject.FileInfo;
-import org.omegat.core.data.ProjectTMX;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
 import org.omegat.core.events.IEntryEventListener;
 import org.omegat.core.events.IFontChangedEventListener;
 import org.omegat.core.events.IProjectEventListener;
 import org.omegat.core.statistics.StatisticsInfo;
-import org.omegat.gui.editor.mark.CalcMarkersThread;
-import org.omegat.gui.editor.mark.ComesFromTMMarker;
-import org.omegat.gui.editor.mark.EntryMarks;
 import org.omegat.gui.editor.mark.Mark;
 import org.omegat.gui.help.HelpFrame;
 import org.omegat.gui.main.DockableScrollPane;
 import org.omegat.gui.main.MainWindow;
-import org.omegat.gui.tagvalidation.ITagValidation;
-import org.omegat.util.Language;
 import org.omegat.util.Log;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
@@ -105,7 +97,6 @@ import com.vlsolutions.swing.docking.event.DockableSelectionListener;
  * @author Didier Briel
  * @author Martin Fleurke
  * @author Guido Leenders
- * @Author Aaron Madlon-Kay
  */
 public class EditorController implements IEditor {
 
@@ -200,13 +191,13 @@ public class EditorController implements IEditor {
                     } else {
                         showType = SHOW_TYPE.EMPTY_PROJECT;
                     }
-                    markerController.removeAll();
+                    markerController.reset(0);
                     setInitialOrientation();
                     break;
                 case CLOSE:
                     history.clear();
                     removeFilter();
-                    markerController.removeAll();
+                    markerController.reset(0);
                     showType = SHOW_TYPE.INTRO;
                     deactivateWithoutCommit();
                     break;
@@ -297,8 +288,6 @@ public class EditorController implements IEditor {
         }
 
         pane.setName(title);
-        pane.setToolTipText(title);
-
         if (pane.getViewport().getView() != data) {
             pane.setViewportView(data);
         }
@@ -456,26 +445,13 @@ public class EditorController implements IEditor {
             file = Core.getProject().getProjectFiles().get(0);
         }
 
-        // remove old segments
-        if (m_docSegList != null) {
-            markerController.removeAll();
-        }
-
-        // check if RTL support required for document
-        boolean hasRTL = sourceLangIsRTL || targetLangIsRTL || EditorUtils.localeIsRTL()
-                || currentOrientation != Document3.ORIENTATION.ALL_LTR;
-        Map<Language, ProjectTMX> otherLanguageTMs = Core.getProject().getOtherTargetLanguageTMs();
-        for (Map.Entry<Language, ProjectTMX> entry : otherLanguageTMs.entrySet()) {
-            hasRTL = hasRTL || EditorUtils.isRTL(entry.getKey().getLanguageCode().toLowerCase());
-        }
-
         Document3 doc = new Document3(this);
 
         ArrayList<SegmentBuilder> temp_docSegList2 = new ArrayList<SegmentBuilder>(file.entries.size());
         for (int i = 0; i < file.entries.size(); i++) {
             SourceTextEntry ste = file.entries.get(i);
             if (isInFilter(new Integer(ste.entryNum()))) {
-                SegmentBuilder sb = new SegmentBuilder(this, doc, settings, ste, ste.entryNum(), hasRTL);
+                SegmentBuilder sb = new SegmentBuilder(this, doc, settings, ste, ste.entryNum());
                 temp_docSegList2.add(sb);
 
                 sb.createSegmentElement(false);
@@ -493,7 +469,6 @@ public class EditorController implements IEditor {
         editor.setDocument(doc);
 
         doc.addUndoableEditListener(editor.undoManager);
-        editor.undoManager.reset();
 
         doc.addDocumentListener(new DocumentListener() {
             //we cannot edit the document here, only other stuff.
@@ -513,6 +488,9 @@ public class EditorController implements IEditor {
             }
         });
 
+        markerController.reset(m_docSegList.length);
+
+        // call all markers
         markerController.process(m_docSegList);
 
         editor.repaint();
@@ -548,14 +526,16 @@ public class EditorController implements IEditor {
             return;
 
         // forget about old marks
+        markerController.resetEntryMarks(displayedEntryIndex);
+
         m_docSegList[displayedEntryIndex].createSegmentElement(true);
         
         Core.getNotes().setNoteText(Core.getProject().getTranslationInfo(ste).note);
 
         // then add new marks
-        markerController.reprocessImmediately(m_docSegList[displayedEntryIndex]);
+        markerController.process(displayedEntryIndex, m_docSegList[displayedEntryIndex]);
 
-        editor.undoManager.reset();
+        editor.cancelUndo();
 
         history.insertNew(m_docSegList[displayedEntryIndex].segmentNumberInProject);
         
@@ -593,7 +573,6 @@ public class EditorController implements IEditor {
             CoreEvents.fireEntryNewFile(Core.getProject().getProjectFiles().get(displayedFileIndex).filePath);
         }
 
-        editor.autoCompleter.hidePopup();
         editor.repaint();
 
         // fire event about new segment activated
@@ -626,18 +605,9 @@ public class EditorController implements IEditor {
      */
     void onTextChanged() {
         Document3 doc = editor.getOmDocument();
-        if (doc.trustedChangesInProgress || doc.textBeingComposed) {
-            return;
-        }
         if (doc.isEditMode()) {
             m_docSegList[displayedEntryIndex].onActiveEntryChanged();
-
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    markerController.reprocessImmediately(m_docSegList[displayedEntryIndex]);
-                    editor.autoCompleter.updatePopup();
-                }
-            });
+            markerController.process(displayedEntryIndex, m_docSegList[displayedEntryIndex]);
         }
     }
 
@@ -718,14 +688,7 @@ public class EditorController implements IEditor {
         Core.getMainWindow().showProgressMessage(pMsg);
     }
 
-    /**
-     * Go to segment at specified location.
-     * 
-     * @param location
-     *            location
-     * @return true if segment changed, false if location inside current segment
-     */
-    protected boolean goToSegmentAtLocation(int location) {
+    protected void goToSegmentAtLocation(int location) {
         // clicked segment
 
         int segmentAtLocation = getSegmentIndexAtLocation(location);
@@ -733,9 +696,6 @@ public class EditorController implements IEditor {
             doChangeSegmentActions();
             displayedEntryIndex = segmentAtLocation;
             activateEntry();
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -776,14 +736,16 @@ public class EditorController implements IEditor {
             return;
         }
 
+        // forget about old marks
+        markerController.resetEntryMarks(displayedEntryIndex);
+
         String newTrans = doc.extractTranslation();
         doc.stopEditMode();
 
-        SourceTextEntry entry = null;
         if (newTrans != null) {
             // segment was active
             SegmentBuilder sb = m_docSegList[displayedEntryIndex];
-            entry = sb.ste;
+            SourceTextEntry entry = sb.ste;
             
             TMXEntry oldTE = Core.getProject().getTranslationInfo(entry);
             
@@ -826,23 +788,9 @@ public class EditorController implements IEditor {
         Core.getNotes().clear();
 
         // then add new marks
-        markerController.reprocessImmediately(m_docSegList[displayedEntryIndex]);
+        markerController.process(displayedEntryIndex, m_docSegList[displayedEntryIndex]);
 
-        editor.undoManager.reset();
-
-        // validate tags if required
-        if (entry != null && Preferences.isPreference(Preferences.TAG_VALIDATE_ON_LEAVE)) {
-            final SourceTextEntry ste = entry;
-            new SwingWorker<Object, Void>() {
-                protected Object doInBackground() throws Exception {
-                    ITagValidation tv = Core.getTagValidation();
-                    if (!tv.checkInvalidTags(ste)) {
-                        tv.displayTagValidationErrors(tv.listInvalidTags(), null);
-                    }
-                    return null;
-                }
-            }.execute();
-        }
+        editor.cancelUndo();
     }
 
     /**
@@ -960,10 +908,9 @@ public class EditorController implements IEditor {
     }
 
     /**
-     * Find the next (un)translated entry.
-     * @param findTranslated should the next entry be translated or not.
+     * Finds the next untranslated entry in the document.
      */
-    private void nextTranslatedEntry(boolean findTranslated) {
+    public void nextUntranslatedEntry() {
         UIThreadsUtil.mustBeSwingThread();
 
         // check if a document is loaded
@@ -1000,15 +947,8 @@ public class EditorController implements IEditor {
             if (displayedFileIndex == startFileIndex && displayedEntryIndex == startEntryIndex) {
                 break; // not found
             }
-            
-            if (!findTranslated) {
-                if (!Core.getProject().getTranslationInfo(ste).isTranslated()) {
-                    break;// non-translated
-                }
-            } else {
-                if (Core.getProject().getTranslationInfo(ste).isTranslated()) {
-                    break;// translated
-                }
+            if (!Core.getProject().getTranslationInfo(ste).isTranslated()) {
+                break;// non-translated
             }
             if (Preferences.isPreference(Preferences.STOP_ON_ALTERNATIVE_TRANSLATION)) {
                 // when there is at least one alternative translation, then we can consider that segment is
@@ -1025,20 +965,6 @@ public class EditorController implements IEditor {
         activateEntry();
 
         this.editor.setCursor(oldCursor);
-    }
-    
-    /**
-     * Finds the next untranslated entry in the document.
-     */
-    public void nextUntranslatedEntry() {
-        nextTranslatedEntry(false);
-    }
-
-    /**
-     * Finds the next translated entry in the document.
-     */
-    public void nextTranslatedEntry() {
-        nextTranslatedEntry(true);
     }
 
     /**
@@ -1228,31 +1154,6 @@ public class EditorController implements IEditor {
         this.editor.setCursor(oldCursor);
     }
 
-    public void gotoEntryAfterFix(final int entryNum, final String fixedSource) {
-        UIThreadsUtil.mustBeSwingThread();
-
-        // Don't commit the current translation text if we fixed this entry
-        // or one of its duplicates (the fixed version will be clobbered).
-        if (entryNum == getCurrentEntryNumber() || getCurrentEntry().getSrcText().equals(fixedSource)) {
-            deactivateWithoutCommit();
-        }
-        gotoFile(displayedFileIndex);
-        gotoEntry(entryNum);
-    }
-
-    public void refreshViewAfterFix(List<Integer> fixedEntries) {
-        UIThreadsUtil.mustBeSwingThread();
-
-        // Don't commit the current translation text if we fixed this entry
-        // or one of its duplicates (the fixed version will be clobbered).
-        if (fixedEntries != null && fixedEntries.contains(getCurrentEntryNumber())) {
-            deactivateWithoutCommit();
-        }
-        int currentEntry = getCurrentEntryNumber();
-        gotoFile(displayedFileIndex);
-        gotoEntry(currentEntry);
-    }
-
     /**
      * Change case of the selected text or if none is selected, of the current word.
      * 
@@ -1399,7 +1300,6 @@ public class EditorController implements IEditor {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void replaceEditText(final String text) {
         UIThreadsUtil.mustBeSwingThread();
 
@@ -1407,32 +1307,9 @@ public class EditorController implements IEditor {
         int start = editor.getOmDocument().getTranslationStart();
         int end = editor.getOmDocument().getTranslationEnd();
 
-        CalcMarkersThread thread = markerController.markerThreads[markerController
-                .getMarkerIndex(ComesFromTMMarker.class.getName())];
-        ((ComesFromTMMarker) thread.marker).setMark(null, null);
-
         // remove text
         editor.select(start, end);
         editor.replaceSelection(text);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void replaceEditTextAndMark(String text) {
-        replaceEditText(text);
-
-        // mark as comes from TM
-        SegmentBuilder sb = m_docSegList[displayedEntryIndex];
-        CalcMarkersThread thread = markerController.markerThreads[markerController
-                .getMarkerIndex(ComesFromTMMarker.class.getName())];
-        ((ComesFromTMMarker) thread.marker).setMark(sb.getSourceTextEntry(), text);
-        markerController.reprocessImmediately(sb);
-    }
-
-    public String getCurrentTranslation() {
-        return editor.getOmDocument().extractTranslation();
     }
 
     /**
@@ -1483,7 +1360,13 @@ public class EditorController implements IEditor {
     public void undo() {
         UIThreadsUtil.mustBeSwingThread();
 
-        editor.undoManager.undo();
+        try {
+            if (editor.undoManager.canUndo()) {
+                editor.undoManager.undo();
+            }
+        } catch (CannotUndoException cue) {
+            Log.log(cue);
+        }
     }
 
     /**
@@ -1492,7 +1375,13 @@ public class EditorController implements IEditor {
     public void redo() {
         UIThreadsUtil.mustBeSwingThread();
 
-        editor.undoManager.redo();
+        try {
+            if (editor.undoManager.canRedo()) {
+                editor.undoManager.redo();
+            }
+        } catch (CannotRedoException cue) {
+            Log.log(cue);
+        }
     }
 
     /**
@@ -1557,7 +1446,7 @@ public class EditorController implements IEditor {
      */
     public void remarkOneMarker(final String markerClassName) {
         int mi = markerController.getMarkerIndex(markerClassName);
-        markerController.reprocess(m_docSegList, mi);
+        markerController.process(m_docSegList, mi);
     }
 
     /**
@@ -1579,10 +1468,7 @@ public class EditorController implements IEditor {
         }
 
         int mi = markerController.getMarkerIndex(markerClassName);
-        EntryMarks ev = new EntryMarks(m_docSegList[displayedEntryIndex],
-                m_docSegList[displayedEntryIndex].getDisplayVersion(), mi);
-        ev.result = marks;
-        markerController.queueMarksOutput(ev);
+        markerController.setEntryMarks(displayedEntryIndex, m_docSegList[displayedEntryIndex], marks, mi);
     }
 
     public void registerPopupMenuConstructors(int priority, IPopupMenuConstructor constructor) {
@@ -1706,12 +1592,6 @@ public class EditorController implements IEditor {
         // Reset the empty translation status
         setEmptyTranslation(false);
     }
-
-    @Override
-    public void windowDeactivated() {
-        editor.autoCompleter.hidePopup();
-    }
-
     /**
      * Class for checking if alternative translation exist.
      */

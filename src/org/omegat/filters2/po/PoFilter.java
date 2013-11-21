@@ -11,20 +11,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters2.po;
@@ -36,12 +35,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.filters2.AbstractFilter;
 import org.omegat.filters2.FilterContext;
 import org.omegat.filters2.Instance;
@@ -49,7 +46,6 @@ import org.omegat.filters2.TranslationException;
 import org.omegat.util.Language;
 import org.omegat.util.OStrings;
 import org.omegat.util.Log;
-import org.omegat.util.PatternConsts;
 import org.omegat.util.StaticUtils;
 
 /**
@@ -71,7 +67,6 @@ public class PoFilter extends AbstractFilter {
     public static final String OPTION_ALLOW_BLANK = "disallowBlank";
     public static final String OPTION_SKIP_HEADER = "skipHeader";
     public static final String OPTION_AUTO_FILL_IN_PLURAL_STATEMENT = "autoFillInPluralStatement";
-    public static final String OPTION_FORMAT_MONOLINGUAL = "monolingualFormat";
 
     private static class PluralInfo {
         public int plurals;
@@ -236,11 +231,6 @@ public class PoFilter extends AbstractFilter {
      */
     public static boolean skipHeader = false;
     /**
-     * If true, wrong but widely used format support, where msgid contains ID, msgstr contains original text.
-     */
-    public static boolean formatMonolingual = false;
-
-    /**
      * If true, the "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;" section
      * in the header will be updated with the correct INTEGER and EXPRESSION
      * based on the chosen targetLanguage
@@ -313,12 +303,6 @@ public class PoFilter extends AbstractFilter {
         } else {
             autoFillInPluralStatement = false;
         }
-        String formatMonolingualStr = processOptions.get(OPTION_FORMAT_MONOLINGUAL);
-        if ("true".equalsIgnoreCase(formatMonolingualStr)) {
-            formatMonolingual = true;
-        } else {
-            formatMonolingual = false;
-        }
 
         inEncodingLastParsedFile = fc.getInEncoding();
         BufferedReader reader = createReader(inFile, inEncodingLastParsedFile);
@@ -383,7 +367,7 @@ public class PoFilter extends AbstractFilter {
         translatorComments = new StringBuilder();
         extractedComments = new StringBuilder();
         references = new StringBuilder();
-        path = "";
+        path = null;
 
         String s;
         while ((s = in.readLine()) != null) {
@@ -575,17 +559,7 @@ public class PoFilter extends AbstractFilter {
             translation = null;
         }
         if (entryParseCallback != null) {
-            if (formatMonolingual) {
-                List<ProtectedPart> protectedParts = StaticUtils.applyCustomProtectedParts(translation,
-                        PatternConsts.PRINTF_VARS, null);
-                entryParseCallback.addEntry(source, translation, null, fuzzy, comments, path, this,
-                        protectedParts);
-            } else {
-                List<ProtectedPart> protectedParts = StaticUtils.applyCustomProtectedParts(source,
-                        PatternConsts.PRINTF_VARS, null);
-                entryParseCallback.addEntry(id, source, translation, fuzzy, comments, path, this,
-                        protectedParts);
-            }
+            entryParseCallback.addEntry(id, source, translation, fuzzy, comments, path, this);
         } else if (entryAlignCallback != null) {
             entryAlignCallback.addTranslation(id, source, translation, fuzzy, null, this);
         }
@@ -593,15 +567,13 @@ public class PoFilter extends AbstractFilter {
 
     protected void alignHeader(String header, FilterContext fc) {
         if (entryParseCallback != null && !PoFilter.skipHeader) {
-            header = unescape(autoFillInPluralStatement(header, fc));
-            List<ProtectedPart> protectedParts = StaticUtils.applyCustomProtectedParts(header,
-                    PatternConsts.PRINTF_VARS, null);
-            entryParseCallback.addEntry(null, header, null, false, null, path, this, protectedParts);
+            header = autoFillInPluralStatement(header, fc);
+            entryParseCallback.addEntry(null, unescape(header), null, false, null, path, this);
         }
     }
 
     protected void flushTranslation(MODE currentMode, FilterContext fc) throws IOException {
-        if (sources[0].length() == 0 && path.isEmpty()) {
+        if (sources[0].length() == 0) {
             if (targets[0].length() == 0) {
                 // there is no text to translate yet
                 return;
@@ -670,7 +642,7 @@ public class PoFilter extends AbstractFilter {
         for (int i=0;i<plurals;i++) {
             targets[i].setLength(0);
         }
-        path = "";
+        path = null;
         translatorComments.setLength(0);
         extractedComments.setLength(0);
         references.setLength(0);

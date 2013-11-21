@@ -9,20 +9,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
@@ -37,15 +36,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import org.omegat.gui.help.HelpFrame;
 
 /**
  * Files processing utilities.
@@ -143,33 +139,6 @@ public class FileUtil {
     }
 
     /**
-     * Read file as UTF-8 text.
-     */
-    public static String readTextFile(File file) throws IOException {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(file), OConsts.UTF8));
-
-        try {
-            StringWriter out = new StringWriter();
-            LFileCopy.copy(rd, out);
-            return out.toString();
-        } finally {
-            rd.close();
-        }
-    }
-
-    /**
-     * Write text in file using UTF-8.
-     */
-    public static void writeTextFile(File file, String text) throws IOException {
-        Writer wr = new OutputStreamWriter(new FileOutputStream(file), OConsts.UTF8);
-        try {
-            wr.write(text);
-        } finally {
-            wr.close();
-        }
-    }
-
-    /**
      * Find files in subdirectories.
      * 
      * @param dir
@@ -237,32 +206,4 @@ public class FileUtil {
         }
         return fileAbs.substring(rootAbs.length());
     }
-    
-    /**
-     * Load a text file from the root of help.
-     * @param The name of the text file
-     * @return The content of the text file
-     */
-    public static String loadTextFileFromDoc(String textFile) {
-
-        // Get the license
-        URL url = HelpFrame.getHelpFileURL(null, textFile);
-        if (url == null) {
-            return HelpFrame.errorHaiku();
-        }
-
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(url.openStream(), OConsts.UTF8));
-            try {
-                StringWriter out = new StringWriter();
-                LFileCopy.copy(rd, out);
-                return out.toString();
-            } finally {
-                rd.close();
-            }
-        } catch (IOException ex) {
-            return HelpFrame.errorHaiku();
-        }
-
-    }        
 }

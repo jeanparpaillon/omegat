@@ -11,15 +11,15 @@
     <section>
       <title id="which.package.to.download.windows">Téléchargement du paquet</title>
 
-      <para>Avez-vous une implémentation Java compatible avec l'environnement d'exécution Java (JRE) 1.6 distribué par Oracle ?</para>
+      <para>Avez-vous une implémentation Java compatible avec l'environnement d'exécution Java (JRE) 1.5 distribué par Oracle ?</para>
 
       <itemizedlist>
         <listitem>
-          <para><emphasis role="bold">Oui : </emphasis>téléchargez<emphasis>OmegaT_3.n.n_Windows_without_JRE.exe</emphasis> (Windows sans JRE).</para>
+          <para><emphasis role="bold">Oui : </emphasis>téléchargez<emphasis>OmegaT_2.n.n_Windows_without_JRE.exe</emphasis> (Windows sans JRE).</para>
         </listitem>
 
         <listitem>
-          <para><emphasis role="bold">Non /Je ne sais pas :</emphasis>téléchargez<emphasis> OmegaT_3.n.n_Windows.exe.</emphasis> (Windows avec JRE)</para>
+          <para><emphasis role="bold">Non/Je ne sais pas :</emphasis> téléchargez<emphasis> OmegaT_2.n.n_Windows.exe.</emphasis> (Windows avec JRE).</para>
 
           <para>Ce paquet contient l'environnement d'exécution Java distribué par Oracle. Ce JRE n'interférera pas avec les autres implémentations Java qui pourraient être déjà installées sur votre système.</para>
         </listitem>
@@ -93,15 +93,15 @@
     <section id="which.package.to.download.Linux">
       <title>Téléchargement du paquet</title>
 
-      <para>Avez-vous une implémentation Java compatible avec l'environnement d'exécution Java (JRE) 1.6 distribué par Oracle ?</para>
+      <para>Avez-vous une implémentation Java compatible avec l'environnement d'exécution Java (JRE) 1.5 distribué par Oracle ?</para>
 
       <itemizedlist>
         <listitem>
-          <para><emphasis role="bold">Oui : </emphasis>téléchargez<emphasis>OmegaT_3.n.n_Windows_without_JRE.zip</emphasis> (Windows sans JRE).</para>
+          <para><emphasis role="bold">Oui : </emphasis>téléchargez<emphasis>OmegaT_2.n.n_Windows_without_JRE.zip</emphasis> (Windows sans JRE).</para>
         </listitem>
 
         <listitem>
-          <para><emphasis role="bold">Non /Je ne sais pas :</emphasis> téléchargez <emphasis>OmegaT_3.n.n_Linux.tar.bz2.</emphasis> (Linux avec JRE)</para>
+          <para><emphasis role="bold">Non/Je ne sais pas :</emphasis> téléchargez <emphasis>OmegaT_2.n.n_Linux.tar.bz2.</emphasis> (Linux avec JRE)</para>
 
           <para>Ce paquet contient l'environnement d'exécution Java distribué par Oracle. Ce JRE n'interférera pas avec les autres implémentations Java qui pourraient être déjà installées sur votre système.</para>
         </listitem>
@@ -191,15 +191,15 @@
     <section id="which.package.to.download.OSX">
       <title>Téléchargement du paquet</title>
 
-      <para>Java 1.6 est nécessaire à l'exécution d'<application>OmegaT</application>. Cliquez sur « Mise à jour des logiciels... » dans le menu Pomme pour mettre à jour votre version de Java.</para>
+      <para>Java 1.5 est nécessaire à l'exécution d'<application>OmegaT</application>. Cliquez sur « Mise à jour des logiciels... » dans le menu Pomme pour mettre à jour votre version de Java.</para>
 
-      <para>Téléchargez<emphasis>OmegaT_3.n.n_Mac.zip.</emphasis></para>
+      <para>Téléchargez <emphasis>OmegaT_2.n.n_Mac.zip.</emphasis></para>
     </section>
 
     <section id="OmegaT.installation.OSX">
       <title><application>Installation d'OmegaT</application></title>
 
-      <para>Double-cliquez sur<emphasis>OmegaT_3.n.n_Mac.zip</emphasis> pour le décompresser. Ceci crée un dossier nommé<emphasis> <application>OmegaT</application> </emphasis>. Ce dossier contient deux fichiers : index.html et <emphasis><application>OmegaT</application>.app.</emphasis> Copiez le dossier dans un dossier approprié (par exemple, Applications). Une fois que vous avez fait cela, vous pouvez supprimer le fichier<emphasis>OmegaT_3.n.n_Mac.zip</emphasis>, il n'est plus utile.</para>
+      <para>Double-cliquez sur <emphasis>OmegaT_2.n.n_Mac.zip</emphasis> pour le décompresser. Ceci crée un dossier nommé<emphasis> <application>OmegaT</application> </emphasis>. Ce dossier contient deux fichiers : index.html et <emphasis><application>OmegaT</application>.app.</emphasis> Copiez le dossier dans un dossier approprié (par exemple, Applications). Ceci fait, vous pouvez supprimer le fichier<emphasis>OmegaT_2.n.n_Mac.zip</emphasis>, il n'est plus utile.</para>
     </section>
 
     <section id="adding.OmegaT.to.the.dock">
@@ -247,11 +247,11 @@
 
       <para><application>OmegaT</application> est fourni avec l'environnement d'exécution Java JRE distribué par Oracle pour Linux (Intel x86) et les plateformes Windows. Les utilisateurs d'autres plateformes (Linux PowerPC, Linux x64, Solaris SPARC/x86/x64, Windows x64 etc) doivent avoir un environnement d'exécution Java JRE compatible opérant sur leur système pour pouvoir utiliser <application>OmegaT</application>.</para>
 
-      <para>Avez-vous une implémentation Java compatible avec l'environnement d'exécution Java (JRE) 1.6 distribué par Oracle ?</para>
+      <para>Avez-vous une implémentation Java compatible avec l'environnement d'exécution Java (JRE) 1.5 distribué par Oracle ?</para>
 
       <itemizedlist>
         <listitem>
-          <para><emphasis role="bold">Oui : </emphasis>téléchargez <emphasis>OmegaT_3.n.n_Windows_without_JRE.</emphasis>zip (Windows sans JRE). Ce paquet peut être utilisé par toutes les plateformes sur lesquelles un environnement d'exécution Java 1.6 compatible Oracle est installé.</para>
+          <para><emphasis role="bold">Oui : </emphasis>téléchargez <emphasis>OmegaT_2.n.n_Windows_without_JRE.</emphasis>zip (Windows sans JRE). Ce paquet peut être utilisé par toutes les plates-formes sur lesquelles un environnement d'exécution Java 1.5 compatible JRE est installé.</para>
         </listitem>
 
         <listitem>
@@ -259,9 +259,9 @@
         </listitem>
 
         <listitem>
-          <para><emphasis role="bold">Non :</emphasis> obtenez un environnement d'exécution Java pour votre système (voir ci-dessous) et téléchargez <emphasis>OmegaT_3.n.n_Without_JRE.zip</emphasis> (Cross-platform sans JRE).</para>
+          <para><emphasis role="bold">Non :</emphasis> obtenez un environnement d'exécution Java pour votre système (voir ci-dessous) et téléchargez <emphasis>OmegaT_2.n.n_Without_JRE.zip</emphasis> (multiplateforme sans JRE).</para>
 
-          <para>Oracle fournit des environnements d'exécution Java JRE pour Solaris SPARC/x86 (Java 1.6) et pour Linux x64, Solaris x64, Windows x64 (Java 1.6) à l'adresse <ulink url="http://www.oracle.com/technetwork/java/archive-139210.html">http://www.oracle.com/technetwork/java/archive-139210.html</ulink></para>
+          <para>Oracle fournit des environnements d'exécution Java JRE pour Solaris SPARC/x86 (Java 1.5) et pour Linux x64, Solaris x64, Windows x64 (Java 1.5) à l'adresse <ulink url="http://www.oracle.com/technetwork/java/archive-139210.html">http://www.oracle.com/technetwork/java/archive-139210.html</ulink>.</para>
 
           <para>IBM fournit des environnements d'exécution Java JRE pour Linux PowerPC à l'adresse <ulink url="http://www.ibm.com/developerworks/java/jdk/linux/download.html">http://www.ibm.com/developerworks/java/jdk/linux/download.htm</ulink>.</para>
 
@@ -275,7 +275,7 @@
           <primary>Installation d'OmegaT</primary> <secondary>Autres systèmes</secondary>
         </indexterm></title>
 
-      <para>Pour installer <application>OmegaT</application>, il suffit de décompresser le fichier <emphasis role="bold">OmegaT_3.n.n_Without_JRE.zip</emphasis>. Ceci crée un dossier <emphasis>./OmegaT_3.n.n_Without_JRE/</emphasis> dans le dossier de travail en cours avec tous les fichiers nécessaires à l'exécution d'<application>OmegaT</application>.</para>
+      <para>Pour installer <application>OmegaT</application>, il suffit de décompresser le fichier <emphasis role="bold">OmegaT_2.n.n_Without_JRE.zip</emphasis>. Ceci crée un dossier <emphasis>./OmegaT_2.n.n_Without_JRE/</emphasis> dans le dossier de travail en cours avec tous les fichiers nécessaires à l'exécution d'<application>OmegaT</application>.</para>
     </section>
 
     <section id="installing.convenient.shortcuts">
@@ -298,7 +298,7 @@
         <primary>Exécution d'OmegaT</primary> <secondary>Utilisation de Java Web Start</secondary>
       </indexterm></title>
 
-    <para>La technologie Java Web Start (proposée dans Java 1.6 et les versions ultérieures) peut être utilisée pour déployer des applications logicielles Java autonomes grâce à un simple clic sur le réseau. Java Web Start s'assure que la dernière version de l'application est déployée et que la version correcte de l'environnement d'exécution Java JRE est utilisée. Pour lancer OmegaT pour la première fois avec Java Web Start, saisissez l'URL suivant dans votre navigateur :</para>
+    <para>La technologie de Java Web Start (une partie de Java 1.5 et les versions ultérieures) peut être utilisée pour déployer des applications logicielles Java autonomes grâce à un simple clic sur le réseau. Java Web Start s'assure que la dernière version de l'application est déployée et que la version correcte de l'environnement d'exécution Java JRE est utilisée. Pour lancer OmegaT pour la première fois avec Java Web Start, saisissez l'URL suivant dans votre navigateur :</para>
 
     <para><emphasis>http://omegat.sourceforge.net/webstart/<application>OmegaT</application>.jnlp</emphasis></para>
 
@@ -391,7 +391,7 @@
 
       <itemizedlist>
         <listitem>
-          <para><emphasis role="bold">Lissage des polices</emphasis> - (seulement avec Java 1.6)</para>
+          <para><emphasis role="bold">Lissage des polices</emphasis> - (seulement avec Java 1.5)</para>
 
           <para><emphasis role="bold">-Dswing.aatext=true<indexterm class="singular">
               <primary>Exécution d'OmegaT</primary> <secondary>Arguments de scripts de lancement</secondary> <tertiary>Lissage des polices</tertiary>
@@ -639,7 +639,7 @@
         <primary>Exécution d'OmegaT</primary> <secondary>Construction d'OmegaT à partir de la source</secondary>
       </indexterm></title>
 
-    <para>Notez qu'Apache Ant (<emphasis>http://ant.apache.org/bindownload.cgi</emphasis>) est nécessaire pour créer votre propre version d'OmegaT. Décompressez le fichier <emphasis>OmegaT_3.n.n_Source.zip</emphasis> et entrez dans le dossier OmegaT_3.n.n_Source ou dans le dossier <emphasis>./omegat/</emphasis> du code extrait depuis SVN. Assurez-vous que le fichier build.xml est bien présent dans ce dossier. Ensuite, sur la ligne de commande, saisissez :</para>
+    <para>Notez qu'Apache Ant (<emphasis>http://ant.apache.org/bindownload.cgi</emphasis>) est nécessaire pour créer votre propre version d'OmegaT. Décompressez le fichier <emphasis>OmegaT_2.n.n_Source.zip</emphasis> et accédez au dossier OmegaT_2.n.n_Source ou au dossier <emphasis>./omegat/</emphasis> du code extrait depuis SVN. Assurez-vous que le fichier build.xml est bien présent dans ce dossier. Ensuite, sur la ligne de commande, saisissez :</para>
 
     <para><literal>$ ant jar release</literal></para>
 

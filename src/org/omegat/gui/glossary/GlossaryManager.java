@@ -5,24 +5,22 @@
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2009-2010 Alex Buloichik
-               2013 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.glossary;
@@ -57,7 +55,6 @@ public class GlossaryManager implements DirectoryMonitor.Callback {
     private final GlossaryTextArea pane;
     private final Map<String, List<GlossaryEntry>> glossaries = new TreeMap<String, List<GlossaryEntry>>();
 
-    protected File priorityGlossary;
     protected final IGlossary[] externalGlossaries;
 
     public GlossaryManager(final GlossaryTextArea pane) {
@@ -76,7 +73,6 @@ public class GlossaryManager implements DirectoryMonitor.Callback {
 
     public void start() {
         File dir = new File(Core.getProject().getProjectProperties().getGlossaryRoot());
-        priorityGlossary = new File(Core.getProject().getProjectProperties().getWriteableGlossary());
         monitor = new DirectoryMonitor(dir, this);
         monitor.start();
     }
@@ -88,7 +84,6 @@ public class GlossaryManager implements DirectoryMonitor.Callback {
         }
     }
 
-    @Override
     public void fileChanged(File file) {
         synchronized (this) {
             glossaries.remove(file.getName());
@@ -113,20 +108,19 @@ public class GlossaryManager implements DirectoryMonitor.Callback {
      * Loads one glossary file. It choose and calls required required reader.
      */
     private List<GlossaryEntry> loadGlossaryFile(final File file) throws Exception {
-        boolean isPriority = priorityGlossary.equals(file);
         String fname_lower = file.getName().toLowerCase();
         if (fname_lower.endsWith(OConsts.EXT_TSV_DEF)) {
             Log.logRB("CT_LOADING_GLOSSARY", new Object[] { file.getName() });
-            return GlossaryReaderTSV.read(file, isPriority);
+            return GlossaryReaderTSV.read(file);
         } else if (fname_lower.endsWith(OConsts.EXT_TSV_UTF8) || fname_lower.endsWith(OConsts.EXT_TSV_TXT)) {
             Log.logRB("CT_LOADING_GLOSSARY", new Object[] { file.getName() });
-            return GlossaryReaderTSV.read(file, isPriority);
+            return GlossaryReaderTSV.read(file);
         } else if (fname_lower.endsWith(OConsts.EXT_CSV_UTF8)) {
             Log.logRB("CT_LOADING_GLOSSARY", new Object[] { file.getName() });
-            return GlossaryReaderCSV.read(file, isPriority);
+            return GlossaryReaderCSV.read(file);
         } else if (fname_lower.endsWith(OConsts.EXT_TBX)) {
             Log.logRB("CT_LOADING_GLOSSARY", new Object[] { file.getName() });
-            return GlossaryReaderTBX.read(file, isPriority);
+            return GlossaryReaderTBX.read(file);
         } else {
             return null;
         }

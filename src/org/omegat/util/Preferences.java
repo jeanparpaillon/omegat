@@ -10,24 +10,23 @@
                2011 John Moran, Didier Briel
                2012 Martin Fleurke, Wildrich Fourie, Didier Briel, Thomas Cordonnier,
                     Aaron Madlon-Kay
-               2013 Aaron Madlon-Kay, Zoltan Bartko
+               2013 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
@@ -101,11 +100,8 @@ public class Preferences {
     public static final String SEARCHWINDOW_CASE_SENSITIVE = "search_window_case_sensitive";
     public static final String SEARCHWINDOW_SEARCH_SOURCE = "search_window_search_source";
     public static final String SEARCHWINDOW_SEARCH_TARGET = "search_window_search_target";
-    public static final String SEARCHWINDOW_SEARCH_TRANSLATED = "search_window_search_translated";
     public static final String SEARCHWINDOW_SEARCH_NOTES = "search_window_search_notes";
     public static final String SEARCHWINDOW_REG_EXPRESSIONS = "search_window_reg_expressions";
-    public static final String SEARCHWINDOW_GLOSSARY_SEARCH = "search_window_glossary_search";
-    public static final String SEARCHWINDOW_MEMORY_SEARCH = "search_window_memory_search";
     public static final String SEARCHWINDOW_TM_SEARCH = "search_window_tm_search";
     public static final String SEARCHWINDOW_ALL_RESULTS = "search_window_all_results";
     public static final String SEARCHWINDOW_ADVANCED_VISIBLE = "search_window_advanced_visible";
@@ -145,10 +141,7 @@ public class Preferences {
     public static final String ALLOW_APERTIUM_TRANSLATE = "allow_apertium_translate";
 
     public static final String ALLOW_MICROSOFT_TRANSLATE = "allow_microsoft_translate";
-    
-    public static final String ALLOW_MYMEMORY_HUMAN_TRANSLATE = "allow_mymemory_human_translate";
-    public static final String ALLOW_MYMEMORY_MACHINE_TRANSLATE = "allow_mymemory_machine_translate";
-    
+
     /** Enable TransTips */
     public static final String TRANSTIPS = "transtips";
     /** TransTips Option: Only match exact words */
@@ -205,12 +198,6 @@ public class Preferences {
     public static final String CHECK_CUSTOM_PATTERN = "tagValidation_customPattern";
     /** Tag Validation Option: check target for text that should have been removed according to regexp.*/
     public static final String CHECK_REMOVE_PATTERN = "tagValidation_removePattern";
-
-    /** Tag Validation Option: allow tag editing in editor. */
-    public static final String ALLOW_TAG_EDITING = "allowTagEditing";
-
-    /** Tag Validation Option: allow tag editing in editor. */
-    public static final String TAG_VALIDATE_ON_LEAVE = "tagValidateOnLeave";
 
     /** Team option: author ID */
     public static final String TEAM_AUTHOR = "team_Author";
@@ -301,36 +288,6 @@ public class Preferences {
 
     public static final String LOOSE_TAG_ORDERING = "loose_tag_ordering";
 
-    public static final String TAGS_VALID_REQUIRED = "tags_valid_required";
-
-    /**
-     * Prefix for keys used to record default tokenizer behavior settings.
-     * Prepend to the full name of the tokenizer, e.g.
-     * 
-     * <code>TOK_BEHAVIOR_PREFIX + tokenizer.class.getName()</code> to obtain
-     * <code>tokenizer_behavior_org.omegat.tokenizer.LuceneXXTokenizer</code>
-     */
-    public static final String TOK_BEHAVIOR_PREFIX = "tokenizer_behavior_";
-
-    /** glossary auto-completion */
-    public static final String AC_GLOSSARY_SHOW_SOURCE = "ac_glossary_show_source";
-    public static final String AC_GLOSSARY_SHOW_TARGET_BEFORE_SOURCE = "ac_glossary_show_target_before_source";
-    public static final String AC_GLOSSARY_SORT_BY_SOURCE = "ac_glossary_sort_by_source";
-    public static final String AC_GLOSSARY_SORT_BY_LENGTH = "ac_glossary_sort_by_length";
-    public static final String AC_GLOSSARY_SORT_ALPHABETICALLY = "ac_glossary_sort_alphabetically";
-    public static final String AC_GLOSSARY_CAPITALIZE = "ac_glossary_capitalize";
-
-    /** autotext auto-completion */
-    public static final String AC_AUTOTEXT_FILE_NAME = "omegat.autotext";
-    public static final String AC_AUTOTEXT_SORT_BY_LENGTH = "ac_autotext_sort_by_length";
-    public static final String AC_AUTOTEXT_SORT_ALPHABETICALLY = "ac_autotext_sort_alphabetically";
-    public static final String AC_AUTOTEXT_SORT_FULL_TEXT = "ac_autotext_sort_full_text";
-
-    /** char table auto-completion */
-    public static final String AC_CHARTABLE_USE_CUSTOM_CHARS = "ac_chartable_use_custom_chars";
-    public static final String AC_CHARTABLE_CUSTOM_CHAR_STRING = "ac_chartable_custom_char_string";
-    public static final String AC_CHARTABLE_UNIQUE_CUSTOM_CHARS = "ac_chartable_unique_custom_chars";
-
     /** Private constructor, because this file is singleton */
     static {
         m_loaded = false;
@@ -402,26 +359,6 @@ public class Preferences {
      */
     public static boolean isPreference(String key) {
         return "true".equals(getPreference(key));
-    }
-
-    /**
-     * Returns the boolean value of some preference out of OmegaT's preferences
-     * file, if it exists.
-     * <p>
-     * If the key is not found, returns the default value provided.
-     * 
-     * @param key
-     *            name of the key to look up, usually OConsts.PREF_...
-     * @param defaultValue
-     *            default value for the key
-     * @return preference value as an boolean
-     */
-    public static boolean isPreferenceDefault(String key, boolean defaultValue) {
-        String val = getPreference(key);
-        if (StringUtil.isEmpty(val)) {
-            return defaultValue;
-        }
-        return "true".equals(val);
     }
 
     /**
@@ -564,13 +501,9 @@ public class Preferences {
             // trying again later
             m_loaded = true;
 
-            File prefsFile = new File(StaticUtils.getConfigDir() + FILE_PREFERENCES);
-            if (!prefsFile.exists()) {
-                prefsFile = new File(StaticUtils.installDir(), FILE_PREFERENCES);
-            }
             XMLStreamReader xml = new XMLStreamReader();
             xml.killEmptyBlocks();
-            xml.setStream(prefsFile);
+            xml.setStream(new File(StaticUtils.getConfigDir() + FILE_PREFERENCES));
             XMLBlock blk;
             List<XMLBlock> lst;
 

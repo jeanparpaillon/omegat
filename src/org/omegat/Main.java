@@ -6,32 +6,28 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2009 Martin Fleurke, Alex Buloichik, Didier Briel
                2012 Aaron Madlon-Kay
-               2013 Kyle Katarn, Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat;
 
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,9 +48,9 @@ import org.omegat.core.data.ProjectProperties;
 import org.omegat.core.data.RealProject;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
-import org.omegat.core.tagvalidation.ErrorReport;
 import org.omegat.filters2.master.PluginUtils;
 import org.omegat.gui.main.ProjectUICommands;
+import org.omegat.gui.tagvalidation.ITagValidation;
 import org.omegat.util.Log;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
@@ -66,7 +62,7 @@ import org.omegat.util.TMXWriter;
 
 import com.vlsolutions.swing.docking.DockingDesktop;
 
-/**	
+/**
  * The main OmegaT class, used to launch the program.
  * 
  * @author Keith Godfrey
@@ -74,7 +70,6 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * @author Alex Buloichik
  * @author Didier Briel
  * @author Aaron Madlon-Kay
- * @author Kyle Katarn
  */
 public class Main {
     /** Application execution mode. */
@@ -174,19 +169,15 @@ public class Main {
         switch (runMode) {
         case GUI:
             runGUI();
-            // GUI has own shutdown code
             break;
         case CONSOLE_TRANSLATE:
             runConsoleTranslate();
-            PluginUtils.unloadPlugins();
             break;
         case CONSOLE_CREATEPSEUDOTRANSLATETMX:
             runCreatePseudoTranslateTMX();
-            PluginUtils.unloadPlugins();
             break;
         case CONSOLE_ALIGN:
             runConsoleAlign();
-            PluginUtils.unloadPlugins();
             break;
         }
     }
@@ -201,25 +192,6 @@ public class Main {
 
         Log.log("Docking Framework version: " + DockingDesktop.getDockingFrameworkVersion());
         Log.log("");
-
-        // Set X11 application class name to make some desktop user interfaces
-        // (like Gnome Shell) recognize OmegaT
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Class<?> cls = toolkit.getClass();
-        try
-        {
-            if (cls.getName().equals("sun.awt.X11.XToolkit"))
-            {
-                Field field = cls.getDeclaredField("awtAppClassName");
-                field.setAccessible(true);
-                field.set(toolkit, "OmegaT");
-            }
-        }
-        catch (Exception e)
-        {
-            // do nothing
-        }
-
         try {
             // Workaround for JDK bug 6389282 (OmegaT bug bug 1555809)
             // it should be called before setLookAndFeel() for GTK LookandFeel
@@ -237,16 +209,6 @@ public class Main {
         } catch (Throwable ex) {
             Log.log(ex);
             showError(ex);
-        }
-
-        if (!Core.getPluginsLoadingErrors().isEmpty()) {
-            String err = "";
-            for (int i = 0; i < Core.getPluginsLoadingErrors().size(); i++) {
-                err += "\n" + Core.getPluginsLoadingErrors().get(i);
-            }
-            err = err.substring(1);
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), err,
-                    OStrings.getString("STARTUP_ERRORBOX_TITLE"), JOptionPane.ERROR_MESSAGE);
         }
 
         CoreEvents.fireApplicationStartup();
@@ -311,18 +273,16 @@ public class Main {
 
         if ("abort".equalsIgnoreCase(tagValidation)) {
             System.out.println(OStrings.getString("CONSOLE_VALIDATING_TAGS"));
-            List<ErrorReport> stes = Core.getTagValidation().listInvalidTags();
-            if (stes != null) {
-                Core.getTagValidation().displayTagValidationErrors(stes, null);
+            ITagValidation aTagValidation = Core.getTagValidation();
+            if (!aTagValidation.validateTags()) {
                 System.out.println(OStrings.getString("CONSOLE_TAGVALIDATION_FAIL"));
                 System.out.println(OStrings.getString("CONSOLE_TAGVALIDATION_ABORT"));
                 System.exit(1);
             }
         } else if ("warn".equalsIgnoreCase(tagValidation)) {
             System.out.println(OStrings.getString("CONSOLE_VALIDATING_TAGS"));
-            List<ErrorReport> stes = Core.getTagValidation().listInvalidTags();
-            if (stes != null) {
-                Core.getTagValidation().displayTagValidationErrors(stes, null);
+            ITagValidation aTagValidation = Core.getTagValidation();
+            if (!aTagValidation.validateTags()) {
                 System.out.println(OStrings.getString("CONSOLE_TAGVALIDATION_FAIL"));
             }
         } else {
@@ -373,10 +333,10 @@ public class Main {
             for (SourceTextEntry ste : entries) {
                 switch (pseudoTranslateType) {
                 case EQUAL:
-                    data.put(ste.getSrcText(), new TMXEntry(ste.getSrcText(), ste.getSrcText(), true));
+                    data.put(ste.getSrcText(), new TMXEntry(ste.getSrcText(), ste.getSrcText(), null, 0, null, true));
                     break;
                 case EMPTY:
-                    data.put(ste.getSrcText(), new TMXEntry(ste.getSrcText(), "", true));
+                    data.put(ste.getSrcText(), new TMXEntry(ste.getSrcText(), "", null, 0, null, true));
                     break;
                 }
             }
@@ -412,7 +372,7 @@ public class Main {
             System.exit(1);
         }
 
-        System.out.println(OStrings.getString("INITIALIZING"));
+        System.out.println(OStrings.getString("CONSOLE_INITIALIZING"));
         try {
             Core.initializeConsole(params);
         } catch (Throwable ex) {
@@ -431,7 +391,7 @@ public class Main {
 
             TMXWriter.buildTMXFile(tmxFile, false, false, p.getProjectProperties(), data);
 
-            System.out.println(OStrings.getString("FINISHED"));
+            System.out.println(OStrings.getString("CONSOLE_FINISHED"));
         } catch (Exception e) {
             System.err.println("An error has occured: " + e.toString());
             System.exit(1);
@@ -462,14 +422,9 @@ public class Main {
         }
 
         RealProject p = new RealProject(projectProperties);
-        if (loadProject) {
+        if (loadProject)
             p.loadProject(true);
-            if (p.isProjectLoaded()) {
-                Core.setProject(p);
-            }
-        } else {
-            Core.setProject(p);
-        }
+        Core.setProject(p);
         return p;
     }
 

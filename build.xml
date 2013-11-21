@@ -5,51 +5,38 @@
  OmegaT - Java based Computer Assisted Translation (CAT) tool
  Copyright (C) 2000-2007 Keith Godfrey and Maxym Mykhalchuk
                2008-2010 Didier Briel, Alex Buloichik
-               2012 Didier Briel
-               2013 Didier Briel, Aaron Madlon-Kay
+               2012-2013 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 **************************************************************************/
 -->
 
 <project name="OmegaT" default="all" basedir=".">
     <!-- Use an empty string for non-beta versions  and _Beta for beta versions -->
-    <property name="beta" value="_Beta" />
+    <property name="beta" value="" />
     
     <description>Builds, tests, and runs the project OmegaT.</description>
     <import file="nbproject/build-impl.xml"/>
     <import file="nbproject/profiler-build-impl.xml"/>
 
-    <fileset dir="lib" id="all-jars-fileset">
-        <include name="**/*.jar"/>
-    </fileset>
-    <pathconvert pathsep=" " property="all-jars-path" refid="all-jars-fileset">
-        <chainedmapper>
-            <flattenmapper/>
-            <globmapper from="*" to="lib/*"/>
-        </chainedmapper>
-    </pathconvert>
-
     <target name="-pre-init">
         <property name="iscc.exe" value="iscc.exe"/>
         <property file="src/org/omegat/Version.properties"/>
         <filter filtersfile="src/org/omegat/Version.properties"/>
-        <filter token="all-jars-path" value="${all-jars-path}"/>
         <copy file="manifest-template.mf" tofile="manifest.mf" filtering="true"/>
         <condition property="updatenr"
                    value="0${update}"
@@ -74,6 +61,9 @@
         <delete file="log.txt"/>
         <delete file="manifest.mf"/>
         <delete dir="dist2"/>
+        <ant antfile="addons/nbedge-filter/build.xml" target="clean" inheritall="false" />
+        <ant antfile="addons/properties-import/build.xml" target="clean" inheritall="false" />
+        <ant antfile="addons/sentseg-tmx/build.xml" target="clean" inheritall="false" />
     </target>
     
     <target name="-post-jar">
@@ -81,10 +71,6 @@
         <!-- copy the native libraries to the distribution directory -->
         <copy todir="dist/native">
             <fileset dir="native"/>
-        </copy>
-        <!-- copy scripts to the distribution directory -->
-        <copy todir="dist/scripts">
-            <fileset dir="scripts"/>
         </copy>
     </target>
     
@@ -153,7 +139,7 @@
     <target name="src" depends="init" description="Build source distribution">
         <mkdir dir="dist2"/>
         <zip destfile="dist2/OmegaT_${distversion}${beta}_Source.zip" basedir="." 
-                includes="docs/** images/** lib/** nbproject/** lib-mnemonics/** release/** src/** test/** gen/** manifest-template.mf build.xml native/** doc_src/** docs_devel/**"
+                includes="addons/** docs/** images/** lib/** nbproject/** lib-mnemonics/** release/** src/** test/** gen/** manifest-template.mf build.xml native/** doc_src/** docs_devel/**"
                 excludes="**/nbproject/private/** **/build/** **/dist/**" />
     </target>
 
@@ -193,11 +179,10 @@
         <copy todir="dist/images">
             <fileset dir="images"/>
         </copy>
-        <!-- Already done by "jar" 
         <mkdir dir="dist/lib"/>
         <copy todir="dist/lib">
             <fileset dir="lib" excludes="sources/**"/>
-        </copy> -->
+        </copy>
     </target>
    
     <!-- Builds a ZIP distribution -->    
@@ -319,6 +304,16 @@ Custom strings from release\win32-specific must be added manually to the languag
         <ant dir="release/WebStart-specific" antfile="build.xml"/>
     </target>
 
+    <!-- Builds and copies to dist2 all addons -->
+    <target name="addons">
+        <ant antfile="addons/properties-import/build.xml" target="dist" inheritall="false"/>
+        <copy file="addons/properties-import/import_properties_1.3.zip" todir="dist2"/>
+        <ant antfile="addons/sentseg-tmx/build.xml" target="dist" inheritall="false"/>
+	<copy file="addons/sentseg-tmx/sentseg_tmx_1.1.zip" todir="dist2"/>
+	<!--
+        <ant antfile="addons/nbedge-filter/build.xml" target="jar" inheritall="false"/>
+	-->
+    </target>
         
     <!-- Builds all OmegaT products -->
     <target name="all" depends="l10n-pack,src,jar,zip,win,linux,mac" />
@@ -341,56 +336,48 @@ Custom strings from release\win32-specific must be added manually to the languag
     </target>
 
 
-    <target name="gen">
-        <exec executable="xjc">
-            <arg line="-d src"/>
-            <arg line="-p gen.core.segmentation"/>
-            <arg value="src/schemas/srx20.xsd"/>
-        </exec>
-        <exec executable="xjc">
-            <arg line="-d src"/>
-            <arg line="-p gen.core.filters"/>
-            <arg value="src/schemas/filters.xsd"/>
-        </exec>
-        <exec executable="xjc">
-            <arg line="-d src"/>
-            <arg line="-p gen.core.tbx"/>
-            <arg value="src/schemas/tbx.xsd"/>
-        </exec>
-        <exec executable="xjc">
-            <arg line="-d src"/>
-            <arg line="-p gen.core.project"/>
-            <arg value="src/schemas/project_properties.xsd"/>
-        </exec>
-        <exec executable="xjc">
-            <arg line="-d src"/>
-            <arg line="-p gen.core.tmx14"/>
-            <arg line="-b src/schemas/tmx14.xjb"/>
-            <arg value="src/schemas/tmx14.xsd"/>
-        </exec>
-    </target>
+	<target name="gen">
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+			<classpath>
+				<fileset dir="lib" includes="**/*.jar" />
+				<fileset dir="gen/lib" includes="**/*.jar" />
+			</classpath>
+		</taskdef>
 
-    <target name="docindexgen" depends="jar">
-        <mkdir dir="build/genclasses" />
-        <javac srcdir="gen/src" destdir="build/genclasses">
-            <classpath>
-                <fileset dir="lib" includes="**/*.jar" />
-                <pathelement path="build/classes" />
-            </classpath>
-        </javac>
-        <copy todir="build/genclasses">
-            <fileset dir="gen/src" excludes="**/*.java"/>
-        </copy>
+		<xjc schema="src/schemas/srx20.xsd" destdir="src" package="gen.core.segmentation" />
+		<xjc schema="src/schemas/filters.xsd" destdir="src" package="gen.core.filters" />	
+		<xjc schema="src/schemas/tbx.xsd" destdir="src" package="gen.core.tbx" />	
+		<xjc schema="src/schemas/project_properties.xsd" destdir="src" package="gen.core.project" />	
+		<!--
+		<xjc schema="src/schemas/tmx11.dtd" destdir="src" package="gen.core.tmx11"> 	
+      <arg value="-dtd" />
+    </xjc>
+    -->
+    <!--
+    do not forget to change xml:lang:
+    @XmlAttribute(name = "lang", namespace="http://www.w3.org/XML/1998/namespace", required = true)
+		-->
+		<xjc schema="src/schemas/tmx14.xsd" binding="src/schemas/tmx14.xjb" destdir="src" package="gen.core.tmx14" /> 	
+	</target>
 
-        <java classname="util.CreateDocIndexUtil">
-            <classpath>
-                <pathelement path="build/genclasses" />
-                <pathelement path="build/classes" />
-            </classpath>
-        </java>
-        <copy todir="docs">
-            <fileset dir="release" includes="OmegaT-license.txt doc-license.txt changes.txt" />
-        </copy>
-    </target>
-    
+	<target name="docindexgen" depends="jar">
+		<mkdir dir="build/genclasses" />
+		<javac srcdir="gen/src" destdir="build/genclasses">
+			<classpath>
+				<fileset dir="lib" includes="**/*.jar" />
+				<pathelement path="build/classes" />
+			</classpath>
+		</javac>
+		<copy todir="build/genclasses">
+			<fileset dir="gen/src" excludes="**/*.java"/>
+		</copy>
+
+		<java classname="util.CreateDocIndexUtil">
+			<classpath>
+				<pathelement path="build/genclasses" />
+				<pathelement path="build/classes" />
+			</classpath>
+		</java>
+	</target>
+	
 </project>

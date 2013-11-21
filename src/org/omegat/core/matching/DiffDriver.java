@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.matching;
@@ -29,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.omegat.core.Core;
-import org.omegat.tokenizer.ITokenizer;
 import org.omegat.util.Token;
 
 import bmsi.util.Diff;
@@ -55,21 +53,16 @@ public class DiffDriver {
      */
     public static Render render(String original, String revised) {
 
-        Render result = new Render();
-        
         String[] originalStrings = tokenize(original);
         String[] revisedStrings = tokenize(revised);
-        
-        if (originalStrings == null || revisedStrings == null) {
-            return result;
-        }
 
         // Get "change script", a linked list of Diff.changes.
         Diff diff = new Diff(originalStrings, revisedStrings);
         Diff.change script = diff.diff_2(false);
         assert (validate(script, originalStrings, revisedStrings));
 
-        StringBuilder rawText = new StringBuilder();
+        Render result = new Render();
+        StringBuffer rawText = new StringBuffer();
 
         // Walk original token strings past the last index in
         // case there was an insertion at the end.
@@ -184,11 +177,6 @@ public class DiffDriver {
      */
     private static String[] tokenize(String input) {
         ITokenizer tokenizer = Core.getProject().getSourceTokenizer();
-        
-        if (tokenizer == null) {
-            // Project has probably been closed.
-            return null;
-        }
 
         Token[] tokens = tokenizer.tokenizeAllExactly(input);
         String[] strings = new String[tokens.length];

@@ -8,7 +8,7 @@
         <primary>Scorciatoie</primary> <secondary>Personalizzazione</secondary>
       </indexterm>Personalizzazione delle scorciatoie</title>
 
-    <para>Alla maggior parte degli elementi che appaiono nel menu principale si può applicare una nuova scorciatoia. Si possono modificare le scorciatoie già assegnate, come pure aggiungerne di nuove, inserendo un file di definizione delle scorciatoie all'interno della cartella delle preferenze di OmegaT (si veda <link linkend="user.files">Posizione dei file utente</link>).</para>
+    <para>Alla maggior parte degli elementi che appaiono nel menu principale si può applicare una nuova scorciatoia. Solo agli elementi del menu più comunemente usati è attribuita una scorciatoia predefinita. Si possono modificare le scorciatoie già assegnate, come pure aggiungerne di nuove, inserendo un file di definizione delle scorciatoie all'interno della cartella delle preferenze di OmegaT (si veda <link linkend="user.files">Posizione dei file utente</link>).</para>
 
     <para>Il file di definizione delle scorciatoie si deve chiamare <filename>MainMenuShortcuts.properties</filename> e deve contenere una definizione di scorciatoia per riga. Sono accettate le righe vuote, mentre quelle di commento devono iniziare con &quot;//&quot;. Tutto quello che segue i segni &quot;//&quot; viene ignorato.</para>
 
@@ -18,7 +18,7 @@
         <para>La sintassi completa per le combinazioni di tasti (scorciatoie) è definita nelle documentazione Java 1.6 seguente di Oracle (fondo della pagina): <ulink url="http://docs.oracle.com/javase/6/docs/api/javax/swing/KeyStroke.html">Java 1.6 keystrokes shortcuts</ulink></para>
       </footnote>.</para>
 
-    <para>&lt;scorciatoia&gt; deve essere nella forma seguente: 0 o più <code>&lt;modificatore&gt;</code> seguito da 0 o 1 <code>&lt;evento&gt;</code> seguito da 1 <code>&lt;tasto&gt;</code>, dove:<itemizedlist>
+    <para>&lt;scorciatoia&gt; deve essere nella forma seguente:0 o più <code>&lt;modificatore&gt;</code> seguito da 0 o 1 <code>&lt;evento&gt;</code> seguito da 1 <code>&lt;tasto&gt;</code>, dove:<itemizedlist>
         <listitem>
           <para><code>&lt;modificatore&gt;</code> può essere: <emphasis>maiusc (shift)</emphasis>, <emphasis>control</emphasis>, <emphasis>ctrl</emphasis>, <emphasis>meta</emphasis><footnote>
               <para>Sui sistemi Mac, il modificatore <emphasis>meta</emphasis> deve essere utilizzato per specificare il tasto <emphasis>command</emphasis>.</para>
@@ -38,9 +38,9 @@
       </itemizedlist></para>
 
     <para>Per esempio, nelle scorciatoie predefinite di OmegaT<footnote>
-        <para>Le scorciatoie predefinite di OmegaT sono disponibili in Sourceforge: <ulink url="http://omegat.svn.sourceforge.net/viewvc/omegat/branches/release-2-6/src/org/omegat/gui/main/MainMenuShortcuts.properties">Default OmegaT Shortcuts</ulink></para>
+        <para>Le scorciatoie predefinite di OmegaT sono disponibili in Sourceforge: <ulink url="http://omegat.svn.sourceforge.net/viewvc/omegat/branches/release-2-5/src/org/omegat/gui/main/MainMenuShortcuts.properties">Default OmegaT Shortcuts</ulink></para>
 
-        <para>In Sourceforge sono pure disponibili le scorciatoie predefinite di OmegaT per Mac, esse utilizzano tutte il tasto &quot;meta&quot; al posto di &quot;ctrl&quot;: <ulink url="http://omegat.svn.sourceforge.net/viewvc/omegat/branches/release-2-6/src/org/omegat/gui/main/MainMenuShortcuts.mac.properties">Default OmegaT Shortcuts for the Mac</ulink></para>
+        <para>In Sourceforge sono pure disponibili le scorciatoie predefinite di OmegaT per Mac, esse utilizzano tutte il tasto &quot;meta&quot; al posto di &quot;ctrl&quot;: <ulink url="http://omegat.svn.sourceforge.net/viewvc/omegat//branches/release-2-5/src/org/omegat/gui/main/MainMenuShortcuts.mac.properties">Default OmegaT Shortcuts for the Mac</ulink></para>
       </footnote>, è possibile trovare:</para>
 
     <itemizedlist>
@@ -75,9 +75,9 @@
       <title>Menu Progetto</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -106,14 +106,6 @@
             <entry><keycap>Ctrl+O</keycap></entry>
 
             <entry>projectOpenMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Scarica il progetto in collaborazione</entry>
-
-            <entry/>
-
-            <entry>projectTeamNewMenuItem</entry>
           </row>
 
           <row>
@@ -199,9 +191,9 @@
       <title>Menu Modifica</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -345,7 +337,7 @@
           </row>
 
           <row>
-            <entry>Commuta carattere in/Minuscolo</entry>
+            <entry>Minuscolo</entry>
 
             <entry/>
 
@@ -353,7 +345,7 @@
           </row>
 
           <row>
-            <entry>Commuta carattere in/Maiuscolo</entry>
+            <entry>Maiuscolo</entry>
 
             <entry/>
 
@@ -361,7 +353,7 @@
           </row>
 
           <row>
-            <entry>Commuta carattere in/Prima lettera maiuscola</entry>
+            <entry>Prima lettera maiuscola</entry>
 
             <entry/>
 
@@ -375,23 +367,6 @@
 
             <entry>cycleSwitchCaseMenuItem</entry>
           </row>
-
-          <row>
-            <entry>Usa come traduzione predefinita</entry>
-
-            <entry/>
-
-            <entry>editMultipleDefault</entry>
-          </row>
-
-          <row>
-            <entry>Crea traduzione alternativa</entry>
-
-            <entry/>
-
-            <entry>editMultipleAlternate</entry>
-          </row>
-
         </tbody>
       </tgroup>
     </table>
@@ -404,9 +379,9 @@
       <title>Menu Vai</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -454,33 +429,17 @@
           </row>
 
           <row>
-            <entry>Nota successiva</entry>
+            <entry>Indietro nella cronologia...</entry>
 
-            <entry/>
+            <entry><keycap>Ctrl+Maiusc+P</keycap></entry>
 
-            <entry>gotoNextNoteMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Nota precedente</entry>
-
-            <entry/>
-
-            <entry>gotoPreviousNoteMenuItem</entry>
+            <entry>gotoHistoryForwardMenuItem</entry>
           </row>
 
           <row>
             <entry>Avanti nella cronologia...</entry>
 
             <entry><keycap>Ctrl+Maiusc+N</keycap></entry>
-
-            <entry>gotoHistoryForwardMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Indietro nella cronologia...</entry>
-
-            <entry><keycap>Ctrl+Maiusc+P</keycap></entry>
 
             <entry>gotoHistoryBackMenuItem</entry>
           </row>
@@ -500,9 +459,9 @@
       </indexterm>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -550,38 +509,6 @@
           </row>
 
           <row>
-            <entry>Evidenzia i segmenti con note</entry>
-
-            <entry/>
-
-            <entry>viewMarkNotedSegmentsCheckBoxMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Evidenzia gli spazi non divisibili</entry>
-
-            <entry/>
-
-            <entry>viewMarkNBSPCheckBoxMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Evidenza gli spazi vuoti</entry>
-
-            <entry/>
-
-            <entry>viewMarkWhitespaceCheckBoxMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Evidenzia caratteri di controllo algoritmo bidirezionale</entry>
-
-            <entry/>
-
-            <entry>viewMarkBidiCheckBoxMenuItem</entry>
-          </row>
-
-           <row>
             <entry>Informazioni sulla modifica/Nessuna</entry>
 
             <entry/>
@@ -589,7 +516,7 @@
             <entry>viewDisplayModificationInfoNoneRadioButtonMenuItem</entry>
           </row>
 
-         <row>
+          <row>
             <entry>Informazioni sulla modifica/Selezionato</entry>
 
             <entry/>
@@ -616,9 +543,9 @@
       <title>Menu Strumenti</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -668,9 +595,9 @@
       <title>Menu Opzioni</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -798,7 +725,7 @@
           </row>
 
           <row>
-            <entry>Salvataggio e risultato...</entry>
+            <entry>Salva...</entry>
 
             <entry/>
 
@@ -832,9 +759,9 @@
       <title>Menu Aiuto</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 

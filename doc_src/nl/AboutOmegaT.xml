@@ -20,13 +20,13 @@
 
     <itemizedlist>
       <listitem>
-        <para><emphasis role="bold">Terminologiebeheer</emphasis>: Terminologiebeheer is belangrijk voor consistentie in de vertalingen. OmegaT gebruikt woordenlijsten die vertalingen van woorden of korte frasen bevatten, een soort vereenvoudigd tweetalig woordenboek op een bepaald terrein. Voor uw verwijzing toont OmegaT de vertaling van elk woord als dat aanwezig is in het segment en is geregistreerd in de woordenlijst.</para>
+        <para><emphasis role="bold">Terminologiebeheer</emphasis>: Terminologiebeheer is belangrijk voor consistentie in de vertalingen. OmegaT gebruikt woordenlijsten die vertalingen van woorden of korte frasen bevatten, een soort vereenvoudigd tweetalig woordenboek op een bepaald terrein. Voor uw verwijzing toont OmegaT de vertaling van woorden als die aanwezig zijn in het segment dat op dit moment de focus heeft.</para>
       </listitem>
     </itemizedlist>
 
     <itemizedlist>
       <listitem>
-        <para><emphasis role="bold">Proces van vertalingen:</emphasis> Veronderstel dat u iets moet vertalen, van één enkel bestand tot een map die submappen bevat met meerdere bestanden in verschillende indelingen. Als u OmegaT laat weten welke bestanden u moet vertalen, zal het kijken naar de bestanden die het begrijpt, gebaseerd op regels voor bestandsfiltering, de tekstdelen daarin herkennen, de tekstgroepen opsplitsen op basis van segmentatieregels, en de segmenten één voor één tonen zodat u door kunt gaan met de vertaling. OmegaT slaat uw vertalingen op en stelt mogelijke vertalingen voor vanuit overeenkomende segmenten die zijn geregistreerd in de vertaalgeheugens. Als u klaar bent om het uiteindelijke product te bekijken, kunt u de vertaalde bestanden exporteren, ze openen in het gewenste programma en zien hoe de vertaling er in de uiteindelijke indeling uitziet.</para>
+        <para><emphasis role="bold">Proces van vertalingen:</emphasis> Veronderstel dat u iets moet vertalen, van één enkel bestand tot een map die submappen bevat met meerdere bestanden in verschillende indelingen. Als u OmegaT laat weten welke bestanden u moet vertalen, zal het kijken naar de bestanden die het begrijpt, gebaseerd op regels voor bestandsfiltering, de tekstdelen daarin herkennen, de tekstgroepen opsplitsen op basis van segmentatieregels, en de segmenten één voor één tonen zodat u door kunt gaan met de vertaling. OmegaT slaat uw vertalingen op en stelt mogelijke vertalingen voor vanuit overeenkomende segmenten in eerdere vertaalgeheugens. Als u klaar bent om het uiteindelijke product te bekijken, kunt u de vertaalde bestanden exporteren, ze openen in het gewenste programma en zien hoe de vertaling er in de uiteindelijke indeling uitziet.</para>
       </listitem>
     </itemizedlist>
   </section>
@@ -38,7 +38,7 @@
 
     <itemizedlist>
       <listitem>
-        <para><emphasis role="bold">Leren OmegaT te gebruiken binnen 5 minuten!:</emphasis> dit hoofdstuk is bedoeld als een snelle handleiding voor beginners en ook voor mensen die al CAT-programma's kennen en toont de complete procedure vanaf het openen van een nieuw vertaalproject tot het voltoien van de vertaling.</para>
+        <para><emphasis role="bold">gids Snel starten:</emphasis> dit hoofdstuk is bedoeld als een gids Snel starten voor beginners en “ongeduldige types”, die de complete procedure weergeeft vanaf het openen van een nieuw project voor vertalingen tot en met het voltooien van die vertaling.</para>
       </listitem>
     </itemizedlist>
 
