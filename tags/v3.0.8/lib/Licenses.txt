@@ -1,0 +1,104 @@
+Licenses:
+
+htmlparser.jar version 1.6 is distributed under the GNU Lesser  
+General Public License version 2.1 and greater
+Sources are available in OmegaT sources, in the directory lib/sources
+
+jna.jar is distributed under the GNU Lesser General Public License  
+version 2.1 and greater
+Sources are available in OmegaT sources, in the directory lib/sources
+
+MRJAdapter.jar 1.0.8 is distributed under the GNU Lesser General  
+Public License version 2.1 and greater
+Sources are available in OmegaT sources, in the directory lib/sources
+
+vldocking_2.1.4.jar is distributed under the CeCILL license version 2.0
+Sources are available from VLSolutions, at 
+http://www.vlsolutions.com
+
+Hunspell is distributed under the GNU Lesser General Public License  
+version 2.1 and greater, the GNU Public License version 2.0 and  
+greater or the Mozilla Public License version 1.1
+Sources are available in OmegaT sources, in the directory lib/sources
+Some Hunspell librairies may correspond to older versions
+Sources are all available from
+https://sourceforge.net/project/showfiles.php?group_id=143754&package_id=157912
+
+swing-layout-1.0.2.jar is distributed under the GNU Lesser General  
+Public License version 2.1 and greater
+Sources are available in OmegaT sources, in the directory lib/sources
+
+jmyspell-core-1.0.0-beta-2-1.4.jar is distributed under the 
+GNU Lesser General Public License version 2.1 and greater
+Sources are available in OmegaT sources, in the directory lib/sources
+
+swing-worker-1.2.jar is distributed under the GNU Lesser General Public License  
+version 2.1.
+Sources are available in OmegaT sources, in the directory lib/sources
+
+svnkit-1.7.5.jar is distributed under the
+TMate Open Source / Commercial dual license
+(required for SVNRemoteRepository.java)
+
+sequence-library-1.0.2.jar is distributed under the Sequence Library License
+(required for SVNRemoteRepository.java)
+
+antlr-runtime-3.4.jar is distributed under the ANTLR 3 License
+(required for SVNRemoteRepository.java)
+
+sqljet-1.1.3.jar is distributed under the GNU General Public License version 2
+(required for SVNRemoteRepository.java)
+Sources are available in OmegaT sources, in the directory lib/sources
+
+org.eclipse.jgit-2.1.0.201209190230-r.jar is distributed under the
+Eclipse Distribution License (EDL) v 1.0 
+(required for GITRemoteRepository.java)
+
+jsch-0.1.49.jar is distributed under the JSch License
+(required for GITRemoteRepository.java)
+
+Base64 is public domain and is included in OmegaT sources
+
+diff.jar is distributed under the GNU General Public License version 1 and greater
+Sources are available in OmegaT sources, in the directory lib/sources
+
+orion-ssh2-214.jar is distributed under the Orion SSH for Java license
+
+lucene-*.jar are distributed under the Apache License 2.0
+
+The English tokenizers (org.omegat.tokenizer.SnowballEnglishTokenizer and
+org.omegat.tokenizer.LuceneEnglishTokenizer) use stop words from Okapi
+(http://okapi.sourceforge.net) under the LGPL license.
+
+tinysegmenter.jar is distributed under the Modified BSD license
+
+commons-*.jar are distributed under the Apache License 2.0
+(required for LanguageTool, scripting)
+
+jwordSplitter-3.4.jar is distributed under the Apache License 2.0
+(required for LanguageTool)
+
+LanguageTool-data.jar and languagetool-core-2.1.jar are distributed under the LGPL license
+LanguageTool sources are available via SVN from http://sourceforge.net/projects/languagetool/
+
+morfologik-*.jar is distributed under the Morfologik license
+(required for LanguageTool)
+
+segment-1.4.1.jar is distributed under the Segment license
+(required for LanguageTool)
+
+lucene-gosen-2.0.2-ipadic.jar is distributed under the LGPL license
+(required for LanguageTool)
+lucene-gosen sources are available via SVN from http://code.google.com/p/lucene-gosen/source/checkout
+
+pdfbox-app-1.8.1.jar is distributed under the Apache License 2.0
+
+bsf-2.4.0.jar is distributed under the Apache License 2.0
+(required for scripting)
+
+groovy-all-1.8.9.jar is distributed under the Apache License 2.0
+(required for scripting)
+
+js-rhino-1.7R4.jar is distributed under the Mozilla Public License 2.0
+(required for scripting)
+
