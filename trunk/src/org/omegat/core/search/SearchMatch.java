@@ -3,7 +3,7 @@
           with fuzzy matching, translation memory, keyword search, 
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2010 Alex Buloichik
+ Copyright (C) 2010-2013 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -31,18 +31,30 @@ package org.omegat.core.search;
  * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public class SearchMatch implements Comparable<SearchMatch> {
-    public int start, length;
+    public int start, end;
 
-    public SearchMatch(int start, int length) {
+    public SearchMatch(int start, int end) {
         this.start = start;
-        this.length = length;
+        this.end = end;
     }
 
     public int compareTo(SearchMatch o) {
         int diff = start - o.start;
         if (diff == 0) {
-            diff = length - o.length;
+            diff = end - o.end;
         }
         return diff;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+
+    public int getLength() {
+        return end - start;
     }
 }
