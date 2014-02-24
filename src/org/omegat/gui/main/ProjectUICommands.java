@@ -7,7 +7,6 @@
                2011 Martin Fleurke
                2012 Thomas Cordonnier
                2013 Yu Tang
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -580,7 +579,7 @@ public class ProjectUICommands {
 
         new SwingWorker<Object, Void>() {
             protected Object doInBackground() throws Exception {
-                Core.getProject().saveProject(false);
+                Core.getProject().saveProject();
                 Core.getProject().compileProject(".*");
                 return null;
             }
@@ -601,7 +600,7 @@ public class ProjectUICommands {
         new SwingWorker<Object, Void>() {
             @Override
             protected Object doInBackground() throws Exception {
-                Core.getProject().saveProject(false);
+                Core.getProject().saveProject();
                 Core.getProject().compileProject(sourcePattern);
                 return null;
             }

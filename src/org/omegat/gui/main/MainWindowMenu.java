@@ -282,7 +282,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
         editMenu.add(editCreateGlossaryEntryMenuItem = createMenuItem("TF_MENU_EDIT_CREATE_GLOSSARY_ENTRY"));
         editMenu.add(new JSeparator());
         editMenu.add(editFindInProjectMenuItem = createMenuItem("TF_MENU_EDIT_FIND"));
-        editMenu.add(editReplaceInProjectMenuItem = createMenuItem("TF_MENU_EDIT_REPLACE"));
         editMenu.add(new JSeparator());
         editMenu.add(switchCaseSubMenu = createMenu("TF_EDIT_MENU_SWITCH_CASE"));
         editMenu.add(selectFuzzySubMenu = createMenu("TF_MENU_EDIT_COMPARE"));
@@ -297,7 +296,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
         editMenu.add(new JSeparator());
         editMenu.add(editMultipleDefault = createMenuItem("MULT_MENU_DEFAULT"));
         editMenu.add(editMultipleAlternate = createMenuItem("MULT_MENU_MULTIPLE"));
-        editMenu.add(editRegisterIdenticalMenuItem = createMenuItem("TF_MENU_EDIT_IDENTICAL_TRANSLATION"));
 
         switchCaseSubMenu.add(lowerCaseMenuItem = createMenuItem("TF_EDIT_MENU_SWITCH_CASE_TO_LOWER"));
         switchCaseSubMenu.add(upperCaseMenuItem = createMenuItem("TF_EDIT_MENU_SWITCH_CASE_TO_UPPER"));
@@ -324,7 +322,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
         viewMenu.add(viewMarkNBSPCheckBoxMenuItem = createCheckboxMenuItem("MW_VIEW_MENU_MARK_NBSP"));
         viewMenu.add(viewMarkWhitespaceCheckBoxMenuItem = createCheckboxMenuItem("MW_VIEW_MENU_MARK_WHITESPACE"));
         viewMenu.add(viewMarkBidiCheckBoxMenuItem = createCheckboxMenuItem("MW_VIEW_MENU_MARK_BIDI"));
-        viewMenu.add(viewMarkAutoPopulatedCheckBoxMenuItem = createCheckboxMenuItem("MW_VIEW_MENU_MARK_AUTOPOPULATED"));
         viewMenu.add(viewModificationInfoMenu = createMenu("MW_VIEW_MENU_MODIFICATION_INFO"));
         ButtonGroup viewModificationInfoMenuBG = new ButtonGroup();
         viewModificationInfoMenu
@@ -346,8 +343,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
         viewMarkWhitespaceCheckBoxMenuItem.setIcon(getViewMenuMarkBGIcon(Styles.COLOR_WHITESPACE));
         viewMarkBidiCheckBoxMenuItem.setIcon(getViewMenuMarkBGIcon(Styles.COLOR_BIDIMARKERS));
         viewModificationInfoMenu.setIcon(getViewMenuMarkBGIcon(null));
-        viewMarkAutoPopulatedCheckBoxMenuItem
-                .setIcon(getViewMenuMarkBGIcon(Styles.COLOR_MARK_COMES_FROM_TM_XICE));
 
         toolsMenu.add(toolsValidateTagsMenuItem = createMenuItem("TF_MENU_TOOLS_VALIDATE"));
         toolsMenu.add(toolsSingleValidateTagsMenuItem = createMenuItem("TF_MENU_TOOLS_SINGLE_VALIDATE"));
@@ -456,8 +451,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
                 .isMarkWhitespace());
         viewMarkBidiCheckBoxMenuItem.setSelected(Core.getEditor().getSettings()
                 .isMarkBidi());
-        viewMarkAutoPopulatedCheckBoxMenuItem.setSelected(Core.getEditor().getSettings()
-                .isMarkAutoPopulated());
 
         viewDisplayModificationInfoNoneRadioButtonMenuItem
                 .setSelected(EditorSettings.DISPLAY_MODIFICATION_INFO_NONE.equals(Core.getEditor()
@@ -578,13 +571,12 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
                 projectReloadMenuItem, projectCloseMenuItem, projectSaveMenuItem, projectEditMenuItem,
                 projectCompileMenuItem, projectSingleCompileMenuItem,
 
-                editMenu, editFindInProjectMenuItem, editReplaceInProjectMenuItem,
-                editInsertSourceMenuItem, editInsertTranslationMenuItem,
+                editMenu, editFindInProjectMenuItem, editInsertSourceMenuItem, editInsertTranslationMenuItem,
                 editTagPainterMenuItem, editOverwriteSourceMenuItem, editOverwriteTranslationMenuItem,
                 editRedoMenuItem, editSelectFuzzy1MenuItem, editSelectFuzzy2MenuItem,
                 editSelectFuzzy3MenuItem, editSelectFuzzy4MenuItem, editSelectFuzzy5MenuItem,
                 editUndoMenuItem, switchCaseSubMenu, editOverwriteMachineTranslationMenuItem,
-                editMultipleDefault, editMultipleAlternate, editRegisterIdenticalMenuItem,
+                editMultipleDefault, editMultipleAlternate,
 
                 gotoMenu, gotoNextSegmentMenuItem, gotoNextUntranslatedMenuItem, gotoPreviousSegmentMenuItem,
                 gotoSegmentMenuItem, gotoNextNoteMenuItem, gotoPreviousNoteMenuItem,
@@ -623,7 +615,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
 
     JMenuItem cycleSwitchCaseMenuItem;
     JMenuItem editFindInProjectMenuItem;
-    JMenuItem editReplaceInProjectMenuItem;
     JMenuItem editInsertSourceMenuItem;
     JMenuItem editInsertTranslationMenuItem;
     JMenu editMenu;
@@ -646,7 +637,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
     JMenuItem editTagNextMissedMenuItem;
     JMenuItem editExportSelectionMenuItem;
     JMenuItem editCreateGlossaryEntryMenuItem;
-    JMenuItem editRegisterIdenticalMenuItem;
     public JMenuItem gotoHistoryBackMenuItem;
     public JMenuItem gotoHistoryForwardMenuItem;
     JMenu gotoMenu;
@@ -716,7 +706,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
     JCheckBoxMenuItem viewMarkNBSPCheckBoxMenuItem;
     JCheckBoxMenuItem viewMarkWhitespaceCheckBoxMenuItem;
     JCheckBoxMenuItem viewMarkBidiCheckBoxMenuItem;
-    JCheckBoxMenuItem viewMarkAutoPopulatedCheckBoxMenuItem;
     JMenu viewModificationInfoMenu;
     JRadioButtonMenuItem viewDisplayModificationInfoNoneRadioButtonMenuItem;
     JRadioButtonMenuItem viewDisplayModificationInfoSelectedRadioButtonMenuItem;

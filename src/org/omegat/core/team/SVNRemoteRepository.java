@@ -26,10 +26,7 @@ package org.omegat.core.team;
 
 import java.io.File;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.omegat.util.Log;
@@ -183,7 +180,7 @@ public class SVNRemoteRepository implements IRemoteRepository {
 
     public void restoreBase(File[] files) throws Exception {
         ourClientManager.getWCClient().doRevert(files, SVNDepth.EMPTY, null);
-        Log.logDebug(LOGGER, "SVN restore base for {0}", toList(files));
+        Log.logDebug(LOGGER, "SVN restore base for {0}", (Object) files);
     }
 
     public void download(File[] files) throws SocketException, Exception {
@@ -191,7 +188,7 @@ public class SVNRemoteRepository implements IRemoteRepository {
         try {
             long[] revs = ourClientManager.getUpdateClient().doUpdate(files, SVNRevision.HEAD, SVNDepth.INFINITY,
                     false, false);
-            Log.logDebug(LOGGER, "SVN updated files {0} to revisions {1}", toList(files), toList(revs));
+            Log.logDebug(LOGGER, "SVN updated files {0} to revisions {1}", files, revs);
             Log.logInfoRB("SVN_FINISH", "download");
         } catch (SVNException ex) {
             Log.logErrorRB("SVN_ERROR", "download", ex.getMessage());
@@ -248,18 +245,6 @@ public class SVNRemoteRepository implements IRemoteRepository {
             Log.logErrorRB("SVN_ERROR", "upload", ex.getMessage());
             throw ex;
         }
-    }
-
-    List<File> toList(File[] files) {
-        return Arrays.asList(files);
-    }
-
-    List<Long> toList(long[] arr) {
-        List<Long> result = new ArrayList<Long>(arr.length);
-        for (long v : arr) {
-            result.add(v);
-        }
-        return result;
     }
 
     void checkNetworkException(Exception ex) throws NetworkException {

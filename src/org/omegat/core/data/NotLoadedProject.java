@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.omegat.core.data.TMXEntry.ExternalLinked;
 import org.omegat.core.segmentation.SRX;
 import org.omegat.core.statistics.StatisticsInfo;
 import org.omegat.core.team.IRemoteRepository;
@@ -78,9 +77,6 @@ public class NotLoadedProject implements IProject {
     public void iterateByMultipleTranslations(MultipleTranslationsIterator it) {
     }
 
-    public void setNote(SourceTextEntry entry, TMXEntry oldTrans, String note) {
-    }
-
     public boolean isOrphaned(String source) {
         return false;
     }
@@ -123,14 +119,10 @@ public class NotLoadedProject implements IProject {
     public void saveProject() {
     }
 
-    public void saveProject(boolean doTeamSync) {
-    }
-
     public void saveProjectProperties() throws IOException {
     }
 
-    public void setTranslation(SourceTextEntry entry, PrepareTMXEntry trans, boolean defaultTranslation,
-            ExternalLinked externalLinked) {
+    public void setTranslation(SourceTextEntry entry, String trans, String note, boolean isDefault) {
     }
 
     public ITokenizer getSourceTokenizer() {
@@ -142,12 +134,5 @@ public class NotLoadedProject implements IProject {
     }
 
     public void findNonUniqueSegments() {
-    }
-
-    public List<String> getSourceFilesOrder() {
-        return null;
-    }
-
-    public void setSourceFilesOrder(List<String> filesList) {
     }
 }

@@ -28,11 +28,11 @@
 
 package org.omegat.core.matching;
 
+import org.omegat.core.data.EntryKey;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.omegat.core.data.EntryKey;
-import org.omegat.util.TMXProp;
+import java.util.Map;
 
 /**
  * Class to hold a single fuzzy match.
@@ -50,7 +50,7 @@ public class NearString {
     public NearString(final EntryKey key, final String source, final String translation, MATCH_SOURCE comesFrom,
             final boolean fuzzyMark, final int nearScore, final int nearScoreNoStem, final int adjustedScore,
             final byte[] nearData, final String projName, final String creator, final long creationDate,
-            final String changer, final long changedDate, final List<TMXProp> props) {
+            final String changer, final long changedDate, final Map<String, String> props) {
         this.key = key;
         this.source = source;
         this.translation = translation;
@@ -69,7 +69,7 @@ public class NearString {
     public static NearString merge(NearString ns, final EntryKey key, final String source, final String translation,
             MATCH_SOURCE comesFrom, final boolean fuzzyMark, final int nearScore, final int nearScoreNoStem,
             final int adjustedScore, final byte[] nearData, final String projName, final String creator,
-            final long creationDate, final String changer, final long changedDate, final List<TMXProp> props) {
+            final long creationDate, final String changer, final long changedDate, final Map<String, String> props) {
         
         List<String> projs = new ArrayList<String>();
         List<Scores> scores = new ArrayList<Scores>();
@@ -109,7 +109,7 @@ public class NearString {
     /** matching attributes of near strEntry */
     public byte[] attr;
     public String[] projs;
-    public List<TMXProp> props;
+    public Map<String,String> props;
     public String creator;
     public long creationDate;
     public String changer;

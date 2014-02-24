@@ -5,7 +5,6 @@
 
  Copyright (C) 2008 Alex Buloichik
                2010 Didier Briel
-               2014 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -53,8 +52,6 @@ public interface IProject {
      * Save project.
      */
     void saveProject();
-
-    void saveProject(boolean doTeamSync);
 
     /**
      * Close project.
@@ -111,21 +108,11 @@ public interface IProject {
      * @param entry
      *            entry
      * @param trans
-     *            translation. It can't be null
+     *            translation. Null for remove translation, empty string for empty transation.
+     * @param isDefault
+     *            true if default translation should be changed
      */
-    void setTranslation(SourceTextEntry entry, PrepareTMXEntry trans, boolean defaultTranslation, TMXEntry.ExternalLinked externalLinked);
-
-    /**
-     * Change note only for translation.
-     * 
-     * @param entry
-     *            entry
-     * @param oldTrans
-     *            old translation
-     * @param note
-     *            note text
-     */
-    void setNote(SourceTextEntry entry, TMXEntry oldTrans, String note);
+    void setTranslation(SourceTextEntry entry, String trans, String note, boolean isDefault);
 
     /**
      * Get statistics for project.
@@ -185,16 +172,6 @@ public interface IProject {
      * synchronization to read it.
      */
     List<FileInfo> getProjectFiles();
-
-    /**
-     * Get ordered list of source file names.
-     */
-    List<String> getSourceFilesOrder();
-
-    /**
-     * Set ordered list of source file names.
-     */
-    void setSourceFilesOrder(List<String> filesList);
 
     public static class FileInfo {
         public String filePath;

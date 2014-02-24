@@ -6,7 +6,6 @@
  Copyright (C) 2010 Alex Buloichik
                2012 Thomas CORDONNIER
                2013 Aaron Madlon-Kay
-               2014 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -48,12 +47,14 @@ public class ExternalTMX {
 
     private final String name;
 
-    private final List<PrepareTMXEntry> entries;
+    private final List<TMXEntry> entries;
+
+    private final boolean paragraphSegtype;
 
     public ExternalTMX(final ProjectProperties props, final File file, final boolean extTmxLevel2,
             final boolean useSlash) throws Exception {
         this.name = file.getName();
-        entries = new ArrayList<PrepareTMXEntry>();
+        entries = new ArrayList<TMXEntry>();
 
         TMXReader2.LoadCallback loader = new TMXReader2.LoadCallback() {
             public boolean onEntry(TMXReader2.ParsedTu tu, TMXReader2.ParsedTuv tuvSource,
@@ -92,15 +93,8 @@ public class ExternalTMX {
                         sources, targets);
 
                 for (int i = 0; i < sources.size(); i++) {
-                    PrepareTMXEntry te = new PrepareTMXEntry();
-                    te.source = sources.get(i);
-                    te.translation = targets.get(i);
-                    te.changer = changer;
-                    te.changeDate = changed;
-                    te.creator = creator;
-                    te.creationDate = created;
-                    te.note = tu.note;
-                    te.otherProperties = tu.props;
+                    TMXEntry te = new TMXEntry(sources.get(i), targets.get(i), changer, changed,
+                            creator, created, tu.note, true, tu.props);
                     entries.add(te);
                 }
             }
@@ -109,13 +103,14 @@ public class ExternalTMX {
         TMXReader2 reader = new TMXReader2();
         reader.readTMX(file, props.getSourceLanguage(), props.getTargetLanguage(),
                 props.isSentenceSegmentingEnabled(), false, extTmxLevel2, useSlash, loader);
+        paragraphSegtype = reader.isParagraphSegtype();
     }
 
     public String getName() {
         return name;
     }
 
-    public List<PrepareTMXEntry> getEntries() {
+    public List<TMXEntry> getEntries() {
         return entries;
     }
 
