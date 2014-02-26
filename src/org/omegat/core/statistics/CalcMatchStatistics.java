@@ -102,6 +102,7 @@ public class CalcMatchStatistics extends LongProcessThread {
     }
 
     public void run() {
+        try {
             finder = new FindMatches(Core.getProject().getSourceTokenizer(), OConsts.MAX_NEAR_STRINGS, true,
                     false);
             distanceCalculator = new LevenshteinDistance();
@@ -113,6 +114,8 @@ public class CalcMatchStatistics extends LongProcessThread {
                 calcTotal(true);
             }
             callback.finishData();
+        } catch (InterruptedException ex) {
+        }
     }
 
     void show(String text, boolean append) {
@@ -126,7 +129,7 @@ public class CalcMatchStatistics extends LongProcessThread {
         }
     }
 
-    void calcPerFile() {
+    void calcPerFile() throws InterruptedException {
         int fileNumber = 0;
         for (IProject.FileInfo fi : Core.getProject().getProjectFiles()) {
             fileNumber++;
@@ -154,7 +157,7 @@ public class CalcMatchStatistics extends LongProcessThread {
         Statistics.writeStat(fn, textForLog.toString());
     }
 
-    MatchStatCounts calcTotal(boolean outData) {
+    MatchStatCounts calcTotal(boolean outData) throws InterruptedException {
         MatchStatCounts result = new MatchStatCounts(true);
         alreadyProcessedInProject.clear();
 
@@ -199,7 +202,7 @@ public class CalcMatchStatistics extends LongProcessThread {
         return result;
     }
 
-    MatchStatCounts forFile(IProject.FileInfo fi) {
+    MatchStatCounts forFile(IProject.FileInfo fi) throws InterruptedException {
         MatchStatCounts result = new MatchStatCounts(false);
         alreadyProcessedInFile.clear();
 
@@ -249,7 +252,8 @@ public class CalcMatchStatistics extends LongProcessThread {
      * 
      * Similarity calculates between tokens tokenized by ITokenizer.tokenizeAllExactly() (adjustedScore)
      */
-    void calcSimilarity(List<SourceTextEntry> untranslatedEntries, MatchStatCounts counts) {
+    void calcSimilarity(List<SourceTextEntry> untranslatedEntries, MatchStatCounts counts)
+            throws InterruptedException {
         for (SourceTextEntry ste : untranslatedEntries) {
             checkInterrupted();
             String srcNoXmlTags = ste.getSrcText();

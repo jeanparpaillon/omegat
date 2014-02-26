@@ -34,12 +34,10 @@ import org.omegat.core.TestCore;
 import org.omegat.core.data.EntryKey;
 import org.omegat.core.data.ExternalTMX;
 import org.omegat.core.data.IProject;
-import org.omegat.core.data.PrepareTMXEntry;
 import org.omegat.core.data.ProjectProperties;
 import org.omegat.core.data.ProjectTMX;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
-import org.omegat.core.data.TMXEntry.ExternalLinked;
 import org.omegat.core.events.IProjectEventListener.PROJECT_CHANGE_TYPE;
 import org.omegat.core.statistics.StatisticsInfo;
 import org.omegat.core.team.IRemoteRepository;
@@ -65,20 +63,13 @@ public class FalseFriendsTest extends TestCore {
         };
 
         Core.setProject(new IProject() {
-            public void setTranslation(SourceTextEntry entry, PrepareTMXEntry trans,
-                    boolean defaultTranslation, TMXEntry.ExternalLinked externalLinked) {
-            }
-
-            public void setNote(SourceTextEntry entry, TMXEntry oldTrans, String note) {
+            public void setTranslation(SourceTextEntry entry, String trans, String note, boolean isDefault) {
             }
 
             public void saveProjectProperties() throws Exception {
             }
 
             public void saveProject() {
-            }
-            
-            public void saveProject(boolean doTeamSync) {
             }
 
             public void iterateByMultipleTranslations(MultipleTranslationsIterator it) {
@@ -147,13 +138,6 @@ public class FalseFriendsTest extends TestCore {
             }
 
             public void closeProject() {
-            }
-
-            public List<String> getSourceFilesOrder() {
-                return null;
-            }
-
-            public void setSourceFilesOrder(List<String> filesList) {
             }
         });
     }

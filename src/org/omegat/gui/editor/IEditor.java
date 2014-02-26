@@ -55,6 +55,8 @@ public interface IEditor {
         CYCLE,
     }
 
+    int CURSOR_ON_START_OF_ENTRY = -1;
+    int CURSOR_ON_END_OF_ENTRY = -2;
     /**
      * Get current file name which opened in editor.
      * 
@@ -84,6 +86,13 @@ public interface IEditor {
      * Will position cursor at the start of segment
      */
     void activateEntry();
+
+    /**
+     * Activate entry for edit.
+     * 
+     * Must be called only from UI thread.
+     */
+    void activateEntry(int preferredPosition);
 
     /**
      * Commits the translation and deactivate entry. Translation will be saved.
@@ -182,8 +191,6 @@ public interface IEditor {
      */
     void refreshViewAfterFix(List<Integer> fixedEntries);
 
-    void refreshView(boolean doCommit);
-    
     /**
      * Set current focus to editor.
      */
@@ -308,17 +315,13 @@ public interface IEditor {
     void remarkOneMarker(String markerClassName);
 
     /**
-     * Gets a filter for this editor, or null if filter doesn't applied.
-     */
-    IEditorFilter getFilter();
-
-    /**
-     * Sets a filter to this editor. The filter causes only the selected entries to be shown in the editor.
+     * Adds a filter to this editor. The filter causes only the selected entries
+     * to be shown in the editor.
      * 
-     * @param filter
-     *            Filter instance
+     * @param entryList
+     *            List of project-wide entry numbers
      */
-    void setFilter(IEditorFilter filter);
+    void addFilter(List<Integer> entryList);
 
     /**
      * Removes the current filter.
@@ -334,9 +337,4 @@ public interface IEditor {
      * Perform any necessary actions for window deactivation.
      */
     void windowDeactivated();
-
-    /**
-     * Register translation to be identical to source.
-     */
-    void registerIdenticalTranslation();
 }

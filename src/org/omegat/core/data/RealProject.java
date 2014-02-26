@@ -9,7 +9,6 @@
                2009-2010 Didier Briel
                2012 Alex Buloichik, Guido Leenders, Didier Briel, Martin Fleurke
                2013 Aaron Madlon-Kay, Didier Briel
-               2014 Aaron Madlon-Kay, Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -33,15 +32,9 @@ package org.omegat.core.data;
 
 import gen.core.filters.Filters;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
-import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -58,11 +51,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.lucene.util.Version;
-import org.madlonkay.supertmxmerge.StmProperties;
-import org.madlonkay.supertmxmerge.SuperTmxMerge;
 import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
 import org.omegat.core.KnownException;
@@ -129,9 +118,7 @@ public class RealProject implements IProject {
     private boolean m_modifiedFlag;
 
     /** List of all segments in project. */
-    protected List<SourceTextEntry> allProjectEntries = new ArrayList<SourceTextEntry>(4096);
-
-    protected ImportFromAutoTMX importHandler;
+    private List<SourceTextEntry> allProjectEntries = new ArrayList<SourceTextEntry>(4096);
 
     private final StatisticsInfo hotStat = new StatisticsInfo();
 
@@ -167,10 +154,10 @@ public class RealProject implements IProject {
     private Set<EntryKey> existKeys = new HashSet<EntryKey>();
 
     /** Segments count in project files. */
-    protected List<FileInfo> projectFilesList = new ArrayList<FileInfo>();
+    protected final List<FileInfo> projectFilesList = new ArrayList<FileInfo>();
 
     /** This instance returned if translation not exist. */
-    private final TMXEntry EMPTY_TRANSLATION;
+    private static final TMXEntry EMPTY_TRANSLATION = new TMXEntry("", null, true);
     
     private boolean allowTranslationEqualToSource = Preferences.isPreference(Preferences.ALLOW_TRANS_EQUAL_TO_SRC);
 
@@ -194,10 +181,6 @@ public class RealProject implements IProject {
     }
 
     public RealProject(final ProjectProperties props, IRemoteRepository repository) {
-        PrepareTMXEntry empty = new PrepareTMXEntry();
-        empty.source = "";
-        EMPTY_TRANSLATION = new TMXEntry(empty, true, null);
-
         m_config = props;
         this.repository = repository;
 
@@ -256,13 +239,12 @@ public class RealProject implements IProject {
 
             loadTranslations();
 
-            allProjectEntries = Collections.unmodifiableList(allProjectEntries);
-            importHandler = new ImportFromAutoTMX(this, allProjectEntries);
-
             loadTM();
 
             loadOtherLanguages();
 
+            allProjectEntries = Collections.unmodifiableList(allProjectEntries);
+            
             loaded = true;
 
             // clear status message
@@ -315,9 +297,6 @@ public class RealProject implements IProject {
 
             loadTranslations();
 
-            allProjectEntries = Collections.unmodifiableList(allProjectEntries);
-            importHandler = new ImportFromAutoTMX(this, allProjectEntries);
-
             importTranslationsFromSources();
 
             loadTM();
@@ -328,6 +307,8 @@ public class RealProject implements IProject {
             String stat = CalcStandardStatistics.buildProjectStats(this, hotStat);
             String fn = m_config.getProjectInternal() + OConsts.STATS_FILENAME;
             Statistics.writeStat(fn, stat);
+
+            allProjectEntries = Collections.unmodifiableList(allProjectEntries);
 
             loaded = true;
 
@@ -631,10 +612,6 @@ public class RealProject implements IProject {
 
     /** Saves the translation memory and preferences */
     public synchronized void saveProject() {
-        saveProject(true);
-    }
-    
-    public synchronized void saveProject(boolean doTeamSync) {
         Log.logInfoRB("LOG_DATAENGINE_SAVE_START");
         UIThreadsUtil.mustNotBeSwingThread();
 
@@ -652,7 +629,7 @@ public class RealProject implements IProject {
 
                     projectTMX.save(m_config, s, isProjectModified());
 
-                    if (repository != null && doTeamSync) {
+                    if (repository != null) {
                         Core.getMainWindow().showStatusMessageRB("TEAM_SYNCHRONIZE");
                         rebaseProject();
                     }
@@ -758,163 +735,130 @@ public class RealProject implements IProject {
             needUpload = true;
         }
 
-        while (true) {
-            boolean again = false;
-            
-            //get revisions of files
-            String baseRevTMX = repository.getBaseRevisionId(projectTMXFile);
-            Log.logDebug(LOGGER, "rebaseProject: TMX base revision: {0}", baseRevTMX);
-            String baseRevGlossary = null;
-            if (updateGlossary) {
-                baseRevGlossary = repository.getBaseRevisionId(glossaryFile);
-                Log.logDebug(LOGGER, "rebaseProject: glossary base revision: {0}", baseRevGlossary);
+        //get revisions of files
+        String baseRevTMX = repository.getBaseRevisionId(projectTMXFile);
+        Log.logDebug(LOGGER, "rebaseProject: TMX base revision: {0}", baseRevTMX);
+        String baseRevGlossary = null;
+        if (updateGlossary) {
+            baseRevGlossary = repository.getBaseRevisionId(glossaryFile);
+            Log.logDebug(LOGGER, "rebaseProject: glossary base revision: {0}", baseRevGlossary);
+        }
+
+        //save current status to file in case we encounter errors.
+        // save into ".new" file
+        filenameTMXwithLocalChangesOnBase = new File(projectTMXFilename + "-based_on_" + baseRevTMX + OConsts.NEWFILE_EXTENSION);
+        filenameGlossarywithLocalChangesOnBase = null;
+        projectTMX.exportTMX(m_config, filenameTMXwithLocalChangesOnBase, false, false, true); //overwrites file if it exists
+        if (updateGlossary) {
+            filenameGlossarywithLocalChangesOnBase = new File(glossaryFilename + "-based_on_" + baseRevGlossary + OConsts.NEWFILE_EXTENSION);
+            if (filenameGlossarywithLocalChangesOnBase.exists()) {
+                //empty file first, because we append to it.
+                filenameGlossarywithLocalChangesOnBase.delete();
             }
-    
-            //save current status to file in case we encounter errors.
-            // save into ".new" file
-            filenameTMXwithLocalChangesOnBase = new File(projectTMXFilename + "-based_on_" + baseRevTMX + OConsts.NEWFILE_EXTENSION);
-            filenameGlossarywithLocalChangesOnBase = null;
-            projectTMX.exportTMX(m_config, filenameTMXwithLocalChangesOnBase, false, false, true); //overwrites file if it exists
-            if (updateGlossary) {
-                filenameGlossarywithLocalChangesOnBase = new File(glossaryFilename + "-based_on_" + baseRevGlossary + OConsts.NEWFILE_EXTENSION);
-                if (filenameGlossarywithLocalChangesOnBase.exists()) {
-                    //empty file first, because we append to it.
-                    filenameGlossarywithLocalChangesOnBase.delete();
-                }
-                filenameGlossarywithLocalChangesOnBase.createNewFile();
-                for (GlossaryEntry ge : glossaryEntries) {
-                    GlossaryReaderTSV.append(filenameGlossarywithLocalChangesOnBase, ge);
-                }
-            }
-    
-            // restore BASE revision
-            repository.restoreBase(modifiedFiles);
-            // load base revision
-            baseTMX = new ProjectTMX(m_config.getSourceLanguage(), m_config.getTargetLanguage(), m_config.isSentenceSegmentingEnabled(), projectTMXFile, null);
-            if (updateGlossary) {
-                baseGlossaryEntries = GlossaryReaderTSV.read(glossaryFile, true);
-            }
-    
-            //Maybe user has made local changes to other files. We don't want that. 
-            //Every translator in a project should work on the SAME=equal project.
-            //Now is a good time to 'clean' the project.
-            //Note that we can replace restoreBase with reset for the same functionality.
-            //Here I keep a separate call, just to make it clear what and why we are doing
-            //and to allow to make this feature optional in future releases
-            unlockProject(); // So that we are able to replace omegat.project
-            try {
-                repository.reset();
-            } finally {
-                lockProject(); // we restore the lock
-            }
-    
-            /* project is now in a bad state!
-             * If an error is raised before we reach the end of this function, we have backups in .new files.
-             * The user can use them to fix stuff, because
-             * -The tmx is still in memory, and on save it will be updated (but we can't assume that).
-             * -the glossary will be updated to the base, so we lost that.
-             */
-    
-            // update to HEAD revision from repository and load
-            try {
-                //NB: if glossary is updated, this will cause the GlossaryManager to reload the file :(
-                //I can live with that; we will update it a few lines down, so loss of info is only temporary. Only reloading of big files might take resources.
-                repository.download(modifiedFiles);
-                //download succeeded, we are online!
-                setOnlineMode();
-            } catch (IRemoteRepository.NetworkException ex) {
-                //network problems, we are offline.
-                setOfflineMode();
-                //not on HEAD, so upload will fail
-                needUpload = false;
-                //go on to restore changes
-            } catch (Exception ex) {
-                //not on HEAD, so upload will fail
-                needUpload = false;
-                //go on to restore changes
-            }
-            String headRevTMX = repository.getBaseRevisionId(projectTMXFile);
-            Log.logDebug(LOGGER, "rebaseProject: TMX head revision: {0}", headRevTMX);
-    
-            if (headRevTMX.equals(baseRevTMX)) {
-                // don't need rebase
-                filenameTMXwithLocalChangesOnHead = filenameTMXwithLocalChangesOnBase;
-                filenameTMXwithLocalChangesOnBase = null;
-                //free up some memory
-                baseTMX = null;
-            } else {
-                // need rebase
-                again = true;
-                headTMX = new ProjectTMX(m_config.getSourceLanguage(), m_config.getTargetLanguage(), m_config.isSentenceSegmentingEnabled(), projectTMXFile, null);
-                
-                // Do 3-way merge of:
-                // Base: baseTMX
-                // File 1: projectTMX (mine)
-                // File 2: headTMX (theirs)
-                synchronized (projectTMX) {
-                    StmProperties props = new StmProperties().setBaseTmxName(OStrings.getString("TMX_MERGE_BASE"))
-                            .setTmx1Name(OStrings.getString("TMX_MERGE_MINE"))
-                            .setTmx2Name(OStrings.getString("TMX_MERGE_THEIRS"))
-                            .setLanguageResource(OStrings.getResourceBundle())
-                            .setParentWindow(Core.getMainWindow().getApplicationFrame());
-                    ProjectTMX mergedTMX = SuperTmxMerge.merge(baseTMX, projectTMX, headTMX,
-                            m_config.getSourceLanguage().getLanguage(), m_config.getTargetLanguage().getLanguage(),
-                            props);
-                    projectTMX.replaceContent(mergedTMX);
-                }
-                
-                // Refresh view immediately to make sure changes are applied properly.
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        Core.getEditor().refreshView(false);
-                    }
-                });
-                
-                filenameTMXwithLocalChangesOnHead = new File(projectTMXFilename + "-based_on_" + headRevTMX + OConsts.NEWFILE_EXTENSION);
-                projectTMX.exportTMX(m_config, filenameTMXwithLocalChangesOnHead, false, false, true);
-                //free memory
-                headTMX = null;
-            }
-            if (updateGlossary) {
-                String headRevGlossary = repository.getBaseRevisionId(glossaryFile);
-                Log.logDebug(LOGGER, "rebaseProject: glossary head revision: {0}", headRevGlossary);
-                if (headRevGlossary.equals(baseRevGlossary)) {
-                    // don't need rebase
-                    filenameGlossarywithLocalChangesOnHead = filenameGlossarywithLocalChangesOnBase;
-                    filenameGlossarywithLocalChangesOnBase = null;
-                    //free up some memory
-                    baseGlossaryEntries = null;
-                } else {
-                    again = true;
-                    headGlossaryEntries = GlossaryReaderTSV.read(glossaryFile, true);
-                    List<GlossaryEntry> deltaAddedGlossaryLocal = new ArrayList<GlossaryEntry>(glossaryEntries);
-                    deltaAddedGlossaryLocal.removeAll(baseGlossaryEntries);
-                    List<GlossaryEntry> deltaRemovedGlossaryLocal = new ArrayList<GlossaryEntry>(baseGlossaryEntries);
-                    deltaRemovedGlossaryLocal.removeAll(glossaryEntries);
-                    headGlossaryEntries.addAll(deltaAddedGlossaryLocal);
-                    headGlossaryEntries.removeAll(deltaRemovedGlossaryLocal);
-    
-                    filenameGlossarywithLocalChangesOnHead = new File(glossaryFilename + "-based_on_" + headRevGlossary + OConsts.NEWFILE_EXTENSION);
-                    filenameGlossarywithLocalChangesOnHead.createNewFile();
-                    for (GlossaryEntry ge : headGlossaryEntries) {
-                        GlossaryReaderTSV.append(filenameGlossarywithLocalChangesOnHead, ge);
-                    }
-    
-                    //free memory
-                    headGlossaryEntries = null;
-                    baseGlossaryEntries = null;
-                }
-            } else {
-                filenameGlossarywithLocalChangesOnHead = null;
-            }
-            
-            if (!again) {
-                // free memory
-                glossaryEntries = null;
-                break;
+            filenameGlossarywithLocalChangesOnBase.createNewFile();
+            for (GlossaryEntry ge : glossaryEntries) {
+                GlossaryReaderTSV.append(filenameGlossarywithLocalChangesOnBase, ge);
             }
         }
+
+        // restore BASE revision
+        repository.restoreBase(modifiedFiles);
+        // load base revision
+        baseTMX = new ProjectTMX(m_config.getSourceLanguage(), m_config.getTargetLanguage(), m_config.isSentenceSegmentingEnabled(), projectTMXFile, null);
+        if (updateGlossary) {
+            baseGlossaryEntries = GlossaryReaderTSV.read(glossaryFile, true);
+        }
+
+        //Maybe user has made local changes to other files. We don't want that. 
+        //Every translator in a project should work on the SAME=equal project.
+        //Now is a good time to 'clean' the project.
+        //Note that we can replace restoreBase with reset for the same functionality.
+        //Here I keep a separate call, just to make it clear what and why we are doing
+        //and to allow to make this feature optional in future releases
+        unlockProject(); // So that we are able to replace omegat.project
+        try {
+            repository.reset();
+        } finally {
+            lockProject(); // we restore the lock
+        }
+
+        /* project is now in a bad state!
+         * If an error is raised before we reach the end of this function, we have backups in .new files.
+         * The user can use them to fix stuff, because
+         * -The tmx is still in memory, and on save it will be updated (but we can't assume that).
+         * -the glossary will be updated to the base, so we lost that.
+         */
+
+        // update to HEAD revision from repository and load
+        try {
+            //NB: if glossary is updated, this will cause the GlossaryManager to reload the file :(
+            //I can live with that; we will update it a few lines down, so loss of info is only temporary. Only reloading of big files might take resources.
+            repository.download(modifiedFiles);
+            //download succeeded, we are online!
+            setOnlineMode();
+        } catch (IRemoteRepository.NetworkException ex) {
+            //network problems, we are offline.
+            setOfflineMode();
+            //not on HEAD, so upload will fail
+            needUpload = false;
+            //go on to restore changes
+        } catch (Exception ex) {
+            //not on HEAD, so upload will fail
+            needUpload = false;
+            //go on to restore changes
+        }
+        String headRevTMX = repository.getBaseRevisionId(projectTMXFile);
+        Log.logDebug(LOGGER, "rebaseProject: TMX head revision: {0}", headRevTMX);
+
+        if (headRevTMX.equals(baseRevTMX)) {
+            // don't need rebase
+            filenameTMXwithLocalChangesOnHead = filenameTMXwithLocalChangesOnBase;
+            filenameTMXwithLocalChangesOnBase = null;
+            //free up some memory
+            baseTMX = null;
+        } else {
+            // need rebase
+            headTMX = new ProjectTMX(m_config.getSourceLanguage(), m_config.getTargetLanguage(), m_config.isSentenceSegmentingEnabled(), projectTMXFile, null);
+            //calculate delta with base, and apply delta on head and replace translations with new head.
+            projectTMX.calculateDeltaAndApply(baseTMX, headTMX);
+            filenameTMXwithLocalChangesOnHead = new File(projectTMXFilename + "-based_on_" + headRevTMX + OConsts.NEWFILE_EXTENSION);
+            projectTMX.exportTMX(m_config, filenameTMXwithLocalChangesOnHead, false, false, true);
+            //free memory
+            headTMX = null;
+        }
+        if (updateGlossary) {
+            String headRevGlossary = repository.getBaseRevisionId(glossaryFile);
+            Log.logDebug(LOGGER, "rebaseProject: glossary head revision: {0}", headRevGlossary);
+            if (headRevGlossary.equals(baseRevGlossary)) {
+                // don't need rebase
+                filenameGlossarywithLocalChangesOnHead = filenameGlossarywithLocalChangesOnBase;
+                filenameGlossarywithLocalChangesOnBase = null;
+                //free up some memory
+                baseGlossaryEntries = null;
+            } else {
+                headGlossaryEntries = GlossaryReaderTSV.read(glossaryFile, true);
+                List<GlossaryEntry> deltaAddedGlossaryLocal = new ArrayList<GlossaryEntry>(glossaryEntries);
+                deltaAddedGlossaryLocal.removeAll(baseGlossaryEntries);
+                List<GlossaryEntry> deltaRemovedGlossaryLocal = new ArrayList<GlossaryEntry>(baseGlossaryEntries);
+                deltaRemovedGlossaryLocal.removeAll(glossaryEntries);
+                headGlossaryEntries.addAll(deltaAddedGlossaryLocal);
+                headGlossaryEntries.removeAll(deltaRemovedGlossaryLocal);
+
+                filenameGlossarywithLocalChangesOnHead = new File(glossaryFilename + "-based_on_" + headRevGlossary + OConsts.NEWFILE_EXTENSION);
+                filenameGlossarywithLocalChangesOnHead.createNewFile();
+                for (GlossaryEntry ge : headGlossaryEntries) {
+                    GlossaryReaderTSV.append(filenameGlossarywithLocalChangesOnHead, ge);
+                }
+
+                //free memory
+                headGlossaryEntries = null;
+                baseGlossaryEntries = null;
+                glossaryEntries = null;
+            }
+        } else {
+            filenameGlossarywithLocalChangesOnHead = null;
+        }
+
         /* project_save.tmx / writableGlossary are now the head version (or still the base version, if offline)
          * the old situation is in based_on_<base>.new files
          * the new situation is in based_on_<head>.new files
@@ -1028,15 +972,11 @@ public class RealProject implements IProject {
         List<String> srcFileList = new ArrayList<String>();
         File root = new File(m_config.getSourceRoot());
         StaticUtils.buildFileList(srcFileList, root, true);
-        for (int i = 0; i < srcFileList.size(); i++) {
-            srcFileList.set(i, srcFileList.get(i).substring(m_config.getSourceRoot().length()));
-        }
-        StaticUtils.sortByList(srcFileList, getSourceFilesOrder());
 
         for (String filename : srcFileList) {
             // strip leading path information;
             // feed file name to project window
-            String filepath = filename;
+            String filepath = filename.substring(m_config.getSourceRoot().length());
 
             Core.getMainWindow().showStatusMessageRB("CT_LOAD_FILE_MX", filepath);
 
@@ -1047,8 +987,7 @@ public class RealProject implements IProject {
 
             loadFilesCallback.setCurrentFile(fi);
 
-            IFilter filter = fm.loadFile(m_config.getSourceRoot() + filename, new FilterContext(m_config),
-                    loadFilesCallback);
+            IFilter filter = fm.loadFile(filename, new FilterContext(m_config), loadFilesCallback);
 
             loadFilesCallback.fileFinished();
 
@@ -1131,16 +1070,14 @@ public class RealProject implements IProject {
                     continue;
                 }
 
-                PrepareTMXEntry prepare = new PrepareTMXEntry();
-                prepare.source = ste.getSrcText();
                 // project with default translations
                 if (m_config.isSupportDefaultTranslations()) {
                     // can we import as default translation ?
                     TMXEntry enDefault = projectTMX.getDefaultTranslation(ste.getSrcText());
                     if (enDefault == null) {
                         // default not exist yet - yes, we can
-                        prepare.translation = ste.getSourceTranslation();
-                        projectTMX.setTranslation(ste, new TMXEntry(prepare, true, null), true);
+                        TMXEntry tr = new TMXEntry(ste.getSrcText(), ste.getSourceTranslation(), true);
+                        projectTMX.setTranslation(ste, tr, true);
                         allowToImport.put(ste.getSrcText(), ste.getSourceTranslation());
                     } else {
                         // default translation already exist - did we just
@@ -1150,8 +1087,8 @@ public class RealProject implements IProject {
                         if (justImported != null && !ste.getSourceTranslation().equals(justImported)) {
                             // we just imported default and it doesn't equals to
                             // current - import as alternative
-                            prepare.translation = ste.getSourceTranslation();
-                            projectTMX.setTranslation(ste, new TMXEntry(prepare, false, null), false);
+                            TMXEntry tr = new TMXEntry(ste.getSrcText(), ste.getSourceTranslation(), false);
+                            projectTMX.setTranslation(ste, tr, false);
                         }
                     }
                 } else { // project without default translations
@@ -1159,8 +1096,8 @@ public class RealProject implements IProject {
                     TMXEntry en = projectTMX.getMultipleTranslation(ste.getKey());
                     if (en == null) {
                         // not exist yet - yes, we can
-                        prepare.translation = ste.getSourceTranslation();
-                        projectTMX.setTranslation(ste, new TMXEntry(prepare, false, null), false);
+                        TMXEntry tr = new TMXEntry(ste.getSrcText(), ste.getSourceTranslation(), false);
+                        projectTMX.setTranslation(ste, tr, false);
                     }
                 }
             }
@@ -1253,9 +1190,21 @@ public class RealProject implements IProject {
     /**
      * Append new translation from auto TMX.
      */
-    void appendFromAutoTMX(ExternalTMX tmx) {
+    private void appendFromAutoTMX(ExternalTMX tmx) {
+        Set<String> existSources = new HashSet<String>(allProjectEntries.size());
+        for (SourceTextEntry ste : allProjectEntries) {
+            existSources.add(ste.getSrcText());
+        }
         synchronized (projectTMX) {
-            importHandler.process(tmx);
+            for (TMXEntry e : tmx.getEntries()) {
+                if (existSources.contains(e.source)) {
+                    // source exist
+                    if (!projectTMX.defaults.containsKey(e.source)) {
+                        // translation not exist
+                        projectTMX.defaults.put(e.source, e);
+                    }
+                }
+            }
         }
     }
 
@@ -1291,75 +1240,62 @@ public class RealProject implements IProject {
         return m_modifiedFlag;
     }
 
-    @Override
-    public void setTranslation(final SourceTextEntry entry, final PrepareTMXEntry trans, boolean defaultTranslation, TMXEntry.ExternalLinked externalLinked) {
-        if (trans == null) {
-            throw new IllegalArgumentException("RealProject.setTranslation(tr) can't be null");
-        }
+    /**
+     * {@inheritDoc}
+     */
+    public void setTranslation(final SourceTextEntry entry, final String trans, String note, boolean isDefault) {
 
-        TMXEntry prevTrEntry = defaultTranslation ? projectTMX.getDefaultTranslation(entry.getSrcText())
-                : projectTMX.getMultipleTranslation(entry.getKey());
-
-        trans.changer = Preferences.getPreferenceDefault(Preferences.TEAM_AUTHOR,
+        TMXEntry prevTrEntry = isDefault ? projectTMX.getDefaultTranslation(entry.getSrcText()) : projectTMX
+                .getMultipleTranslation(entry.getKey());
+        
+        String creator;
+        long creationDate;
+        String changer = Preferences.getPreferenceDefault(Preferences.TEAM_AUTHOR,
                 System.getProperty("user.name"));
-        trans.changeDate = System.currentTimeMillis();
+        long changeDate = System.currentTimeMillis();
 
         if (prevTrEntry == null) {
             // there was no translation yet
             prevTrEntry = EMPTY_TRANSLATION;
-            trans.creationDate = trans.changeDate;
-            trans.creator = trans.changer;
+            creationDate = changeDate;
+            creator = changer;
         } else {
-            trans.creationDate = prevTrEntry.creationDate;
-            trans.creator = prevTrEntry.creator;
+            creationDate = prevTrEntry.creationDate;
+            creator = prevTrEntry.creator;
         }
-
-        if (StringUtil.isEmpty(trans.note)) {
-            trans.note = null;
-        }
-
-        trans.source = entry.getSrcText();
-
+        
         TMXEntry newTrEntry;
-
-        if (trans.translation == null && trans.note == null) {
-            // no translation, no note
-            newTrEntry = null;
+        if (StringUtil.equalsWithNulls(prevTrEntry.translation, trans)) {
+            // translation not changed
+            if (StringUtil.nvl(prevTrEntry.note, "").equals(StringUtil.nvl(note, ""))) {
+                // note was not changed also
+                return;
+            }
+            // only note was changed
+            newTrEntry = new TMXEntry(prevTrEntry.source, prevTrEntry.translation, prevTrEntry.changer,
+                    prevTrEntry.changeDate, prevTrEntry.creator, prevTrEntry.creationDate,
+                    (StringUtil.isEmpty(note) ? null : note), prevTrEntry.defaultTranslation, null);
         } else {
-            newTrEntry = new TMXEntry(trans, defaultTranslation, externalLinked);
+            // translation was changed
+            if (trans == null && StringUtil.isEmpty(note)) {
+                // no translation, no note
+                newTrEntry = null;
+            } else {
+                newTrEntry = new TMXEntry(entry.getSrcText(), trans, changer, changeDate,
+                        creator, creationDate, (StringUtil.isEmpty(note) ? null : note), isDefault, null);
+            }
         }
 
         m_modifiedFlag = true;
 
-        projectTMX.setTranslation(entry, newTrEntry, defaultTranslation);
+        projectTMX.setTranslation(entry, newTrEntry, isDefault);
 
         /**
          * Calculate how to statistics should be changed.
          */
         int diff = prevTrEntry.translation == null ? 0 : -1;
-        diff += trans.translation == null ? 0 : +1;
+        diff += trans == null ? 0 : +1;
         hotStat.numberofTranslatedSegments += diff;
-    }
-
-    @Override
-    public void setNote(final SourceTextEntry entry, final TMXEntry oldTE, final String note) {
-        if (oldTE == null) {
-            throw new IllegalArgumentException("RealProject.setNote(tr) can't be null");
-        }
-
-        TMXEntry prevTrEntry = oldTE.defaultTranslation ? projectTMX
-                .getDefaultTranslation(entry.getSrcText()) : projectTMX
-                .getMultipleTranslation(entry.getKey());
-        if (prevTrEntry == null) {
-            throw new IllegalArgumentException("RealProject.setNote() must have previous translation");
-        }
-
-        PrepareTMXEntry en = new PrepareTMXEntry(prevTrEntry);
-        en.note = note;
-
-        m_modifiedFlag = true;
-
-        projectTMX.setTranslation(entry, new TMXEntry(en, prevTrEntry.defaultTranslation, prevTrEntry.linked), prevTrEntry.defaultTranslation);
     }
 
     public void iterateByDefaultTranslations(DefaultTranslationsIterator it) {
@@ -1396,7 +1332,7 @@ public class RealProject implements IProject {
         return transMemories;
     }
 
-    public Map<Language, ProjectTMX> getOtherTargetLanguageTMs() {
+    public Map<Language,ProjectTMX> getOtherTargetLanguageTMs() {
         return otherTargetLangTMs;
     }
 
@@ -1486,39 +1422,6 @@ public class RealProject implements IProject {
      */
     public List<FileInfo> getProjectFiles() {
         return Collections.unmodifiableList(projectFilesList);
-    }
-
-    @Override
-    public List<String> getSourceFilesOrder() {
-        final String file = m_config.getProjectInternal() + OConsts.FILES_ORDER_FILENAME;
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-            List<String> result = new ArrayList<String>();
-            String s;
-            while ((s = rd.readLine()) != null) {
-                result.add(s);
-            }
-            rd.close();
-            return result;
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    @Override
-    public void setSourceFilesOrder(List<String> filesList) {
-        final String file = m_config.getProjectInternal() + OConsts.FILES_ORDER_FILENAME;
-        try {
-            BufferedWriter wr = new BufferedWriter(
-                    new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-            for (String f : filesList) {
-                wr.write(f);
-                wr.write('\n');
-            }
-            wr.close();
-        } catch (Exception ex) {
-            Log.log(ex);
-        }
     }
 
     /**
@@ -1634,8 +1537,6 @@ public class RealProject implements IProject {
                 boolean removeSpaces = Core.getFilterMaster().getConfig().isRemoveSpacesNonseg();
                 String sourceS = ParseEntry.stripSomeChars(source, spr, config.isRemoveTags(), removeSpaces);
                 String transS = ParseEntry.stripSomeChars(translation, spr, config.isRemoveTags(), removeSpaces);
-
-                PrepareTMXEntry tr = new PrepareTMXEntry();
                 if (config.isSentenceSegmentingEnabled()) {
                     List<String> segmentsSource = Segmenter.segment(config.getSourceLanguage(), sourceS, null, null);
                     List<String> segmentsTranslation = Segmenter
@@ -1644,9 +1545,7 @@ public class RealProject implements IProject {
                         if (isFuzzy) {
                             transS = "[" + filter.getFuzzyMark() + "] " + transS;
                         }
-                        tr.source = sourceS;
-                        tr.translation = transS;
-                        data.put(sourceS, new TMXEntry(tr, true, null));
+                        data.put(sourceS, new TMXEntry(sourceS, transS, true));
                     } else {
                         for (short i = 0; i < segmentsSource.size(); i++) {
                             String oneSrc = segmentsSource.get(i);
@@ -1654,18 +1553,14 @@ public class RealProject implements IProject {
                             if (isFuzzy) {
                                 oneTrans = "[" + filter.getFuzzyMark() + "] " + oneTrans;
                             }
-                            tr.source = oneSrc;
-                            tr.translation = oneTrans;
-                            data.put(sourceS, new TMXEntry(tr, true, null));
+                            data.put(sourceS, new TMXEntry(oneSrc, oneTrans, true));
                         }
                     }
                 } else {
                     if (isFuzzy) {
                         transS = "[" + filter.getFuzzyMark() + "] " + transS;
                     }
-                    tr.source = sourceS;
-                    tr.translation = transS;
-                    data.put(sourceS, new TMXEntry(tr, true, null));
+                    data.put(sourceS, new TMXEntry(sourceS, transS, true));
                 }
             }
         }

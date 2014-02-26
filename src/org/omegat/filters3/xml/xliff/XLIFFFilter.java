@@ -6,7 +6,6 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2007-2011 Didier Briel
                2013 Didier Briel, Aaron Madlon-Kay, Piotr Kulik
-               2014 Piotr Kulik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -56,7 +55,7 @@ public class XLIFFFilter extends XMLFilter {
     private boolean ignored;
     private ArrayList<String> groupResname = new ArrayList<String>();
     private int groupLevel;
-    private ArrayList<String> notes = new ArrayList<String>();
+    private String note;
     private String text;
     private ArrayList<String> entryText = new ArrayList<String>();
     private ArrayList<List<ProtectedPart>> protectedParts = new ArrayList<List<ProtectedPart>>();
@@ -206,7 +205,7 @@ public class XLIFFFilter extends XMLFilter {
     public void tagEnd(String path) {
         if (path.endsWith("trans-unit/note")) {
             // <trans-unit> <note>'s only 
-            notes.add(text);
+            note = text;
         } else if (path.endsWith("trans-unit")) {
             if (entryParseCallback != null) {
                 StringBuffer buf = new StringBuffer();
@@ -224,7 +223,7 @@ public class XLIFFFilter extends XMLFilter {
                     buf.append('\n');
                 }
 
-                for (String note : notes) {
+                if (note != null) {
                     buf.append(note);
                     buf.append('\n');
                 }
@@ -237,7 +236,7 @@ public class XLIFFFilter extends XMLFilter {
             }
 
             resname = null;
-            notes.clear();
+            note = null;
             entryText.clear();
             protectedParts.clear();
         } else if (path.endsWith("/group")) {

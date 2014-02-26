@@ -6,7 +6,6 @@
  Copyright (C) 2010 Alex Buloichik
                2012 Thomas Cordonnier
                2013 Alex Buloichik
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -38,7 +37,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 
 import javax.xml.namespace.QName;
@@ -46,7 +47,6 @@ import javax.xml.stream.Location;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLReporter;
-import javax.xml.stream.XMLResolver;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
@@ -111,7 +111,7 @@ public class TMXReader2 {
                 warningsCount++;
             }
         });
-        factory.setXMLResolver(TMX_DTD_RESOLVER_2);
+        
         dateFormat1 = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH);
         dateFormat1.setTimeZone(TimeZone.getTimeZone("UTC"));
         dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
@@ -308,7 +308,7 @@ public class TMXReader2 {
             case XMLEvent.END_ELEMENT:
                 EndElement eEnd = (EndElement) e;
                 if ("prop".equals(eEnd.getName().getLocalPart())) {
-                    currentTu.props.add(new TMXProp(propType, propContent.toString()));
+                    currentTu.props.put(propType, propContent.toString());
                     return;
                 }
                 break;
@@ -591,7 +591,7 @@ public class TMXReader2 {
         public String creationid;
         public long creationdate;
         public String note;
-        public List<TMXProp> props = new ArrayList<TMXProp>();
+        public Map<String, String> props = new TreeMap<String, String>();
         public List<ParsedTuv> tuvs = new ArrayList<ParsedTuv>();
 
         void clear() {
@@ -599,7 +599,7 @@ public class TMXReader2 {
             changedate = 0;
             creationid = null;
             creationdate = 0;
-            props = new ArrayList<TMXProp>(); // do not CLEAR, because it may be shared
+            props = new TreeMap<String, String>(); // do not CLEAR, because it may be shared
             tuvs = new ArrayList<ParsedTuv>();
             note = null;
         }
@@ -620,19 +620,6 @@ public class TMXReader2 {
                 return new InputSource(TMXReader2.class.getResourceAsStream("/schemas/tmx11.dtd"));
             } else if (systemId.endsWith("tmx14.dtd")) {
                 return new InputSource(TMXReader2.class.getResourceAsStream("/schemas/tmx14.dtd"));
-            } else {
-                return null;
-            }
-        }
-    };
-
-    public static final XMLResolver TMX_DTD_RESOLVER_2 = new XMLResolver() {
-        public Object resolveEntity(String publicId, String systemId,
-                String baseURI, String namespace) throws XMLStreamException {
-            if (systemId.endsWith("tmx11.dtd")) {
-                return TMXReader2.class.getResourceAsStream("/schemas/tmx11.dtd");
-            } else if (systemId.endsWith("tmx14.dtd")) {
-                return TMXReader2.class.getResourceAsStream("/schemas/tmx14.dtd");
             } else {
                 return null;
             }
