@@ -7,24 +7,22 @@
                2010 Alex Buloichik
                2011 Alex Buloichik, Martin Fleurke
                2012 Alex Buloichik, Didier Briel
-               2013 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 package org.omegat.util;
 
@@ -34,7 +32,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -53,7 +50,6 @@ import org.omegat.core.data.TMXEntry;
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Martin Fleurke
  * @author Didier Briel
- * @author Aaron Madlon-Kay
  */
 public class TMXWriter2 {
     private static XMLOutputFactory FACTORY;
@@ -153,7 +149,7 @@ public class TMXWriter2 {
      * @param propValues
      *            pairs with property name and values
      */
-    public void writeEntry(String source, String translation, TMXEntry entry, List<String> propValues)
+    public void writeEntry(String source, String translation, TMXEntry entry, String[] propValues)
             throws Exception {
         xml.writeCharacters("    ");
         xml.writeStartElement("tu");
@@ -161,15 +157,15 @@ public class TMXWriter2 {
 
         // add properties
         if (propValues != null) {
-            for (int i = 0; i < propValues.size(); i += 2) {
-                if (propValues.get(i + 1) == null) {
+            for (int i = 0; i < propValues.length; i += 2) {
+                if (propValues[i + 1] == null) {
                     // value is null - not need to write
                     continue;
                 }
                 xml.writeCharacters("      ");
                 xml.writeStartElement("prop");
-                xml.writeAttribute("type", propValues.get(i));
-                xml.writeCharacters(propValues.get(i + 1));
+                xml.writeAttribute("type", propValues[i]);
+                xml.writeCharacters(propValues[i + 1]);
                 xml.writeEndElement(); // prop
                 xml.writeCharacters(FileUtil.LINE_SEPARATOR);
             }
@@ -179,7 +175,7 @@ public class TMXWriter2 {
         if (entry.note != null && !entry.note.equals("")) {
             String note = StaticUtils.fixChars(entry.note);
             if (forceValidTMX) {
-                note = StaticUtils.stripXmlTags(note);
+                note = StaticUtils.stripTags(note);
             }
             xml.writeCharacters("      ");
             xml.writeStartElement("note");
@@ -191,7 +187,7 @@ public class TMXWriter2 {
         // write source segment
         source = StaticUtils.fixChars(source);
         if (forceValidTMX) {
-            source = StaticUtils.stripXmlTags(source);
+            source = StaticUtils.stripTags(source);
         }
         xml.writeCharacters("      ");
         xml.writeStartElement("tuv");
@@ -215,7 +211,7 @@ public class TMXWriter2 {
         if (translation != null) {
             translation = StaticUtils.fixChars(translation);
             if (forceValidTMX) {
-                translation = StaticUtils.stripXmlTags(translation);
+                translation = StaticUtils.stripTags(translation);
             }
 
             xml.writeCharacters("      ");
@@ -230,12 +226,6 @@ public class TMXWriter2 {
             }
             if (entry.changeDate > 0) {
                 xml.writeAttribute("changedate", tmxDateFormat.format(new Date(entry.changeDate)));
-            }
-            if (!StringUtil.isEmpty(entry.creator)) {
-                xml.writeAttribute("creationid", entry.creator);
-            }
-            if (entry.creationDate > 0) {
-                xml.writeAttribute("creationdate", tmxDateFormat.format(new Date(entry.creationDate)));
             }
             xml.writeCharacters(FileUtil.LINE_SEPARATOR);
 

@@ -7,12 +7,18 @@
 	<classpathentry exported="true" kind="lib" path="lib/htmlparser.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jna.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/MRJAdapter.jar" sourcepath="lib/sources/MRJAdapter-source.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/swing-layout-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmyspell-core-1.0.0-beta-2.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/junit-4.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/xmlunit-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/pdfbox-app-1.8.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="lib" path="lib/activation.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-impl.jar"/>
+	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/vldocking_2.1.4.jar"/>
 	<classpathentry kind="lib" path="lib/swing-worker-1.2.jar" sourcepath="lib/sources/swing-worker-src-1.2.zip"/>
+	<classpathentry kind="lib" path="lib/sjsxp-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-2.1.0.201209190230-r.jar"/>
 	<classpathentry kind="lib" path="lib/jsch-0.1.49.jar"/>
 	<classpathentry kind="lib" path="lib/sequence-library-1.0.2.jar"/>
@@ -20,30 +26,6 @@
 	<classpathentry kind="lib" path="lib/sqljet-1.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-runtime-3.4.jar"/>
 	<classpathentry kind="lib" path="lib/diff.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="lib/lucene-analyzers-3.6.2.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-core-3.6.2.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-kuromoji-3.6.2.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-smartcn-3.6.2.jar"/>
-	<classpathentry kind="lib" path="lib/tinysegmenter.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/orion-ssh2-214.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/cjftransform-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/ictclas4j-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/jwordsplitter-3.4.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/languagetool-core-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/LanguageTool-data.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/morfologik-fsa-1.5.4.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/morfologik-speller-1.5.4.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/morfologik-stemming-1.5.4.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/segment-1.4.1.jar"/>
-	<classpathentry kind="lib" path="lib/LanguageTool/lucene-gosen-2.0.2-ipadic.jar"/>
-	<classpathentry kind="lib" path="lib/bsf-2.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/js-rhino-1.7R4.jar"/>
-	<classpathentry kind="lib" path="lib/groovy-all-1.8.9.jar"/>
-	<classpathentry kind="lib" path="lib/KoreanAnalyzer-3x-120223.jar"/>
-	<classpathentry kind="lib" path="lib/SuperTMXMerge-for_OmegaT.jar"/>
-	<classpathentry kind="lib" path="lib/swing-layout-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/JSAP-2.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -8,25 +8,19 @@
         <primary>Сочетания клавиш</primary> <secondary>Настройка</secondary>
       </indexterm>Настройка сочетаний клавиш</title>
 
-    <para>Для большинства элементов главного меню можно настроить сочетание клавиш. Вы можете изменить сочетания клавиш по умолчанию и добавить новые, поместив в каталог настроек ОмегаТ файл с соответствующими определениями (см. раздел <link linkend="user.files">Расположение пользовательских файлов</link>).</para>
+    <para>Для большинства элементов главного меню можно настроить сочетание клавиш. По умолчанию, сочетания клавиш присвоены только наиболее используемым пунктам меню. Вы можете изменить сочетания клавиш по умолчанию и добавить новые, поместив в каталог настроек ОмегаТ файл с соответствующими определениями (см. раздел <link linkend="user.files">Расположение пользовательских файлов</link>).</para>
 
     <para>Файл с определениями сочетаний клавиш должен называться <filename>MainMenuShortcuts.properties</filename> и содержать не более одного сочетания в каждой строке. Допускается наличие пустых строк и строк комментария, которые начинаются с «//». Все символы после знака «//» будут проигнорированы.</para>
 
     <para>Чтобы новые сочетания клавиш вступили в силу, после изменения <filename>MainMenuShortcuts.properties</filename> <application>ОмегаТ</application> должна быть перезапущена.</para>
 
-    <para>The shortcut definition syntax is the following: <code>&lt;menu item
-    code&gt;=&lt;shortcut&gt;</code>, where <emphasis>&lt;menu item
-    code&gt;</emphasis> is a code taken from the tables below and
-    <emphasis>&lt;shortcut&gt;</emphasis> is a combination of pressed keys
-    specified by the user<footnote>
+    <para>Новые сочетания клавиш должны определяться следующим образом: <code>&lt;кодовое обозначение пункта меню&gt;=&lt;сочетание клавиш&gt;</code>, где <emphasis>&lt;кодовое обозначение пункта меню&gt;</emphasis> — код из приведённых ниже таблиц, а <emphasis>&lt;сочетание клавиш&gt;</emphasis> — заданная пользователем комбинация клавиш, которую надо нажать.<footnote>
         <para>Полный синтаксис определения сочетаний клавиш описан в документации Java 1.6 от компании Oracle (внизу страницы): <ulink url="http://docs.oracle.com/javase/6/docs/api/javax/swing/KeyStroke.html">Сочетания клавиш Java 1.6</ulink></para>
       </footnote>.</para>
 
     <para>&lt;сочетание клавиш&gt; имеет следующий формат: 0 или 1 <code>&lt;модификатор&gt;</code>, затем 0 или 1 <code>&lt;состояние&gt;</code> и 1 <code>&lt;клавиша&gt;</code>, где:<itemizedlist>
         <listitem>
-          <para><code>&lt;modifier&gt;</code> can be:
-          <emphasis>shift</emphasis>, <emphasis>control</emphasis>,
-          <emphasis>ctrl</emphasis>, <emphasis>meta</emphasis><footnote>
+          <para><code>&lt;модификатор&gt;</code> может принимать значения: <emphasis>shift</emphasis>, <emphasis>control</emphasis>, <emphasis>ctrl</emphasis>, <emphasis>meta</emphasis><footnote>
               <para>На Mac OS X модификатор <emphasis>meta</emphasis> используется для обозначения клавиши <emphasis>COMMAND</emphasis>.</para>
             </footnote>, <emphasis>alt</emphasis>,
           <emphasis>altGraph</emphasis></para>
@@ -37,18 +31,17 @@
         </listitem>
 
         <listitem>
-          <para>and <code>&lt;key&gt;</code> can be any key available on your
-          keyboard<footnote>
+          <para>и <code>&lt;клавиша&gt;</code> может соответствовать любой доступной на клавиатуре клавише<footnote>
               <para>Все возможные клавиши перечислены в документации Java 1.6 от компании Oracle: <ulink url="http://docs.oracle.com/javase/6/docs/api/java/awt/event/KeyEvent.html">Описание Java 1.6 keyEvents</ulink></para>
             </footnote>.</para>
         </listitem>
       </itemizedlist></para>
 
-    <para>For example, in the default OmegaT shortcuts<footnote>
-        <para>Сочетания клавиш по умолчанию в ОмегаТ доступны на SourceForge: <ulink url="http://omegat.svn.sourceforge.net/viewvc/omegat/branches/release-2-6/src/org/omegat/gui/main/MainMenuShortcuts.properties">Сочетания клавиш по умолчанию</ulink></para>
+    <para>Например, в сочетаниях клавиш, используемых ОмегаТ по умолчанию<footnote>
+        <para>Сочетания клавиш по умолчанию в ОмегаТ доступны на SourceForge: <ulink url="http://omegat.svn.sourceforge.net/viewvc/omegat/branches/release-2-5/src/org/omegat/gui/main/MainMenuShortcuts.properties">Сочетания клавиш по умолчанию</ulink></para>
 
-        <para>Сочетания клавиш по умолчанию для Mac также доступны на SourceForge, в них вместо «ctrl» используется «meta»: <ulink url="http://omegat.svn.sourceforge.net/viewvc/omegat/branches/release-2-6/src/org/omegat/gui/main/MainMenuShortcuts.mac.properties">Сочетания клавиш по умолчанию для Mac</ulink></para>
-      </footnote>, one can find:</para>
+        <para>Сочетания клавиш по умолчанию для Mac также доступны на SourceForge, в них вместо «ctrl» используется «meta»: <ulink url="http://omegat.svn.sourceforge.net/viewvc/omegat//branches/release-2-5/src/org/omegat/gui/main/MainMenuShortcuts.mac.properties">Сочетания клавиш по умолчанию для Mac</ulink></para>
+      </footnote> можно найти:</para>
 
     <itemizedlist>
       <listitem>
@@ -62,14 +55,7 @@
 
     <para>Первое сочетание клавиш используется для <guimenuitem>открытия проекта</guimenuitem>, а второе для <guimenuitem>добавления записи в глоссарий</guimenuitem>.</para>
 
-    <para>If you want to use <keycombo>
-        <keycap>Shift</keycap>
-
-        <keycap>Ctrl</keycap>
-
-        <keycap>O</keycap>
-      </keycombo> to open a project, modify your
-    <filename>MainMenuShortcuts.properties</filename> as follows:<code>
+    <para>Если для открытия проекта вы хотите использовать сочетание клавиш <keycombo> <keycap>SHIFT</keycap> <keycap>CTRL</keycap> <keycap>O</keycap> </keycombo>, измените <filename>MainMenuShortcuts.properties</filename> следующим образом:<code>
     </code></para>
 
     <para><code>projectOpenMenuItem=shift ctrl O</code>.</para>
@@ -89,9 +75,9 @@
       <title>Меню «Проект»</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -120,14 +106,6 @@
             <entry><keycap>CTRL+O</keycap></entry>
 
             <entry>projectOpenMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Загрузить командный проект</entry>
-
-            <entry/>
-
-            <entry>projectTeamNewMenuItem</entry>
           </row>
 
           <row>
@@ -213,9 +191,9 @@
       <title>Меню «Правка»</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -359,7 +337,7 @@
           </row>
 
           <row>
-            <entry>Сменить регистр на/Строчные буквы</entry>
+            <entry>Строчные буквы</entry>
 
             <entry/>
 
@@ -367,7 +345,7 @@
           </row>
 
           <row>
-            <entry>Сменить регистр на/Прописные буквы</entry>
+            <entry>Прописные буквы</entry>
 
             <entry/>
 
@@ -375,7 +353,7 @@
           </row>
 
           <row>
-            <entry>Сменить регистр на/Каждое слово с прописной буквы</entry>
+            <entry>Каждое слово с прописной буквы</entry>
 
             <entry/>
 
@@ -389,23 +367,6 @@
 
             <entry>cycleSwitchCaseMenuItem</entry>
           </row>
-
-          <row>
-            <entry>Использовать как перевод по умолчанию</entry>
-
-            <entry/>
-
-            <entry>editMultipleDefault</entry>
-          </row>
-
-          <row>
-            <entry>Создать вариант перевода</entry>
-
-            <entry/>
-
-            <entry>editMultipleAlternate</entry>
-          </row>
-
         </tbody>
       </tgroup>
     </table>
@@ -418,9 +379,9 @@
       <title>Меню «Переход»</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -468,33 +429,17 @@
           </row>
 
           <row>
-            <entry>Следующее примечание</entry>
+            <entry>Назад...</entry>
 
-            <entry/>
+            <entry><keycap>CTRL+SHIFT+P</keycap></entry>
 
-            <entry>gotoNextNoteMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Предыдущее примечание</entry>
-
-            <entry/>
-
-            <entry>gotoPreviousNoteMenuItem</entry>
+            <entry>gotoHistoryForwardMenuItem</entry>
           </row>
 
           <row>
             <entry>Вперёд...</entry>
 
             <entry><keycap>CTRL+SHIFT+N</keycap></entry>
-
-            <entry>gotoHistoryForwardMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Назад...</entry>
-
-            <entry><keycap>CTRL+SHIFT+P</keycap></entry>
 
             <entry>gotoHistoryBackMenuItem</entry>
           </row>
@@ -514,9 +459,9 @@
       </indexterm>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -564,38 +509,6 @@
           </row>
 
           <row>
-            <entry>Выделить сегменты с примечаниями</entry>
-
-            <entry/>
-
-            <entry>viewMarkNotedSegmentsCheckBoxMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Выделить неразрывные пробелы</entry>
-
-            <entry/>
-
-            <entry>viewMarkNBSPCheckBoxMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Выделить пробелы</entry>
-
-            <entry/>
-
-            <entry>viewMarkWhitespaceCheckBoxMenuItem</entry>
-          </row>
-
-          <row>
-            <entry>Выделить управляющие символы алгоритма отображения двунаправленного текста</entry>
-
-            <entry/>
-
-            <entry>viewMarkBidiCheckBoxMenuItem</entry>
-          </row>
-
-           <row>
             <entry>Сведения об изменении/Ничего не показывать</entry>
 
             <entry/>
@@ -603,7 +516,7 @@
             <entry>viewDisplayModificationInfoNoneRadioButtonMenuItem</entry>
           </row>
 
-         <row>
+          <row>
             <entry>Сведения об изменении/Показать для выбранного сегмента</entry>
 
             <entry/>
@@ -630,9 +543,9 @@
       <title>Меню «Инструменты»</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -682,9 +595,9 @@
       <title>Меню «Параметры»</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 
@@ -812,7 +725,7 @@
           </row>
 
           <row>
-            <entry>Параметры сохранения и создания документов...</entry>
+            <entry>Сохранить</entry>
 
             <entry/>
 
@@ -846,9 +759,9 @@
       <title>Меню «Справка»</title>
 
       <tgroup cols="3" colsep="1">
-        <colspec align="left" colname="1" colnum="1"/>
+        <colspec align="left" colname="1" colnum="1" colwidth="120"/>
 
-        <colspec align="left" colname="2" colnum="2"/>
+        <colspec align="left" colname="2" colnum="2" colwidth="80"/>
 
         <colspec align="left" colname="3" colnum="3"/>
 

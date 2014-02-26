@@ -245,7 +245,7 @@
 
       <para>As you translate your files, <application>OmegaT</application>
       stores your work continually in <filename>project_save.tmx</filename> in
-      the project's /<filename>omegat</filename> subfolder.</para>
+      the project's /<filename>omegat</filename> subfolders.</para>
 
       <para><application>OmegaT</application> also backups translation memory
       to <filename>project_save.tmx.YEARMMDDHHNN.bak</filename> in the same
@@ -503,7 +503,7 @@
       <itemizedlist>
         <listitem>
           <para>When you exit the project. the TMX files in the main project
-          folder (see above) now contain the transltions in the selected
+          folder (see above) now contain the translations in the selected
           language pair, for the files, you have copied into the source
           folder. Copy them to a safe place for future referrals.</para>
         </listitem>

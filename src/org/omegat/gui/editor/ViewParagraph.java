@@ -3,8 +3,7 @@
           with fuzzy matching, translation memory, keyword search, 
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2013 - Zoltan Bartko - bartkozoltan@bartkozoltan.com
-               2013 Alex Buloichik
+ Copyright (C) 2013 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -27,23 +26,14 @@
 package org.omegat.gui.editor;
 
 import java.awt.Shape;
+
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.Element;
 import javax.swing.text.ParagraphView;
-import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
 /**
- * Custom breakspots processing required only for word wrapping issue fix: on
- * the editing line with wordwrap, add a new line at the beginning of the line
- * and write something, the word wrapping behaves in a strange way. If you paste
- * a long line (wrapped one), the word wrap disappears and the line gets looong.
  * 
- * JDK bug 6539700(http://bugs.sun.com/view_bug.do?bug_id=6539700) : JTextPane
- * line wrap radically different from previous versions in jre 1.5.0_10+. Fixed
- * in Java 7b70.
- * 
- * @author bartkoz
  * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public class ViewParagraph extends ParagraphView {
@@ -59,7 +49,6 @@ public class ViewParagraph extends ParagraphView {
             return;
         }
         super.removeUpdate(e, a, f);
-        resetBreakSpots();
     }
 
     @Override
@@ -69,7 +58,6 @@ public class ViewParagraph extends ParagraphView {
             return;
         }
         super.insertUpdate(e, a, f);
-        resetBreakSpots();
     }
 
     @Override
@@ -79,19 +67,9 @@ public class ViewParagraph extends ParagraphView {
             return;
         }
         super.changedUpdate(e, a, f);
-        resetBreakSpots();
     }
 
     private boolean isOutside(DocumentEvent e) {
         return e.getOffset() + e.getLength() < getStartOffset() || getEndOffset() < e.getOffset();
-    }
-
-    private void resetBreakSpots() {
-        for (int i = 0; i < layoutPool.getViewCount(); i++) {
-            View v = layoutPool.getView(i);
-            if (v instanceof ViewLabel) {
-                ((ViewLabel) v).resetBreakSpots();
-            }
-        }
     }
 }

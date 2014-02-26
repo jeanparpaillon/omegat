@@ -12,20 +12,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
@@ -146,6 +145,8 @@ public class PatternConsts {
             // [ 2138846 ] French dictionary cannot be downloaded and installed
             "\"([a-z]{1,8})(_([A-Z]{1,8})?)(_1-3-2)?\\.zip\"");
 
+    public static final Pattern NBSP = Pattern.compile("\u00a0");
+
     public static final Pattern SPACE_TAB = Pattern.compile("( |	)+");
 
     /**
@@ -195,10 +196,6 @@ public class PatternConsts {
      * pattern for text that should be removed from translation. Can be null!
      */
     private static Pattern REMOVE;
-    /**
-     * Pattern for text that should be considered a custom tag. Can be null!
-     */
-    private static Pattern CUSTOM_TAGS;
 
     /**
      * Returns the placeholder pattern (OmegaT tags, printf tags, java MessageFomat tags, custom tags, combined according to user configuration)
@@ -248,22 +245,5 @@ public class PatternConsts {
      */
     public static void updateRemovePattern() {
         REMOVE = null;
-    }
-
-    public static Pattern getCustomTagPattern() {
-        if (CUSTOM_TAGS == null) {
-            String customTagsRegex = Preferences.getPreferenceDefaultAllowEmptyString(Preferences.CHECK_CUSTOM_PATTERN);
-            if (!"".equalsIgnoreCase(customTagsRegex)) {
-                CUSTOM_TAGS = Pattern.compile(customTagsRegex);
-            }
-        }
-        return CUSTOM_TAGS;
-    }
-
-    /**
-     * Resets the remove pattern. Use it when the user has changed tagvalidation configuration.
-     */
-    public static void updateCustomTagPattern() {
-        CUSTOM_TAGS = null;
     }
 }

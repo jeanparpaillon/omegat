@@ -3,30 +3,28 @@
           with fuzzy matching, translation memory, keyword search,
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2009-2014 Alex Buloichik
+ Copyright (C) 2009 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -119,11 +117,8 @@ public class DirectoryMonitor extends Thread {
         }
 
         // find new files
-        List<File> foundFiles = FileUtil.findFiles(dir, new FileFilter() {
-            public boolean accept(File pathname) {
-                return true;
-            }
-        });
+        List<File> foundFiles = new ArrayList<File>();
+        readDir(dir, foundFiles);
         for (File f : foundFiles) {
             if (stopped)
                 return;
@@ -133,6 +128,19 @@ public class DirectoryMonitor extends Thread {
                 LOGGER.finer("File '" + f + "' added");
                 existFiles.put(fn, new FileInfo(f));
                 callback.fileChanged(f);
+            }
+        }
+    }
+
+    protected void readDir(final File dir, final List<File> found) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    readDir(f, found);
+                } else {
+                    found.add(f);
+                }
             }
         }
     }

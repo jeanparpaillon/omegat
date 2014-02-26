@@ -29,21 +29,23 @@
          <div class="titlepage">
             <div>
                <div>
-                  <h1 class="title"><a name="appendix.TokenizerPlugin.inOmegaT"></a>Annexe&nbsp;D.&nbsp;Extension module Tokenizer<a class="indexterm" name="d0e10788"></a></h1>
+                  <h1 class="title"><a name="appendix.TokenizerPlugin.inOmegaT"></a>Annexe&nbsp;D.&nbsp;Extension module Tokenizer<a class="indexterm" name="d0e10742"></a></h1>
                </div>
             </div>
          </div>
          <div class="toc">
             <dl class="toc">
-               <dt><span class="section"><a href="appendix.TokenizerPlugin.inOmegaT.html#d0e10793">1. Introduction</a></span></dt>
-               <dt><span class="section"><a href="appendix.TokenizerPlugin.inOmegaT.html#d0e10822">2. Installation et Utilisation</a></span></dt>
+               <dt><span class="section"><a href="appendix.TokenizerPlugin.inOmegaT.html#d0e10747">1. Introduction</a></span></dt>
+               <dt><span class="section"><a href="appendix.TokenizerPlugin.inOmegaT.html#d0e10776">2. Installation et utilisation de la ligne de commande</a></span></dt>
+               <dt><span class="section"><a href="appendix.TokenizerPlugin.inOmegaT.html#d0e10793">3. Spécificités Mac OS X</a></span></dt>
+               <dt><span class="section"><a href="appendix.TokenizerPlugin.inOmegaT.html#d0e10807">4. Résolution des problèmes</a></span></dt>
             </dl>
          </div>
          <div class="section">
             <div class="titlepage">
                <div>
                   <div>
-                     <h2 class="title" style="clear: both"><a name="d0e10793"></a>1.&nbsp;Introduction<a class="indexterm" name="d0e10796"></a><a class="indexterm" name="d0e10801"></a></h2>
+                     <h2 class="title" style="clear: both"><a name="d0e10747"></a>1.&nbsp;Introduction<a class="indexterm" name="d0e10750"></a><a class="indexterm" name="d0e10755"></a></h2>
                   </div>
                </div>
             </div>
@@ -85,21 +87,86 @@
             <div class="titlepage">
                <div>
                   <div>
-                     <h2 class="title" style="clear: both"><a name="d0e10822"></a>2.&nbsp;Installation et Utilisation
+                     <h2 class="title" style="clear: both"><a name="d0e10776"></a>2.&nbsp;Installation et utilisation de la ligne de commande
                      </h2>
                   </div>
                </div>
             </div>
-            <p>Les lemmatiseurs sont inclus dans OmegaT OmegaT sélectionne automatiquement les lemmatiseurs pour les langues sources et cibles
-               en fonction des paramètres du projet. Il est possible de sélectionner un autre lemmatiseur ou une version différente du lemmatiseur
-               dans la fenêtre de Propriétés du projet.
+            <p>Un pack de lemmatisation adapté du projet Lucene est utilisable sur OmegaT en tant qu'extension. Il est téléchargeable sur
+               le site : http://sourceforge.net/projects/omegat-plugins/files/. Téléchargez les fichiers les plus récents (OmegaT-tokenizers_0.4_2-2.1.zip
+               au moment de la rédaction de ce guide).
             </p>
-            <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-               <h3 class="title">Incompatibilités</h3>
-               <p>OmegaT ne se lancera pas si des lemmatiseurs sont présents dans le dossier /plugin. Retirer tous les lemmatiseurs du dossier
-                  /plugin avant de lancer OmegaT.
-               </p>
+            <p>Pour installer le lemmatiseur, créez un dossier que vous appellerez « plugins » dans le dossier où se trouve OmegaT.jar et
+               décompressez les fichiers à l'intérieur du dossier.
+            </p>
+            <p>Pour utiliser un lemmatiseur dans OmegaT, vous devez spécifier quel lemmatiseur vous allez utiliser pour la langue source
+               et quel lemmatiseur vous allez utiliser pour la langue cible. La syntaxe est la suivante :
+            </p>
+            <p><code class="literal">java -jar OmegaT.jar --ITokenizer=[nom du lemmatiseur pour la langue source] --ITokenizerTarget=[nom du lemmatiseur pour la
+                  langue cible]</code></p>
+            <p>Les noms des lemmatiseurs sont écrits dans le fichier lisez-moi ( Readme.txt )  fourni avec les fichiers des lemmatiseurs.
+               Par exemple, pour utiliser le lemmatiseur Lucene CJK pour la langue source et le lemmatiseur Lucene français pour la langue
+               cible, votre ligne de commande devra être rédigée comme ceci :
+            </p>
+            <p><code class="literal">java -jar OmegaT.jar
+                      --ITokenizer=org.omegat.plugins.tokenizer.LuceneCJKTokenizer
+                      --ITokenizerTarget=org.omegat.plugins.tokenizer.LuceneFrenchTokenizer</code></p>
+         </div>
+         <div class="section">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e10793"></a>3.&nbsp;Spécificités Mac OS X
+                     </h2>
+                  </div>
+               </div>
             </div>
+            <p>Si vous souhaitez utiliser les lemmatiseurs avec le paquet Mac OS X OmegaT.app, l'installation du lemmatiseur décrite ci-dessus
+               s'applique (clic droit sur OmegaT.app pour trouver l'emplacement du fichier OmegaT.jar), mais vous devrez spécifier les noms
+               des lemmatiseurs dans le fichier<code class="filename">info.plist </code> qui contient les options de lancement de Java . Suivez les instructions ci-dessus pour accéder au fichier <code class="filename">info.plist</code> et éditez-le de sorte qu'il soit similaire à ce qui suit (n'oubliez pas de remplacer le nom des lemmatiseurs de l'exemple
+               par ceux que vous aurez choisis) :
+            </p>
+            <div class="literallayout">
+               <p><code class="code"><br>
+                     &lt;key&gt;VMOptions&lt;/key&gt;<br>
+                     &lt;string&gt;-Xmx1024M&lt;/string&gt;<br>
+                     <br>
+                     &lt;key&gt;Arguments&lt;/key&gt;<br>
+                     &lt;array&gt;<br>
+                     &nbsp;&nbsp;&lt;string&gt;--ITokenizer=org.omegat.plugins.tokenizer.LuceneCJKTokenizer&lt;/string&gt;<br>
+                     &nbsp;&nbsp;&lt;string&gt;--ITokenizerTarget=org.omegat.plugins.tokenizer.LuceneFrenchTokenizer&lt;/string&gt;<br>
+                     &lt;/array&gt;</code></p>
+            </div>
+         </div>
+         <div class="section">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e10807"></a>4.&nbsp;Résolution des problèmes
+                     </h2>
+                  </div>
+               </div>
+            </div>
+            <p>Pour être sûr que les lemmatiseurs sont biens utilisés, ouvrez un projet et vérifiez les informations du journal de la console.
+               Pour l'exemple utilisé ci-dessus, vous devriez voir ceci apparaître :
+            </p>
+            <div class="literallayout">
+               <p><code class="code"><br>
+                     84528:&nbsp;Info:&nbsp;Source&nbsp;tokenizer:&nbsp;org.omegat.plugins.tokenizer.LuceneCJKTokenizer&nbsp;<br>
+                     84528:&nbsp;Info:&nbsp;Target&nbsp;tokenizer:&nbsp;org.omegat.plugins.tokenizer.LuceneFrenchTokenizer&nbsp;<br>
+                     </code></p>
+            </div>
+            <p>Les nombres situés sur la gauche seront certainement différents sur votre système. Assurez-vous donc que les noms des lemmatiseurs
+               source et cible, spécifiés dans les options de démarrage, correspondent à ce qu'affiche le journal. Si les lemmatiseurs ne
+               démarrent pas correctement, le journal affichera ceci :
+            </p>
+            <div class="literallayout">
+               <p><code class="code">12719:&nbsp;Info:&nbsp;Source&nbsp;tokenizer:&nbsp;org.omegat.core.matching.Tokenizer<br>
+                     12719:&nbsp;Info:&nbsp;Target&nbsp;tokenizer:&nbsp;org.omegat.core.matching.Tokenizer</code></p>
+            </div>
+            <p>Avec le paquet Mac OS X OmegaT.app, double-cliquez sur <code class="literal">JavaApplicationStub</code> situé dans /OmegaT.app/Contents/MacOS/ (voir ci-dessus comment y accéder) pour lancer OmegaT depuis la console et avoir un
+               accès immédiat au journal.
+            </p>
          </div>
       </div>
       <div class="navfooter">

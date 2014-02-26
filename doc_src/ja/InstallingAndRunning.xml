@@ -11,15 +11,15 @@
     <section>
       <title id="which.package.to.download.windows">パッケージのダウンロード</title>
 
-      <para>Oracle の Java 1.6 JRE 互換の Java を実行可能な環境ですか？</para>
+      <para>Oracle の Java 1.5 JRE 互換の Java を実行可能な環境ですか？</para>
 
       <itemizedlist>
         <listitem>
-          <para><emphasis role="bold">はい：</emphasis><emphasis>OmegaT_3.n.n_Windows_without_JRE.exe</emphasis> をダウンロードしてください。</para>
+          <para><emphasis role="bold">はい：</emphasis><emphasis>OmegaT_2.n.n_Windows_without_JRE.exe</emphasis> をダウンロードしてください。</para>
         </listitem>
 
         <listitem>
-          <para><emphasis role="bold">いいえ / わかりません：</emphasis><emphasis> OmegaT_3.n.n_Windows.exe</emphasis> をダウンロードしてください。</para>
+          <para><emphasis role="bold">いいえ / わかりません：</emphasis><emphasis> OmegaT_2.n.n_Windows.exe</emphasis> をダウンロードしてください。</para>
 
           <para>このパッケージには Oracle の Java 実行環境（JRE）が含まれています。この JRE は、その環境にインストールされている可能性がある他の Java には影響しません。</para>
         </listitem>
@@ -98,15 +98,15 @@
     <section id="which.package.to.download.Linux">
       <title>適切なパッケージのダウンロード</title>
 
-      <para>Oracle の Java 1.6 JRE 互換の Java を実行可能な環境ですか？</para>
+      <para>Oracle の Java 1.5 JRE 互換の Java を実行可能な環境ですか？</para>
 
       <itemizedlist>
         <listitem>
-          <para><emphasis role="bold">はい：</emphasis><emphasis>OmegaT_3.n.n_Without_JRE.zip</emphasis> をダウンロードしてください。</para>
+          <para><emphasis role="bold">はい：</emphasis><emphasis>OmegaT_2.n.n_Without_JRE.zip</emphasis> をダウンロードしてください。</para>
         </listitem>
 
         <listitem>
-          <para><emphasis role="bold">いいえ / わかりません：</emphasis><emphasis>OmegaT_3.n.n_Linux.tar.bz2</emphasis> をダウンロードしてください。</para>
+          <para><emphasis role="bold">いいえ / わかりません：</emphasis><emphasis>OmegaT_2.n.n_Linux.tar.bz2</emphasis> をダウンロードしてください。</para>
 
           <para>このパッケージには Oracle の Java 実行環境（JRE）が含まれています。この JRE は、その環境にインストールされている可能性がある他の Java には影響しません。</para>
         </listitem>
@@ -169,7 +169,7 @@
           </listitem>
 
           <listitem>
-            <para>［名前］欄に <application>OmegaT</application> と入力します。［コマンド］欄には、ナビゲーションボタンを使用して <application>OmegaT</application> 起動スクリプト（展開したフォルダの中にある <application>OmegaT</application> という名称のファイル）を指定します。最後に［OK］をクリックします。</para>
+            <para>［名前］欄に <application>OmegaT</application> と入力します。［コマンド］欄には、ナビゲーションボタンを使用して <application>OmegaT</application> 起動スクリプト（展開したフォルダーの中にある <application>OmegaT</application> という名称のファイル）を指定します。最後に［OK］をクリックします。</para>
           </listitem>
 
           <listitem>
@@ -196,15 +196,15 @@
     <section id="which.package.to.download.OSX">
       <title>パッケージのダウンロード</title>
 
-      <para><application>OmegaT</application> の実行には Java 1.6 が必要です。Apple メニューから［システム環境設定］→［表示］→［ソフトウェアアップデート］→［今すぐ確認］で、最新バージョンの Java がインストールされているか確認してください。</para>
+      <para><application>OmegaT</application> の実行には Java 1.5 が必要です。Apple メニューから［システム環境設定］→［表示］→［ソフトウェアアップデート］→［今すぐ確認］で、最新バージョンの Java がインストールされているか確認してください。</para>
 
-      <para><emphasis>OmegaT_3.n.n_Mac.zip</emphasis> をダウンロードしてください。</para>
+      <para><emphasis>OmegaT_2.n.n_Mac.zip</emphasis> をダウンロードしてください。</para>
     </section>
 
     <section id="OmegaT.installation.OSX">
       <title><application>OmegaT をインストールする</application></title>
 
-      <para><emphasis>OmegaT_3.n.n_Mac.zip</emphasis> をダブルクリックして解凍してください。<emphasis><application>OmegaT</application></emphasis> フォルダーが作成されます。フォルダーには２つのファイルが含まれています。index.html と <emphasis><application>OmegaT</application>.app</emphasis> です。このフォルダーを適切な場所（アプリケーションフォルダなど）へコピーしてください。ここまでくれば、<emphasis>OmegaT_3.n.n_Mac.zip</emphasis> ファイルを削除してもかまいません。</para>
+      <para><emphasis>OmegaT_2.n.n_Mac.zip</emphasis> をダブルクリックして解凍してください。<emphasis><application>OmegaT</application></emphasis> フォルダーが作成されます。フォルダーには２つのファイルが含まれています。index.html と <emphasis><application>OmegaT</application>.app</emphasis> です。このフォルダーを適切な場所（アプリケーションフォルダなど）へコピーしてください。ここまでくれば、<emphasis>OmegaT_2.n.n_Mac.zip</emphasis> ファイルを削除してもかまいません。</para>
     </section>
 
     <section id="adding.OmegaT.to.the.dock">
@@ -220,17 +220,17 @@
 
       <para><emphasis><application>OmegaT</application>.app</emphasis> をダブルクリックするか、ドックのアイコンをクリックします。</para>
 
-      <para>OmegaT の挙動は、<application><emphasis>Info.plist</emphasis></application> ファイルの <emphasis>Properties</emphasis> 部分と <emphasis>VMOptions</emphasis> 部分を編集することでカスタマイズできます。</para>
-      
-      <para>まず <emphasis><application>OmegaT</application>.app</emphasis> を右クリックして、［パッケージの内容を表示］を選びます。次に、Contents フォルダーにある <application><emphasis>Info.plist</emphasis></application> を右クリックして、任意のテキストエディターで開きます。あるいはコマンドラインから「cd」コマンドで目的の階層に移動し、<application>emacs</application> や <application>vi</application> のようなコマンドラインエディターで <emphasis>Info.plist</emphasis> を開いてもよいでしょう。<indexterm class="singular">
+      <para>まず <emphasis><application>OmegaT</application>.app</emphasis> を右クリックして、［パッケージの内容を表示］を選びます。次に、Contents フォルダーにある <application><emphasis>Info.plist</emphasis></application> を右クリックして、任意のテキストエディターで開きます。あるいはコマンドラインから「cd」コマンドで目的の階層に移動し、<application>emacs</application> や <application>vi</application> のようなコマンドラインエディターで <emphasis>Info.plist</emphasis> を開いてもよいでしょう。<emphasis> <indexterm class="singular">
           <primary>OmegaT のカスタマイズ</primary> <secondary>OS X</secondary> <tertiary>起動引数</tertiary>
-        </indexterm></para>
+        </indexterm></emphasis></para>
+
+      <para>「Java」の下にある <emphasis>Properties</emphasis> 部分と <emphasis>VMOptions</emphasis> 部分がカスタマイズの対象になります。</para>
 
       <para><emphasis>VMOptions</emphasis> に値を追加したい場合は、値と値のあいだに空白を入れてください。たとえば <filename>-Xmx1024M -Duser.language=ja</filename> とすると、最大 1024MB のメモリを確保できる設定で、日本語のユーザーインターフェースで<application>OmegaT</application> を起動します。</para>
 
       <para><emphasis><application>OmegaT</application>.app</emphasis> を複数起動したい場合は、代わりに <emphasis><application>OmegaT</application>.app/Contents/MacOS/</emphasis> にある <emphasis>JavaApplicationStub</emphasis> ファイルをダブルクリックしてください。</para>
 
-      <para><application>OmegaT</application> をコマンドラインから起動する場合は、<emphasis><application>OmegaT</application>.app/Contents/Resources/Java/</emphasis> にある <emphasis><application>OmegaT</application>.jar</emphasis> ファイルを指定してください。詳細は「コマンドラインから OmegaT を起動する」を参照してください。</para>
+      <para><emphasis><application> </application></emphasis><application>OmegaT</application> をコマンドラインから起動する場合は、<emphasis><application>OmegaT</application>.app/Contents/Resources/Java/</emphasis> にある <emphasis><application>OmegaT</application>.jar</emphasis> ファイルを指定してください。詳細は「コマンドラインから OmegaT を起動する」を参照してください。</para>
     </section>
 
     <section id="Mac.OSX.goodies">
@@ -252,11 +252,11 @@
 
       <para><application>OmegaT</application> は Linux（Intel x86）と Windows プラットフォーム向けにバンドルされた Oracle Java JRE で動作します。その他のプラットフォーム（Linux PowerPC、Linux x64、Solaris SPARC/x86/x64、Windows x64 など）を使用しているユーザーは、互換性のある Java JRE を動作できる環境であれば <application>OmegaT</application> を使用できます。</para>
 
-      <para>Oracle の Java 1.6 JRE 互換の Java を実行可能な環境ですか？</para>
+      <para>Oracle の Java 1.5 JRE 互換の Java を実行可能な環境ですか？</para>
 
       <itemizedlist>
         <listitem>
-          <para><emphasis role="bold">はい：</emphasis><emphasis>OmegaT_3.n.n_Windows_without_JRE.zip</emphasis> をダウンロードしてください。Java 1.6 JRE 互換の JRE がインストールされていれば、どのプラットフォームであっても、このパッケージが使用できます。</para>
+          <para><emphasis role="bold">はい：</emphasis><emphasis>OmegaT_2.n.n_Windows_without_JRE.zip</emphasis> をダウンロードしてください。Java 1.5 JRE 互換の JRE がインストールされていれば、どのプラットフォームであっても、このパッケージが使用できます。</para>
         </listitem>
 
         <listitem>
@@ -264,9 +264,9 @@
         </listitem>
 
         <listitem>
-          <para><emphasis role="bold">いいえ：</emphasis>システムに適した Java JRE（下記参照）を入手してください。その後 <emphasis>OmegaT_3.n.n_Without_JRE.zip</emphasis> をダウンロードしてください。</para>
+          <para><emphasis role="bold">いいえ：</emphasis>システムに適した Java JRE（下記参照）を入手してください。その後 <emphasis>OmegaT_2.n.n_Without_JRE.zip</emphasis> をダウンロードしてください。</para>
 
-          <para>Oracle は以下のシステム向けの JRE を提供しています：Solaris SPARC/x86（Java 1.6）と Linux x64、Solaris x64、Windows x64（Java 1.6）<ulink url="http://www.oracle.com/technetwork/java/archive-139210.html">http://www.oracle.com/technetwork/java/archive-139210.html</ulink></para>
+          <para>Oracle は以下のシステム向けの JRE を提供しています：Solaris SPARC/x86（Java 1.5）と Linux x64、Solaris x64、Windows x64（Java 1.5）<ulink url="http://www.oracle.com/technetwork/java/archive-139210.html">http://www.oracle.com/technetwork/java/archive-139210.html</ulink></para>
 
           <para>IBM は Linux PowerPC 向けに JRE を提供しています：<ulink url="http://www.ibm.com/developerworks/java/jdk/linux/download.html">http://www.ibm.com/developerworks/java/jdk/linux/download.htm</ulink></para>
 
@@ -280,7 +280,7 @@
           <primary>OmegaT のインストール</primary> <secondary>その他のシステム</secondary>
         </indexterm></title>
 
-      <para><application>OmegaT</application> をインストールするには、<emphasis role="bold">OmegaT_3.n.n_Without_JRE.zip</emphasis> ファイルを展開してください。作業フォルダーに <emphasis>OmegaT_3.n.n_Without_JRE</emphasis> フォルダーと、<application>OmegaT</application> の実行に必要なすべてのファイルが作成されます。</para>
+      <para><application>OmegaT</application> をインストールするには、<emphasis role="bold">OmegaT_2.n.n_Without_JRE.zip</emphasis> ファイルを展開してください。作業フォルダーに <emphasis>OmegaT_2.n.n_Without_JRE</emphasis> フォルダーと、<application>OmegaT</application> の実行に必要なすべてのファイルが作成されます。</para>
     </section>
 
     <section id="installing.convenient.shortcuts">
@@ -303,7 +303,7 @@
         <primary>OmegaT の実行</primary> <secondary>Java Web Start の使用</secondary>
       </indexterm></title>
 
-    <para>Java Web Start テクノロジー（Java 1.6 以降が対応）を用いると、独立型の Java アプリケーションを、１クリックでネットワーク上からローカル環境に配置することができます。Java Web Start を使うと、適切なバージョンの Java 実行環境（JRE）と、最新バージョンのプログラムとを確実に配布できるという利点があります。Java Web Start を使用して OmegaT を最初に起動する場合は、ブラウザ上で以下の URL にアクセスしてください：</para>
+    <para>Java Web Start テクノロジー（Java 1.5 以降が対応）を用いると、独立型の Java アプリケーションを、１クリックでネットワーク上からローカル環境に配置することができます。Java Web Start を使うと、適切なバージョンの Java 実行環境（JRE）と、最新バージョンのプログラムとを確実に配布できるという利点があります。Java Web Start を使用して OmegaT を最初に起動する場合は、ブラウザ上で以下の URL にアクセスしてください：</para>
 
     <para><emphasis>http://omegat.sourceforge.net/webstart/<application>OmegaT</application>.jnlp</emphasis></para>
 
@@ -451,11 +451,18 @@
           <para>-<emphasis role="bold">Dmicrosoft.api.client_secret=XXXX9xXxX9xXXxxXXX9xxX99xXXXX9xx9XXxXxXXXXX=</emphasis></para>
         </listitem>
 
+        <listitem>
+          <para><emphasis role="bold">チームプロジェクトのオプション設定<parameter><indexterm class="singular">
+              <primary>OmegaT の実行</primary> <secondary>起動スクリプトの引数</secondary> <tertiary>no-team オプション</tertiary>
+            </indexterm></parameter></emphasis></para>
+
+          <para><emphasis role="bold">-no-team</emphasis> チーム作業用のプロジェクトに関連する引数です。この引数を指定すると、チームプロジェクトを開いても同期しません。</para>
+        </listitem>
       </itemizedlist>
 
       <para>複数の引数を、組み合わせて指定することもできます。上記で例示したすべての引数を使用して <application>OmegaT</application> を起動する場合、コマンドは以下のようになります：</para>
 
-      <para><literal>java -Dswing.aatext=true -Duser.language=pt -Duser.country=BR -Xmx1024M -Dhttp.proxyHost=192.168.1.1 -Dhttp.proxyport=3128 -jar -OmegaT.jar</literal></para>
+      <para><literal>java -Dswing.aatext=true -Duser.language=pt -Duser.country=BR -Xmx1024M -DDhttp.proxyHost=192.168.1.1 -Dhttp.proxyport=3128 -jar -<application>OmegaT</application>.jar</literal></para>
     </section>
 
     <section id="omegat.command.arguments">
@@ -510,7 +517,7 @@
 
         <itemizedlist>
           <listitem>
-            <para><literal>--config-dir=&lt;config-dir&gt;</literal> 設定ファイルがどのフォルダーにあるかを指定します。このオプションが指定されない場合は、<application>OmegaT</application> は初期設定を使用します（ユーザーホームフォルダーの下の <application>OmegaT</application> フォルダーか、それが存在しない場合は現在の作業フォルダー）。引数は二重のハイフン記号（-）で始まることに注意してください。</para>
+            <para><literal>--config-dir=&lt;config-dir&gt;</literal> 設定ファイルがどの場所にあるかを指定します。このオプションが指定されない場合は、<application>OmegaT</application> は初期設定を使用します（ユーザーホームフォルダーの下の <application>OmegaT</application> フォルダーか、それが存在しない場合は現在の作業フォルダー）。引数は二重のハイフン記号（-）で始まることに注意してください。</para>
           </listitem>
         </itemizedlist>
 
@@ -608,19 +615,6 @@
             <para>この設定は、バッチモードでタグ検証を可能にします。「<literal>abort</literal>」を指定した場合は、不正なタグを見つけた時点で、タグ検証を中止します。「<literal>warn</literal>」を指定した場合は、すべての分節についてタグ検証を実施し、不正なタグについては警告を出力します。</para>
           </listitem>
         </itemizedlist>
-        
-        <itemizedlist>
-          <listitem>
-            <para><literal>--no-team</literal> チーム作業用のプロジェクトに関連する引数です。この引数を指定すると、チームプロジェクトを開いても同期しません。</para>
-          </listitem>
-        </itemizedlist>
-
-        <itemizedlist>
-          <listitem>
-            <para><literal>--disable-project-locking</literal> Windows において、OmegaT の複数のインスタンスが同じプロジェクトを開けるようになります。Windows 上では、OmegaT がプロジェクトを開くと、既定で <literal>omegat.project</literal> ファイルをロックします。そのため、OmegaT の別のインスタンスが使用中のプロジェクトを開こうとすると、エラーメッセージが表示されます。この引数を指定すると、ロックしません。</para>
-          </listitem>
-        </itemizedlist>
-
       </section>
 
       <section id="console.mode.option.quiet">
@@ -646,7 +640,7 @@
         <primary>OmegaT の実行</primary> <secondary>ソースコードからの OmegaT のビルド</secondary>
       </indexterm></title>
 
-    <para>OmegaT を独自にビルドするためには、ant プログラム（<emphasis>http://ant.apache.org/bindownload.cgi</emphasis>）も必要になります。<emphasis>OmegaT_3.n.n_Source.zip</emphasis> ファイルを展開し、OmegaT_3.n.n_Source フォルダーに移動するか、あるいは SVN リポジトリからソースコードをチェックアウトし、<emphasis>omegat</emphasis> フォルダー（チェックアウト時に名前を変えた場合は何であれそのフォルダー）に移動してください。build.xml ファイルがそのフォルダーに存在することを確認してください。それから、以下のコマンドを入力してください：</para>
+    <para>OmegaT を独自にビルドするためには、ant プログラム（<emphasis>http://ant.apache.org/bindownload.cgi</emphasis>）も必要になります。<emphasis>OmegaT_2.n.n_Source.zip</emphasis> ファイルを展開し、OmegaT_2.n.n_Source フォルダーに移動するか、あるいは SVN リポジトリからソースコードをチェックアウトし、<emphasis>omegat</emphasis> フォルダー（チェックアウト時に名前を変えた場合は何であれそのフォルダー）に移動してください。build.xml ファイルがそのフォルダーに存在することを確認してください。それから、以下のコマンドを入力してください：</para>
 
     <para><literal>$ ant jar release</literal></para>
 

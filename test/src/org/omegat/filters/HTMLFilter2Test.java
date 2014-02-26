@@ -7,37 +7,30 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters;
 
-import java.io.File;
 import java.util.List;
-import java.util.TreeMap;
 
 import org.junit.Test;
-import org.omegat.core.Core;
 import org.omegat.core.data.IProject;
-import org.omegat.filters2.FilterContext;
 import org.omegat.filters2.html2.HTMLFilter2;
-import org.omegat.util.Language;
 
 public class HTMLFilter2Test extends TestFilterBase {
-    @Test
     public void testParse() throws Exception {
         List<String> entries = parse(new HTMLFilter2(), "test/data/filters/html/file-HTMLFilter2.html");
         assertEquals(entries.size(), 2);
@@ -45,7 +38,6 @@ public class HTMLFilter2Test extends TestFilterBase {
         assertEquals("This is second line.", entries.get(1));
     }
 
-    @Test
     public void testTranslate() throws Exception {
         translateText(new HTMLFilter2(), "test/data/filters/html/file-HTMLFilter2.html");
     }
@@ -59,29 +51,5 @@ public class HTMLFilter2Test extends TestFilterBase {
         checkMulti("This is first line.", null, null, "", "This is second line.", null);
         checkMulti("This is second line.", null, null, "This is first line.", "", null);
         checkMultiEnd();
-    }
-
-    @Test
-    public void testTagsOptimization() throws Exception {
-        String f = "test/data/filters/html/file-HTMLFilter2-tags-optimization.html";
-        HTMLFilter2 filter = new HTMLFilter2();
-
-        Core.getFilterMaster().getConfig().setRemoveTags(false);
-        filter.isFileSupported(new File(f), new TreeMap<String, String>(), new FilterContext(new Language("en"),
-                new Language("be"), false));
-        IProject.FileInfo fi = loadSourceFiles(filter, f);
-
-        checkMultiStart(fi, f);
-        checkMultiNoPrevNext("<i0/><b1><c2>This</c2> is <i3>first</i3> line.</b1>", null, null, null);
-        translateXML(filter, f);
-
-        Core.getFilterMaster().getConfig().setRemoveTags(true);
-        filter.isFileSupported(new File(f), new TreeMap<String, String>(), new FilterContext(new Language("en"),
-                new Language("be"), false));
-        fi = loadSourceFiles(filter, f);
-
-        checkMultiStart(fi, f);
-        checkMultiNoPrevNext("<c0>This</c0> is <i1>first</i1> line.", null, null, null);
-        translateXML(filter, f);
     }
 }

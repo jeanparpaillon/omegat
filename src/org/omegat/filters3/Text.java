@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3;
@@ -36,11 +35,11 @@ import org.omegat.util.StaticUtils;
  */
 public abstract class Text implements Element {
     /** The text itself. */
-    private StringBuilder text;
+    private String text;
 
     /** Returns the piece of text stored. */
     public String getText() {
-        return text.toString();
+        return text;
     }
 
     private boolean meaningEvaluated = false;
@@ -49,7 +48,7 @@ public abstract class Text implements Element {
     /** Whether the text is meaningful, i.e. contains anything but space. */
     public boolean isMeaningful() {
         if (!meaningEvaluated) {
-            meaningful = text.toString().trim().length() > 0;
+            meaningful = text.trim().length() > 0;
             meaningEvaluated = true;
         }
         return meaningful;
@@ -57,11 +56,7 @@ public abstract class Text implements Element {
 
     /** Creates a new instance of Text initialized with some text. */
     public Text(String text) {
-        this.text = new StringBuilder(text);
-    }
-
-    public void append(String text) {
-        this.text.append(text);
+        this.text = text;
     }
 
     /**
@@ -88,7 +83,7 @@ public abstract class Text implements Element {
      * text itself.
      */
     public String toShortcut() {
-        return text.toString();
+        return text;
     }
 
     /**
@@ -97,7 +92,7 @@ public abstract class Text implements Element {
      * should return <code>Rock&amp;Roll</code>.
      */
     public String toTMX() {
-        return StaticUtils.makeValidXML(text.toString());
+        return StaticUtils.makeValidXML(text);
     }
 
     /**

@@ -1,31 +1,34 @@
-Deze vertaling is het werk van Dick Groskamp, copyright© 2013
+Deze vertaling is het werk van Dick Groskamp, copyright© 2012
 
 ==============================================================================
   ==============================================================================
-OmegaT 3.0, Lees Mij-bestand
+OmegaT 2.0, Lees Mij-bestand
 
   1.  Informatie over OmegaT
+  2.
   2.  Wat is OmegaT?
   3.  Installeren van OmegaT
   4.  Deelnemen aan OmegaT
+  5.
   5.  Heeft u problemen met OmegaT ? Heeft u hulp nodig?
   6.  Uitgavedetails
 
 ==============================================================================
   1.  Informatie over OmegaT
+  2.
 
 
 De meest recente informatie over OmegaT is te vinden op
       http://www.omegat.org/
 
 Gebruikersondersteuning op de Yahoo! gebruikersgroep (meertalig), waar zonder abonnement de archieven kunnen worden doorzocht:
-     http://tech.groups.yahoo.com/group/OmegaT/
+     http://groups.yahoo.com/group/OmegaT/
 
 Verzoeken tot verbeteringen (in het Engels) op de SourceForge-website:
-     https://sourceforge.net/p/omegat/feature-requests/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520350
 
 Foutrapportages (in het Engels) op de SourceForge-website:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
 ==============================================================================
   2.  Wat is OmegaT?
@@ -94,7 +97,8 @@ De gebruikershandleiding zit in het pakket dat u zojuist heeft gedownload. U kun
  3. Installeren van OmegaT
 
 3.1 Algemeen
-OmegaT vereist dat een Java Runtime Environment (JRE) versie 1.5 of hoger is geïnstalleerd op uw systeem om uitgevoerd te kunnen worden. OmegaT pakketten die de Java Runtime Environment bevatten zijn nu beschikbaar om gebruikers de moeite van het selecteren, verkrijgen en installeren te besparen. 
+OmegaT vereist dat een Java Runtime Environment (JRE) versie 
+1.5 of hoger is geïnstalleerd op uw systeem om uitgevoerd te kunnen worden. OmegaT pakketten die de Java Runtime Environment bevatten zijn nu beschikbaar om gebruikers de moeite van het selecteren, verkrijgen en installeren te besparen. 
 
 Als u al Java hebt is één manier om de huidige versie van OmegaT te installeren het gebruiken van Java Web Start. 
 Download voor dit doel het volgende bestand en voer het uit:
@@ -111,12 +115,15 @@ De alternatieve manieren en mogelijkheden voor het downloaden en installeren van
 Windows- en Linuxgebruikers: als u er van overtuigd bent dat op uw systeem al een passende versie van de JRE is geïnstalleerd, dan kunt u de versie van OmegaT zonder de JRE installeren (dit wordt aangegeven in de naam van de versie, namelijk "Without_JRE"). 
 Als u twijfelt raden wij u aan om de versie die wordt geleverd met de JRE te gebruiken. Dat is veilig omdat, zelfs als er al een JRE op uw systeem geïnstalleerd is, deze versie die niet zal beïnvloeden.
 
-Linuxgebruikers:
-OmegaT kan worden uitgevoerd op de open-implementatie bron Java die is verpakt in vele Linuxdistributies (bijvoorbeeld Ubuntu), maar het kan zijn dat u problemen, problemen met de weergave of ontbrekende mogelijkheden ervaart. We raden daarom aan om ofwel de Oracle Java Runtime Environment (JRE) of het OmegaT-pakket, gebundeld met JRE (de .tar.bz2-bundel gemarkeerd "Linux") te downloaden en te installeren. Indien u een versie van Java installeert op systeemniveau moet u er ofwel voor zorgen dat het is vermeld in uw pad voor opstarten, of het expliciet aanroepen bij het opstarten van OmegaT. Indien u niet echt bekend bent met Linux raden we u aan om een versie van OmegaT te installeren waarin de JRE is opgenomen. Dit is veilig omdat deze "lokale" JRE geen problemen zal veroorzaken met andere Java-implementaties die misschien al op uw systeem geïnstalleerd zijn.
+Linuxgebruikers: 
+OmegaT kan worden uitgevoerd op de open-implementatie bron Java die is verpakt in vele Linuxdistributies (bijvoorbeeld Ubuntu), maar het kan zijn dat u problemen, problemen met de weergave of ontbrekende mogelijkheden ervaart. We raden daarom aan om ofwel de Oracle Java Runtime Environment (JRE) 
+of het OmegaT-pakket, gebundeld met JRE (de .tar.bz2-bundel gemarkeerd 
+"Linux") te downloaden en te installeren. Indien u een versie van Java installeert op systeemniveau moet u er ofwel voor zorgen dat het is vermeld in uw pad voor opstarten, of het expliciet aanroepen bij het opstarten van OmegaT. Indien u niet echt bekend bent met Linux raden we u aan om een versie van OmegaT te installeren waarin de JRE is opgenomen. Dit is veilig omdat deze "lokale" JRE geen problemen zal veroorzaken met andere Java-implementaties die misschien al op uw systeem geïnstalleerd zijn.
 
-Macgebruikers:
+Macgebruikers: 
 De JRE is al geïnstalleerd op Mac OS X vóór Mac OS X 10.7 
-(Lion). Liongebruikers zullen er door het systeem naar worden gevraagd als zij voor de eerste keer een toepassing starten die java vereist en het systeem zal het eventueel automatisch downloaden en installeren.
+(Lion). Liongebruikers zullen er door het systeem naar worden gevraagd als zij voor de eerste keer een toepassing starten die java vereist en het systeem zal het eventueel 
+automatisch downloaden en installeren.
 
 Linux op PowerPC-systemen: gebruikers moeten IBM's JRE downloaden omdat Oracle geen JRE voor PPC-systemen levert. Download in dat geval vanaf:
 
@@ -177,10 +184,12 @@ Voor een meer gebruikersvriendelijker manier om OmegaT op te straten kunt u gebr
 Alt+F2
 omegat.kaptn
 
-Voor meer informatie over het Kaptain-script en het toevoegen van menuitems en pictogrammen om op te starten op Linux, bekijk de OmegaT on Linux HowTo.
+Voor meer informatie over het Kaptain-script en het toevoegen van menuitems en 
+pictogrammen om op te starten op Linux, bekijk de OmegaT on Linux HowTo.
 
 Macgebruikers:
-Sleep OmegaT.app naar uw dock of naar de werkbalk van een Finder-venster om het vanaf elke locatie te kunnen starten. U kunt het ook aanroepen in het zoekveld van Spotlight.
+Sleep OmegaT.app naar uw dock of naar de werkbalk van een Finder-venster om het vanaf elke locatie te kunnen starten. U kunt het ook aanroepen in het 
+zoekveld van Spotlight.
 
 ==============================================================================
  4. Deelnemen aan het OmegaT-project
@@ -190,10 +199,10 @@ Om deel te nemen aan de ontwikkeling van OmegaT neemt u contact op met de ontwik
 
 Voor het vertalen van OmegaT's gebruikersinterface, gebruikershandleiding of andere gerelateerde documenten:
       
-      http://www.omegat.org/en/howtos/localizing_omegat.php
+      http://www.omegat.org/en/translation-info.html
 
 En abonneert u zich op de lijst van vertalers:
-      https://lists.sourceforge.net/lists/listinfo/omegat-l10n
+      http://lists.sourceforge.net/mailman/listinfo/omegat-l10n
 
 Voor het op andere manieren bijdragen abonneert u zich eerst op de gebruikersgroep op:
       http://tech.groups.yahoo.com/group/Omegat/
@@ -220,8 +229,6 @@ Code is bijgedragen door
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
-  Piotr Kulik
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
@@ -253,12 +260,14 @@ Andere bijdragen door
 
 OmegaT gebruikt de volgende bibliotheken:
   HTMLParser 1.6 van Somik Raha, Derrick Oswald en anderen (LGPL License)
-  MRJ Adapter 1.0.8 van Steve Roy (LGPL License)
-  VLDocking Framework 2.1.4 van VLSolutions (CeCILL License)
-  Hunspell van László Németh en anderen (LGPL License)
-  JNA van Todd Fast, Timothy Wall en anderen (LGPL License)
-  Swing-Layout 1.0.2 (LGPL License)
-  Jmyspell 2.1.4 (LGPL License)
+  MRJ Adapter 1.0.8 door Steve Roy (LGPL License)
+  VLDocking Framework 2.1.4 van VLSolutions (CeCILL-licentie)
+  Hunspell van László Németh en anderen (LGPL-licentie)
+  JNA van Todd Fast, Timothy Wall en anderen (LGPL-licentie)
+  Swing-Layout 1.0.2 (LGPL-licentie)
+  Jmyspell 2.1.4 (LGPL-licentie)
+  JAXB (GPLv2 + klassenpad uitzondering)
+  SJXP 1.0.2 (GPL v2)
   SVNKit 1.7.5 (TMate License)
   Sequence Library (Sequence Library License)
   ANTLR 3.4 (ANTLR 3 licentie)
@@ -267,18 +276,6 @@ OmegaT gebruikt de volgende bibliotheken:
   JSch (JSch License)
   Base64 (publieke domein)
   Diff (GPL)
-  orion-ssh2-214 (Orion SSH voor Java-licentie)
-  lucene-*.jar (Apache License 2.0)
-  De Engelse tokenizers (org.omegat.tokenizer.SnowballEnglishTokenizer en
-  org.omegat.tokenizer.LuceneEnglishTokenizer) gebruiken stopwoorden van Okapi
-(http://okapi.sourceforge.net) (LGPL license)
-  tinysegmenter.jar (Aangepaste BSD-licentie)
-  commons-*.jar (Apache License 2.0)
-  jWordSplitter (Apache License 2.0)
-  LanguageTool.jar (LGPL-licentie)
-  morfologik-*.jar (Morfologik licentie)
-  segment-1.4.1.jar (Segment-licentie)
-  pdfbox-app-1.8.1.jar (Apache License 2.0)
 
 ==============================================================================
  5.  Heeft u problemen met OmegaT ? Heeft u hulp nodig?
@@ -295,10 +292,10 @@ Elk goed foutenrapport heeft exact drie dingen nodig.
 U kunt kopieën van bestanden, delen uit het logbestand, schermafdrukken of iets waarvan u denkt dat dat de ontwikkelaars zal helpen bij het oplossen van uw probleem, toevoegen.
 
 Bladeren door de archieven van de gebruikersgroep kunt u via:
-     http://tech.groups.yahoo.com/group/OmegaT/
+     http://groups.yahoo.com/group/OmegaT/
 
 Bladeren door de pagina met foutrapportages en, indien nodig, indienen van een nieuw foutenrapport via:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
 U wilt zich misschien registreren als gebruiker van SourceForge om te kunnen zien wat er met uw foutenrapport gebeurd.
 

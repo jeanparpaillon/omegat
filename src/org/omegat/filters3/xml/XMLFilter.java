@@ -9,20 +9,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml;
@@ -33,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +39,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.filters2.AbstractFilter;
 import org.omegat.filters2.FilterContext;
 import org.omegat.filters2.TranslationException;
@@ -86,9 +83,6 @@ public abstract class XMLFilter extends AbstractFilter implements Translator {
     /** Detected encoding of the input XML file. */
     private String encoding;
 
-    /** Detected EOL chars. */
-    private String eol;
-
     /**
      * Creates a special XML-encoding-aware reader of an input file.
      * 
@@ -108,7 +102,6 @@ public abstract class XMLFilter extends AbstractFilter implements Translator {
             IOException {
         XMLReader xmlreader = new XMLReader(inFile, inEncoding);
         this.encoding = xmlreader.getEncoding();
-        this.eol = xmlreader.getEol();
         return new BufferedReader(xmlreader);
     }
 
@@ -136,7 +129,7 @@ public abstract class XMLFilter extends AbstractFilter implements Translator {
         if (outFile == null)
             return new BufferedWriter(new StringWriter());
         else
-            return new BufferedWriter(new XMLWriter(outFile, outEncoding, eol));
+            return new BufferedWriter(new XMLWriter(outFile, outEncoding));
     }
 
     /**
@@ -147,7 +140,6 @@ public abstract class XMLFilter extends AbstractFilter implements Translator {
     /**
      * @return The target language of the project
      */
-    @Override
     public Language getTargetLanguage() {
         return targetLanguage;
     }
@@ -187,7 +179,6 @@ public abstract class XMLFilter extends AbstractFilter implements Translator {
      * 
      * @return <code>false</code>
      */
-    @Override
     public boolean isSourceEncodingVariable() {
         return false;
     }
@@ -197,7 +188,6 @@ public abstract class XMLFilter extends AbstractFilter implements Translator {
      * 
      * @return <code>true</code>
      */
-    @Override
     public boolean isTargetEncodingVariable() {
         return true;
     }
@@ -205,18 +195,8 @@ public abstract class XMLFilter extends AbstractFilter implements Translator {
     /**
      * The method the Handler would call to pass translatable content to OmegaT core and receive translation.
      */
-    @Override
-    public String translate(String entry, List<ProtectedPart> protectedParts) {
-        if (entryParseCallback != null) {
-            entryParseCallback.addEntry(null, entry, null, false, null, null, this, protectedParts);
-            return entry;
-        } else if (entryTranslateCallback != null) {
-            String translation = entryTranslateCallback.getTranslation(null, entry, null);
-            return translation != null ? translation : entry;
-        } else { // We're not supposed to be there,  (parsing called from inside isFileSupported, for instance)
-            return entry; // so what we return is not important
-        }
-            
+    public String translate(String entry) {
+        return super.processEntry(entry);
     }
 
     /**
@@ -278,24 +258,15 @@ public abstract class XMLFilter extends AbstractFilter implements Translator {
         }
     }
     
-    @Override
     public void tagStart(String path, Attributes atts) {
     }
     
-    @Override
     public void tagEnd(String path) {
     }
 
-    @Override
     public void comment(String comment) {
     }
 
-    @Override
     public void text(String text) {
-    }
-
-    @Override
-    public boolean isInIgnored() {
-        return false;
     }
 }

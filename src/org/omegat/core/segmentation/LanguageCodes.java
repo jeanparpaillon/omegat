@@ -8,20 +8,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.segmentation;
@@ -52,7 +51,6 @@ public final class LanguageCodes {
     public static final String POLISH_CODE = "Polish";
     public static final String RUSSIAN_CODE = "Russian";
     public static final String SWEDISH_CODE = "Swedish";
-    public static final String CHINESE_CODE = "Chinese";
     public static final String DEFAULT_CODE = "Default";
     public static final String F_TEXT_CODE = "Text";
     public static final String F_HTML_CODE = "HTML";
@@ -70,7 +68,6 @@ public final class LanguageCodes {
     public static final String POLISH_KEY = "CORE_SRX_RULES_LANG_POLISH";
     public static final String RUSSIAN_KEY = "CORE_SRX_RULES_LANG_RUSSIAN";
     public static final String SWEDISH_KEY = "CORE_SRX_RULES_LANG_SWEDISH";
-    public static final String CHINESE_KEY = "CORE_SRX_RULES_LANG_CHINESE";
     public static final String DEFAULT_KEY = "CORE_SRX_RULES_LANG_DEFAULT";
     public static final String F_TEXT_KEY = "CORE_SRX_RULES_FORMATTING_TEXT";
     public static final String F_HTML_KEY = "CORE_SRX_RULES_FORMATTING_HTML";
@@ -90,8 +87,6 @@ public final class LanguageCodes {
         codeKeyHash.put(DUTCH_CODE, DUTCH_KEY);
         codeKeyHash.put(POLISH_CODE, POLISH_KEY);
         codeKeyHash.put(RUSSIAN_CODE, RUSSIAN_KEY);
-        codeKeyHash.put(SWEDISH_CODE, SWEDISH_KEY);
-        codeKeyHash.put(CHINESE_CODE, CHINESE_KEY);
         codeKeyHash.put(DEFAULT_CODE, DEFAULT_KEY);
         codeKeyHash.put(F_TEXT_CODE, F_TEXT_KEY);
         codeKeyHash.put(F_HTML_CODE, F_HTML_KEY);

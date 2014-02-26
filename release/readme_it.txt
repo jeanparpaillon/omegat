@@ -1,7 +1,7 @@
-Questa traduzione è frutto del lavoro di Valter Mura, copyright© 2013
+﻿Questa traduzione è frutto del lavoro di Valter Mura, copyright© 2012.
 
 ==============================================================================
-  File Leggimi di OmegaT 3.0
+  File Leggimi di OmegaT 2.0
 
   1.  Informazioni su OmegaT
   2.  Che cosa è OmegaT?
@@ -43,7 +43,7 @@ Le caratteristiche principali di OmegaT sono:
   - supporto dei correttori ortografici open source "al volo"
   - supporto dei dizionari StarDict
   - supporto dei servizi di traduzione automatica Google Translate
-  - documentazione ed esercitazioni chiare ed esaustive
+  - - documentazione ed esercitazioni chiare ed esaustive
   - localizzazione in più lingue
 
 OmegaT è in grado di riconoscere immediatamente i seguenti formati di file formattati:
@@ -52,7 +52,7 @@ OmegaT è in grado di riconoscere immediatamente i seguenti formati di file form
 
   - file di testo ASCII (.txt, ecc.)
   - testo codificato (*.UTF8)
-  - pacchetti risorsa Java (*.properties)
+  - Java resource bundles (*.properties)
   - file PO (*.po)
   - file INI (codice=valore) (*.ini)
   - file DTD (*.DTD)
@@ -62,24 +62,23 @@ OmegaT è in grado di riconoscere immediatamente i seguenti formati di file form
 
 - formati di file di testo con tag
 
-  - File OpenOffice.org / OpenDocument (*.odt, *.ott, *.ods, *.ots, *.odp, *.otp)
-  - File Microsoft Open XML (*.docx, *.xlsx, *.pptx)
-  - File (X)HTML (*.html, *.xhtml,*.xht)
+  - OpenOffice.org / OpenDocument (*.odt, *.ott, *.ods, *.ots, *.odp, *.otp)
+  - Microsoft Open XML (*.docx, *.xlsx, *.pptx)
+  - (X)HTML (*.html, *.xhtml,*.xht)
   - compilatore Help HTML (*.hhc, *.hhk)
-  - File DocBook (*.xml)
+  - DocBook (*.xml)
   - XLIFF monolingua (*.xlf, *.xliff, *.sdlxliff)
-  - File QuarkXPress CopyFlowGold (*.tag, *.xtg)
+  - QuarkXPress CopyFlowGold (*.tag, *.xtg)
   - file ResX (*.resx)
   - risorsa Android (*.xml)
-  - File LaTex (*.tex, *.latex)
+  - LaTex (*.tex, *.latex)
   - file di guida (*.xml) e manuale (*.hmxp)
-  - File LocManager (*.xml) Tipo3 
+  - Typo3 LocManager (*.xml)
   - localizzazione WiX (*.wxl)
-  - Fike Iceni Infix (*.xml)
+  - Iceni Infix (*.xml)
   - esportazione Flash XML (*.xml)
-  - File Wordfast TXML (*.txml)
+  - Wordfast TXML (*.txml)
   - Camtasia per Windows (*.camproj)
-  - File Visio (*.vxd)
 
 OmegaT può essere personalizzato per gestire anche altri tipi di formati di file.
 
@@ -184,7 +183,7 @@ Avrete così un'idea di che cosa accade nel mondo di OmegaT...
 Elenco dei contributi precedenti (in ordine alfabetico)
 
 Contributi al codice:
-  (in ordine alfabetico)
+  Zoltan Bartko
   Volker Berlin
   Didier Briel (gestore dello sviluppo)
   Kim Bruning
@@ -193,14 +192,11 @@ Contributi al codice:
   Thomas Cordonnier
   Martin Fleurke  
   Wildrich Fourie
-  Phillip Hall
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
-  Ibai Lakunza Velasco
   Guido Leenders
-  Aaron Madlon-Kay
+  Ibai Lakunza Velasco
   Fabián Mandelbaum
   John Moran
   Maxym Mykhalchuk 
@@ -208,9 +204,8 @@ Contributi al codice:
   Henry Pijffers 
   Briac Pilpré
   Tiago Saboga
-  Andrzej Sawuła
+  Andrzej Sawula
   Benjamin Siband
-  Yu Tang
   Rashid Umarov  
   Antonio Vilei
   Martin Wunderlich
@@ -222,29 +217,31 @@ Altri contributi:
   Jean-Christophe Helary (gestore della localizzazione)
   Vito Smolej (gestore della documentazione)
   Samuel Murray
-  Marc Prior  
+  Marc Prior 
   e molte, molte altre persone che hanno contribuito
 
 (se ritenete di aver contribuito in modo significativo al Progetto OmegaT ma il vostro nome non è presente nell'elenco, contattateci senza problemi).
 
 OmegaT usa le seguenti librerie:
-  HTMLParser 1.6 di Somik Raha, Derrick Oswald et al (licenza LGPL)
+
+  HTMLParser di Somik Raha, Derrick Oswald et al (licenza LGPL)
+  http://sourceforge.net/projects/htmlparser
+
   MRJ Adapter 1.0.8 di Steve Roy (licenza LGPL)
+  http://homepage.mac.com/sroy/mrjadapter/
+
   VLDocking Framework 2.1.4 di VLSolutions (licenza CeCILL)
+  http://www.vlsolutions.com/en/products/docking/
+
   Hunspell di László Németh et al (licenza LGPL)
+
   JNA di Todd Fast, Timothy Wall et al (licenza LGPL)
+
   Swing-Layout 1.0.2 (licenza LGPL)
+
   Jmyspell 2.1.4 (licenza LGPL)
-  SVNKit 1.7.5 (licenza TMate)
-  Sequence Library (licenza Sequence Library)
-  ANTLR 3.4 (licenza ANTLR 3)
-  SQLJet 1.1.3 (GPL v2)
-  JGit (licenza di distribuzione Eclipse)
-  JSch (licenza JSch)
-  Base64 (dominio pubblico)
-  Diff (GPL)
-  JSAP (LGPL)
-  orion-ssh2-214 (licenza Orion SSH per Java)
+
+  JAXB 2.1.7 (GPLv2 + classpath exception)
 
 ==============================================================================
  5.  OmegaT genera problemi? Si ha bisogno di assistenza?

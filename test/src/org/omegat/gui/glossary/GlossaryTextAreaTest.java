@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.glossary;
@@ -35,7 +34,6 @@ import org.omegat.core.TestCoreInitializer;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.gui.editor.EditorSettings;
 import org.omegat.gui.editor.IEditor;
-import org.omegat.gui.editor.IEditorFilter;
 import org.omegat.gui.editor.IPopupMenuConstructor;
 import org.omegat.gui.editor.mark.Mark;
 import org.omegat.util.Preferences;
@@ -52,8 +50,8 @@ public class GlossaryTextAreaTest extends TestCore {
         Preferences.setPreference(org.omegat.util.Preferences.TRANSTIPS, false);
 
         final List<GlossaryEntry> entries = new ArrayList<GlossaryEntry>();
-        entries.add(new GlossaryEntry("source1", "translation1", "", false));
-        entries.add(new GlossaryEntry("source2", "translation2", "comment2", false));
+        entries.add(new GlossaryEntry("source1", "translation1", ""));
+        entries.add(new GlossaryEntry("source2", "translation2", "comment2"));
         final GlossaryTextArea gta = new GlossaryTextArea();
         SwingUtilities.invokeAndWait(new Runnable() {
             public void run() {
@@ -72,8 +70,8 @@ public class GlossaryTextAreaTest extends TestCore {
         Preferences.setPreference(org.omegat.util.Preferences.TRANSTIPS, false);
 
         final List<GlossaryEntry> entries = new ArrayList<GlossaryEntry>();
-        entries.add(new GlossaryEntry("source1", "translation1", "", false));
-        entries.add(new GlossaryEntry("source2", "translation2", "comment2", false));
+        entries.add(new GlossaryEntry("source1", "translation1", ""));
+        entries.add(new GlossaryEntry("source2", "translation2", "comment2"));
         final GlossaryTextArea gta = new GlossaryTextArea();
         SwingUtilities.invokeAndWait(new Runnable() {
             public void run() {
@@ -149,9 +147,6 @@ public class GlossaryTextAreaTest extends TestCore {
 
             public void nextUntranslatedEntry() {
             }
-            
-            public void nextTranslatedEntry() {
-            }
 
             public void prevEntry() {
             }
@@ -168,18 +163,13 @@ public class GlossaryTextAreaTest extends TestCore {
 
             public void replaceEditText(String text) {
             }
-            public void replaceEditTextAndMark(String text) {
-            }
 
             public void requestFocus() {
             }
             public void remarkOneMarker(String markerClassName) {
             }
 
-            public IEditorFilter getFilter() {
-                return null;
-            }
-            public void setFilter(IEditorFilter filter) {
+            public void addFilter(List<Integer> entryList) {
             }
 
             public void removeFilter() {
@@ -198,25 +188,6 @@ public class GlossaryTextAreaTest extends TestCore {
 
             public void prevEntryWithNote() {
                 throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            public String getCurrentTranslation() {
-                return null;
-            }
-
-            public void gotoEntryAfterFix(int fixedEntry, String fixedSource) {
-            }
-
-            public void refreshViewAfterFix(List<Integer> fixedEntries) {
-            }
-
-            public void windowDeactivated() {
-            }
-
-            public void refreshView(boolean doCommit) {
-            }
-
-            public void registerIdenticalTranslation() {
             }
         });
     }

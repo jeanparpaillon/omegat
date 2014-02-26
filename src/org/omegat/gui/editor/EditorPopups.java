@@ -9,20 +9,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.editor;
@@ -36,20 +35,19 @@ import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 
 import org.omegat.core.Core;
-import org.omegat.core.data.PrepareTMXEntry;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
 import org.omegat.core.spellchecker.SpellCheckerMarker;
 import org.omegat.util.Log;
 import org.omegat.util.OStrings;
-import org.omegat.util.StaticUtils;
-import org.omegat.util.TagUtil;
 import org.omegat.util.gui.UIThreadsUtil;
+import org.omegat.gui.glossary.TransTipsPopup;
 
 /**
  * Some standard editor popups.
@@ -64,7 +62,6 @@ public class EditorPopups {
         ec.registerPopupMenuConstructors(200, new GoToSegmentPopup(ec));
         ec.registerPopupMenuConstructors(400, new DefaultPopup());
         ec.registerPopupMenuConstructors(500, new EmptyNoneTranslationPopup(ec));
-        ec.registerPopupMenuConstructors(600, new InsertTagsPopup(ec));
     }
 
     /**
@@ -304,53 +301,34 @@ public class EditorPopups {
                 return;
             }
 
-            menu.add(OStrings.getString("TRANS_POP_EMPTY_TRANSLATION")).addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            ec.commitAndDeactivate(EditorController.ForceTranslation.EMPTY, null);
-                            ec.activateEntry();
-                        }
-                    });
-            menu.add(OStrings.getString("TRANS_POP_REMOVE_TRANSLATION")).addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            ec.commitAndDeactivate(EditorController.ForceTranslation.UNTRANSLATED, null);
-                            ec.activateEntry();
-                        }
-                    });
-            menu.add(OStrings.getString("TRANS_POP_IDENTICAL_TRANSLATION")).addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            ec.commitAndDeactivate(EditorController.ForceTranslation.EQUALS_TO_SOURCE, null);
-                            ec.activateEntry();
-                        }
-                    });
+            JMenuItem itemEmpty = menu.add(OStrings.getString("TRANS_POP_EMPTY_TRANSLATION"));
+            itemEmpty.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    Core.getEditor().setEmptyTranslation(true);
+                    setTranslation("");
+                    Core.getEditor().replaceEditText("");
+                }
+            });
+            JMenuItem itemRemove = menu.add(OStrings.getString("TRANS_POP_REMOVE_TRANSLATION"));
+            itemRemove.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    setTranslation(null);
+                    Core.getEditor().replaceEditText("");
+                }
+            });
             menu.addSeparator();
         }
-    }
 
-    public static class InsertTagsPopup implements IPopupMenuConstructor {
-        protected final EditorController ec;
-
-        public InsertTagsPopup(EditorController ec) {
-            this.ec = ec;
-        }
-
-        public void addItems(JPopupMenu menu, final JTextComponent comp, final int mousepos, boolean isInActiveEntry,
-                boolean isInActiveTranslation, SegmentBuilder sb) {
-            if (!isInActiveTranslation) {
+        protected void setTranslation(String v) {
+            SourceTextEntry ste = Core.getEditor().getCurrentEntry();
+            if (ste == null) {
                 return;
             }
-
-            for (final String tag : TagUtil.getAllTagsMissingFromTarget()) {
-                JMenuItem item = menu.add(StaticUtils.format(OStrings.getString("TF_MENU_EDIT_TAG_INSERT_N"), tag));
-                item.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        Core.getEditor().insertText(tag);
-                    }
-                });
-            }
-            menu.addSeparator();
+            TMXEntry prevTrans = Core.getProject().getTranslationInfo(ste);
+            Core.getProject().setTranslation(ste, v, Core.getNotes().getNoteText(),
+                    prevTrans.defaultTranslation);
+            Core.getEditor().replaceEditText("");
+            Core.getEditor().commitAndLeave();
         }
     }
 }

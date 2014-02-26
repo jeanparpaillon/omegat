@@ -5,24 +5,22 @@
 
  Copyright (C) 2000-2006 Keith Godfrey, Maxym Mykhalchuk, and Henry Pijffers
                2008 Alex Buloichik
-               2013 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
@@ -40,7 +38,6 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import org.omegat.util.logging.OmegaTFileHandler;
 
 /**
  * A collection of methods to make logging things easier.
@@ -139,29 +136,6 @@ public class Log {
     public static String getLogLocation() {
         return StaticUtils.getConfigDir() + "/logs";
     }
-    
-    /**
-     * Compute the filename of the log file
-     * @return the filename of the log, or an empty string
-     */
-    public static String getLogFileName() {
-        Handler[] hand = LOGGER.getParent().getHandlers();
-        if (hand[1] instanceof OmegaTFileHandler) {
-            OmegaTFileHandler omegatLog = (OmegaTFileHandler) hand[1];
-            return omegatLog.getOmegaTLogFileName()+ ".log";
-        } else {
-            return "";
-        }
-            
-    }
-    
-    /**
-     * Compute the full path of the log file
-     * @return the full path of the log file
-     */
-    public static String getLogFilePath() {
-        return getLogLocation() + "/" + getLogFileName();
-    }
 
     /**
      * Logs what otherwise would go to System.out
@@ -254,8 +228,8 @@ public class Log {
             rec.setParameters(parameters);
             rec.setLoggerName(LOGGER.getName());
             LOGGER.log(rec);
-            }
         }
+    }
 
     /**
      * Writes an error message to the log (to be retrieved from the resource
@@ -306,24 +280,6 @@ public class Log {
             rec.setLoggerName(LOGGER.getName());
             rec.setThrown(ex);
             LOGGER.log(rec);
-        }
-    }
-
-    /**
-     * Writes debug message to log(without localization)
-     * 
-     * @param message
-     *            message text
-     * @param parameters
-     *            Parameters for the error message. These are inserted by using
-     *            StaticUtils.format.
-     */
-    public static void logDebug(Logger logger, String message, Object... parameters) {
-        if (logger.isLoggable(Level.FINE)) {
-            LogRecord rec = new LogRecord(Level.FINE, message);
-            rec.setParameters(parameters);
-            rec.setLoggerName(logger.getName());
-            logger.log(rec);
         }
     }
 }
