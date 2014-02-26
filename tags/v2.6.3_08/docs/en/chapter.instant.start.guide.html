@@ -1,0 +1,252 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   
+      <title>Chapter&nbsp;2.&nbsp;Learn to use OmegaT in 5 minutes!</title>
+      <link rel="stylesheet" type="text/css" href="OmegaT.css">
+      <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+      <link rel="home" href="index.html" title="OmegaT 2.6 - User's Guide">
+      <link rel="up" href="index.html" title="OmegaT 2.6 - User's Guide">
+      <link rel="prev" href="chapter.about.OmegaT.html" title="Chapter&nbsp;1.&nbsp;About OmegaT - introduction">
+      <link rel="next" href="chapter.installing.and.running.html" title="Chapter&nbsp;3.&nbsp;Installing and running OmegaT">
+   </head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <div class="navheader">
+         <table width="100%" summary="Navigation header">
+            <tr>
+               <th colspan="3" align="center">Chapter&nbsp;2.&nbsp;Learn to use OmegaT in 5 minutes!</th>
+            </tr>
+            <tr>
+               <td width="20%" align="left"><a accesskey="p" href="chapter.about.OmegaT.html">Prev</a>&nbsp;
+               </td>
+               <th width="60%" align="center">&nbsp;</th>
+               <td width="20%" align="right">&nbsp;<a accesskey="n" href="chapter.installing.and.running.html">Next</a></td>
+            </tr>
+         </table>
+         <hr>
+      </div>
+      <div class="chapter">
+         <div class="titlepage">
+            <div>
+               <div>
+                  <h1 class="title"><a name="chapter.instant.start.guide"></a>Chapter&nbsp;2.&nbsp;Learn to use OmegaT in 5 minutes!
+                  </h1>
+               </div>
+            </div>
+         </div>
+         <div class="toc">
+            <dl class="toc">
+               <dt><span class="section"><a href="chapter.instant.start.guide.html#create.and.open.new.project">1. Set up a new project</a></span></dt>
+               <dt><span class="section"><a href="chapter.instant.start.guide.html#translate.the.segments.one.by.one">2. Translate the file</a></span></dt>
+               <dt><span class="section"><a href="chapter.instant.start.guide.html#d0e262">3. Validate your tags</a></span></dt>
+               <dt><span class="section"><a href="chapter.instant.start.guide.html#d0e289">4. Generate the translated file</a></span></dt>
+               <dt><span class="section"><a href="chapter.instant.start.guide.html#d0e300">5. Few more things to remember</a></span></dt>
+            </dl>
+         </div>
+         <div class="section">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="create.and.open.new.project"></a>1.&nbsp;Set up a new project<a class="indexterm" name="d0e198"></a></h2>
+                  </div>
+               </div>
+            </div>
+            <p><em><span class="remark">Note:</span></em>On an Apple Mac, use the <span class="keycap"><strong>Cmd</strong></span>
+                   or <span class="keycap"><strong>Apple</strong></span> key instead of the <span class="keycap"><strong>Ctrl</strong></span>
+                   key
+            </p>
+            <p>To start using OmegaT, first create a project that will hold all
+                   your files, such as your source file, translation memories, glossaries,
+                   and eventually your translated file. In the <span class="guimenu">Project</span>
+                   menu, select <span class="guimenuitem">New...</span><a class="indexterm" name="d0e224"></a> and type a name for your project. Remember where you are
+                   creating the project, because you will need to return to it later.
+            </p>
+            <p>After you give your project a name, the Create New Project dialog
+                   will open. At the top of that dialog, select your source file's language
+                   and the language that your translated file will be, and click
+                   <span class="guibutton">OK </span>to continue.
+            </p>
+            <p><span class="application">If you are interested in other settings of this dialog,
+                      you can return to it any time by pressing
+                      <span class="keycap"><strong>Ctrl+E.</strong></span></span></p>
+            <p>Next, the Project Files dialog opens. Click the Import source
+                   files... to select your source file. OmegaT will then copy the selected
+                   file to the <code class="filename">/source/</code>subfolder of your newly created
+                   project. After the source file has loaded in the Editor pane, you can
+                   close the Project files dialog.
+            </p>
+         </div>
+         <div class="section">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="translate.the.segments.one.by.one"></a>2.&nbsp;Translate the file
+                     </h2>
+                  </div>
+               </div>
+            </div>
+            <p>OmegaT will present one segment at a time for you to translate.
+                   After you have translated each segment, press <span class="keycap"><strong>Ctrl+U </strong></span>to
+                   move to the next untranslated segment. Whenever you want to see what your
+                   translation will look like in its final format, press
+                   <span class="keycap"><strong>Ctrl+D</strong></span> to generate the translated document, which will be
+                   created in the /target/ subfolder of your project folder. During
+                   translation, use the <span class="guimenu">Edit</span> and <span class="guimenu">Go To</span>
+                   menus to perform various useful functions.
+            </p>
+         </div>
+         <div class="section">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e262"></a>3.&nbsp;Validate your tags
+                     </h2>
+                  </div>
+               </div>
+            </div>
+            <p>If your source file is a formatted file, e.g. Microsoft Word,
+                   LibreOffice Writer or HTML, OmegaT will convert the formatting into tags
+                   that surround the text that you translate. Often documents will also have
+                   tags that have nothing to do with formatting, but which are also
+                   important in the source file (and in the translated file). A source
+                   sentence might look like
+            </p>
+            <p></p>
+            <div class="mediaobject" align="left"><img src="images/InstantGuide_1.png" align="left"></div>
+            <p></p>
+            <p>OmegaT, however, will present this sentence in the following
+                   fashion:
+            </p>
+            <p><code class="literal"></code></p>
+            <div class="mediaobject" align="left"><img src="images/InstantGuide_2.png" align="left"></div>
+            <p></p>
+            <p>The tags in OmegaT are greyed, so they are easy to recognise. They
+                   are not protected, so that you can delete them, enter them by hand or move
+                   them around in the target sentence. However, if you made mistakes when you
+                   typed the formatting tags, your translated file might fail to open.
+                   Therefore, press <span class="keycap"><strong>Ctrl+T</strong></span> before you generate your
+                   translated file, to validate that your tags are correct.
+            </p>
+         </div>
+         <div class="section">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e289"></a>4.&nbsp;Generate the translated file
+                     </h2>
+                  </div>
+               </div>
+            </div>
+            <p>Once you have made certain that there are no tag errors in your
+                   translation, press <span class="keycap"><strong>Ctrl+D</strong></span> to generate the target file,
+                   which will be created in the<code class="filename"> /target/</code>subfolder of
+                   your project folder.
+            </p>
+         </div>
+         <div class="section">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e300"></a>5.&nbsp;Few more things to remember
+                     </h2>
+                  </div>
+               </div>
+            </div>
+            <div class="itemizedlist">
+               <ul class="itemizedlist" style="list-style-type: disc; ">
+                  <li class="listitem">
+                     <p>If a file does not loads into the Editor pane, then it could be
+                                that your source file is in a format that doesn't work in OmegaT. See
+                                Chapter 7: File Filters in the User Manual for a list of file formats
+                                that OmegaT can handle.
+                     </p>
+                  </li>
+               </ul>
+            </div>
+            <div class="itemizedlist">
+               <ul class="itemizedlist" style="list-style-type: disc; ">
+                  <li class="listitem">
+                     <p>You can create a new project for each new job, and you can add
+                                several source files to a project at a time.
+                     </p>
+                  </li>
+               </ul>
+            </div>
+            <div class="itemizedlist">
+               <ul class="itemizedlist" style="list-style-type: disc; ">
+                  <li class="listitem">
+                     <p>To remind yourself of the project's initial settings, open the
+                                Project Settings dialog by pressing <span class="keycap"><strong>Ctrl+E</strong></span>. To see a
+                                list of files in the project, open the Project Files dialog by
+                                pressing <span class="keycap"><strong>Ctrl+L</strong></span>.
+                     </p>
+                  </li>
+               </ul>
+            </div>
+            <div class="itemizedlist">
+               <ul class="itemizedlist" style="list-style-type: disc; ">
+                  <li class="listitem">
+                     <p>At the end of your translation, OmegaT exports three translation
+                                memories called "level1", "level2" and "omegat" to your project
+                                folder. The "level1" and "level2" memories can be shared with users of
+                                other translation programs. The memory named "omegat" can be used in
+                                OmegaT itself, in future projects that you create. If you place
+                                translation memory files in the /tm/ subfolder of your project folder,
+                                OmegaT will automatically search them for similar segments, called
+                                "fuzzy matches".
+                     </p>
+                  </li>
+               </ul>
+            </div>
+            <div class="itemizedlist">
+               <ul class="itemizedlist" style="list-style-type: disc; ">
+                  <li class="listitem">
+                     <p>You can create a glossary by pressing
+                                <span class="guibutton">Ctrl+Shift+G</span>, or copy existing glossaries to
+                                the<code class="filename">/glossary/</code>subfolder of your project folder,
+                                and OmegaT will automatically look up words in them.
+                     </p>
+                  </li>
+               </ul>
+            </div>
+            <div class="itemizedlist">
+               <ul class="itemizedlist" style="list-style-type: disc; ">
+                  <li class="listitem">
+                     <p>It is often useful to search for words and phrases in the source
+                                text and in your translation, so press <span class="keycap"><strong>Ctrl+F</strong></span> for the
+                                "Text Search" dialog at any time.
+                     </p>
+                  </li>
+               </ul>
+            </div>
+            <div class="itemizedlist">
+               <ul class="itemizedlist" style="list-style-type: disc; ">
+                  <li class="listitem">
+                     <p>For a more comprehensive introduction see <a class="ulink" href="http://www.omegat.org/en/tutorial/OmegaT%20for%20Beginners.pdf" target="_top">OmegaT
+                                   for beginners</a> on the OmegaT web site. If you need assistance
+                                with any aspect of OmegaT, feel free to join the <a class="ulink" href="http://tech.groups.yahoo.com/group/OmegaT/" target="_top">OmegaT users
+                                   group.</a></p>
+                  </li>
+               </ul>
+            </div>
+         </div>
+      </div>
+      <div class="navfooter">
+         <hr>
+         <table width="100%" summary="Navigation footer">
+            <tr>
+               <td width="40%" align="left"><a accesskey="p" href="chapter.about.OmegaT.html">Prev</a>&nbsp;
+               </td>
+               <td width="20%" align="center">&nbsp;</td>
+               <td width="40%" align="right">&nbsp;<a accesskey="n" href="chapter.installing.and.running.html">Next</a></td>
+            </tr>
+            <tr>
+               <td width="40%" align="left" valign="top">Chapter&nbsp;1.&nbsp;About <span class="application">OmegaT</span> - introduction&nbsp;
+               </td>
+               <td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+               <td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;3.&nbsp;Installing and running <span class="application">OmegaT</span></td>
+            </tr>
+         </table>
+      </div>
+   </body>
+</html>
