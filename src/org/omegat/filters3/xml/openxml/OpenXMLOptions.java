@@ -5,24 +5,23 @@
 
  Copyright (C) 2007-2010 Didier Briel
                2010 Antonio Vilei
-               2011-2013 Didier Briel
+               2011 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml.openxml;
@@ -49,7 +48,6 @@ import org.omegat.filters2.AbstractOptions;
  * <li>[+] Slide comments (PowerPoint)
  * <li>[] Slide Masters (PowerPoint)
  * <li>[] Slide Layouts (PowerPoint)
- * <li>[] External links (PowerPoint)
  * <li>[] Charts (Global)
  * <li>[] Diagrams (Global)
  * <li>[] Drawings (Global)
@@ -76,7 +74,6 @@ public class OpenXMLOptions extends AbstractOptions {
     private static final String OPTION_TRANSLATE_SLIDE_COMMENTS = "translateSlideComments";
     private static final String OPTION_TRANSLATE_SLIDE_MASTERS = "translateSlideMasters";
     private static final String OPTION_TRANSLATE_SLIDE_LAYOUTS = "translateSlideLayouts";
-    private static final String OPTION_TRANSLATE_SLIDE_LINKS = "translateSlideLinks";   
     private static final String OPTION_TRANSLATE_CHARTS = "translateCharts";
     private static final String OPTION_TRANSLATE_DRAWINGS = "translateDrawings";
     private static final String OPTION_TRANSLATE_WORDART = "translateWordArt";
@@ -255,22 +252,6 @@ public class OpenXMLOptions extends AbstractOptions {
         setBoolean(OPTION_TRANSLATE_SLIDE_LAYOUTS, translateSlideLayouts);
     }
 
-    /**
-     * Returns whether Slide Links should be translated.
-     * @return the state of OPTION_TRANSLATE_SLIDE_LINKS
-     */
-    public boolean getTranslateSlideLinks() {
-        return getBoolean(OPTION_TRANSLATE_SLIDE_LINKS, false);
-    }
-
-    /**
-     * Sets whether Slide Links should be translated.
-     * @param translateSlideLinks The option to translate external links
-     */
-    public void setTranslateSlideLinks(boolean translateSlideLinks) {
-        setBoolean(OPTION_TRANSLATE_SLIDE_LINKS, translateSlideLinks);
-    }
-    
     /**
      * Returns whether Charts should be translated.
      */

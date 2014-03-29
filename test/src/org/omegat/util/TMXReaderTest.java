@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 package org.omegat.util;
 
@@ -56,7 +55,7 @@ public class TMXReaderTest extends TestCore {
     public void testLeveL2() throws Exception {
         final Map<String, String> tr = new TreeMap<String, String>();
         new TMXReader2().readTMX(new File("test/data/tmx/test-level2.tmx"), new Language("en-US"),
-                new Language("be"), false, false, true, false, new TMXReader2.LoadCallback() {
+                new Language("be"), false, false, false, false, new TMXReader2.LoadCallback() {
                     public boolean onEntry(TMXReader2.ParsedTu tu, TMXReader2.ParsedTuv tuvSource,
                             TMXReader2.ParsedTuv tuvTarget, boolean isParagraphSegtype) {
                         tr.put(tuvSource.text, tuvTarget.text);
@@ -64,8 +63,6 @@ public class TMXReaderTest extends TestCore {
                     }
                 });
         assertEquals("betuv", tr.get("entuv"));
-        assertEquals("tr", tr.get("2 <a0> zz <t1>xx</t1>"));
-        assertEquals("tr", tr.get("3 <n0>xx</n0>"));
     }
 
     public void testInvalidTMX() throws Exception {

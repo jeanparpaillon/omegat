@@ -6,24 +6,23 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2007-2010 Didier Briel
                2010 Antonio Vilei
-               2011-2013 Didier Briel
+               2011 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml.openxml;
@@ -72,7 +71,6 @@ public class EditOpenXMLOptionsDialog extends javax.swing.JDialog {
         translateSlideCommentsCB.setSelected(options.getTranslateSlideComments());
         translateSlideMastersCB.setSelected(options.getTranslateSlideMasters());
         translateSlideLayoutsCB.setSelected(options.getTranslateSlideLayouts());
-        translateSlideLinksCB.setSelected(options.getTranslateSlideLinks());
         translateChartsCB.setSelected(options.getTranslateCharts());
         translateDrawingsCB.setSelected(options.getTranslateDrawings());
         translateWordArtCB.setSelected(options.getTranslateWordArt());
@@ -133,7 +131,6 @@ public class EditOpenXMLOptionsDialog extends javax.swing.JDialog {
         translateSlideCommentsCB = new javax.swing.JCheckBox();
         translateSlideMastersCB = new javax.swing.JCheckBox();
         translateSlideLayoutsCB = new javax.swing.JCheckBox();
-        translateSlideLinksCB = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
         translateChartsCB = new javax.swing.JCheckBox();
         translateDiagramsCB = new javax.swing.JCheckBox();
@@ -181,7 +178,7 @@ public class EditOpenXMLOptionsDialog extends javax.swing.JDialog {
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, OStrings.getString("OpenDoc_TRANSLATE_ELEMENTS")); // NOI18N
         jPanel1.add(jLabel2);
 
-        jLabel3.setFont(new java.awt.Font("MS Sans Serif", 1, 11)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("MS Sans Serif", 1, 11));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         org.openide.awt.Mnemonics.setLocalizedText(jLabel3, OStrings.getString("OpenXML_WORD")); // NOI18N
         jPanel1.add(jLabel3);
@@ -239,7 +236,7 @@ public class EditOpenXMLOptionsDialog extends javax.swing.JDialog {
         });
         jPanel1.add(translateFootersCB);
 
-        jLabel4.setFont(new java.awt.Font("MS Sans Serif", 1, 11)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("MS Sans Serif", 1, 11));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         org.openide.awt.Mnemonics.setLocalizedText(jLabel4, OStrings.getString("OpenXML_EXCEL")); // NOI18N
         jPanel1.add(jLabel4);
@@ -261,7 +258,7 @@ public class EditOpenXMLOptionsDialog extends javax.swing.JDialog {
         });
         jPanel1.add(translateSheetNamesCB);
 
-        jLabel5.setFont(new java.awt.Font("MS Sans Serif", 1, 11)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("MS Sans Serif", 1, 11));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         org.openide.awt.Mnemonics.setLocalizedText(jLabel5, OStrings.getString("OpenXML_POWER_POINT")); // NOI18N
         jPanel1.add(jLabel5);
@@ -281,10 +278,7 @@ public class EditOpenXMLOptionsDialog extends javax.swing.JDialog {
         org.openide.awt.Mnemonics.setLocalizedText(translateSlideLayoutsCB, OStrings.getString("OpenXML_TRANSLATE_SLIDE_LAYOUTS")); // NOI18N
         jPanel1.add(translateSlideLayoutsCB);
 
-        org.openide.awt.Mnemonics.setLocalizedText(translateSlideLinksCB, OStrings.getString("OpenXML_TRANSLATE_SLIDE_LINKS")); // NOI18N
-        jPanel1.add(translateSlideLinksCB);
-
-        jLabel7.setFont(new java.awt.Font("MS Sans Serif", 1, 11)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("MS Sans Serif", 1, 11));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         org.openide.awt.Mnemonics.setLocalizedText(jLabel7, OStrings.getString("OpenXML_GLOBAL")); // NOI18N
         jPanel1.add(jLabel7);
@@ -342,7 +336,9 @@ public class EditOpenXMLOptionsDialog extends javax.swing.JDialog {
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
-        setLocationRelativeTo(null);
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        java.awt.Dimension dialogSize = getSize();
+        setLocation((screenSize.width-dialogSize.width)/2,(screenSize.height-dialogSize.height)/2);
     }// </editor-fold>//GEN-END:initComponents
 
     private void preserveSpacesCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preserveSpacesCBActionPerformed
@@ -398,7 +394,6 @@ public class EditOpenXMLOptionsDialog extends javax.swing.JDialog {
         options.setTranslateSlideComments(translateSlideCommentsCB.isSelected());
         options.setTranslateSlideMasters(translateSlideMastersCB.isSelected());
         options.setTranslateSlideLayouts(translateSlideLayoutsCB.isSelected());
-        options.setTranslateSlideLinks(translateSlideLinksCB.isSelected());
         options.setTranslateCharts(translateChartsCB.isSelected());
         options.setTranslateDrawings(translateDrawingsCB.isSelected());
         options.setTranslateWordArt(translateWordArtCB.isSelected());
@@ -469,7 +464,6 @@ public class EditOpenXMLOptionsDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox translateSheetNamesCB;
     private javax.swing.JCheckBox translateSlideCommentsCB;
     private javax.swing.JCheckBox translateSlideLayoutsCB;
-    private javax.swing.JCheckBox translateSlideLinksCB;
     private javax.swing.JCheckBox translateSlideMastersCB;
     private javax.swing.JCheckBox translateWordArtCB;
     // End of variables declaration//GEN-END:variables

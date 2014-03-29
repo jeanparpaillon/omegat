@@ -3,24 +3,23 @@
           with fuzzy matching, translation memory, keyword search, 
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2010-2013 Alex Buloichik
+ Copyright (C) 2010 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.editor.mark;
@@ -29,6 +28,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
+import javax.swing.SwingUtilities;
 
 import org.omegat.gui.editor.MarkerController;
 import org.omegat.gui.editor.SegmentBuilder;
@@ -44,10 +45,11 @@ import org.omegat.util.Log;
 public class CalcMarkersThread extends Thread {
 
     private final Queue<EntryMarks> forCheck = new LinkedList<EntryMarks>();
+    private final Queue<EntryMarks> forOutput = new LinkedList<EntryMarks>();
 
     private final MarkerController mController;
     private final int markerIndex;
-    public final IMarker marker;
+    private final IMarker marker;
 
     public CalcMarkersThread(MarkerController mc, IMarker marker, int markerIndex) {
         this.mController = mc;
@@ -59,13 +61,16 @@ public class CalcMarkersThread extends Thread {
         synchronized (forCheck) {
             forCheck.clear();
         }
+        synchronized (forOutput) {
+            forOutput.clear();
+        }
     }
 
     public void add(SegmentBuilder[] entryBuilders) {
         List<EntryMarks> vers = new ArrayList<EntryMarks>(entryBuilders.length);
 
         for (int i = 0; i < entryBuilders.length; i++) {
-            EntryMarks v = new EntryMarks(entryBuilders[i], entryBuilders[i].getDisplayVersion(), markerIndex);
+            EntryMarks v = new EntryMarks(i, entryBuilders[i], entryBuilders[i].getDisplayVersion());
             vers.add(v);
         }
 
@@ -75,8 +80,8 @@ public class CalcMarkersThread extends Thread {
         }
     }
 
-    public void add(SegmentBuilder entryBuilder) {
-        EntryMarks v = new EntryMarks(entryBuilder, entryBuilder.getDisplayVersion(), markerIndex);
+    public void add(int entryIndex, SegmentBuilder entryBuilder) {
+        EntryMarks v = new EntryMarks(entryIndex, entryBuilder, entryBuilder.getDisplayVersion());
 
         synchronized (forCheck) {
             forCheck.add(v);
@@ -87,7 +92,8 @@ public class CalcMarkersThread extends Thread {
     @Override
     public void run() {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-        Thread.currentThread().setName(this.getClass().getSimpleName() + " - " + marker.getClass().getSimpleName());
+        Thread.currentThread().setName(
+                this.getClass().getSimpleName() + " - " + marker.getClass().getSimpleName());
 
         try {
             while (true) {
@@ -95,6 +101,8 @@ public class CalcMarkersThread extends Thread {
                 synchronized (forCheck) {
                     ev = forCheck.poll();
                     if (ev == null) {
+                        // there is no strings in queue - output all
+                        showOutput();
                         // wait next
                         forCheck.wait();
                     }
@@ -105,26 +113,52 @@ public class CalcMarkersThread extends Thread {
 
                 // Calculate only if entry not changed yet
                 try {
-                    if (ev.isSegmentChanged()) {
+                    if (mController.isEntryChanged(ev)) {
                         // already changed
                         continue;
                     }
-                    ev.result = marker.getMarksForEntry(ev.ste, ev.sourceText, ev.translationText, ev.isActive);
+                    ev.result = marker.getMarksForEntry(ev.sourceText, ev.translationText, ev.isActive);
                     if (ev.result == null) {
                         // null returned - not need to change anything
                         continue;
                     }
-                    if (ev.isSegmentChanged()) {
+                    if (mController.isEntryChanged(ev)) {
                         // already changed
                         continue;
                     }
-                    mController.queueMarksOutput(ev);
-                } catch (Throwable ex) {
+                    synchronized (forOutput) {
+                        // output marks
+                        forOutput.add(ev);
+                    }
+                } catch (Exception ex) {
                     Log.log(ex);
                 }
             }
         } catch (InterruptedException ex) {
             Log.log(ex);
         }
+    }
+
+    /**
+     * Show marks in Swing thread.
+     */
+    protected void showOutput() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                while (true) {
+                    EntryMarks ev;
+                    synchronized (forOutput) {
+                        ev = forOutput.poll();
+                    }
+                    if (ev == null) {
+                        // end of queue
+                        return;
+                    }
+                    if (!mController.isEntryChanged(ev)) {
+                        mController.setEntryMarks(ev.entryIndex, ev.builder, ev.result, markerIndex);
+                    }
+                }
+            }
+        });
     }
 }

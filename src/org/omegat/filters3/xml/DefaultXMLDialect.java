@@ -8,42 +8,34 @@
                2009 Didier Briel
                2010 Antonio Vilei
                2011 Didier Briel
-               2013 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.filters3.Attributes;
-import org.omegat.filters3.Element;
-import org.omegat.filters3.Tag;
-import org.omegat.filters3.Text;
 import org.omegat.util.MultiMap;
-import org.omegat.util.StaticUtils;
 import org.xml.sax.InputSource;
 
 /**
@@ -52,7 +44,6 @@ import org.xml.sax.InputSource;
  * @author Maxym Mykhalchuk
  * @author Martin Fleurke
  * @author Didier Briel
- * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public class DefaultXMLDialect implements XMLDialect {
     /** The set of defined paragraph tags. */
@@ -67,13 +58,6 @@ public class DefaultXMLDialect implements XMLDialect {
     public void defineParagraphTags(String[] tags) {
         for (String tag : tags)
             defineParagraphTag(tag);
-    }
-
-    /** The set of defined content based tags. */
-    private Map<String, Tag.Type> contentBasedTags = new HashMap<String, Tag.Type>();
-
-    public void defineContentBasedTag(String tag, Tag.Type type) {
-        contentBasedTags.put(tag, type);
     }
 
     /** The set of defined tags that surround preformatted text. */
@@ -219,17 +203,8 @@ public class DefaultXMLDialect implements XMLDialect {
      * <p>
      * Each entry in a set should be a String class.
      */
-    @Override
     public Set<String> getParagraphTags() {
         return paragraphTags;
-    }
-
-    /**
-     * Returns the set of content based tags.
-     */
-    @Override
-    public Map<String, Tag.Type> getContentBasedTags() {
-        return contentBasedTags;
     }
 
     /**
@@ -237,7 +212,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * <p>
      * Each entry in a set should be a String class.
      */
-    @Override
     public Set<String> getPreformatTags() {
         return preformatTags;
     }
@@ -248,7 +222,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * <p>
      * Each entry in a set should be a String class.
      */
-    @Override
     public Set<String> getIntactTags() {
         return intactTags;
     }
@@ -258,7 +231,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * <p>
      * Each entry should map from a String to a set of Strings.
      */
-    @Override
     public MultiMap<String, String> getTranslatableTagAttributes() {
         return translatableTagAttributes;
     }
@@ -271,7 +243,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * the XHTML filter to not translate the value attribute of an
      * input-element, except when it is a button or submit or reset.
      */
-    @Override
     public Boolean validateTranslatableTagAttribute(String tag, String attribute, Attributes atts) {
         return true;
     }
@@ -289,13 +260,7 @@ public class DefaultXMLDialect implements XMLDialect {
      *            The list of the tag attributes
      * @return <code>true</code> or <code>false</code>
      */
-    @Override
     public Boolean validateIntactTag(String tag, Attributes atts) {
-        return false;
-    }
-
-    @Override
-    public Boolean validateContentBasedTag(String tag, Attributes atts) {
         return false;
     }
 
@@ -313,7 +278,6 @@ public class DefaultXMLDialect implements XMLDialect {
      *            The list of the tag attributes
      * @return <code>true</code> or <code>false</code>
      */
-    @Override
     public Boolean validateTranslatableTag(String tag, Attributes atts) {
         return true;
     }
@@ -331,7 +295,6 @@ public class DefaultXMLDialect implements XMLDialect {
      *            The list of the tag attributes
      * @return <code>true</code> or <code>false</code>
      */
-    @Override
     public Boolean validateParagraphTag(String tag, Attributes atts) {
         return false;
     }
@@ -349,7 +312,6 @@ public class DefaultXMLDialect implements XMLDialect {
      *            The list of the tag attributes
      * @return <code>true</code> or <code>false</code>
      */
-    @Override
     public Boolean validatePreformatTag(String tag, Attributes atts) {
         return false;
     }
@@ -360,7 +322,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * <p>
      * Each entry in a set should be a String class.
      */
-    @Override
     public Set<String> getTranslatableAttributes() {
         return translatableAttributes;
     }
@@ -372,7 +333,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * <p>
      * Each entry in a set should be a String class.
      */
-    @Override
     public Set<String> getOutOfTurnTags() {
         return outOfTurnTags;
     }
@@ -385,7 +345,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * Each entry should map an {@link Integer} to a {@link Pattern} -- regular
      * expression for a specified constrained string.
      */
-    @Override
     public Map<Integer, Pattern> getConstraints() {
         return constraints;
     }
@@ -394,7 +353,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * Resolves external entites if child filter needs it. Default
      * implementation returns <code>null</code>.
      */
-    @Override
     public InputSource resolveEntity(String publicId, String systemId) {
         return null;
     }
@@ -405,7 +363,6 @@ public class DefaultXMLDialect implements XMLDialect {
      * Each entry should map a {@link String} to a {@link String} -- a tag to
      * its shortcut.
      */
-    @Override
     public Map<String, String> getShortcuts() {
         return shortcuts;
     }
@@ -422,7 +379,6 @@ public class DefaultXMLDialect implements XMLDialect {
      *            The parameter setting wether closing tags should be used or
      *            not for empty tags.
      */
-    @Override
     public void setClosingTagRequired(boolean onOff) {
         closingTagRequired = onOff;
     }
@@ -430,7 +386,6 @@ public class DefaultXMLDialect implements XMLDialect {
     /**
      * Gives the value of closingTag
      */
-    @Override
     public Boolean getClosingTagRequired() {
         return closingTagRequired;
     }
@@ -443,7 +398,6 @@ public class DefaultXMLDialect implements XMLDialect {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void setTagsAggregationEnabled(boolean onOff) {
         tagsAggregationEnabled = onOff;
     }
@@ -451,7 +405,6 @@ public class DefaultXMLDialect implements XMLDialect {
     /**
      * {@inheritDoc}
      */
-    @Override
     public Boolean getTagsAggregationEnabled() {
         return tagsAggregationEnabled;
     }
@@ -460,7 +413,6 @@ public class DefaultXMLDialect implements XMLDialect {
     /**
      * {@inheritDoc}
      */
-    @Override
     public Boolean getForceSpacePreserving() {
         return forceSpacePreserving;
     }
@@ -468,31 +420,8 @@ public class DefaultXMLDialect implements XMLDialect {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void setForceSpacePreserving(boolean onOff) {
         forceSpacePreserving = onOff;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String constructShortcuts(List<Element> elements, List<ProtectedPart> protectedParts) {
-        protectedParts.clear();
-        StringBuilder r = new StringBuilder();
-        for (Element el : elements) {
-            String shortcut = el.toShortcut();
-            r.append(shortcut);
-            if (!(el instanceof Text)) {
-                ProtectedPart pp = new ProtectedPart();
-                pp.setTextInSourceSegment(shortcut);
-                pp.setDetailsFromSourceFile(el.toOriginal());
-                pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
-                pp.setReplacementUniquenessCalculation(StaticUtils.TAG_REPLACEMENT);
-                pp.setReplacementMatchCalculation(StaticUtils.TAG_REPLACEMENT);
-                protectedParts.add(pp);
-            }
-        }
-        return r.toString();
-    }
 }

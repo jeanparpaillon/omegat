@@ -8,6 +8,10 @@ jna.jar is distributed under the GNU Lesser General Public License
 version 2.1 and greater
 Sources are available in OmegaT sources, in the directory lib/sources
 
+MRJAdapter.jar 1.0.8 is distributed under the GNU Lesser General  
+Public License version 2.1 and greater
+Sources are available in OmegaT sources, in the directory lib/sources
+
 vldocking_2.1.4.jar is distributed under the CeCILL license version 2.0
 Sources are available from VLSolutions, at 
 http://www.vlsolutions.com
@@ -20,12 +24,27 @@ Some Hunspell librairies may correspond to older versions
 Sources are all available from
 https://sourceforge.net/project/showfiles.php?group_id=143754&package_id=157912
 
-swing-layout-1.0.4.jar is distributed under the GNU Lesser General  
-Public License version 2.1.
+swing-layout-1.0.2.jar is distributed under the GNU Lesser General  
+Public License version 2.1 and greater
 Sources are available in OmegaT sources, in the directory lib/sources
 
 jmyspell-core-1.0.0-beta-2-1.4.jar is distributed under the 
 GNU Lesser General Public License version 2.1 and greater
+Sources are available in OmegaT sources, in the directory lib/sources
+
+activation.jar, jaxb-api.jar, jaxb-impl.jar and jsr173_1.0_api.jar 
+are part of JAXB, and are distributed under the 
+Common Development and Distribution License (CDDL) v1.0 / GPLv2 + classpath 
+exception dual license
+Sources are available in OmegaT sources, in the directory lib/sources/JAXB
+Complete JAXB sources are available from https://jaxb.dev.java.net/2.1.7/
+
+swing-worker-1.2.jar is distributed under the GNU Lesser General Public License  
+version 2.1.
+Sources are available in OmegaT sources, in the directory lib/sources
+
+sjsxp-1.0.2.jar is distributed under the 
+Common Development and Distribution License (CDDL) v1.0 / GPLv2 dual license
 Sources are available in OmegaT sources, in the directory lib/sources
 
 svnkit-1.7.5.jar is distributed under the
@@ -54,40 +73,5 @@ Base64 is public domain and is included in OmegaT sources
 diff.jar is distributed under the GNU General Public License version 1 and greater
 Sources are available in OmegaT sources, in the directory lib/sources
 
-orion-ssh2-214.jar is distributed under the Orion SSH for Java license
-
-lucene-*.jar are distributed under the Apache License 2.0
-
-The English tokenizers (org.omegat.tokenizer.SnowballEnglishTokenizer and
-org.omegat.tokenizer.LuceneEnglishTokenizer) use stop words from Okapi
-(http://okapi.sourceforge.net) under the LGPL license.
-
-tinysegmenter.jar is distributed under the Modified BSD license
-
-commons-*.jar are distributed under the Apache License 2.0
-(required for LanguageTool, scripting)
-
-jwordSplitter-3.4.jar is distributed under the Apache License 2.0
-(required for LanguageTool)
-
-LanguageTool-data.jar and languagetool-core-2.1.jar are distributed under the LGPL license
-LanguageTool sources are available via SVN from http://sourceforge.net/projects/languagetool/
-
-morfologik-*.jar is distributed under the Morfologik license
-(required for LanguageTool)
-
-segment-1.4.1.jar is distributed under the Segment license
-(required for LanguageTool)
-
-lucene-gosen-2.0.2-ipadic.jar is distributed under the LGPL license
-(required for LanguageTool)
-lucene-gosen sources are available via SVN from http://code.google.com/p/lucene-gosen/source/checkout
-
-pdfbox-app-1.8.1.jar is distributed under the Apache License 2.0
-
-groovy-all-2.2.2.jar is distributed under the Apache License 2.0
-(required for scripting)
-
-SuperTMXMerge-for_OmegaT.jar is distributed under the GNU Lesser General  
-Public License version 2.1 and greater
+JSAP-2.1.jar is distributed under the GNU Lesser General Public License version 
 Sources are available in OmegaT sources, in the directory lib/sources

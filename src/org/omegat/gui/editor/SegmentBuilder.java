@@ -9,20 +9,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.editor;
@@ -31,7 +30,8 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -43,11 +43,11 @@ import org.omegat.core.Core;
 import org.omegat.core.data.ProjectTMX;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
-import org.omegat.gui.editor.MarkerController.MarkInfo;
 import org.omegat.util.Language;
 import org.omegat.util.Log;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
+import org.omegat.util.PatternConsts;
 import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
@@ -71,8 +71,6 @@ public class SegmentBuilder {
     private static final DateFormat dateFormat = DateFormat.getDateInstance();
     private static final DateFormat timeFormat = DateFormat.getTimeInstance();
 
-    static AtomicLong globalVersions = new AtomicLong();
-
     final SourceTextEntry ste;
     final int segmentNumberInProject;
 
@@ -81,7 +79,7 @@ public class SegmentBuilder {
      * thread, like spell checking. Version changed(in Swing thread only) each
      * time when entry drawn, and when user edits it (for active entry).
      */
-    private volatile long displayVersion;
+    private long displayVersion;
     /** Source text of entry, or null if not displayed. */
     private String sourceText;
     /** Translation text of entry, or null if not displayed. */
@@ -108,36 +106,33 @@ public class SegmentBuilder {
 
     /** Source start position - for marks. */
     protected Position posSourceBeg;
-    protected int posSourceLength;
     /** Translation start position - for marks. */
     protected Position posTranslationBeg;
-    protected int posTranslationLength;
 
     /** current offset in document to insert new stuff*/
     protected int offset;
-
-    /**
-     * Markers for this segment.
-     * 
-     * Array of displayed marks. 1nd dimension - marker, 2nd dimension - marks
-     */
-    protected MarkInfo[][] marks;
 
     /**
      * True if source OR target languages is RTL. In this case, we will insert
      * RTL/LTR embedded direction chars. Otherwise - will not insert, since JDK
      * 1.6 has bug with performance with embedded directions chars.
      */
-    protected final boolean hasRTL;
+    protected boolean hasRTL;
 
-    public SegmentBuilder(final EditorController controller, final Document3 doc, final EditorSettings settings,
-            final SourceTextEntry ste, final int segmentNumberInProject, final boolean hasRTL) {
+    public SegmentBuilder(final EditorController controller, final Document3 doc,
+            final EditorSettings settings, final SourceTextEntry ste, final int segmentNumberInProject) {
         this.controller = controller;
         this.doc = doc;
         this.settings = settings;
         this.ste = ste;
         this.segmentNumberInProject = segmentNumberInProject;
-        this.hasRTL = hasRTL;
+
+        hasRTL = controller.sourceLangIsRTL || controller.targetLangIsRTL || EditorUtils.localeIsRTL()
+                || controller.currentOrientation != Document3.ORIENTATION.ALL_LTR;
+        Map<Language,ProjectTMX> otherLanguageTMs = Core.getProject().getOtherTargetLanguageTMs();
+        for (Map.Entry<Language,ProjectTMX> entry : otherLanguageTMs.entrySet()) {
+            hasRTL = hasRTL || EditorUtils.isRTL(entry.getKey().getLanguageCode().toLowerCase());
+        }
     }
 
     public boolean isDefaultTranslation() {
@@ -158,7 +153,7 @@ public class SegmentBuilder {
     public void createSegmentElement(final boolean isActive) {
         UIThreadsUtil.mustBeSwingThread();
 
-        displayVersion = globalVersions.incrementAndGet();
+        displayVersion++;
         this.active = isActive;
 
         doc.trustedChangesInProgress = true;
@@ -244,23 +239,16 @@ public class SegmentBuilder {
             }
 
             posSourceBeg = doc.createPosition(prevOffset + (hasRTL ? 1 : 0));
-            posSourceLength = sourceText.length();
 
             if (trans.isTranslated()) {
                 //translation exist
                 translationText = trans.translation;
+            } else if (!Preferences.isPreference(Preferences.DONT_INSERT_SOURCE_TEXT)) {
+                // need to insert source text on empty translation
+                translationText = ste.getSrcText();
             } else {
-                boolean insertSource = !Preferences.isPreference(Preferences.DONT_INSERT_SOURCE_TEXT);
-                if (controller.entriesFilter != null && controller.entriesFilter.isSourceAsEmptyTranslation()) {
-                    insertSource = true;
-                }
-                if (insertSource) {
-                    // need to insert source text on empty translation
-                    translationText = ste.getSrcText();
-                } else {
-                    // empty text on non-exist translation
-                    translationText = "";
-                }
+                // empty text on non-exist translation
+                translationText = "";
             }
 
             addActiveSegPart(translationText);
@@ -324,7 +312,6 @@ public class SegmentBuilder {
             int prevOffset = offset;
             addInactiveSegPart(true, sourceText);
             posSourceBeg = doc.createPosition(prevOffset + (hasRTL ? 1 : 0));
-            posSourceLength = sourceText.length();
         } else {
             posSourceBeg = null;
         }
@@ -333,7 +320,6 @@ public class SegmentBuilder {
             int prevOffset = offset;
             addInactiveSegPart(false, translationText);
             posTranslationBeg = doc.createPosition(prevOffset + (hasRTL ? 1 : 0));
-            posTranslationLength = translationText.length();
         } else {
             posTranslationBeg = null;
         }
@@ -578,7 +564,7 @@ public class SegmentBuilder {
      */
     void onActiveEntryChanged() {
         translationText = doc.extractTranslation();
-        displayVersion = globalVersions.incrementAndGet();
+        displayVersion++;
     }
 
     /**
@@ -601,33 +587,48 @@ public class SegmentBuilder {
      */
     private void insertTextWithTags(String text, boolean isSource) throws BadLocationException {
         AttributeSet normal = attrs(isSource, false, false, false);
+        int start = offset;
+        int end = start + text.length();
         insert(text, normal);
+        formatText(text, start, end, isSource);
     }
 
-    public void resetTextAttributes() {
-        doc.trustedChangesInProgress = true;
-        try {
-            if (posSourceBeg != null) {
-                int sBeg = posSourceBeg.getOffset();
-                int sLen = posSourceLength;
-                AttributeSet attrs = attrs(true, false, false, false);
-                doc.setCharacterAttributes(sBeg, sLen, attrs, true);
+    /**
+     * formats source or target segment to highlight placeholders, tags, non-breakable spaces etc.
+     * @param text the text to format
+     * @param start start position in editor
+     * @param end end position in editor
+     * @param isSource is the text a source segment or not
+     */
+    public void formatText(String text, int start, int end, boolean isSource) {
+        if (controller.currentOrientation != Document3.ORIENTATION.ALL_LTR) {
+            //workaround for the issue that in RTL-embedded text, the formatting somehow
+            //splits up the text, and the first parts then can get rendered confusingly.
+            //E.g. "Blah %s, Blah." gets formatted, and thus split into "blah |<em>%s</em>|, Blah."
+            //and that is shown partly in RTL as " Blah|<em>%s</em>|, Blah.".
+            //Note the first space is displayed to the left of the word.
+            //To prevent this, the formatting is not done when the editor is in RTL.
+            //(markers are used for formatting in this case, which is a little less beautiful)
+            return;
+        }
+        //first remove any formatting
+        AttributeSet attrNormal = attrs(isSource, false, false, false);
+        doc.setCharacterAttributes(start, end-start, attrNormal, true);
+        //format placeholders
+        AttributeSet attrPlaceholder = attrs(isSource, true, false, false);
+        Pattern placeholderPattern = PatternConsts.getPlaceholderPattern();
+        Matcher placeholderMatch = placeholderPattern.matcher(text);
+        while (placeholderMatch.find()) {
+            doc.setCharacterAttributes(start+placeholderMatch.start(), placeholderMatch.end()-placeholderMatch.start(), attrPlaceholder, true);
+        }
+        //format text-to-remove
+        AttributeSet attrRemove = attrs(isSource, false, true, false);
+        Pattern removePattern = PatternConsts.getRemovePattern();
+        if (removePattern != null) {
+            Matcher removeMatcher = removePattern.matcher(text);
+            while (removeMatcher.find()) {
+                doc.setCharacterAttributes(start+removeMatcher.start(), removeMatcher.end()-removeMatcher.start(), attrRemove, true);
             }
-            if (active) {
-                int tBeg = doc.getTranslationStart();
-                int tEnd = doc.getTranslationEnd();
-                AttributeSet attrs = attrs(false, false, false, false);
-                doc.setCharacterAttributes(tBeg, tEnd - tBeg, attrs, true);
-            } else {
-                if (posTranslationBeg != null) {
-                    int tBeg = posTranslationBeg.getOffset();
-                    int tLen = posTranslationLength;
-                    AttributeSet attrs = attrs(false, false, false, false);
-                    doc.setCharacterAttributes(tBeg, tLen, attrs, true);
-                }
-            }
-        } finally {
-            doc.trustedChangesInProgress = false;
         }
     }
 

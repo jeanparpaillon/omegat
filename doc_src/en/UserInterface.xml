@@ -682,7 +682,7 @@
                 <entry><literal>${diff}</literal></entry>
 
                 <entry>String showing the differences between the source and
-                the match.<emphasis> Hint:</emphasis> use this if the text,
+                the match.<emphasis> Hint:</emphasis> use this if the text that
                 you are translating has been updated.</entry>
               </row>
 

@@ -6,40 +6,36 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2008 Alex Buloichik
                2009 Wildrich Fourie, Didier Briel, Alex Buloichik
-               2013 Aaron Madlon-Kay, Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.glossary;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.omegat.core.Core;
 import org.omegat.core.data.SourceTextEntry;
+import org.omegat.core.matching.ITokenizer;
+import org.omegat.core.matching.Tokenizer;
 import org.omegat.gui.common.EntryInfoSearchThread;
-import org.omegat.tokenizer.DefaultTokenizer;
-import org.omegat.tokenizer.ITokenizer;
 import org.omegat.util.Token;
 
 /**
@@ -62,7 +58,6 @@ import org.omegat.util.Token;
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Wildrich Fourie
  * @author Didier Briel
- * @author Aaron Madlon-Kay
  */
 public class FindGlossaryThread extends EntryInfoSearchThread<List<GlossaryEntry>> {
 
@@ -101,44 +96,47 @@ public class FindGlossaryThread extends EntryInfoSearchThread<List<GlossaryEntry
                 if (glosTokensN == 0)
                     continue;
 
-                if (DefaultTokenizer.isContainsAll(strTokens, glosTokens)) {
+                if (Tokenizer.isContainsAll(strTokens, glosTokens)) {
                     result.add(glosEntry);
                 }
             }
         }
 
         // After the matched entries have been tokenized and listed.
-        // We reorder entries: 1) by priority, 2) by length, 3) by alphabet
-        // Then remove the duplicates and combine the synonyms.
-        sortGlossaryEntries(result);
+        // We remove the duplicates and combine the synonyms.
+        // Then the matches are ordered to display the biggest matches first.
         result = filterGlossary(result);
+        for (int z = 0; z < result.size(); z++)
+            for (int x = z + 1; x < result.size() - 1; x++) {
+                GlossaryEntry zEntry = (GlossaryEntry) result.get(z);
+                GlossaryEntry xEntry = (GlossaryEntry) result.get(x);
+
+                if (xEntry.getSrcText().length() > zEntry.getSrcText().length()) {
+                    Object temp = result.get(x);
+                    result.set(x, result.get(z));
+                    result.set(z, (GlossaryEntry) temp);
+                }
+            }
         return result;
     }
 
-    static void sortGlossaryEntries(List<GlossaryEntry> entries) {
-        Collections.sort(entries, new Comparator<GlossaryEntry>() {
-            public int compare(GlossaryEntry o1, GlossaryEntry o2) {
-                int p1 = o1.getPriority() ? 1 : 2;
-                int p2 = o2.getPriority() ? 1 : 2;
-                int c = p1 - p2;
-                if (c == 0) {
-                    c = o2.getSrcText().length() - o1.getSrcText().length();
-                }
-                if (c == 0) {
-                    c = o1.getSrcText().compareToIgnoreCase(o2.getSrcText());
-                }
-                if (c == 0) {
-                    c = o1.getSrcText().compareTo(o2.getSrcText());
-                }
-                if (c == 0) {
-                    c = o1.getLocText().compareToIgnoreCase(o2.getLocText());
-                }
-                return c;
-            }
-        });
+    /**
+     * If a combined glossary entry contains ',', it needs to be bracketed by
+     * quotes, to prevent confusion when entries are combined. However, if the
+     * entry contains ';' or '"', it will automatically be bracketed by quotes.
+     * 
+     * @param entry
+     *            A glossary text entry
+     * @return A glossary text entry possibly bracketed by quotes
+     */
+    private String bracketEntry(String entry) {
+
+        if (entry.contains(",") && !(entry.contains(";") || entry.contains("\"")))
+            entry = '"' + entry + '"';
+        return entry;
     }
 
-    static List<GlossaryEntry> filterGlossary(List<GlossaryEntry> result) {
+    private List<GlossaryEntry> filterGlossary(List<GlossaryEntry> result) {
         // First check that entries exist in the list.
         if (result.size() == 0)
             return result;
@@ -146,7 +144,7 @@ public class FindGlossaryThread extends EntryInfoSearchThread<List<GlossaryEntry
         List<GlossaryEntry> returnList = new LinkedList<GlossaryEntry>();
 
         // The default replace entry
-        GlossaryEntry replaceEntry = new GlossaryEntry("", "", "", false);
+        GlossaryEntry replaceEntry = new GlossaryEntry("", "", "");
 
         // ... Remove the duplicates from the list
         // ..............................
@@ -248,28 +246,42 @@ public class FindGlossaryThread extends EntryInfoSearchThread<List<GlossaryEntry
             // == Now put the sortedList together
             // ===============================
             String srcTxt = sortList.get(0).getSrcText();
-            ArrayList<String> locTxts = new ArrayList<String>();
-            ArrayList<String> comTxts = new ArrayList<String>();
-            ArrayList<Boolean> prios = new ArrayList<Boolean>();
+            String locTxt = sortList.get(0).getLocText();
+            String comTxt = "";
 
-            for (GlossaryEntry e : sortList) {
-                for (String s : e.getLocTerms(false)) {
-                    locTxts.add(s);
-                }
-                for (String s : e.getComments()) {
-                    comTxts.add(s);
-                }
-                for (boolean s : e.getPriorities()) {
-                    prios.add(s);
+            int comCounter = 1;
+
+            locTxt = bracketEntry(locTxt);
+
+            String prevLocTxt = sortList.get(0).getLocText();
+            String prevComTxt = sortList.get(0).getCommentText();
+
+            if (!prevComTxt.equals(""))
+                comTxt = comCounter + ". " + prevComTxt;
+
+            for (int m = 1; m < sortList.size(); m++) {
+                if (!sortList.get(m).getLocText().equals(prevLocTxt)) {
+                    comCounter++;
+                    prevLocTxt = sortList.get(m).getLocText();
+                    locTxt += ", " + bracketEntry(prevLocTxt);
+                    // The Comments cannot be equal because all the duplicates
+                    // have been removed earlier.
+                    if (!sortList.get(m).getCommentText().equals("")) {
+                        if (comTxt.equals(""))
+                            comTxt = comCounter + ". " + sortList.get(m).getCommentText();
+                        else
+                            comTxt += "\n" + comCounter + ". " + sortList.get(m).getCommentText();
+                    }
+                } else {
+                    if (!sortList.get(m).getCommentText().equals("")) {
+                        if (comTxt.equals(""))
+                            comTxt = comCounter + ". " + sortList.get(m).getCommentText();
+                        else
+                            comTxt += "\n" + comCounter + ". " + sortList.get(m).getCommentText();
+                    }
                 }
             }
-            boolean[] priorities = new boolean[prios.size()];
-            for (int j = 0; j < prios.size(); j++) {
-                priorities[j] = prios.get(j);
-            }
-
-            GlossaryEntry combineEntry = new GlossaryEntry(srcTxt, locTxts.toArray(new String[0]),
-                    comTxts.toArray(new String[0]), priorities);
+            GlossaryEntry combineEntry = new GlossaryEntry(srcTxt, locTxt, comTxt);
             returnList.add(combineEntry);
             // ==================================================================
         }

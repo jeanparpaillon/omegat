@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util.gui;
@@ -51,11 +50,6 @@ public final class Styles {
     public static final Color COLOR_NBSP = new Color(200, 200, 200);
     public static final Color COLOR_WHITESPACE = new Color(128, 128, 128);
     public static final Color COLOR_BIDIMARKERS = new Color(200, 0, 0);
-    public static final Color COLOR_MARK_COMES_FROM_TM = new Color(250,128,114); // Salmon red
-    public static final Color COLOR_MARK_COMES_FROM_TM_XICE = new Color(255, 153, 0);
-    public static final Color COLOR_MARK_COMES_FROM_TM_X100PC = new Color(255, 187, 84);
-    public static final Color COLOR_MARK_COMES_FROM_TM_XAUTO = new Color(255, 213, 150);
-    public static final Color COLOR_REPLACE = Color.blue;
 
     /**
      * Construct required attributes set.

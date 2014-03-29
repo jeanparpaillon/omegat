@@ -1,7 +1,7 @@
 Tento překlad vypracoval [Josef Molnár], copyright© [2013].
 
 ==============================================================================
-  OmegaT 3.0, soubor Read Me / Čti mě
+  OmegaT 2.0, soubor Read Me / Čti mě
 
   1.  Informace o aplikaci OmegaT
   2.  Co je OmegaT?
@@ -18,13 +18,13 @@ Nejaktuálnější informace o aplikaci OmegaT naleznete na adrese:
       http://www.omegat.org/
 
 Uživatelská podpora, v rámci uživatelské skupiny na Yahoo! (vícejazyčně), je zde možno prohledávat archívy i bez registrace:
-     http://tech.groups.yahoo.com/group/OmegaT/
+     http://groups.yahoo.com/group/OmegaT/
 
 Požadavky a návrhy na zlepšení (anglicky), na stránce SourceForge:
-     https://sourceforge.net/p/omegat/feature-requests/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520350
 
 Požadavky a návrhy na zlepšení (anglicky), na stránce SourceForge:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
 ==============================================================================
   2.  Co je OmegaT?
@@ -178,10 +178,10 @@ Jestli chcete přispívat při vývoji aplikace OmegaT, spojte se s vývojáři 
 
 Jestli máte zájem o překlad uživatelského rozhraní OmegaT, uživatelské příručky nebo jiných příbuzných dokumentů, tak si nejprve přečtěte tyto informace:
       
-      http://www.omegat.org/en/howtos/localizing_omegat.php
+      http://www.omegat.org/en/translation-info.html
 
 a přihlaste se do konference pro překladatele:
-      https://lists.sourceforge.net/lists/listinfo/omegat-l10n
+      http://lists.sourceforge.net/mailman/listinfo/omegat-l10n
 
 Když byste chtěli přispívat jinak, přihlaste se nejdříve do uživatelské skupiny na adrese:
       http://tech.groups.yahoo.com/group/omegat/
@@ -208,7 +208,6 @@ Do kódu přispěli
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
@@ -247,6 +246,8 @@ OmegaT používá následující knihovny:
   JNA dodali Todd Fast, Timothy Wall a dalších (LGPL Licence)
   Swing-Layout 1.0.2 (Licence LGPL)
   Jmyspell 2.1.4 (Licence LGPL)
+  JAXB 2.1.7 (GPLv2 + výjimka classpath)
+  SJXP 1.0.2 (GPL v2)
   SVNKit 1.7.5 (Licence TMate)
   Sequence Library (Sequence Library License)
   ANTLR 3.4 (Licence ANTLR 3)
@@ -255,20 +256,6 @@ OmegaT používá následující knihovny:
   JSch (Licence JSch)
   Base64 (public domain)
   Diff (GPL)
-  orion-ssh2-214 (Orion SSH for Java license)
-  lucene-*.jar (Apache License 2.0)
-  Tokenizery pro angličtinu (org.omegat.tokenizer.SnowballEnglishTokenizer a
-  org.omegat.tokenizer.LuceneEnglishTokenizer) používají stop slova z Okapi (http://okapi.sourceforge.net) (LGPL licence)
-  tinysegmenter.jar (Modified BSD license)
-  commons-*.jar (Apache License 2.0)
-  jWordSplitter (Apache License 2.0)
-  LanguageTool.jar (LGPL license)
-  morfologik-*.jar (Morfologik license)
-  segment-1.4.1.jar (Segment license)
-  pdfbox-app-1.8.1.jar (Apache License 2.0)
-  Fontbox-0.1.0.jar and JempBox-0.2.0.jar (Fontbox license)
-  icu4j-51_1.jar (ICU4J license)
-
 
 ==============================================================================
  5.  Máte s aplikací OmegaT problémy? Potřebujete pomoc?
@@ -287,10 +274,10 @@ Každé dobré hlášení o chybě potřebuje přesně tři věci.
 Můžete přidat kopie souborů, části logu, snímky obrazovky, prostě cokoliv, o čem si myslíte, že pomůže vývojářům nalézt a opravit vámi hlášenou chybu.
 
 Archívy uživatelské skupiny můžete prohlížet na adrese:
-     http://tech.groups.yahoo.com/group/OmegaT/
+     http://groups.yahoo.com/group/OmegaT/
 
 Prohlížet stránku hlášení o chybách a v případě potřeby přidat nové hlášení můžete zde:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
 Abyste byli informování o tom, co se děje s vaším hlášením o chybě, můžete se zaregistrovat jako uživatel Source Forge.
 

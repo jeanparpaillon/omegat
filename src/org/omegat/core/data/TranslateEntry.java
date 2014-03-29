@@ -5,31 +5,28 @@
 
  Copyright (C) 2011 Alex Buloichik
                2012 Wildrich Fourie
-               2013 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.omegat.core.Core;
 
 import org.omegat.core.segmentation.Rule;
 import org.omegat.core.segmentation.Segmenter;
@@ -46,7 +43,6 @@ import org.omegat.util.StringUtil;
  * 
  * @author Alex Buloichik <alex73mail@gmail.com>
  * @author Wildrich Fourie
- * @author Didier Briel
  */
 public abstract class TranslateEntry implements ITranslateCallback {
 
@@ -93,7 +89,6 @@ public abstract class TranslateEntry implements ITranslateCallback {
      * @param source
      *            source text
      */
-    @Override
     public String getTranslation(final String id, final String origSource, final String path) {
         ParseEntry.ParseEntryResult spr = new ParseEntry.ParseEntryResult();
 
@@ -102,10 +97,9 @@ public abstract class TranslateEntry implements ITranslateCallback {
         // has been enabled.
         String tags = null;
         if(m_config.isRemoveTags())
-            tags = StaticUtils.buildTagListForRemove(origSource);
+            tags = StaticUtils.buildTagList(origSource);
         
-        boolean removeSpaces = Core.getFilterMaster().getConfig().isRemoveSpacesNonseg();
-        final String source = ParseEntry.stripSomeChars(origSource, spr, m_config.isRemoveTags(), removeSpaces);
+        final String source = ParseEntry.stripSomeChars(origSource, spr, m_config.isRemoveTags());
         
         StringBuffer res = new StringBuffer();
 

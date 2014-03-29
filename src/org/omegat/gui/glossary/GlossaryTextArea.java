@@ -8,24 +8,22 @@
                2009-2010 Wildrich Fourie
                2010 Alex Buloichik
                2012 Jean-Christophe Helary
-               2013 Aaron Madlon-Kay, Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.glossary;
@@ -46,8 +44,6 @@ import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.StyledDocument;
 
 import org.omegat.core.Core;
 import org.omegat.core.data.ProjectProperties;
@@ -55,13 +51,13 @@ import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.StringEntry;
 import org.omegat.gui.common.EntryInfoThreadPane;
 import org.omegat.gui.dialogs.CreateGlossaryEntry;
+import org.omegat.gui.editor.mark.Mark;
 import org.omegat.gui.main.DockableScrollPane;
 import org.omegat.util.Log;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.StringUtil;
 import org.omegat.util.gui.AlwaysVisibleCaret;
-import org.omegat.util.gui.Styles;
 import org.omegat.util.gui.UIThreadsUtil;
 
 /**
@@ -73,15 +69,14 @@ import org.omegat.util.gui.UIThreadsUtil;
  * @author Wildrich Fourie
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Jean-Christophe Helary
- * @author Aaron Madlon-Kay
  */
 @SuppressWarnings("serial")
 public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
 
     private static final String EXPLANATION = OStrings.getString("GUI_GLOSSARYWINDOW_explanation");
 
-    private static final AttributeSet NO_ATTRIBUTES = Styles.createAttributeSet(null, null, false, null);
-    private static final AttributeSet PRIORITY_ATTRIBUTES = Styles.createAttributeSet(null, null, true, null);
+    /** Glossary manager instance. */
+    protected final GlossaryManager manager = new GlossaryManager(this);
 
     /**
      * Currently processed entry. Used to detect if user moved into new entry. In this case, new find should
@@ -117,7 +112,6 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
         popup = new JPopupMenu();
         JMenuItem menuItem = new JMenuItem(OStrings.getString("GUI_GLOSSARYWINDOW_addentry"));
         menuItem.addActionListener(new ActionListener(){
-            @Override
             public void actionPerformed(ActionEvent e) {
                 Core.getGlossary().showCreateGlossaryEntryDialog();
             }
@@ -132,19 +126,19 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
     @Override
     protected void onProjectOpen() {
         clear();
-        Core.getGlossaryManager().start();
+        manager.start();
     }
 
     @Override
     protected void onProjectClose() {
         clear();
         this.setText(EXPLANATION);
-        Core.getGlossaryManager().stop();
+        manager.stop();
     }
 
     @Override
     protected void startSearchThread(SourceTextEntry newEntry) {
-        new FindGlossaryThread(GlossaryTextArea.this, newEntry, Core.getGlossaryManager()).start();
+        new FindGlossaryThread(GlossaryTextArea.this, newEntry, manager).start();
     }
 
     /**
@@ -161,7 +155,6 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
      * Sets the list of glossary entries to show in the pane. Each element of the list should be an instance
      * of {@link GlossaryEntry}.
      */
-    @Override
     protected void setFoundResult(SourceTextEntry en, List<GlossaryEntry> entries) {
         UIThreadsUtil.mustBeSwingThread();
 
@@ -171,28 +164,23 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
             return;
         }
 
-        nowEntries = entries;
-
         // If the TransTips is enabled then underline all the matched glossary
         // entries
         if (Preferences.isPreference(Preferences.TRANSTIPS)) {
-            Core.getEditor().remarkOneMarker(TransTipsMarker.class.getName());
+            // TODO move marks construction into search thread
+            highlightTransTips(en, entries);
         }
 
-        GlossaryEntry.StyledString buf = new GlossaryEntry.StyledString();
+        nowEntries = entries;
+
+        StringBuffer buf = new StringBuffer();
         for (GlossaryEntry entry : entries) {
-            GlossaryEntry.StyledString str = entry.toStyledString();
-            buf.append(str);
+            buf.append(entry.getSrcText() + " = " + entry.getLocText());
+            if (entry.getCommentText().length() > 0)
+                buf.append("\n" + entry.getCommentText());
             buf.append("\n\n");
         }
-        setText(buf.text.toString());
-        setCaretPosition(0);
-        StyledDocument doc = getStyledDocument();
-        doc.setCharacterAttributes(0, doc.getLength(), NO_ATTRIBUTES, true); // remove old bold settings first
-        for (int i = 0; i < buf.boldStarts.size(); i++) {
-            doc.setCharacterAttributes(buf.boldStarts.get(i), buf.boldLengths.get(i), PRIORITY_ATTRIBUTES,
-                    true);
-        }
+        setText(buf.toString());
     }
 
     /** Clears up the pane. */
@@ -200,8 +188,25 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
         setText("");
     }
 
-    List<GlossaryEntry> getDisplayedEntries() {
-        return nowEntries;
+    /** {@inheritDoc} */
+    public void highlightTransTips(SourceTextEntry en, List<GlossaryEntry> entries) {
+        if (!entries.isEmpty()) {
+            final List<Mark> marks = new ArrayList<Mark>();
+            // Get the index of the current segment in the whole document
+            String sourceText = en.getSrcText();
+            sourceText = sourceText.toLowerCase();
+
+            TransTips.Search callback = new TransTips.Search() {
+                public void found(GlossaryEntry ge, int start, int end) {
+                    marks.add(new Mark(Mark.ENTRY_PART.SOURCE, start, end));
+                }
+            };
+
+            for (GlossaryEntry ent : entries) {
+                TransTips.search(en.getSrcText(), ent, callback);
+            }
+            Core.getEditor().markActiveEntrySource(en, marks, TransTipsMarker.class.getName());
+        }
     }
 
     /**
@@ -263,11 +268,9 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
         dialog.setVisible(true);
 
         dialog.addWindowFocusListener(new WindowFocusListener() {
-            @Override
             public void windowLostFocus(WindowEvent e) {
             }
 
-            @Override
             public void windowGainedFocus(WindowEvent e) {
                 String sel = Core.getEditor().getSelectedText();
                 if (!StringUtil.isEmpty(sel)) {
@@ -283,7 +286,6 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
         });
 
         dialog.addWindowListener(new WindowAdapter() {
-            @Override
             public void windowClosed(WindowEvent e) {
                 createGlossaryEntryDialog = null;
                 if (dialog.getReturnStatus() == CreateGlossaryEntry.RET_OK) {
@@ -292,7 +294,7 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
                     String com = dialog.getCommentText().getText();
                     if (!StringUtil.isEmpty(src) && !StringUtil.isEmpty(loc)) {
                         try {
-                            GlossaryReaderTSV.append(out, new GlossaryEntry(src, loc, com, true));
+                            GlossaryReaderTSV.append(out, new GlossaryEntry(src, loc, com));
                         } catch (Exception ex) {
                             Log.log(ex);
                         }

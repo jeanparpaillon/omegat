@@ -11,7 +11,7 @@ OmegaT の日本語版は、以下の貢献者によって作成されました�
 ・1.8/2.0版 全体チェック 篠原 範子氏
 
 ==============================================================================
-  OmegaT 3.0 - お読みください
+  OmegaT 2.0 - お読みください
 
   1.  OmegaT について
   2.  OmegaT とは？
@@ -192,7 +192,6 @@ OmegaT の開発に協力したい場合、以下のサイトから開発者た�
       http://lists.sourceforge.net/lists/listinfo/omegat-development
 
 OmegaT のユーザーインターフェースや取扱説明書、他の関連文書の翻訳に協力したい場合、まず下記のファイルを読んでください：
-      
       http://www.omegat.org/en/howtos/localizing_omegat.php
 
 そして翻訳者のメーリングリストに参加してください：
@@ -212,20 +211,17 @@ OmegaT のユーザーインターフェースや取扱説明書、他の関連�
 コードに関する貢献者
   Zoltan Bartko
   Volker Berlin
-  Didier Briel（開発マネージャー）
+  Didier Briel（開発担当）
   Kim Bruning
-  Alex Buloichik（リード開発者）
+  Alex Buloichik（開発リーダー）
   Sandra Jean Chua
   Thomas Cordonnier
-  Enrique Estévez Fernández
   Martin Fleurke  
   Wildrich Fourie
   Phillip Hall
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
-  Piotr Kulik
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
@@ -261,8 +257,10 @@ OmegaT は以下に示すライブラリを使用しています。
   VLSolutions 社による VLDocking Framework 2.1.4（CeCILL ライセンス）
   László Németh などによる Hunspell（LGPL ライセンス）
   Todd Fast, Timothy Wall などによる JNA（LGPL ライセンス）
-  Swing-Layout 1.0.4（LGPL ライセンス）
+  Swing-Layout 1.0.2（LGPL ライセンス）
   Jmyspell 2.1.4（LGPL ライセンス）
+  JAXB（GPL v2 ライセンスと Classpath 例外）
+  SJXP 1.0.2（GPL v2 ライセンス）
   SVNKit 1.7.5（TMate ライセンス）
   Sequence Library（Sequence Library ライセンス）
   ANTLR 3.4（ANTLR 3 ライセンス）
@@ -271,21 +269,6 @@ OmegaT は以下に示すライブラリを使用しています。
   JSch（JSch ライセンス）
   Base64（パブリックドメイン）
   Diff（GPL ライセンス）
-  orion-ssh2-214（Orion SSH for Java ライセンス）
-  lucene-*.jar（Apache ライセンス 2.0）
-  英語用のトークナイザー（org.omegat.tokenizer.SnowballEnglishTokenizer および
-  org.omegat.tokenizer.LuceneEnglishTokenizer）が利用する 
-  Okapi（http://okapi.sourceforge.net）由来の stop words（LGPL ライセンス）
-  tinysegmenter.jar（修正 BSD ライセンス）
-  commons-*.jar（Apache ライセンス 2.0）
-  jWordSplitter（Apache ライセンス 2.0）
-  LanguageTool.jar（LGPL ライセンス）
-  morfologik-*.jar（Morfologik ライセンス）
-  segment-1.4.1.jar（Segment ライセンス）
-  pdfbox-app-1.8.1.jar（Apache ライセンス 2.0）
-  KoreanAnalyzer-3x-120223.jar（Apache ライセンス 2.0）
-  beansbinding-1.2.1.jar（LGPL ライセンス）
-  SuperTMXMerge-for_OmegaT.jar（LGPL ライセンス）
 
 ==============================================================================
  5.  バグかな？と思ったら

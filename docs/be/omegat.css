@@ -32,9 +32,9 @@ code, .code {
 }
 
 .note {
-	font-size: small;
-	color: black;
-	background: silver;
+	font-size: x-small;
+	color: red;
+	background: yellow;
 }
 
 .warning {

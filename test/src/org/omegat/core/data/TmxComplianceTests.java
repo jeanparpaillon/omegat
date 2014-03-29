@@ -7,25 +7,25 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.data;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -209,7 +209,8 @@ public class TmxComplianceTests extends TmxComplianceBase {
         ProjectTMX tmx = new ProjectTMX(props.getSourceLanguage(), props.getTargetLanguage(), props.isSentenceSegmentingEnabled(), outFile, orphanedCallback);
 
         for (int i = 0; i < sources.size(); i++) {
-            tmx.defaults.put(sources.get(i), createTMXEntry(sources.get(i), translations.get(i), true));
+            tmx.defaults.put(sources.get(i), new TMXEntry(sources.get(i), translations.get(i), null, 0, null,
+                    true));
         }
 
         tmx.exportTMX(props, outFile, false, false, true);
@@ -238,17 +239,6 @@ public class TmxComplianceTests extends TmxComplianceBase {
      */
     @Test
     public void testExport1D() throws Exception {
-        if (true) {
-            /**
-             * Test data contains .po files, which doesn't compliance with PO
-             * specification
-             * (https://www.gnu.org/savannah-checkouts/gnu/gettext/
-             * manual/html_node/PO-Files.html). By the specification, msgid
-             * should contain "untranslated-string", but in the ExportTest1D.po
-             * file it contains ID.
-             */
-            return;
-        }
         File tmxFile = new File("test/data/tmx/TMXComplianceKit/ExportTest1D.tmx");
         File sourceFile = new File("test/data/tmx/TMXComplianceKit/ExportTest1D.po");
         File translatedFile = new File("test/data/tmx/TMXComplianceKit/ExportTest1D_fr.po");
@@ -284,7 +274,7 @@ public class TmxComplianceTests extends TmxComplianceBase {
         config.put(HTMLOptions.OPTION_SKIP_META, "true");
 
         Map<String, TMXEntry> fix = new TreeMap<String, TMXEntry>();
-        fix.put("Picture:", createTMXEntry("Picture:", "Image:", true));
+        fix.put("Picture:", new TMXEntry("Picture:", "Image:", null, 0, null, true));
         translateUsingTmx(new HTMLFilter2(), config, "ImportTest2A.htm", "UTF-8", "ImportTest2A.tmx",
                 "windows-1252", props, fix);
         
@@ -342,18 +332,12 @@ public class TmxComplianceTests extends TmxComplianceBase {
         ProjectTMX tmx = new ProjectTMX(props.getSourceLanguage(), props.getTargetLanguage(), props.isSentenceSegmentingEnabled(), outFile, orphanedCallback);
 
         for (int i = 0; i < sources.size(); i++) {
-            tmx.defaults.put(sources.get(i), createTMXEntry(sources.get(i), translations.get(i), true));
+            tmx.defaults.put(sources.get(i), new TMXEntry(sources.get(i), translations.get(i), null, 0, null,
+                    true));
         }
 
         tmx.exportTMX(props, outFile, false, true, true);
 
         compareTMX(tmxFile, outFile, 12);
-    }
-
-    TMXEntry createTMXEntry(String source, String translation, boolean def) {
-        PrepareTMXEntry tr = new PrepareTMXEntry();
-        tr.source = source;
-        tr.translation = translation;
-        return new TMXEntry(tr, def, null);
     }
 }

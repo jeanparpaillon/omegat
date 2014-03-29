@@ -9,20 +9,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
@@ -35,8 +34,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.omegat.core.data.PrepareTMXEntry;
 import org.omegat.core.data.ProjectProperties;
+import org.omegat.core.data.TMXEntry;
 
 /**
  * Class that store TMX (Translation Memory Exchange) files.
@@ -62,7 +61,7 @@ public class TMXWriter {
      * @throws IOException
      */
     public static void buildTMXFile(final String filename, final boolean forceValidTMX,
-            final boolean levelTwo, final ProjectProperties m_config, final Map<String, PrepareTMXEntry> data)
+            final boolean levelTwo, final ProjectProperties m_config, final Map<String, TMXEntry> data)
             throws IOException {
         // we got this far, so assume lang codes are proper
         String sourceLocale = m_config.getSourceLanguage().toString();
@@ -110,14 +109,14 @@ public class TMXWriter {
         String source = null;
         String target = null;
         String note = null;
-        for (Map.Entry<String, PrepareTMXEntry> en : data.entrySet()) {
-            PrepareTMXEntry transEntry = en.getValue();
-            source = forceValidTMX ? StaticUtils.stripXmlTags(en.getKey()) : en.getKey();
-            target = forceValidTMX ? StaticUtils.stripXmlTags(transEntry.translation) : transEntry.translation;
+        for (Map.Entry<String, TMXEntry> en : data.entrySet()) {
+            TMXEntry transEntry = en.getValue();
+            source = forceValidTMX ? StaticUtils.stripTags(en.getKey()) : en.getKey();
+            target = forceValidTMX ? StaticUtils.stripTags(transEntry.translation) : transEntry.translation;
             source = StaticUtils.makeValidXML(source);
             target = StaticUtils.makeValidXML(target);
             if (note != null) {
-                note = forceValidTMX ? StaticUtils.stripXmlTags(transEntry.note) : transEntry.note;
+                note = forceValidTMX ? StaticUtils.stripTags(transEntry.note) : transEntry.note;
                 note = StaticUtils.makeValidXML(note);
             }
             // TO DO: This *possibly* converts occurrences in the actual text of

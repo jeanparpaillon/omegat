@@ -11,7 +11,7 @@ UninstallDisplayIcon={app}\OmegaT.exe
 AllowNoIcons=yes
 Compression=lzma
 SolidCompression=yes
-LicenseFile=OmegaT-license.txt
+LicenseFile=license.txt
 OutputDir=..\dist2
 OutputBaseFilename=OmegaT_@VERSION_NUMBER_SUBST@_Windows_without_JRE
 
@@ -21,11 +21,10 @@ Source: "images\*"; DestDir: "{app}\images"; Flags: recursesubdirs
 Source: "lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs
 Source: "native\*"; DestDir: "{app}\native"; Flags: recursesubdirs
 Source: "plugins\*"; DestDir: "{app}\plugins"; Flags: recursesubdirs
-Source: "scripts\*"; DestDir: "{app}\scripts"; Flags: recursesubdirs
 Source: "OmegaT.exe"; DestDir: "{app}"
 Source: "OmegaT.l4J.ini"; DestDir: "{app}"; AfterInstall: SetUserLanguage; Flags: onlyifdoesntexist
 Source: "OmegaT.jar"; DestDir: "{app}"
-Source: "OmegaT-license.txt"; DestDir: "{app}"
+Source: "license.txt"; DestDir: "{app}"
 Source: "doc-license.txt"; DestDir: "{app}"
 Source: "readme.txt"; DestDir: "{app}"; Flags: isreadme;
 Source: "readme_ar.txt"; DestDir: "{app}"; Flags: isreadme; Languages: ar
@@ -41,7 +40,6 @@ Source: "readme_gl.txt"; DestDir: "{app}"; Flags: isreadme; Languages: gl
 Source: "readme_hu.txt"; DestDir: "{app}"; Flags: isreadme; Languages: hu
 Source: "readme_it.txt"; DestDir: "{app}"; Flags: isreadme; Languages: it
 Source: "readme_ja.txt"; DestDir: "{app}"; Flags: isreadme; Languages: ja
-Source: "readme_ko.txt"; DestDir: "{app}"; Flags: isreadme; Languages: ko
 Source: "readme_nl.txt"; DestDir: "{app}"; Flags: isreadme; Languages: nl
 Source: "readme_pl.txt"; DestDir: "{app}"; Flags: isreadme; Languages: pl
 Source: "readme_pt_BR.txt"; DestDir: "{app}"; Flags: isreadme; Languages: pt_BR
@@ -52,7 +50,6 @@ Source: "readme_sl.txt"; DestDir: "{app}"; Flags: isreadme; Languages: sl
 Source: "readme_sq.txt"; DestDir: "{app}"; Flags: isreadme; Languages: sq
 Source: "readme_sv.txt"; DestDir: "{app}"; Flags: isreadme; Languages: sv
 Source: "readme_tr.txt"; DestDir: "{app}"; Flags: isreadme; Languages: tr
-Source: "readme_uk.txt"; DestDir: "{app}"; Flags: isreadme; Languages: uk
 Source: "readme_zh_CN.txt"; DestDir: "{app}"; Flags: isreadme; Languages: zh_CN
 Source: "readme_zh_TW.txt"; DestDir: "{app}"; Flags: isreadme; Languages: zh_TW
 Source: "readme*.txt"; DestDir: "{app}";
@@ -118,7 +115,7 @@ Name: "el"; MessagesFile: "compiler:Languages\Greek.isl"
 ;Name: "id"; MessagesFile: "compiler:Languages\Indonesian.isl"
 Name: "ja"; MessagesFile: "compiler:Languages\Japanese.isl"
 ;Name: "kk"; MessagesFile: "compiler:Languages\Kazakh.isl"
-Name: "ko"; MessagesFile: "compiler:Languages\Korean.isl"
+;Name: "ko"; MessagesFile: "compiler:Languages\Korean.isl"
 ;Name: "lv"; MessagesFile: "compiler:Languages\Latvian.isl"
 ;Name: "lt"; MessagesFile: "compiler:Languages\Lithuanian.isl"
 ;Name: "lb"; MessagesFile: "compiler:Languages\Luxemburgish.isl"

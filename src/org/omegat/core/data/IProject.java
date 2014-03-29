@@ -5,24 +5,22 @@
 
  Copyright (C) 2008 Alex Buloichik
                2010 Didier Briel
-               2014 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.data;
@@ -31,9 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.omegat.core.matching.ITokenizer;
 import org.omegat.core.statistics.StatisticsInfo;
 import org.omegat.core.team.IRemoteRepository;
-import org.omegat.tokenizer.ITokenizer;
 import org.omegat.util.Language;
 
 /**
@@ -53,8 +51,6 @@ public interface IProject {
      * Save project.
      */
     void saveProject();
-
-    void saveProject(boolean doTeamSync);
 
     /**
      * Close project.
@@ -111,21 +107,11 @@ public interface IProject {
      * @param entry
      *            entry
      * @param trans
-     *            translation. It can't be null
+     *            translation. Null for remove translation, empty string for empty transation.
+     * @param isDefault
+     *            true if default translation should be changed
      */
-    void setTranslation(SourceTextEntry entry, PrepareTMXEntry trans, boolean defaultTranslation, TMXEntry.ExternalLinked externalLinked);
-
-    /**
-     * Change note only for translation.
-     * 
-     * @param entry
-     *            entry
-     * @param oldTrans
-     *            old translation
-     * @param note
-     *            note text
-     */
-    void setNote(SourceTextEntry entry, TMXEntry oldTrans, String note);
+    void setTranslation(SourceTextEntry entry, String trans, String note, boolean isDefault);
 
     /**
      * Get statistics for project.
@@ -185,16 +171,6 @@ public interface IProject {
      * synchronization to read it.
      */
     List<FileInfo> getProjectFiles();
-
-    /**
-     * Get ordered list of source file names.
-     */
-    List<String> getSourceFilesOrder();
-
-    /**
-     * Set ordered list of source file names.
-     */
-    void setSourceFilesOrder(List<String> filesList);
 
     public static class FileInfo {
         public String filePath;
