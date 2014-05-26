@@ -3,8 +3,8 @@
  * Open current file
  *
  * @author  Yu Tang
- * @date    2014-05-14
- * @version 0.4
+ * @date    2013-06-05
+ * @version 0.3
  */
 
 import static javax.swing.JOptionPane.*
@@ -24,8 +24,9 @@ def file = prop.sourceRoot + editor.currentFile
 def command
 switch (osType) {
   case [OsType.WIN64, OsType.WIN32]:
-    java.awt.Desktop.desktop.open new File(file)
-    return
+    command = "cmd /c start \"\" \"$file\"" // for WinNT
+    // command = "command /c start \"\" \"$file\"" // for Win9x or WinME
+    break
   case [OsType.MAC64, OsType.MAC32]:
     command = ['open', file]
     break

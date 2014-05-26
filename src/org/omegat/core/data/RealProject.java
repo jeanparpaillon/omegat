@@ -1350,8 +1350,7 @@ public class RealProject implements IProject {
          */
         int diff = prevTrEntry.translation == null ? 0 : -1;
         diff += trans.translation == null ? 0 : +1;
-        hotStat.numberofTranslatedSegments = Math.max(0, 
-                Math.min(hotStat.numberOfUniqueSegments, hotStat.numberofTranslatedSegments + diff));
+        hotStat.numberofTranslatedSegments += diff;
     }
 
     @Override
@@ -1363,20 +1362,16 @@ public class RealProject implements IProject {
         TMXEntry prevTrEntry = oldTE.defaultTranslation ? projectTMX
                 .getDefaultTranslation(entry.getSrcText()) : projectTMX
                 .getMultipleTranslation(entry.getKey());
-        if (prevTrEntry != null) {
-            PrepareTMXEntry en = new PrepareTMXEntry(prevTrEntry);
-            en.note = note;
-            projectTMX.setTranslation(entry, new TMXEntry(en, prevTrEntry.defaultTranslation,
-                    prevTrEntry.linked), prevTrEntry.defaultTranslation);
-        } else {
-            PrepareTMXEntry en = new PrepareTMXEntry();
-            en.source = entry.getSrcText();
-            en.note = note;
-            en.translation = null;
-            projectTMX.setTranslation(entry, new TMXEntry(en, true, null), true);
+        if (prevTrEntry == null) {
+            throw new IllegalArgumentException("RealProject.setNote() must have previous translation");
         }
 
+        PrepareTMXEntry en = new PrepareTMXEntry(prevTrEntry);
+        en.note = note;
+
         m_modifiedFlag = true;
+
+        projectTMX.setTranslation(entry, new TMXEntry(en, prevTrEntry.defaultTranslation, prevTrEntry.linked), prevTrEntry.defaultTranslation);
     }
 
     public void iterateByDefaultTranslations(DefaultTranslationsIterator it) {
@@ -1600,11 +1595,6 @@ public class RealProject implements IProject {
             protectedParts = StaticUtils.applyCustomProtectedParts(segmentSource,
                     PatternConsts.getPlaceholderPattern(), protectedParts);
 
-            //If Allow translation equals to source is not set, we ignore such existing translations
-            if (ek.sourceText.equals(segmentTranslation) && 
-                    !allowTranslationEqualToSource) {
-                segmentTranslation = null;
-            }
             SourceTextEntry srcTextEntry = new SourceTextEntry(ek, allProjectEntries.size() + 1, comment,
                     segmentTranslation, protectedParts);
             srcTextEntry.setSourceTranslationFuzzy(segmentTranslationFuzzy);

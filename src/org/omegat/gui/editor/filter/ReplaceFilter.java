@@ -74,7 +74,6 @@ public class ReplaceFilter implements IEditorFilter {
 
         controlComponent.btnCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Core.getEditor().commitAndDeactivate(); // Make sure that any change done in the current segment is not lost
                 Core.getEditor().removeFilter();
             }
         });

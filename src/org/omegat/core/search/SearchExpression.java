@@ -61,7 +61,6 @@ public class SearchExpression {
     public boolean recursive = true;
     public SearchExpressionType searchExpressionType;
     public boolean caseSensitive = false;
-    public boolean spaceMatchNbsp = false;
     public boolean glossary = true;
     public boolean memory = true;
     public boolean tm = true;

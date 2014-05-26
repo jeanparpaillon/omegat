@@ -4,7 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2013 Alex Buloichik
-               2014 Aaron Madlon-Kay, Piotr Kulik
+               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -35,8 +35,6 @@ import org.omegat.util.OStrings;
 /**
  *
  * @author Alex Buloichik (alex73mail@gmail.com)
- * @author Aaron Madlon-Kay
- * @author Piotr Kulik
  */
 public class SearchWindowForm extends javax.swing.JFrame {
 
@@ -79,8 +77,6 @@ public class SearchWindowForm extends javax.swing.JFrame {
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jPanel3 = new javax.swing.JPanel();
         m_searchCase = new javax.swing.JCheckBox();
-        filler29 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
-        m_searchSpaceMatchNbsp = new javax.swing.JCheckBox();
         filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
         m_searchSource = new javax.swing.JCheckBox();
         filler17 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
@@ -89,7 +85,7 @@ public class SearchWindowForm extends javax.swing.JFrame {
         m_searchNotesCB = new javax.swing.JCheckBox();
         filler24 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
         m_searchCommentsCB = new javax.swing.JCheckBox();
-        filler23 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler23 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jPanel12 = new javax.swing.JPanel();
         m_searchTranslatedUntranslated = new javax.swing.JRadioButton();
         filler27 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
@@ -110,8 +106,6 @@ public class SearchWindowForm extends javax.swing.JFrame {
         jPanel11 = new javax.swing.JPanel();
         m_replaceCase = new javax.swing.JCheckBox();
         filler22 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
-        m_replaceSpaceMatchNbsp = new javax.swing.JCheckBox();
-        filler30 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 0), new java.awt.Dimension(5, 32767));
         m_replaceUntranslated = new javax.swing.JCheckBox();
         filler11 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         m_SearchInPane = new javax.swing.JPanel();
@@ -239,10 +233,6 @@ public class SearchWindowForm extends javax.swing.JFrame {
         m_searchCase.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(m_searchCase, OStrings.getString("SW_CASE_SENSITIVE")); // NOI18N
         jPanel3.add(m_searchCase);
-        jPanel3.add(filler29);
-
-        org.openide.awt.Mnemonics.setLocalizedText(m_searchSpaceMatchNbsp, OStrings.getString("SW_SEARCH_SPACE_MATCH_NBSP")); // NOI18N
-        jPanel3.add(m_searchSpaceMatchNbsp);
         jPanel3.add(filler5);
 
         m_searchSource.setSelected(true);
@@ -323,10 +313,6 @@ public class SearchWindowForm extends javax.swing.JFrame {
         org.openide.awt.Mnemonics.setLocalizedText(m_replaceCase, OStrings.getString("SW_CASE_SENSITIVE")); // NOI18N
         jPanel11.add(m_replaceCase);
         jPanel11.add(filler22);
-
-        org.openide.awt.Mnemonics.setLocalizedText(m_replaceSpaceMatchNbsp, OStrings.getString("SW_SEARCH_SPACE_MATCH_NBSP")); // NOI18N
-        jPanel11.add(m_replaceSpaceMatchNbsp);
-        jPanel11.add(filler30);
 
         org.openide.awt.Mnemonics.setLocalizedText(m_replaceUntranslated, OStrings.getString("SW_REPLACE_UNTRANSLATED")); // NOI18N
         jPanel11.add(m_replaceUntranslated);
@@ -660,9 +646,7 @@ public class SearchWindowForm extends javax.swing.JFrame {
     javax.swing.Box.Filler filler26;
     javax.swing.Box.Filler filler27;
     javax.swing.Box.Filler filler28;
-    javax.swing.Box.Filler filler29;
     javax.swing.Box.Filler filler3;
-    javax.swing.Box.Filler filler30;
     javax.swing.Box.Filler filler4;
     javax.swing.Box.Filler filler5;
     javax.swing.Box.Filler filler6;
@@ -719,7 +703,6 @@ public class SearchWindowForm extends javax.swing.JFrame {
     javax.swing.JTextField m_replaceField;
     javax.swing.JLabel m_replaceLabel;
     javax.swing.JRadioButton m_replaceRegexpSearchRB;
-    javax.swing.JCheckBox m_replaceSpaceMatchNbsp;
     javax.swing.JCheckBox m_replaceUntranslated;
     javax.swing.JLabel m_resultsLabel;
     javax.swing.JLabel m_resultsLabel1;
@@ -733,7 +716,6 @@ public class SearchWindowForm extends javax.swing.JFrame {
     javax.swing.JCheckBox m_searchNotesCB;
     javax.swing.JRadioButton m_searchRegexpSearchRB;
     javax.swing.JCheckBox m_searchSource;
-    javax.swing.JCheckBox m_searchSpaceMatchNbsp;
     javax.swing.JRadioButton m_searchTranslated;
     javax.swing.JRadioButton m_searchTranslatedUntranslated;
     javax.swing.JCheckBox m_searchTranslation;

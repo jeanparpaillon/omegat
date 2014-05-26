@@ -49,10 +49,9 @@ public class SvgFilter extends XMLFilter {
 
     /** Extensions... */
     public Instance[] getDefaultInstances() {
-        return new Instance[] { new Instance("*.svg"),
-        						new Instance("*.xml")};
+        return new Instance[] { new Instance("*.svg") };
     }
-    
+
     /**
      * Either the encoding can be read, or it is UTF-8.
      * 

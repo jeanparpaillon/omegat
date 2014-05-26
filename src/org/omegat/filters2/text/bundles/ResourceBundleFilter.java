@@ -74,7 +74,6 @@ import org.omegat.util.StringUtil;
  * and it's up to the user to select a charset compatible with the characters used.
  * "auto" for the target encoding is considered as being ASCII.
  *
- * Support for the comments into the Comments panel (localization notes).
  */
 public class ResourceBundleFilter extends AbstractFilter {
 
@@ -232,7 +231,7 @@ public class ResourceBundleFilter extends AbstractFilter {
             }
         }
 
-        return result.toString();
+            return result.toString();
         
     }
 
@@ -282,8 +281,6 @@ public class ResourceBundleFilter extends AbstractFilter {
     public void processFile(BufferedReader reader, BufferedWriter outfile, org.omegat.filters2.FilterContext fc) throws IOException {
         LinebreakPreservingReader lbpr = new LinebreakPreservingReader(reader); // fix for bug 1462566
         String str;
-        // Support to show the comments (localization notes) into the Comments panel
-        String comments;
         boolean noi18n = false;
 
         // Parameter in the options of filter to customize the target file
@@ -293,8 +290,7 @@ public class ResourceBundleFilter extends AbstractFilter {
         } else {
             removeStringsUntranslated = false;
         }
-        // Initialize the comments
-        comments = null;
+
         while ((str = getNextLine(lbpr)) != null) {
 
             // Variable to check if a segment is translated
@@ -305,8 +301,6 @@ public class ResourceBundleFilter extends AbstractFilter {
             // skipping empty strings
             if (trimmed.length() == 0) {
                 outfile.write(toAscii(str, false) + lbpr.getLinebreak());
-                // Delete the comments
-                comments = null;
                 continue;
             }
 
@@ -314,8 +308,6 @@ public class ResourceBundleFilter extends AbstractFilter {
             char firstChar = trimmed.charAt(0);
             if (firstChar == '#' || firstChar == '!') {
                 outfile.write(toAscii(str, false) + lbpr.getLinebreak());
-                // Save the comments
-                comments = (comments==null? str : comments + "\n" + str);
                 // checking if the next string shouldn't be internationalized
                 if (trimmed.indexOf("NOI18N") >= 0)
                     noi18n = true;
@@ -373,12 +365,9 @@ public class ResourceBundleFilter extends AbstractFilter {
                     noi18n = false;
                 } else {
                     value = value.replaceAll("\\n\\n", "\n \n");
-                    // If there is a comment, show it into the Comments panel
-                    String trans = process(key, value, comments);
-                    // Delete the comments
-                    comments = null;
+                    String trans = process(key, value);
                     // Check if the segment is not translated
-	            if ("--untranslated_yet--".equals(trans)) {
+	            if (trans == "--untranslated_yet--") {
                         translatedSegment = false;
                         trans = value;
                     }
@@ -435,13 +424,11 @@ public class ResourceBundleFilter extends AbstractFilter {
         return -1;
     }
 
-    // Support to show the comments (localization notes) into the Comments panel
-    // Added the c parameter, of type String, which is the comment showed in the interface
-    protected String process(String key, String value, String c) {
+    protected String process(String key, String value) {
         if (entryParseCallback != null) {
             List<ProtectedPart> protectedParts = StaticUtils.applyCustomProtectedParts(value,
                     PatternConsts.SIMPLE_JAVA_MESSAGEFORMAT_PATTERN_VARS, null);
-            entryParseCallback.addEntry(key, value, null, false, c, null, this, protectedParts);
+            entryParseCallback.addEntry(key, value, null, false, null, null, this, protectedParts);
             return value;
         } else if (entryTranslateCallback != null) {
             String trans = entryTranslateCallback.getTranslation(key, value, null);

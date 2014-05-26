@@ -11,7 +11,6 @@
                2012 Martin Fleurke, Wildrich Fourie, Didier Briel, Thomas Cordonnier,
                     Aaron Madlon-Kay
                2013 Aaron Madlon-Kay, Zoltan Bartko
-               2014 Piotr Kulik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -101,9 +100,7 @@ public class Preferences {
     public static final String SEARCHWINDOW_SEARCH_TYPE = "search_window_search_type";
     public static final String SEARCHWINDOW_REPLACE_TYPE = "search_window_replace_type";
     public static final String SEARCHWINDOW_CASE_SENSITIVE = "search_window_case_sensitive";
-    public static final String SEARCHWINDOW_SPACE_MATCH_NBSP = "search_window_space_match_nbsp";
     public static final String SEARCHWINDOW_CASE_SENSITIVE_REPLACE = "search_window_case_sensitive_replace";
-    public static final String SEARCHWINDOW_SPACE_MATCH_NBSP_REPLACE = "search_window_space_match_nbsp_replace";
     public static final String SEARCHWINDOW_REPLACE_UNTRANSLATED = "search_window_replace_untranslated";
     public static final String SEARCHWINDOW_SEARCH_SOURCE = "search_window_search_source";
     public static final String SEARCHWINDOW_SEARCH_TRANSLATION = "search_window_search_translation";
@@ -347,9 +344,6 @@ public class Preferences {
     public static final String AC_CHARTABLE_USE_CUSTOM_CHARS = "ac_chartable_use_custom_chars";
     public static final String AC_CHARTABLE_CUSTOM_CHAR_STRING = "ac_chartable_custom_char_string";
     public static final String AC_CHARTABLE_UNIQUE_CUSTOM_CHARS = "ac_chartable_unique_custom_chars";
-
-    /** status bar progress mode */
-    public static final String SB_PROGRESS_MODE = "sb_progress_mode";
 
     /** Private constructor, because this file is singleton */
     static {

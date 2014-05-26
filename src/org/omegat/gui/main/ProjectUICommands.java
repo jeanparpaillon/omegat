@@ -7,7 +7,7 @@
                2011 Martin Fleurke
                2012 Thomas Cordonnier
                2013 Yu Tang
-               2014 Aaron Madlon-Kay, Piotr Kulik
+               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -96,7 +96,7 @@ public class ProjectUICommands {
                 // ask about new project properties
                 ProjectPropertiesDialog newProjDialog = new ProjectPropertiesDialog(
                         new ProjectProperties(dir), dir.getAbsolutePath(),
-                        ProjectPropertiesDialog.Mode.NEW_PROJECT);
+                        ProjectPropertiesDialog.NEW_PROJECT);
                 newProjDialog.setVisible(true);
                 newProjDialog.dispose();
 
@@ -385,7 +385,7 @@ public class ProjectUICommands {
                             // to fix it
                             ProjectPropertiesDialog prj = new ProjectPropertiesDialog(props, new File(
                                     projectRootFolder, OConsts.FILE_PROJECT).getAbsolutePath(),
-                                    ProjectPropertiesDialog.Mode.RESOLVE_DIRS);
+                                    ProjectPropertiesDialog.RESOLVE_DIRS);
                             prj.setVisible(true);
                             props = prj.getResult();
                             prj.dispose();
@@ -516,13 +516,6 @@ public class ProjectUICommands {
                 Core.getMainWindow().showStatusMessageRB("MW_STATUS_SAVED");
                 mainWindow.setCursor(oldCursor);
 
-                // fix - reset progress bar to defaults
-                Core.getMainWindow().showLengthMessage(OStrings.getString("MW_SEGMENT_LENGTH_DEFAULT"));
-                Core.getMainWindow().showProgressMessage(OStrings.getString(MainWindowUI.STATUS_BAR_MODE.valueOf(
-                        Preferences.getPreferenceEnumDefault(Preferences.SB_PROGRESS_MODE,
-                                MainWindowUI.STATUS_BAR_MODE.DEFAULT).name()) == MainWindowUI.STATUS_BAR_MODE.DEFAULT
-                        ? "MW_PROGRESS_DEFAULT" : "MW_PROGRESS_DEFAULT_PRECENTAGE"));
-
                 return null;
             }
 
@@ -543,8 +536,7 @@ public class ProjectUICommands {
         // displaying the dialog to change paths and other properties
         ProjectPropertiesDialog prj = new ProjectPropertiesDialog(Core.getProject().getProjectProperties(),
                 Core.getProject().getProjectProperties().getProjectName(),
-                Core.getProject().getRepository() == null ? ProjectPropertiesDialog.Mode.EDIT_PROJECT
-                        : ProjectPropertiesDialog.Mode.EDIT_TEAM_PROJECT);
+                ProjectPropertiesDialog.EDIT_PROJECT);
         prj.setVisible(true);
         final ProjectProperties newProps = prj.getResult();
         prj.dispose();
@@ -565,10 +557,9 @@ public class ProjectUICommands {
 
             protected Object doInBackground() throws Exception {
                 Core.getProject().saveProject();
-                IRemoteRepository repo = Core.getProject().getRepository();
                 ProjectFactory.closeProject();
 
-                ProjectFactory.loadProject(newProps, repo, true);
+                ProjectFactory.loadProject(newProps, null, true);
                 Core.getProject().saveProjectProperties();
                 return null;
             }
