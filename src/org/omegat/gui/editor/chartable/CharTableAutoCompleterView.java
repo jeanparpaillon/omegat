@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2013 Zoltan Bartko, Aaron Madlon-Kay
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -62,6 +61,10 @@ public class CharTableAutoCompleterView extends AutoCompleterTableView {
     @Override
     public boolean updateViewData() {
         updateModel();
+        
+        int offset = completer.getEditor().getCaretPosition();
+        
+        completer.setWordChunkStart(offset);
         return true;
     }
 

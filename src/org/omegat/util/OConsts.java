@@ -7,7 +7,6 @@
                2007 Zoltan Bartko
                2009 Didier Briel
                2013 Guido Leenders
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -71,7 +70,6 @@ public class OConsts {
     public static final String LAST_CHANGES_FILE = "changes.txt";
 
     // status file consts
-    public static final String FILES_ORDER_FILENAME = "files_order.txt";
     public static final String STATUS_EXTENSION = "project_save.tmx";
     public static final String STATUS_RECOVER_EXTENSION = ".recover";
     public static final String BACKUP_EXTENSION = ".bak";
@@ -83,17 +81,12 @@ public class OConsts {
     public static final String DEFAULT_TARGET = "target";
     /** Project subfolder for glossaries default name. */
     public static final String DEFAULT_GLOSSARY = "glossary";
-    /** Default name for the project writeable glossary file (inside project) */
-    public static final String DEFAULT_W_GLOSSARY = "glossary.txt";
-    /** Default suffix for project writeable glossary file (outside of project)  */
-    public static final String DEFAULT_W_GLOSSARY_SUFF = "-glossary.txt";
+    /** Default name for the project writeable glossary file */
+    public static final String DEFAULT_W_GLOSSARY = "-glossary.txt";
     /** Project subfolder for legacy translation memories default name. */
     public static final String DEFAULT_TM = "tm";
     /** Project subfolder for automatically applied translation memories within the tm folder. */
     public static final String AUTO_TM = "auto";
-    /** Project subfolder for automatically applied translation memories within the tm folder. Existing
-        translation are overwritten */
-    public static final String AUTO_ENFORCE_TM = "enforce";
     /** Project subfolder for dictionaries default name. */
     public static final String DEFAULT_DICT = "dictionary";
     /** Project subfolder for project's translation memory. */
@@ -201,8 +194,6 @@ public class OConsts {
     public static final String ISO88592 = "ISO-8859-2";
     /** Encoding: "UTF-16LE". */
     public static final String UTF16LE = "UTF-16LE";
-    /** Encoding: "ASCII". */
-    public static final String ASCII = "US-ASCII";
 
     public static final String REMOTE_SC_DICTIONARY_LIST_LOCATION = "http://download.services.openoffice.org/files/contrib/dictionaries/";
 

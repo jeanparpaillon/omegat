@@ -1,4 +1,4 @@
-Deze vertaling is het werk van Dick Groskamp, copyright© 2014
+Deze vertaling is het werk van Dick Groskamp, copyright© 2013
 
 ==============================================================================
   ==============================================================================
@@ -214,7 +214,6 @@ Code is bijgedragen door
   Alex Buloichik (hoofd ontwikkeling)
   Sandra Jean Chua
   Thomas Cordonnier
-  Enrique Estévez Fernández
   Martin Fleurke  
   Wildrich Fourie
   Phillip Hall
@@ -254,10 +253,11 @@ Andere bijdragen door
 
 OmegaT gebruikt de volgende bibliotheken:
   HTMLParser 1.6 van Somik Raha, Derrick Oswald en anderen (LGPL License)
+  MRJ Adapter 1.0.8 van Steve Roy (LGPL License)
   VLDocking Framework 2.1.4 van VLSolutions (CeCILL License)
   Hunspell van László Németh en anderen (LGPL License)
   JNA van Todd Fast, Timothy Wall en anderen (LGPL License)
-  Swing-Layout 1.0.4 (LGPL License)
+  Swing-Layout 1.0.2 (LGPL License)
   Jmyspell 2.1.4 (LGPL License)
   SVNKit 1.7.5 (TMate License)
   Sequence Library (Sequence Library License)
@@ -279,9 +279,6 @@ OmegaT gebruikt de volgende bibliotheken:
   morfologik-*.jar (Morfologik licentie)
   segment-1.4.1.jar (Segment-licentie)
   pdfbox-app-1.8.1.jar (Apache License 2.0)
-  KoreanAnalyzer-3x-120223.jar (Apache License 2.0)
-  SuperTMXMerge-for_OmegaT.jar (LGPL License)
-  groovy-all-2.2.2.jar (Apache License 2.0)
 
 ==============================================================================
  5.  Heeft u problemen met OmegaT ? Heeft u hulp nodig?

@@ -181,19 +181,9 @@ public class GITRemoteRepository implements IRemoteRepository {
     }
 
     public boolean isUnderVersionControl(File file) throws Exception {
-        boolean result = file.exists();
         String relativeFile = FileUtil.computeRelativePath(repository.getWorkTree(), file);
         Status status = new Git(repository).status().call();
-
-        if (status.getAdded().contains(relativeFile) || status.getModified().contains(relativeFile)
-                || status.getChanged().contains(relativeFile)
-                || status.getConflicting().contains(relativeFile)
-                || status.getMissing().contains(relativeFile) || status.getRemoved().contains(relativeFile)) {
-            result = true;
-        }
-        if (status.getUntracked().contains(relativeFile)) {
-            result = false;
-        }
+        boolean result = !status.getUntracked().contains(relativeFile);
         Log.logDebug(LOGGER, "GIT file {0} is under version control: {1}", relativeFile, result);
         return result;
     }

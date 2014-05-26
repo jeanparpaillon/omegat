@@ -1,5 +1,4 @@
-// :name=Example - Modify Segment :description=Example of segment modification
-
+// Segment modifier
 def ste = editor.currentEntry;
 
 if (ste .srcText != "enu"  ) 

@@ -6,7 +6,6 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2007-2011 Didier Briel
                2013 Didier Briel, Aaron Madlon-Kay, Piotr Kulik
-               2014 Piotr Kulik, Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -56,16 +55,10 @@ public class XLIFFFilter extends XMLFilter {
     private boolean ignored;
     private ArrayList<String> groupResname = new ArrayList<String>();
     private int groupLevel;
-    private ArrayList<String> notes = new ArrayList<String>();
+    private String note;
     private String text;
     private ArrayList<String> entryText = new ArrayList<String>();
     private ArrayList<List<ProtectedPart>> protectedParts = new ArrayList<List<ProtectedPart>>();
-    
-    private String id;
-   /**
-     * Sets whether alternative translations are identified by previous and next paragraphs or by &lt;trans-unit&gt; ID
-    */
-     private boolean useTransUnitID;
 
     /**
      * Register plugin into OmegaT.
@@ -132,11 +125,7 @@ public class XLIFFFilter extends XMLFilter {
     
     @Override
     protected boolean requirePrevNextFields() {
-        if (useTransUnitID) {
-            return false;
-        } else {
-            return true;
-        }
+        return true;
     }
     
     /**
@@ -189,7 +178,6 @@ public class XLIFFFilter extends XMLFilter {
                 } catch (Exception e) {
                     Log.log(e);
                 }
-                this.useTransUnitID = dialect.useTransUnitID;
         }
         return result;
     }
@@ -201,9 +189,6 @@ public class XLIFFFilter extends XMLFilter {
     public void tagStart(String path, Attributes atts) {
         if (atts != null && path.endsWith("trans-unit")) {
             resname = atts.getValue("resname");
-            if (useTransUnitID) {
-                id = atts.getValue("id");
-            }
         }
         // not all <group> tags have resname attribute
         if (path.endsWith("/group")) {
@@ -220,7 +205,7 @@ public class XLIFFFilter extends XMLFilter {
     public void tagEnd(String path) {
         if (path.endsWith("trans-unit/note")) {
             // <trans-unit> <note>'s only 
-            notes.add(text);
+            note = text;
         } else if (path.endsWith("trans-unit")) {
             if (entryParseCallback != null) {
                 StringBuffer buf = new StringBuffer();
@@ -238,7 +223,7 @@ public class XLIFFFilter extends XMLFilter {
                     buf.append('\n');
                 }
 
-                for (String note : notes) {
+                if (note != null) {
                     buf.append(note);
                     buf.append('\n');
                 }
@@ -246,15 +231,12 @@ public class XLIFFFilter extends XMLFilter {
                 String comment = buf.length() == 0 ? null : buf.substring(0, buf.length() - 1);
                 
                 for (int i = 0; i < entryText.size(); i++) {
-                    if (!useTransUnitID) {
-                        id = null;
-                    }
-                    entryParseCallback.addEntry(id, entryText.get(i), null, false, comment, null, this, protectedParts.get(i));
+                    entryParseCallback.addEntry(null, entryText.get(i), null, false, comment, null, this, protectedParts.get(i));
                 }
             }
 
             resname = null;
-            notes.clear();
+            note = null;
             entryText.clear();
             protectedParts.clear();
         } else if (path.endsWith("/group")) {

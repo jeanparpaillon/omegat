@@ -1,5 +1,4 @@
-/* :name=Open TM Folder :description=Open the /tm folder
- * 
+/*
  *  Open the /tm folder
  *
  * @author  Yu Tang

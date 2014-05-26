@@ -8,7 +8,6 @@
                2008 Martin Fleurke
                2009 Alex Buloichik
                2011 Didier Briel
-               2013-1014 Alex Buloichik, Enrique Estevez
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -50,7 +49,6 @@ import org.omegat.filters2.TranslationException;
 import org.omegat.util.Language;
 import org.omegat.util.OStrings;
 import org.omegat.util.Log;
-import org.omegat.util.OConsts;
 import org.omegat.util.PatternConsts;
 import org.omegat.util.StaticUtils;
 
@@ -67,12 +65,10 @@ import org.omegat.util.StaticUtils;
  * @author Martin Fleurke
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Didier Briel
- * @author Enrique Estevez
  */
 public class PoFilter extends AbstractFilter {
 
     public static final String OPTION_ALLOW_BLANK = "disallowBlank";
-    public static final String OPTION_ALLOW_EDITING_BLANK_SEGMENT = "disallowEditingBlankSegment";
     public static final String OPTION_SKIP_HEADER = "skipHeader";
     public static final String OPTION_AUTO_FILL_IN_PLURAL_STATEMENT = "autoFillInPluralStatement";
     public static final String OPTION_FORMAT_MONOLINGUAL = "monolingualFormat";
@@ -236,10 +232,6 @@ public class PoFilter extends AbstractFilter {
      */
     public static boolean allowBlank = false;
     /**
-     * If false, the blank source segments will be skipped (not shown in editor)
-     */
-    public static boolean allowEditingBlankSegment = false;
-    /**
      * If true, the header will be skipped (not shown in editor)
      */
     public static boolean skipHeader = false;
@@ -278,23 +270,18 @@ public class PoFilter extends AbstractFilter {
 
     private BufferedWriter out;
 
-    @Override
     public String getFileFormatName() {
         return OStrings.getString("POFILTER_FILTER_NAME");
     }
 
-    @Override
     public Instance[] getDefaultInstances() {
-        return new Instance[] 
-            { new Instance("*.po", OConsts.UTF8, OConsts.UTF8), new Instance("*.pot", OConsts.UTF8, OConsts.UTF8) };
+        return new Instance[] { new Instance("*.po"), new Instance("*.pot") };
     }
 
-    @Override
     public boolean isSourceEncodingVariable() {
         return true;
     }
 
-    @Override
     public boolean isTargetEncodingVariable() {
         return true;
     }
@@ -313,12 +300,6 @@ public class PoFilter extends AbstractFilter {
             allowBlank = true;
         } else {
             allowBlank = false;
-        }
-        String disallowEditingBlankSegmentStr = processOptions.get(OPTION_ALLOW_EDITING_BLANK_SEGMENT);
-        if ((disallowEditingBlankSegmentStr == null) || (disallowEditingBlankSegmentStr.equalsIgnoreCase("true"))) {
-            allowEditingBlankSegment = true;
-        } else {
-            allowEditingBlankSegment = false;
         }
         String skipHeaderStr = processOptions.get(OPTION_SKIP_HEADER);
         if ("true".equalsIgnoreCase(skipHeaderStr)) {
@@ -451,16 +432,7 @@ public class PoFilter extends AbstractFilter {
                         flushTranslation(currentMode, fc);
                     }
                     currentMode = MODE.MSGID;
-                    // Hack to be able to translate empty segments
-                    // If the source segment is empty and there is a reference then
-                    // it copies the reference of the segment and the localization note into the source segment
-                    if (allowEditingBlankSegment == true && text.length() == 0 && references.length() > 0)
-                    { 
-                        String aux = references.toString() + extractedComments.toString();
-                        sources[0].append(aux);
-                    }
-                    else
-                        sources[0].append(text);
+                    sources[0].append(text);
                 } else {
                     // plural ID ('msg_id_plural')
                     currentMode = MODE.MSGID_PLURAL;
@@ -662,7 +634,7 @@ public class PoFilter extends AbstractFilter {
 
                 if (out != null) {
                     // Header is always written
-                    out.write("msgstr " + getTranslation(null, targets[0], false, true, fc, 0) + "\n");
+                    out.write("msgstr " + getTranslation(targets[0], false, true, fc, 0) + "\n");
                 } else {
                     alignHeader(targets[0].toString(), fc);
                 }
@@ -673,23 +645,16 @@ public class PoFilter extends AbstractFilter {
             if (sources[1].length() == 0) {
                 // non-plurals
                 if (out != null) {
-                    if (formatMonolingual) {
-                        out.write("msgstr "
-                                + getTranslation(sources[0].toString(), targets[0], allowBlank, false, fc, 0)
-                                + "\n");
-                    } else {
-                        out.write("msgstr " + getTranslation(null, sources[0], allowBlank, false, fc, 0)
-                                + "\n");
-                    }
+                    out.write("msgstr " + getTranslation(sources[0], allowBlank, false, fc, 0) + "\n");
                 } else {
                     align(0);
                 }
             } else {
                 // plurals
                 if (out != null) {
-                    out.write("msgstr[0] " + getTranslation(null, sources[0], allowBlank, false, fc, 0) + "\n");
+                    out.write("msgstr[0] " + getTranslation(sources[0], allowBlank, false, fc, 0) + "\n");
                     for (int i=1;i<plurals;i++) {
-                        out.write("msgstr["+i+"] " + getTranslation(null, sources[1], allowBlank, false, fc, i) + "\n");
+                        out.write("msgstr["+i+"] " + getTranslation(sources[1], allowBlank, false, fc, i) + "\n");
                     }
                 } else {
                     align(0);
@@ -739,8 +704,9 @@ public class PoFilter extends AbstractFilter {
      * @return The translated entry, within double quotes on each line (thus ready to be printed to target
      *         file immediately)
      **/
-    private String getTranslation(String id, StringBuilder en, boolean allowNull, boolean isHeader, FilterContext fc, int plural) {
+    private String getTranslation(StringBuilder en, boolean allowNull, boolean isHeader, FilterContext fc, int plural) {
         String entry = unescape(en.toString());
+        String id = null;
 
         if (plural > 1) {
             id = "["+plural+"]"+entry;

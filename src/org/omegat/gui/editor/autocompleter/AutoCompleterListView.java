@@ -55,7 +55,7 @@ public abstract class AutoCompleterListView extends AbstractAutoCompleterView {
     ListModel listModel = new DefaultListModel();
     
     private static AutoCompleterItem NO_SUGGESTIONS = new AutoCompleterItem(
-            OStrings.getString("AC_NO_SUGGESTIONS"), null, 0);
+            OStrings.getString("AC_NO_SUGGESTIONS"), null);
     
     public AutoCompleterListView(String name, AutoCompleter completer) {
         super(name,completer);
@@ -188,9 +188,27 @@ public abstract class AutoCompleterListView extends AbstractAutoCompleterView {
             int offset = editor.getCaretPosition();
             int translationStart = editor.getOmDocument().getTranslationStart();
             
+            // init - these are going to be overwritten, if something better is found.
+            String wordChunk = "";
+            completer.setWordChunkStart(offset);
+            
             String prevText = editor.getDocument().getText(translationStart, offset - translationStart);
             
-            List<AutoCompleterItem> entryList = computeListData(prevText);
+            if (prevText.length() != 0) {
+                ITokenizer tokenizer = getTokenizer();
+                Token[] tokens = tokenizer.tokenizeAllExactly(prevText);
+                
+                if (tokens.length != 0) {
+                    Token lastToken = tokens[tokens.length - 1];
+                    String lastString = prevText.substring(lastToken.getOffset()).trim();
+                    if (lastString.length() > 0) {
+                        wordChunk = lastString;
+                        completer.setWordChunkStart(translationStart + lastToken.getOffset());
+                    }
+                }
+            }
+            
+            List<AutoCompleterItem> entryList = computeListData(wordChunk);
             
             if (entryList.isEmpty()) {
                 entryList.add(NO_SUGGESTIONS);
@@ -204,27 +222,12 @@ public abstract class AutoCompleterListView extends AbstractAutoCompleterView {
         }
     }
     
-    protected String getLastToken(String text) {
-        String token = "";
-        ITokenizer tokenizer = getTokenizer();
-        Token[] tokens = tokenizer.tokenizeAllExactly(text);
-        
-        if (tokens.length != 0) {
-            Token lastToken = tokens[tokens.length - 1];
-            String lastString = text.substring(lastToken.getOffset()).trim();
-            if (lastString.length() > 0) {
-                token = lastString;
-            }
-        }
-        return token;
-    }
-    
     /**
      * Compute the items visible in the auto-completer list
-     * @param prevText the text in the editing field up to the cursor location
-     * @return a list of AutoCompleterItems.
+     * @param wordChunk the string to start with
+     * @return a list of strings.
      */
-    public abstract List<AutoCompleterItem> computeListData(String prevText);
+    public abstract List<AutoCompleterItem> computeListData(String wordChunk);
     
     /**
      * Each view should determine how to print a view item.

@@ -41,7 +41,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 
 import org.omegat.core.Core;
-import org.omegat.core.data.PrepareTMXEntry;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
 import org.omegat.core.spellchecker.SpellCheckerMarker;
@@ -304,25 +303,34 @@ public class EditorPopups {
                 return;
             }
 
-            menu.add(OStrings.getString("TRANS_POP_EMPTY_TRANSLATION")).addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            ec.registerEmptyTranslation();
-                        }
-                    });
-            menu.add(OStrings.getString("TRANS_POP_REMOVE_TRANSLATION")).addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            ec.registerUntranslated();
-                        }
-                    });
-            menu.add(OStrings.getString("TRANS_POP_IDENTICAL_TRANSLATION")).addActionListener(
-                    new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            ec.registerIdenticalTranslation();
-                        }
-                    });
+            JMenuItem itemEmpty = menu.add(OStrings.getString("TRANS_POP_EMPTY_TRANSLATION"));
+            itemEmpty.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    Core.getEditor().setEmptyTranslation(true);
+                    setTranslation("");
+                    Core.getEditor().replaceEditText("");
+                }
+            });
+            JMenuItem itemRemove = menu.add(OStrings.getString("TRANS_POP_REMOVE_TRANSLATION"));
+            itemRemove.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    setTranslation(null);
+                    Core.getEditor().replaceEditText("");
+                }
+            });
             menu.addSeparator();
+        }
+
+        protected void setTranslation(String v) {
+            SourceTextEntry ste = Core.getEditor().getCurrentEntry();
+            if (ste == null) {
+                return;
+            }
+            TMXEntry prevTrans = Core.getProject().getTranslationInfo(ste);
+            Core.getProject().setTranslation(ste, v, Core.getNotes().getNoteText(),
+                    prevTrans.defaultTranslation);
+            Core.getEditor().replaceEditText("");
+            Core.getEditor().commitAndLeave();
         }
     }
 

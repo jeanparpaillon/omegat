@@ -8,7 +8,6 @@
                2009 Didier Briel
                2012 Didier Briel, Aaron Madlon-Kay
                2013 Aaron Madlon-Kay, Guido Leenders
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -97,12 +96,20 @@ public class ProjectFileStorage {
         } else {
             glossaryDir = result.getGlossaryRoot();
         }
+        if (glossaryDir == null) {
+            glossaryDir = ".";
+        }
         glossaryDir = computeAbsolutePath(m_root, glossaryDir, OConsts.DEFAULT_GLOSSARY);
+        glossaryFile = om.getProject().getGlossaryFile();
         if (glossaryFile == null) {
             glossaryFile = OConsts.DEFAULT_FOLDER_MARKER;
         }
         if (glossaryFile.equalsIgnoreCase(OConsts.DEFAULT_FOLDER_MARKER)) {
-            glossaryFile = result.computeDefaultWriteableGlossaryFile();
+            glossaryDir = result.getGlossaryRoot();
+            if (!glossaryDir.endsWith(File.separator)) {
+                glossaryDir += File.separator;
+            }
+            glossaryFile = glossaryDir + result.getProjectName() + OConsts.DEFAULT_W_GLOSSARY;
         } else {
             glossaryFile = glossaryDir + new File(glossaryFile).getName();
         }
@@ -156,7 +163,8 @@ public class ProjectFileStorage {
         String glossaryFile = new File(props.getWriteableGlossary()).getName(); // File name
         String glossaryDir = computeRelativePath(m_root, props.getGlossaryRoot(), OConsts.DEFAULT_GLOSSARY);
         if (glossaryDir.equalsIgnoreCase(OConsts.DEFAULT_FOLDER_MARKER)) { // Standard path for glossary
-            if (!props.isDefaultWriteableGlossaryFile()) {
+            if (!props.getWriteableGlossary().equalsIgnoreCase(props.getGlossaryRoot() +
+                    props.getProjectName() + OConsts.DEFAULT_W_GLOSSARY)) {
                 glossaryDir = props.getWriteableGlossaryDir();
                 glossaryDir = computeRelativePath(m_root, glossaryDir, OConsts.DEFAULT_GLOSSARY);
                 if (!StringUtil.isEmpty(glossaryDir)) {

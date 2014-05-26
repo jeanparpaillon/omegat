@@ -36,8 +36,7 @@ import org.omegat.core.events.IEntryEventListener;
 import org.omegat.util.gui.Styles;
 
 /**
- * Marker for be able to add marks when a match is inserted from such a TMX manually. TMX should be in tm/mt/
- * folder.
+ * Marker for be able to add marks when a match is inserted from such a TMX.
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  */

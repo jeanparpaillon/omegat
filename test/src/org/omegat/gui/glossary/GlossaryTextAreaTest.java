@@ -35,7 +35,6 @@ import org.omegat.core.TestCoreInitializer;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.gui.editor.EditorSettings;
 import org.omegat.gui.editor.IEditor;
-import org.omegat.gui.editor.IEditorFilter;
 import org.omegat.gui.editor.IPopupMenuConstructor;
 import org.omegat.gui.editor.mark.Mark;
 import org.omegat.util.Preferences;
@@ -176,10 +175,7 @@ public class GlossaryTextAreaTest extends TestCore {
             public void remarkOneMarker(String markerClassName) {
             }
 
-            public IEditorFilter getFilter() {
-                return null;
-            }
-            public void setFilter(IEditorFilter filter) {
+            public void addFilter(List<Integer> entryList) {
             }
 
             public void removeFilter() {
@@ -211,18 +207,6 @@ public class GlossaryTextAreaTest extends TestCore {
             }
 
             public void windowDeactivated() {
-            }
-
-            public void refreshView(boolean doCommit) {
-            }
-
-            public void registerIdenticalTranslation() {
-            }
-
-            public void registerEmptyTranslation() {
-            }
-
-            public void registerUntranslated() {
             }
         });
     }

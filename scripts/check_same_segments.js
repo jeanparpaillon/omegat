@@ -1,5 +1,4 @@
-/* :name=QA - Identical Segments :description=Checks for identical segments (case sensitive).
- * 
+/*
  *  Test script taking inspiration from the tag validation class :)
  */
 

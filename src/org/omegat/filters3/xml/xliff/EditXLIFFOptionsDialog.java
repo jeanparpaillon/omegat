@@ -6,7 +6,6 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2007-2012 Didier Briel
                2013 Didier Briel, Piotr Kulik
-               2014 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -63,10 +62,7 @@ public class EditXLIFFOptionsDialog extends javax.swing.JDialog {
         compatibility26CB.setSelected(options.get26Compatibility());
         forceshortcut2fCB.setSelected(options.getForceShortcutToF());
         ignoreTypeForPhTagsCB.setSelected(options.getIgnoreTypeForPhTags());
-        ignoreTypeForBptTagsCB.setSelected(options.getIgnoreTypeForBptTags());
-        prevAndNextRB.setSelected(!options.getAltTransID());
-        transIDRB.setSelected(options.getAltTransID());
-        
+                
         // Handle escape key to close the window
         KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
         Action escapeAction = new AbstractAction() {
@@ -108,13 +104,9 @@ public class EditXLIFFOptionsDialog extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         compatibility26CB = new javax.swing.JCheckBox();
-        jLabel3 = new javax.swing.JLabel();
-        prevAndNextRB = new javax.swing.JRadioButton();
-        transIDRB = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
         forceshortcut2fCB = new javax.swing.JCheckBox();
         ignoreTypeForPhTagsCB = new javax.swing.JCheckBox();
-        ignoreTypeForBptTagsCB = new javax.swing.JCheckBox();
 
         setTitle(OStrings.getString("XLIFF_OPTIONS_TITLE")); // NOI18N
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -156,17 +148,6 @@ public class EditXLIFFOptionsDialog extends javax.swing.JDialog {
         org.openide.awt.Mnemonics.setLocalizedText(compatibility26CB, OStrings.getString("XLIFF_OPTIONS_26")); // NOI18N
         jPanel1.add(compatibility26CB);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, OStrings.getString("XLIFF_OPTIONS_ID")); // NOI18N
-        jPanel1.add(jLabel3);
-
-        buttonGroup1.add(prevAndNextRB);
-        org.openide.awt.Mnemonics.setLocalizedText(prevAndNextRB, OStrings.getString("XLIFF_OPTIONS_ID_NEXT_PREV")); // NOI18N
-        jPanel1.add(prevAndNextRB);
-
-        buttonGroup1.add(transIDRB);
-        org.openide.awt.Mnemonics.setLocalizedText(transIDRB, OStrings.getString("XLIFF_OPTIONS_ID_TRANS_UNIT")); // NOI18N
-        jPanel1.add(transIDRB);
-
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, OStrings.getString("XLIFF_OPTIONS_36_ONLY")); // NOI18N
         jPanel1.add(jLabel1);
 
@@ -175,9 +156,6 @@ public class EditXLIFFOptionsDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(ignoreTypeForPhTagsCB, OStrings.getString("XLIFF_OPTIONS_IGNORE4PH")); // NOI18N
         jPanel1.add(ignoreTypeForPhTagsCB);
-
-        org.openide.awt.Mnemonics.setLocalizedText(ignoreTypeForBptTagsCB, OStrings.getString("XLIFF_OPTIONS_IGNORE4BPT")); // NOI18N
-        jPanel1.add(ignoreTypeForBptTagsCB);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
@@ -191,12 +169,6 @@ public class EditXLIFFOptionsDialog extends javax.swing.JDialog {
         options.set26Compatibility(compatibility26CB.isSelected());
         options.setForceShortcutToF(forceshortcut2fCB.isSelected());
         options.setIgnoreTypeForPhTags(ignoreTypeForPhTagsCB.isSelected());
-        options.setIgnoreTypeForBptTags(ignoreTypeForBptTagsCB.isSelected());
-        if (prevAndNextRB.isSelected()) {
-            options.setAltTransID(false);
-        } else {
-            options.setAltTransID(true);
-        }
 
         doClose(RET_OK);
     }// GEN-LAST:event_okButtonActionPerformed
@@ -225,14 +197,10 @@ public class EditXLIFFOptionsDialog extends javax.swing.JDialog {
     private javax.swing.JButton cancelButton;
     private javax.swing.JCheckBox compatibility26CB;
     private javax.swing.JCheckBox forceshortcut2fCB;
-    private javax.swing.JCheckBox ignoreTypeForBptTagsCB;
     private javax.swing.JCheckBox ignoreTypeForPhTagsCB;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton okButton;
-    private javax.swing.JRadioButton prevAndNextRB;
-    private javax.swing.JRadioButton transIDRB;
     // End of variables declaration//GEN-END:variables
 }

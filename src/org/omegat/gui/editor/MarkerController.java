@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2010-2013 Alex Buloichik
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -213,7 +212,7 @@ public class MarkerController {
     public String getToolTips(int entryIndex, int pos) {
         UIThreadsUtil.mustBeSwingThread();
 
-        if (entryIndex >= ec.m_docSegList.length || entryIndex < 0) {
+        if (entryIndex >= ec.m_docSegList.length) {
             return null;
         }
         MarkInfo[][] m = ec.m_docSegList[entryIndex].marks;

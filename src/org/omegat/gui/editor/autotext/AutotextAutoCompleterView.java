@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2013 Zoltan Bartko, Aaron Madlon-Kay
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -51,21 +50,24 @@ public class AutotextAutoCompleterView extends AutoCompleterListView {
     }
             
     @Override
-    public List<AutoCompleterItem> computeListData(String prevText) {
+    public List<AutoCompleterItem> computeListData(String wordChunk) {
+        boolean matchFullText = Preferences.isPreference(Preferences.AC_AUTOTEXT_SORT_FULL_TEXT);
         
         List<AutoCompleterItem> result = new ArrayList<AutoCompleterItem>();
         for (AutotextPair s : Core.getAutoText().getList()) {
-            if (prevText.endsWith(s.source)) {
+            String toCompare = matchFullText ? s.target : s.source;
+            if (toCompare.toLowerCase().startsWith(wordChunk.toLowerCase())) {
                 result.add(new AutoCompleterItem(s.target,
-                    new String[] { s.source, s.comment }, s.source.length()));
+                    new String[] { s.source, s.comment }));
             }
         }
         
         if (!Core.getProject().getProjectProperties().getTargetLanguage().isSpaceDelimited()
                 && result.size() == 0) {
             for (AutotextPair s : Core.getAutoText().getList()) {
-                result.add(new AutoCompleterItem(s.target, new String[] { s.source, s.comment }, 0));
+                result.add(new AutoCompleterItem(s.target, new String[] { s.source, s.comment }));
             }
+            completer.adjustInsertionPoint(wordChunk.length());
         }
         
         Collections.sort(result, new AutotextComparator());

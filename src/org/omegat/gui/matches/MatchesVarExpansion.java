@@ -4,8 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2012 Thomas Cordonnier, Aaron Madlon-Kay
-               2013-2014 Aaron Madlon-Kay
-               2014 Alex Buloichik
+               2013 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -26,10 +25,8 @@
  **************************************************************************/
 package org.omegat.gui.matches;
 
-import org.omegat.util.TMXProp;
 import org.omegat.util.VarExpansion;
 import org.omegat.core.data.ProjectProperties;
-import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.matching.DiffDriver;
 import org.omegat.core.matching.DiffDriver.TextRun;
 import org.omegat.core.matching.DiffDriver.Render;
@@ -118,9 +115,8 @@ public class MatchesVarExpansion extends VarExpansion<NearString> {
     private static Replacer diffReplacer = new Replacer() {
         public void replace(Result R, NearString match) {
             int diffPos = R.text.indexOf(VAR_DIFF);
-            SourceTextEntry ste = Core.getEditor().getCurrentEntry();
-            if (diffPos != -1 && ste != null) {
-                Render diffRender = DiffDriver.render(match.source, ste.getSrcText(), true);
+            if (diffPos != -1) {
+                Render diffRender = DiffDriver.render(match.source, Core.getEditor().getCurrentEntry().getSrcText(), true);
                 R.diffInfo.put(diffPos, diffRender.formatting);
                 R.text = R.text.replace(VAR_DIFF, diffRender.text);
             }
@@ -130,9 +126,8 @@ public class MatchesVarExpansion extends VarExpansion<NearString> {
     private static Replacer diffReversedReplacer = new Replacer() {
         public void replace(Result R, NearString match) {
             int diffPos = R.text.indexOf(VAR_DIFF_REVERSED);
-            SourceTextEntry ste = Core.getEditor().getCurrentEntry();
-            if (diffPos != -1 && ste != null) {
-                Render diffRender = DiffDriver.render(ste.getSrcText(), match.source, true);
+            if (diffPos != -1) {
+                Render diffRender = DiffDriver.render(Core.getEditor().getCurrentEntry().getSrcText(), match.source, true);
                 R.diffInfo.put(diffPos, diffRender.formatting);
                 R.text = R.text.replace(VAR_DIFF_REVERSED, diffRender.text);
             }
@@ -175,10 +170,10 @@ public class MatchesVarExpansion extends VarExpansion<NearString> {
      * @param props Map of properties
      * @return Expanded template
      */
-    public String expandProperties (String localTemplate, List<TMXProp> props) {
+    public String expandProperties (String localTemplate, Map<String,String> props) {
         Matcher matcher;
         while ((matcher = patternSingleProperty.matcher(localTemplate)).find()) {
-            String value = getPropValue(props, matcher.group(1));
+            String value = props.get(matcher.group(1));
             localTemplate = localTemplate.replace (matcher.group(), value == null ? "" : value);
         }
         while ((matcher = patternPropertyGroup.matcher(localTemplate)).find()) {
@@ -187,9 +182,9 @@ public class MatchesVarExpansion extends VarExpansion<NearString> {
             separator2 = separator2.replace("\\n","\n");
             Pattern pattern = Pattern.compile(patternStr.replace("*","(.*)").replace("?","(.)"));
             StringBuilder res = new StringBuilder();
-            for (TMXProp me: props) {
-                if (pattern.matcher(me.getType().toString()).matches())
-                    res.append(me.getType()).append(separator1).append(me.getValue()).append(separator2);
+            for (Map.Entry<String, String> me: props.entrySet()) {
+                if (pattern.matcher(me.getKey().toString()).matches())
+                    res.append(me.getKey()).append(separator1).append(me.getValue()).append(separator2);
             }
             if (res.toString().endsWith(separator2))
                 res.replace(res.toString().lastIndexOf(separator2), res.length(), "");
@@ -197,16 +192,7 @@ public class MatchesVarExpansion extends VarExpansion<NearString> {
         }        
         return localTemplate;        
     }
-
-    private String getPropValue(List<TMXProp> props, String type) {
-        for (TMXProp me : props) {
-            if (type.equals(me.getType())) {
-                return me.getValue();
-            }
-        }
-        return null;
-    }
-
+    
     @Override
     public String expandVariables (NearString match) {
         String localTemplate = this.template; // do not modify template directly, so that we can reuse for another change

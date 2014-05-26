@@ -6,11 +6,14 @@
 	<classpathentry kind="src" path="lib-mnemonics/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/htmlparser.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jna.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/MRJAdapter.jar" sourcepath="lib/sources/MRJAdapter-source.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/swing-layout-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmyspell-core-1.0.0-beta-2.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/junit-4.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/xmlunit-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/pdfbox-app-1.8.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/vldocking_2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/swing-worker-1.2.jar" sourcepath="lib/sources/swing-worker-src-1.2.zip"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-2.1.0.201209190230-r.jar"/>
 	<classpathentry kind="lib" path="lib/jsch-0.1.49.jar"/>
 	<classpathentry kind="lib" path="lib/sequence-library-1.0.2.jar"/>
@@ -37,9 +40,9 @@
 	<classpathentry kind="lib" path="lib/LanguageTool/morfologik-stemming-1.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/LanguageTool/segment-1.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/LanguageTool/lucene-gosen-2.0.2-ipadic.jar"/>
-	<classpathentry kind="lib" path="lib/groovy-all-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/bsf-2.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/js-rhino-1.7R4.jar"/>
+	<classpathentry kind="lib" path="lib/groovy-all-1.8.9.jar"/>
 	<classpathentry kind="lib" path="lib/KoreanAnalyzer-3x-120223.jar"/>
-	<classpathentry kind="lib" path="lib/SuperTMXMerge-for_OmegaT.jar"/>
-	<classpathentry kind="lib" path="lib/swing-layout-1.0.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

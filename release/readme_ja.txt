@@ -111,7 +111,7 @@ OmegaT の実行には、Java Runtime Environment（JRE）バージョン 1.5 �
 
 最初の実行時に、お使いのコンピューターに適した実行環境とアプリケーションを自動でインストールします。それ以降の実行時は、オンラインである必要はありません。
 
-インストール中、OS によってはいくつかのセキュリティ警告が表示される場合があります。証明書は「PnS Concept」によって署名されています。この（Java Web Start 版）実行ファイルに与える権限（「コンピューターへの無制限アクセス」と表示される可能性があります）は、通常のローカル版に対して適用するものと同一で、コンピューターのハードディスクにアクセスすることを許可するものです。インストール後は、OmegaT.jnlp をクリックすると、もしオンラインであればプログラムの更新がないか検索し、もしあればインストールした後、OmegaT を起動します。 
+インストール中、OS によってはいくつかのセキュリティ警告が表示される場合があります。証明書は「Didier Briel」による自己署名がなされています。この（Java Web Start 版）実行ファイルに与える権限（「コンピューターへの無制限アクセス」と表示される可能性があります）は、通常のローカル版に対して適用するものと同一で、コンピューターのハードディスクにアクセスすることを許可するものです。インストール後は、OmegaT.jnlp をクリックすると、もしオンラインであればプログラムの更新がないか検索し、もしあればインストールした後、OmegaT を起動します。 
 
 ダウンロードとインストールを行う他の方法は、下記に示す通りです。 
 
@@ -212,12 +212,11 @@ OmegaT のユーザーインターフェースや取扱説明書、他の関連�
 コードに関する貢献者
   Zoltan Bartko
   Volker Berlin
-  Didier Briel（開発マネージャー）
+  Didier Briel（開発担当）
   Kim Bruning
-  Alex Buloichik（リード開発者）
+  Alex Buloichik（開発リーダー）
   Sandra Jean Chua
   Thomas Cordonnier
-  Enrique Estévez Fernández
   Martin Fleurke  
   Wildrich Fourie
   Phillip Hall
@@ -230,7 +229,6 @@ OmegaT のユーザーインターフェースや取扱説明書、他の関連�
   Guido Leenders
   Aaron Madlon-Kay
   Fabián Mandelbaum
-  Manfred Martin
   John Moran
   Maxym Mykhalchuk 
   Arno Peters
@@ -258,10 +256,11 @@ OmegaT のユーザーインターフェースや取扱説明書、他の関連�
 
 OmegaT は以下に示すライブラリを使用しています。
   Somik Raha, Derrick Oswald などによる HTMLParser 1.6（LGPL ライセンス）
+  Steve Roy による MRJ Adapter 1.0.8（LGPL ライセンス）
   VLSolutions 社による VLDocking Framework 2.1.4（CeCILL ライセンス）
   László Németh などによる Hunspell（LGPL ライセンス）
   Todd Fast, Timothy Wall などによる JNA（LGPL ライセンス）
-  Swing-Layout 1.0.4（LGPL ライセンス）
+  Swing-Layout 1.0.2（LGPL ライセンス）
   Jmyspell 2.1.4（LGPL ライセンス）
   SVNKit 1.7.5（TMate ライセンス）
   Sequence Library（Sequence Library ライセンス）
@@ -284,8 +283,6 @@ OmegaT は以下に示すライブラリを使用しています。
   segment-1.4.1.jar（Segment ライセンス）
   pdfbox-app-1.8.1.jar（Apache ライセンス 2.0）
   KoreanAnalyzer-3x-120223.jar（Apache ライセンス 2.0）
-  SuperTMXMerge-for_OmegaT.jar（LGPL ライセンス）
-  groovy-all-2.2.2.jar（Apache ライセンス 2.0）
 
 ==============================================================================
  5.  バグかな？と思ったら

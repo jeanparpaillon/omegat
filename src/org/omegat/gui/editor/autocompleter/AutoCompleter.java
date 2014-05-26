@@ -32,6 +32,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +66,11 @@ public class AutoCompleter {
     boolean onMac = StaticUtils.onMacOSX();
     
     private boolean visible = false;
+    
+    /**
+     * insert the selected item from here on.
+     */
+    private int wordChunkStart;
     
     public final static int pageRowCount = 10;
     
@@ -254,16 +260,12 @@ public class AutoCompleter {
         int offset = editor.getCaretPosition();
 
         if (editor.getSelectionStart() == editor.getSelectionEnd()) {
-            editor.setSelectionStart(offset - selected.replacementLength);
+            editor.setSelectionStart(getWordChunkStart());
             editor.setSelectionEnd(offset);
         }
-        String selection = editor.getSelectedText();
         editor.replaceSelection(selected.payload);
         if (selected.cursorAdjust != 0) {
             editor.getCaret().setDot(editor.getCaretPosition() + selected.cursorAdjust);
-        }
-        if (selected.keepSelection) {
-            editor.replaceSelection(selection);
         }
     }
 
@@ -356,5 +358,36 @@ public class AutoCompleter {
      */
     public String keyText(int base, int modifier) {
          return KeyEvent.getKeyModifiersText(modifier) + "+" + KeyEvent.getKeyText(base);
+    }
+
+    /**
+     * Allow outside actors ({@link AutoCompleteView}s) to adjust the item
+     * insertion point according to their needs.
+     * @param adjustment An integer added to the current insertion point
+     */
+    public void adjustInsertionPoint(int adjustment) {
+        if (adjustment == 0) {
+            return;
+        }
+        if (editor.isInActiveTranslation(getWordChunkStart() + adjustment)) {
+            setWordChunkStart(getWordChunkStart() + adjustment);
+        } else {
+            throw new InvalidParameterException("Cannot move the insertion point "
+                    + "outside of the active translation area.");
+        }
+    }
+
+    /**
+     * @return the wordChunkStart
+     */
+    public int getWordChunkStart() {
+        return wordChunkStart;
+    }
+
+    /**
+     * @param wordChunkStart the wordChunkStart to set
+     */
+    public void setWordChunkStart(int wordChunkStart) {
+        this.wordChunkStart = wordChunkStart;
     }
 }

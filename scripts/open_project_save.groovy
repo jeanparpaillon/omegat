@@ -1,10 +1,9 @@
-/* :name=Open project_save.tmx :description=Open project_save.tmx in an editor
- * 
- * Open project_save.tmx in an editor
+/*
+ *  Open project_save.tmx in an editor
  *
  * @author  Yu Tang
- * @date    2014-05-14
- * @version 0.4
+ * @date    2013-06-05
+ * @version 0.3
  */
 
 import static javax.swing.JOptionPane.*
@@ -33,12 +32,9 @@ def file = "${prop.projectInternal}project_save.tmx"
 def command
 switch (osType) {
   case [OsType.WIN64, OsType.WIN32]:
-    try {
-      command = textEditor instanceof List ? [*textEditor, file] : "\"$textEditor\" \"$file\""
-    } catch (ignore) {
-      java.awt.Desktop.desktop.open new File(file)
-    }
-    return
+    command = "cmd /c start \"\" \"$file\""  // default
+    try { command = textEditor instanceof List ? [*textEditor, file] : "\"$textEditor\" \"$file\"" } catch (ignore) {}
+    break
   case [OsType.MAC64, OsType.MAC32]:
     command = ['open', file]  // default
     try { command = textEditor instanceof List ? [*textEditor, file] : ['open', '-a', textEditor, file] } catch (ignore) {}

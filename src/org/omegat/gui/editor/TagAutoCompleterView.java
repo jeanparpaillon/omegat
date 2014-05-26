@@ -49,13 +49,13 @@ public class TagAutoCompleterView extends AutoCompleterListView {
     }
 
     @Override
-    public List<AutoCompleterItem> computeListData(String prevText) {
-        String wordChunk = getLastToken(prevText);
+    public List<AutoCompleterItem> computeListData(String wordChunk) {
         
         List<String> missingGroups = TagUtil.getGroupedMissingTagsFromTarget();
         
         // If wordChunk is a tag, pretend we have a blank wordChunk.
         if (TagUtil.getAllTagsInSource().contains(wordChunk)) {
+            completer.adjustInsertionPoint(wordChunk.length());
             wordChunk = "";
         }
 
@@ -67,27 +67,26 @@ public class TagAutoCompleterView extends AutoCompleterListView {
         
         // If there are no partial matches, show all missing tags as suggestions.
         if (matchGroups.isEmpty()) {
-            return convertList(missingGroups, 0);
+            completer.adjustInsertionPoint(wordChunk.length());
+            return convertList(missingGroups);
         }
         
-        return convertList(matchGroups, wordChunk.length());
+        return convertList(matchGroups);
     }
 
-    private static List<AutoCompleterItem> convertList(List<String> list, int replacementLength) {
+    private static List<AutoCompleterItem> convertList(List<String> list) {
         List<AutoCompleterItem> result = new ArrayList<AutoCompleterItem>();
         for (String s : list) {
             int sep = s.indexOf(TagUtil.TAG_SEPARATOR_SENTINEL);
             String cleaned = s;
             String display = s;
             int adjustment = 0;
-            boolean keepSelection = false;
             if (sep > -1) {
                 cleaned = s.replace(TagUtil.TAG_SEPARATOR_SENTINEL, "");
                 display = s.replace(TagUtil.TAG_SEPARATOR_SENTINEL, "|");
                 adjustment = - (s.length() - 1 - sep);
-                keepSelection = true;
             }
-            result.add(new AutoCompleterItem(cleaned, new String[] { display }, adjustment, keepSelection, replacementLength));
+            result.add(new AutoCompleterItem(cleaned, new String[] { display }, adjustment));
         }
         return result;
     }

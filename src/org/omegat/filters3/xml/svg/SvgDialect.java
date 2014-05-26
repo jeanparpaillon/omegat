@@ -41,7 +41,6 @@ public class SvgDialect extends DefaultXMLDialect {
 
     public SvgDialect() {
         defineConstraint(CONSTRAINT_ROOT, ROOT_PATTERN);
-        defineParagraphTags(new String[] { "text", "p" });
-        defineIntactTags(new String[] { "style", "image", "path"});
+        defineParagraphTags(new String[] { "text" });
     }
 }

@@ -8,7 +8,6 @@
                2008-2011 Didier Briel
                2012 Martin Fleurke, Didier Briel
                2013 Aaron Madlon-Kay, Zoltan Bartko, Didier Briel, Alex Buloichik
-               2014 Aaron Madlon-Kay, Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -140,34 +139,6 @@ public class StaticUtils {
     }
 
     /**
-     * Builds a list of all occurrences of all protected parts.
-     */
-    public static List<TagOrder> buildAllTagList(String str, ProtectedPart[] protectedParts) {
-        List<TagOrder> tags = new ArrayList<TagOrder>();
-        if (protectedParts != null) {
-            for (ProtectedPart pp : protectedParts) {
-                int pos = -1;
-                do {
-                    if ((pos = str.indexOf(pp.getTextInSourceSegment(), pos + 1)) >= 0) {
-                        tags.add(new TagOrder(pos, pp.getTextInSourceSegment()));
-                    }
-                } while (pos >= 0);
-            }
-        }
-
-        if (tags.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Collections.sort(tags, new Comparator<TagOrder>() {
-            @Override
-            public int compare(TagOrder o1, TagOrder o2) {
-                return o1.pos - o2.pos;
-            }
-        });
-        return tags;
-    }
-
-    /**
      * Builds a list of format tags within the supplied string. Format tags are
      * OmegaT style tags: &lt;xx02&gt; or &lt;/yy01&gt;.
      * @return a string containing the tags
@@ -197,9 +168,9 @@ public class StaticUtils {
         return e.getKeyCode() == code && e.getModifiers() == modifiers;
     }
 
-    public static class TagOrder {
-        public final int pos;
-        public final String tag;
+    static class TagOrder {
+        final int pos;
+        final String tag;
 
         public TagOrder(int pos, String tag) {
             this.pos = pos;
@@ -296,37 +267,6 @@ public class StaticUtils {
         Collections.sort(lst, new Comparator<String>() {
             public int compare(String o1, String o2) {
                 return localCollator.compare(o1, o2);
-            }
-        });
-    }
-
-    /**
-     * Sorts list by order. New lines sorted by alphabet.
-     */
-    public static void sortByList(final List<String> list, final List<String> order) {
-        Collections.sort(list, new Comparator<String>() {
-            public int compare(String o1, String o2) {
-                int pos1, pos2;
-                if (order != null) {
-                    pos1 = order.indexOf(o1);
-                    pos2 = order.indexOf(o2);
-                } else {
-                    pos1 = 0;
-                    pos2 = 0;
-                }
-                if (pos1 < 0) {
-                    pos1 = Integer.MAX_VALUE;
-                }
-                if (pos2 < 0) {
-                    pos2 = Integer.MAX_VALUE;
-                }
-                if (pos1 < pos2) {
-                    return -1;
-                } else if (pos1 > pos2) {
-                    return 1;
-                } else {
-                    return o1.compareToIgnoreCase(o2);
-                }
             }
         });
     }

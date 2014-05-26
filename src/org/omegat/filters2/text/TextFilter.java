@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
-               2014 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -47,7 +46,6 @@ import org.omegat.util.OStrings;
  * 
  * @author Keith Godfrey
  * @author Maxym Mykhalchuk
- * @author Didier Briel
  */
 public class TextFilter extends AbstractFilter {
 
@@ -56,7 +54,7 @@ public class TextFilter extends AbstractFilter {
      */
     public static final String SEGMENT_BREAKS = "BREAKS";
     /**
-     * Default. Text filter should segmentOn text into paragraphs on empty lines.
+     * Defult. Text filter should segmentOn text into paragraphs on empty lines.
      */
     public static final String SEGMENT_EMPTYLINES = "EMPTYLINES";
     /**
@@ -65,18 +63,7 @@ public class TextFilter extends AbstractFilter {
     public static final String SEGMENT_NEVER = "NEVER";
 
     public static final String OPTION_SEGMENT_ON = "segmentOn";
-    
-    /**
-     * Length at which a line break should occur in target documents
-     */
-    public static final String OPTION_LINE_LENGTH = "lineLength";
-    
-    /**
-     * Maximum line length in target documents
-     */
-    public static final String OPTION_MAX_LINE_LENGTH = "maxLineLength";
 
-    
     /**
      * Register plugin into OmegaT.
      */
@@ -87,23 +74,19 @@ public class TextFilter extends AbstractFilter {
     public static void unloadPlugins() {
     }
 
-    @Override
     public String getFileFormatName() {
         return OStrings.getString("TEXTFILTER_FILTER_NAME");
     }
 
-    @Override
     public Instance[] getDefaultInstances() {
         return new Instance[] { new Instance("*.txt"), new Instance("*.txt1", OConsts.ISO88591, OConsts.ISO88591),
                 new Instance("*.txt2", OConsts.ISO88592, OConsts.ISO88592), new Instance("*.utf8", OConsts.UTF8, OConsts.UTF8) };
     }
 
-    @Override
     public boolean isSourceEncodingVariable() {
         return true;
     }
 
-    @Override
     public boolean isTargetEncodingVariable() {
         return true;
     }
@@ -121,32 +104,13 @@ public class TextFilter extends AbstractFilter {
         if (ch != 0xFEFF)
             in.reset();
 
-        int lineLength, maxLineLength;
-        try {
-            lineLength = Integer.parseInt(processOptions.get(TextFilter.OPTION_LINE_LENGTH));
-        } catch (Exception ex) {
-            lineLength = 0;
-        }
-        try {
-            maxLineLength = Integer.parseInt(processOptions.get(TextFilter.OPTION_MAX_LINE_LENGTH));
-        } catch (Exception ex) {
-            maxLineLength = 0;
-        }
-        Writer output;
-        if (lineLength != 0 && maxLineLength != 0) {
-            output = new LineLengthLimitWriter(out, lineLength, maxLineLength, Core.getProject()
-                    .getTargetTokenizer());
-        } else {
-            output = out;
-        }
-
         String segmentOn = processOptions.get(TextFilter.OPTION_SEGMENT_ON);
         if (SEGMENT_BREAKS.equals(segmentOn)) {
-            processSegLineBreaks(in, output);
+            processSegLineBreaks(in, out);
         } else if (SEGMENT_NEVER.equals(segmentOn)) {
-            processNonSeg(in, output);
+            processNonSeg(in, out);
         } else {
-            processSegEmptyLines(in, output);
+            processSegEmptyLines(in, out);
         }
     }
 

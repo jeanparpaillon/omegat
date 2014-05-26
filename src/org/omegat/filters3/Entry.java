@@ -39,7 +39,6 @@ import org.omegat.filters3.xml.Handler;
 import org.omegat.filters3.xml.XMLContentBasedTag;
 import org.omegat.filters3.xml.XMLDialect;
 import org.omegat.util.PatternConsts;
-import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
 
 /**
@@ -533,7 +532,7 @@ public class Entry {
     public void setTranslation(String translation, XMLDialect xmlDialect, List<ProtectedPart> protectedParts)
             throws TranslationException {
         if (!sourceToShortcut(xmlDialect, protectedParts).equals(translation)) {
-            checkAndRecoverTags(translation, protectedParts);
+            checkAndRecoverTags(translation);
             this.translation = translation;
         }
     }
@@ -543,15 +542,14 @@ public class Entry {
      * the same tags in weakly correct order. See
      * {@link #setTranslation(String)} for details.
      */
-    private void checkAndRecoverTags(String translation, List<ProtectedPart> protectedParts) throws TranslationException {
+    private void checkAndRecoverTags(String translation) throws TranslationException {
         translatedEntry = new Entry(xmlDialect, handler);
 
         // /////////////////////////////////////////////////////////////////////
         // recovering tags
-        List<StaticUtils.TagOrder> shortTags = StaticUtils.buildAllTagList(translation,
-                protectedParts.toArray(new ProtectedPart[protectedParts.size()]));
+        List<ShortTag> shortTags = listShortTags(translation);
         int pos = 0;
-        for (StaticUtils.TagOrder shortTag : shortTags) {
+        for (ShortTag shortTag : shortTags) {
             if (pos < shortTag.pos) {
                 translatedEntry.add(getTextInstance()
                         .createInstance(translation.substring(pos, shortTag.pos)));
@@ -587,6 +585,45 @@ public class Entry {
             this.tag = tag;
             this.pos = pos;
         }
+    }
+
+    /**
+     * Lists all OmegaT-style tags within the supplied string. Everything that
+     * looks like <code>&lt;xx0&gt;</code>, <code>&lt;yy1/&gt;</code> or
+     * <code>&lt;/zz2&gt;</code> is considered to probably be a tag.
+     * 
+     * @return List of {@link #ShortTag} classes.
+     */
+    private List<ShortTag> listShortTags(String str) {
+        // The code is nearly the same as in buildTagList in StaticUtils.java
+        final int STATE_NORMAL = 1;
+        final int STATE_COLLECT_TAG = 2;
+
+        int state = STATE_NORMAL;
+
+        List<ShortTag> res = new ArrayList<ShortTag>(str.length() / 4);
+        StringBuffer tag = new StringBuffer(str.length());
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == '<') // Possible start of a tag
+            {
+                tag.setLength(0);
+                tag.append(c);
+                state = STATE_COLLECT_TAG;
+            } else if (c == '>') // Possible end of a tag
+            {
+                // checking if the tag looks like OmegaT tag,
+                // not 100% correct, but is the best what I can think of now
+                tag.append(c);
+                if (PatternConsts.OMEGAT_TAG.matcher(tag).matches()) {
+                    res.add(new ShortTag(tag.toString(), 1 + i - tag.length()));
+                    tag.setLength(0);
+                    state = STATE_NORMAL;
+                }
+            } else if (state == STATE_COLLECT_TAG)
+                tag.append(c);
+        }
+        return res;
     }
 
     /**

@@ -1,5 +1,3 @@
-// :name=Check Same Segment :description=Check for identical segments (case sensitive)
-
 console.println("Check for identical segments (case sensitive).\n");
 
 segment_count = 0;

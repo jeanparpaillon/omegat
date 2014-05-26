@@ -35,7 +35,8 @@
 				<jar href="jmyspell-core-1.0.0-beta-2.jar" />
 				<jar href="jna.jar" />
 				<jar href="lib-mnemonics.jar" />
-				<jar href="swing-layout-1.0.4.jar" />
+				<jar href="MRJAdapter.jar" />
+				<jar href="swing-layout-1.0.jar" />
 				<jar href="vldocking_2.1.4.jar" />
 				<jar href="svnkit-1.7.5.jar" />
 				<jar href="antlr-runtime-3.4.jar" />
@@ -43,6 +44,7 @@
 				<jar href="sequence-library-1.0.2.jar" />
 				<jar href="org.eclipse.jgit-2.1.0.201209190230-r.jar" />
 				<jar href="jsch-0.1.49.jar" />
+				<jar href="swing-worker-1.2.jar" />
 				<jar href="lucene-analyzers-3.6.2.jar" />
 				<jar href="lucene-core-3.6.2.jar" />
 				<jar href="lucene-kuromoji-3.6.2.jar" />
@@ -62,9 +64,10 @@
 				<jar href="segment-1.4.1.jar"  />		
 				<jar href="lucene-gosen-2.0.2-ipadic.jar"  />
 				<jar href="pdfbox-app-1.8.1.jar"  />
-				<jar href="groovy-all-2.2.2.jar"  />
+				<jar href="bsf-2.4.0.jar" />
+				<jar href="groovy-all-1.8.9.jar"  />
+				<jar href="js-rhino-1.7R4.jar"  />
 				<jar href="diff.jar" />
-				<jar href="SuperTMXMerge-for_OmegaT.jar" />
 
 			</resources>
 			<resources os="Linux" arch="amd64">

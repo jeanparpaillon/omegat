@@ -6,7 +6,6 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2007-2010 Didier Briel
                2013 Alex Buloichik, Didier Briel, Piotr Kulik
-               2014 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -55,11 +54,6 @@ import org.omegat.util.StringUtil;
 public class XLIFFDialect extends DefaultXMLDialect {
     private boolean forceShortCutToF;
     private boolean ignoreTypeForPhTags;
-    private boolean ignoreTypeForBptTags;
-    /**
-     * Sets whether alternative translations are identified by previous and next paragraphs or by &lt;trans-unit&gt; ID
-    */
-    protected boolean useTransUnitID;
     
     public XLIFFDialect() {
     }
@@ -94,8 +88,6 @@ public class XLIFFDialect extends DefaultXMLDialect {
             
             forceShortCutToF = options.getForceShortcutToF();
             ignoreTypeForPhTags = options.getIgnoreTypeForPhTags();
-            ignoreTypeForBptTags = options.getIgnoreTypeForBptTags();
-            useTransUnitID = options.getAltTransID();
         }
 
     }
@@ -144,7 +136,7 @@ public class XLIFFDialect extends DefaultXMLDialect {
 
         if (atts != null) {
             if ("no".equalsIgnoreCase(atts.getValueByName("translate"))) {
-                return true;
+                return false;
             }
         }
         return false;
@@ -177,7 +169,7 @@ public class XLIFFDialect extends DefaultXMLDialect {
                     // XLIFF specification requires 'rid' and 'id' attributes,
                     // but some tools uses 'i' attribute like for TMX
                     tagHandler.startBPT(tag.getAttribute("rid"), tag.getAttribute("id"), tag.getAttribute("i"));
-                    shortcutLetter = calcTagShortcutLetter(tag, ignoreTypeForBptTags);
+                    shortcutLetter = calcTagShortcutLetter(tag);
                     tagHandler.setTagShortcutLetter(shortcutLetter);
                     tagIndex = tagHandler.endBPT();
                     shortcut = "<" + (shortcutLetter != 0 ? shortcutLetter : 'f') + tagIndex + '>';
