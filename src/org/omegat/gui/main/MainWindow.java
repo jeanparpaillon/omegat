@@ -8,7 +8,6 @@
                2007 Zoltan Bartko
                2008 Andrzej Sawula, Alex Buloichik, Didier Briel
                2013 Yu Tang, Aaron Madlon-Kay
-               2014 Piotr Kulik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -89,7 +88,6 @@ import com.vlsolutions.swing.docking.FloatingDialog;
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Yu Tang
  * @author Aaron Madlon-Kay
- * @author Piotr Kulik
  */
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame implements IMainWindow {
@@ -369,15 +367,6 @@ public class MainWindow extends JFrame implements IMainWindow {
      */
     public void showProgressMessage(String messageText) {
         progressLabel.setText(messageText);
-    }
-
-    /* Set progress bar tooltip text.
-     * 
-     * @param tooltipText
-     *            tooltip text
-     */
-    public void setProgressToolTipText(String toolTipText) {
-        progressLabel.setToolTipText(toolTipText);
     }
 
     /**
