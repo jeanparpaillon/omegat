@@ -6,36 +6,38 @@
  Copyright (C) 2008-2010 Alex Buloichik
                2011 Martin Fleurke
                2012 Thomas Cordonnier
-               2013 Yu Tang
-               2014 Aaron Madlon-Kay, Piotr Kulik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.main;
 
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import org.jdesktop.swingworker.SwingWorker;
 import org.omegat.core.Core;
 import org.omegat.core.KnownException;
 import org.omegat.core.data.ProjectFactory;
@@ -53,6 +55,7 @@ import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.ProjectFileStorage;
+import org.omegat.util.StringUtil;
 import org.omegat.util.gui.DockingUI;
 import org.omegat.util.gui.OmegaTFileChooser;
 import org.omegat.util.gui.OpenProjectFileChooser;
@@ -64,7 +67,6 @@ import org.omegat.util.gui.UIThreadsUtil;
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Martin Fleurke
  * @author Thomas Cordonnier
- * @author Aaron Madlon-Kay
  */
 public class ProjectUICommands {
     public static void projectCreate() {
@@ -74,24 +76,22 @@ public class ProjectUICommands {
             return;
         }
 
-        // ask for new project dir
-        NewProjectFileChooser ndc = new NewProjectFileChooser();
-        int ndcResult = ndc.showSaveDialog(Core.getMainWindow().getApplicationFrame());
-        if (ndcResult != OmegaTFileChooser.APPROVE_OPTION) {
-            // user press 'Cancel' in project creation dialog
-            return;
-        }
-        final File dir = ndc.getSelectedFile();
-
         new SwingWorker<Object, Void>() {
             protected Object doInBackground() throws Exception {
-
+                // ask for new project dir
+                NewProjectFileChooser ndc = new NewProjectFileChooser();
+                int ndcResult = ndc.showSaveDialog(Core.getMainWindow().getApplicationFrame());
+                if (ndcResult != OmegaTFileChooser.APPROVE_OPTION) {
+                    // user press 'Cancel' in project creation dialog
+                    return null;
+                }
+                File dir = ndc.getSelectedFile();
                 dir.mkdirs();
 
                 // ask about new project properties
                 ProjectPropertiesDialog newProjDialog = new ProjectPropertiesDialog(
                         new ProjectProperties(dir), dir.getAbsolutePath(),
-                        ProjectPropertiesDialog.Mode.NEW_PROJECT);
+                        ProjectPropertiesDialog.NEW_PROJECT);
                 newProjDialog.setVisible(true);
                 newProjDialog.dispose();
 
@@ -136,9 +136,7 @@ public class ProjectUICommands {
             protected Object doInBackground() throws Exception {
                 Core.getMainWindow().showStatusMessageRB(null);
 
-                final NewTeamProject dialog = new NewTeamProject(Core.getMainWindow().getApplicationFrame(), true);
-                DockingUI.displayCentered(dialog);
-                dialog.setVisible(true);
+                final NewTeamProject dialog = displayTeamDialog();
 
                 IMainWindow mainWindow = Core.getMainWindow();
                 Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
@@ -153,9 +151,12 @@ public class ProjectUICommands {
                         mainWindow.setCursor(oldCursor);
                         return null;
                     }
-                    if (dialog.repoType != null) {
-                        repository = dialog.repoType.getConstructor(File.class).newInstance(localDirectory);
-                        repository.setCredentials(dialog.credentials);
+                    if (dialog.rbSVN.isSelected()) {
+                        // SVN selected
+                        repository = new SVNRemoteRepository(localDirectory);
+                    } else if (dialog.rbGIT.isSelected()) {
+                        // GIT selected
+                        repository = new GITRemoteRepository(localDirectory);
                     } else {
                         mainWindow.setCursor(oldCursor);
                         return null;
@@ -180,10 +181,6 @@ public class ProjectUICommands {
                     Core.getMainWindow().displayErrorRB(ex, "TEAM_CHECKOUT_ERROR");
                     mainWindow.setCursor(oldCursor);
                     return null;
-                } finally {
-                    if (dialog.credentials != null) {
-                        dialog.credentials.clear();
-                    }
                 }
 
                 try {
@@ -211,6 +208,70 @@ public class ProjectUICommands {
         }.execute();
     }
 
+    public static NewTeamProject displayTeamDialog() {
+        final NewTeamProject dialog = new NewTeamProject(Core.getMainWindow().getApplicationFrame(), true);
+        DockingUI.displayCentered(dialog);
+        dialog.btnCancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.rbGIT.setSelected(false);
+                dialog.rbSVN.setSelected(false);
+                dialog.dispose();
+            }
+        });
+        dialog.btnOk.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+                dialog.ok = true;
+            }
+        });
+        dialog.btnDirectory.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                NewProjectFileChooser ndc = new NewProjectFileChooser();
+                int ndcResult = ndc.showSaveDialog(Core.getMainWindow().getApplicationFrame());
+                if (ndcResult == OmegaTFileChooser.APPROVE_OPTION) {
+                    dialog.txtDirectory.setText(ndc.getSelectedFile().getPath());
+                }
+            }
+        });
+
+        DocumentListener newTeamProjectOkHider = new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                checkNewTeamProjectDialog(dialog);
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                checkNewTeamProjectDialog(dialog);
+            }
+
+            public void insertUpdate(DocumentEvent e) {
+                checkNewTeamProjectDialog(dialog);
+            }
+        };
+
+        dialog.txtDirectory.getDocument().addDocumentListener(newTeamProjectOkHider);
+        dialog.txtRepositoryURL.getDocument().addDocumentListener(newTeamProjectOkHider);
+        dialog.rbGIT.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                checkNewTeamProjectDialog(dialog);
+            }
+        });
+        dialog.rbSVN.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                checkNewTeamProjectDialog(dialog);
+            }
+        });
+
+        dialog.setVisible(true);
+        return dialog;
+    }
+
+    public static void checkNewTeamProjectDialog(NewTeamProject dialog) {
+        boolean enabled = dialog.rbGIT.isSelected() || dialog.rbSVN.isSelected();
+        enabled &= !StringUtil.isEmpty(dialog.txtRepositoryURL.getText());
+        enabled &= !StringUtil.isEmpty(dialog.txtDirectory.getText());
+        dialog.btnOk.setEnabled(enabled);
+    }
+
     /**
      * Open project.
      * 
@@ -224,21 +285,20 @@ public class ProjectUICommands {
             return;
         }
 
-        final File projectRootFolder;
-        if (projectDirectory == null) {
-            // select existing project file - open it
-            OmegaTFileChooser pfc = new OpenProjectFileChooser();
-            if (OmegaTFileChooser.APPROVE_OPTION != pfc.showOpenDialog(Core.getMainWindow()
-                    .getApplicationFrame())) {
-                return;
-            }
-            projectRootFolder = pfc.getSelectedFile();
-        } else {
-            projectRootFolder = projectDirectory;
-        }
-
         new SwingWorker<Object, Void>() {
             protected Object doInBackground() throws Exception {
+                final File projectRootFolder;
+                if (projectDirectory == null) {
+                    // select existing project file - open it
+                    OmegaTFileChooser pfc = new OpenProjectFileChooser();
+                    if (OmegaTFileChooser.APPROVE_OPTION != pfc.showOpenDialog(Core.getMainWindow()
+                            .getApplicationFrame())) {
+                        return null;
+                    }
+                    projectRootFolder = pfc.getSelectedFile();
+                } else {
+                    projectRootFolder = projectDirectory;
+                }
 
                 IMainWindow mainWindow = Core.getMainWindow();
                 Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
@@ -258,20 +318,16 @@ public class ProjectUICommands {
 
                 final IRemoteRepository repository;
                 // check for team-project
-                try {
-                    if (Core.getParams().containsKey("no-team")) {
-                        // disable team functionality
-                        repository = null;
-                    } else if (SVNRemoteRepository.isSVNDirectory(projectRootFolder)) {
-                        // SVN selected
-                        repository = new SVNRemoteRepository(projectRootFolder);
-                    } else if (GITRemoteRepository.isGITDirectory(projectRootFolder)) {
-                        repository = new GITRemoteRepository(projectRootFolder);
-                    } else {
-                        repository = null;
-                    }
-                } catch (Exception e) {
-                    return null;
+                if (Core.getParams().containsKey("no-team")) {
+                    // disable team functionality
+                    repository = null;
+                } else if (SVNRemoteRepository.isSVNDirectory(projectRootFolder)) {
+                    // SVN selected
+                    repository = new SVNRemoteRepository(projectRootFolder);
+                } else if (GITRemoteRepository.isGITDirectory(projectRootFolder)) {
+                    repository = new GITRemoteRepository(projectRootFolder);
+                } else {
+                    repository = null;
                 }
 
                 if (repository != null) {
@@ -319,7 +375,7 @@ public class ProjectUICommands {
                             // to fix it
                             ProjectPropertiesDialog prj = new ProjectPropertiesDialog(props, new File(
                                     projectRootFolder, OConsts.FILE_PROJECT).getAbsolutePath(),
-                                    ProjectPropertiesDialog.Mode.RESOLVE_DIRS);
+                                    ProjectPropertiesDialog.RESOLVE_DIRS);
                             prj.setVisible(true);
                             props = prj.getResult();
                             prj.dispose();
@@ -450,13 +506,6 @@ public class ProjectUICommands {
                 Core.getMainWindow().showStatusMessageRB("MW_STATUS_SAVED");
                 mainWindow.setCursor(oldCursor);
 
-                // fix - reset progress bar to defaults
-                Core.getMainWindow().showLengthMessage(OStrings.getString("MW_SEGMENT_LENGTH_DEFAULT"));
-                Core.getMainWindow().showProgressMessage(OStrings.getString(MainWindowUI.STATUS_BAR_MODE.valueOf(
-                        Preferences.getPreferenceEnumDefault(Preferences.SB_PROGRESS_MODE,
-                                MainWindowUI.STATUS_BAR_MODE.DEFAULT).name()) == MainWindowUI.STATUS_BAR_MODE.DEFAULT
-                        ? "MW_PROGRESS_DEFAULT" : "MW_PROGRESS_DEFAULT_PERCENTAGE"));
-
                 return null;
             }
 
@@ -477,8 +526,7 @@ public class ProjectUICommands {
         // displaying the dialog to change paths and other properties
         ProjectPropertiesDialog prj = new ProjectPropertiesDialog(Core.getProject().getProjectProperties(),
                 Core.getProject().getProjectProperties().getProjectName(),
-                Core.getProject().getRepository() == null ? ProjectPropertiesDialog.Mode.EDIT_PROJECT
-                        : ProjectPropertiesDialog.Mode.EDIT_TEAM_PROJECT);
+                ProjectPropertiesDialog.EDIT_PROJECT);
         prj.setVisible(true);
         final ProjectProperties newProps = prj.getResult();
         prj.dispose();
@@ -499,10 +547,9 @@ public class ProjectUICommands {
 
             protected Object doInBackground() throws Exception {
                 Core.getProject().saveProject();
-                IRemoteRepository repo = Core.getProject().getRepository();
                 ProjectFactory.closeProject();
 
-                ProjectFactory.loadProject(newProps, repo, true);
+                ProjectFactory.loadProject(newProps, null, true);
                 Core.getProject().saveProjectProperties();
                 return null;
             }
@@ -523,33 +570,11 @@ public class ProjectUICommands {
 
         new SwingWorker<Object, Void>() {
             protected Object doInBackground() throws Exception {
-                Core.getProject().saveProject(false);
+                Core.getProject().saveProject();
                 Core.getProject().compileProject(".*");
                 return null;
             }
 
-            protected void done() {
-                try {
-                    get();
-                } catch (Exception ex) {
-                    processSwingWorkerException(ex, "TF_COMPILE_ERROR");
-                }
-            }
-        }.execute();
-    }
-
-    public static void projectSingleCompile(final String sourcePattern) {
-        performProjectMenuItemPreConditions();
-
-        new SwingWorker<Object, Void>() {
-            @Override
-            protected Object doInBackground() throws Exception {
-                Core.getProject().saveProject(false);
-                Core.getProject().compileProject(sourcePattern);
-                return null;
-            }
-
-            @Override
             protected void done() {
                 try {
                     get();

@@ -8,20 +8,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters2.xtagqxp;
@@ -51,23 +50,19 @@ public class XtagFilter extends AbstractFilter {
 
     protected static final String EOL = "\r\n";
 
-    @Override
     public String getFileFormatName() {
         return OStrings.getString("XTAGFILTER_FILTER_NAME");
     }
 
-    @Override
     public Instance[] getDefaultInstances() {
         return new Instance[] { new Instance("*.tag", OConsts.UTF16LE, OConsts.UTF16LE),
                 new Instance("*.xtg", OConsts.UTF16LE, OConsts.UTF16LE), };
     }
 
-    @Override
     public boolean isSourceEncodingVariable() {
         return true;
     }
 
-    @Override
     public boolean isTargetEncodingVariable() {
         return true;
     }
@@ -77,7 +72,6 @@ public class XtagFilter extends AbstractFilter {
         return true;
     }
 
-    @Override
     public void processFile(BufferedReader in, BufferedWriter out, FilterContext fc) throws IOException, TranslationException {
         // BOM (byte order mark) bugfix
         in.mark(1);

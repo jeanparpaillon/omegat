@@ -5,24 +5,22 @@
 
  Copyright (C) 2009 Alex Buloichik
                2010 Arno Peters
-               2013-2014 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.statistics;
@@ -39,7 +37,6 @@ import org.omegat.core.Core;
 import org.omegat.core.data.IProject;
 import org.omegat.core.data.IProject.FileInfo;
 import org.omegat.core.data.ProjectProperties;
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
 import org.omegat.core.threads.LongProcessThread;
@@ -52,26 +49,19 @@ import org.omegat.util.gui.TextUtil;
 /**
  * Thread for calculate standard statistics.
  * 
- * Calculation requires two different tags stripping: one for calculate unique and remaining, and second for
- * calculate number of words and chars.
- * 
- * Number of words/chars calculation requires to just strip all tags, protected parts, placeholders(see StatCount.java).
- * 
- * Calculation of unique and remaining also requires to just strip all tags, protected parts, placeholders for
- * standard calculation.
- * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Arno Peters
  */
 public class CalcStandardStatistics extends LongProcessThread {
+
     private static final String[] htHeaders = new String[] { "", OStrings.getString("CT_STATS_Segments"),
             OStrings.getString("CT_STATS_Words"), OStrings.getString("CT_STATS_Characters_NOSP"),
-            OStrings.getString("CT_STATS_Characters"), OStrings.getString("CT_STATS_Files") };
+            OStrings.getString("CT_STATS_Characters") };
 
     private static final String[] htRows = new String[] { OStrings.getString("CT_STATS_Total"),
             OStrings.getString("CT_STATS_Remaining"), OStrings.getString("CT_STATS_Unique"),
             OStrings.getString("CT_STATS_Unique_Remaining") };
-    private static final boolean[] htAlign = new boolean[] { false, true, true, true, true, true };
+    private static final boolean[] htAlign = new boolean[] { false, true, true, true, true };
 
     private static final String[] ftHeaders = new String[] { OStrings.getString("CT_STATS_FILE_Name"),
             OStrings.getString("CT_STATS_FILE_Total_Segments"),
@@ -103,8 +93,7 @@ public class CalcStandardStatistics extends LongProcessThread {
     public void run() {
         IProject p = Core.getProject();
         String result = buildProjectStats(p, null);
-        callback.displayData(result);
-        callback.finishData();
+        callback.displayData(result, true);
 
         String internalDir = p.getProjectProperties().getProjectInternal();
         // removing old stats
@@ -133,38 +122,39 @@ public class CalcStandardStatistics extends LongProcessThread {
         StatCount remainingUnique = new StatCount();
 
         // find unique segments
-        Map<String, SourceTextEntry> uniqueSegment = new HashMap<String, SourceTextEntry>();
+        Map<String, Integer> uniqueSegment = new HashMap<String, Integer>();
         Set<String> translated = new HashSet<String>();
         for (SourceTextEntry ste : project.getAllEntries()) {
             String src = ste.getSrcText();
-            for (ProtectedPart pp : ste.getProtectedParts()) {
-                src = src.replace(pp.getTextInSourceSegment(), pp.getReplacementUniquenessCalculation());
-            }
-            if (!uniqueSegment.containsKey(src)) {
-                uniqueSegment.put(src, ste);
+            Integer count = uniqueSegment.get(src);
+            if (count == null) {
+                uniqueSegment.put(src, 1);
+            } else {
+                uniqueSegment.put(src, count + 1);
             }
             TMXEntry tr = project.getTranslationInfo(ste);
             if (tr.isTranslated()) {
                 translated.add(src);
             }
         }
-        Set<String> filesUnique = new HashSet<String>();
-        Set<String> filesRemainingUnique = new HashSet<String>();
-        for (Map.Entry<String, SourceTextEntry> en : uniqueSegment.entrySet()) {
-            /* Number of words and chars calculated without all tags and protected parts. */
-            StatCount count = new StatCount(en.getValue());
+        for (String src : uniqueSegment.keySet()) {
+            int words = Statistics.numberOfWords(src);
+            String noTags = StaticUtils.stripTags(src);
+            int charsNoSpaces = Statistics.numberOfCharactersWithoutSpaces(noTags);
 
             // add to unique
-            unique.add(count);
-            filesUnique.add(en.getValue().getKey().file);
+            unique.segments++;
+            unique.words += words;
+            unique.charsWithoutSpaces += charsNoSpaces;
+            unique.charsWithSpaces += noTags.length();
             // add to unique remaining
-            if (!translated.contains(en.getKey())) {
-                remainingUnique.add(count);
-                filesRemainingUnique.add(en.getValue().getKey().file);
+            if (!translated.contains(src)) {
+                remainingUnique.segments++;
+                remainingUnique.words += words;
+                remainingUnique.charsWithoutSpaces += charsNoSpaces;
+                remainingUnique.charsWithSpaces += noTags.length();
             }
         }
-        unique.addFiles(filesUnique.size());
-        remainingUnique.addFiles(filesRemainingUnique.size());
 
         List<FileData> counts = new ArrayList<FileData>();
         Map<String, Boolean> firstSeenUniqueSegment = new HashMap<String, Boolean>();
@@ -172,47 +162,59 @@ public class CalcStandardStatistics extends LongProcessThread {
             FileData numbers = new FileData();
             numbers.filename = file.filePath;
             counts.add(numbers);
-            int fileTotal = 0;
-            int fileRemaining = 0;
             for (SourceTextEntry ste : file.entries) {
                 String src = ste.getSrcText();
-                for (ProtectedPart pp : ste.getProtectedParts()) {
-                    src = src.replace(pp.getTextInSourceSegment(), pp.getReplacementUniquenessCalculation());
-                }
 
-                /* Number of words and chars calculated without all tags and protected parts. */
-                StatCount count = new StatCount(ste);
+                int words = Statistics.numberOfWords(src);
+                String noTags = StaticUtils.stripTags(src);
+                int charsNoSpaces = Statistics.numberOfCharactersWithoutSpaces(noTags);
+                int chars = noTags.length();
 
                 // add to total
-                total.add(count);
-                fileTotal = 1;
+                total.segments++;
+                total.words += words;
+                total.charsWithoutSpaces += charsNoSpaces;
+                total.charsWithSpaces += chars;
 
                 // add to remaining
                 TMXEntry tr = project.getTranslationInfo(ste);
                 if (!tr.isTranslated()) {
-                    remaining.add(count);
-                    fileRemaining = 1;
+                    remaining.segments++;
+                    remaining.words += words;
+                    remaining.charsWithoutSpaces += charsNoSpaces;
+                    remaining.charsWithSpaces += chars;
                 }
 
                 // add to file's info
-                numbers.total.add(count);
+                numbers.total.segments++;
+                numbers.total.words += words;
+                numbers.total.charsWithoutSpaces += charsNoSpaces;
+                numbers.total.charsWithSpaces += chars;
 
+                Integer uniqueCount = uniqueSegment.get(src);
                 Boolean firstSeen = firstSeenUniqueSegment.get(src);
                 if (firstSeen == null) {
                     firstSeenUniqueSegment.put(src, false);
-                    numbers.unique.add(count);
+                    numbers.unique.segments++;
+                    numbers.unique.words += words;
+                    numbers.unique.charsWithoutSpaces += charsNoSpaces;
+                    numbers.unique.charsWithSpaces += chars;
 
                     if (!tr.isTranslated()) {
-                        numbers.remainingUnique.add(count);
+                        numbers.remainingUnique.segments++;
+                        numbers.remainingUnique.words += words;
+                        numbers.remainingUnique.charsWithoutSpaces += charsNoSpaces;
+                        numbers.remainingUnique.charsWithSpaces += chars;
                     }
                 }
 
                 if (!tr.isTranslated()) {
-                    numbers.remaining.add(count);
+                    numbers.remaining.segments++;
+                    numbers.remaining.words += words;
+                    numbers.remaining.charsWithoutSpaces += charsNoSpaces;
+                    numbers.remaining.charsWithSpaces += chars;
                 }
             }
-            total.addFiles(fileTotal);
-            remaining.addFiles(fileRemaining);
         }
 
         StringBuilder result = new StringBuilder();
@@ -232,17 +234,13 @@ public class CalcStandardStatistics extends LongProcessThread {
             hotStat.numberOfSegmentsTotal = total.segments;
             hotStat.numberofTranslatedSegments = translated.size();
             hotStat.numberOfUniqueSegments = unique.segments;
-            hotStat.uniqueCountsByFile.clear();
-            for (FileData fd : counts) {
-                hotStat.uniqueCountsByFile.put(fd.filename, fd.unique.segments);
-            }
         }
 
         return result.toString();
     }
 
     protected static String[][] calcHeaderTable(final StatCount[] result) {
-        String[][] table = new String[result.length][6];
+        String[][] table = new String[result.length][5];
 
         for (int i = 0; i < result.length; i++) {
             table[i][0] = htRows[i];
@@ -250,7 +248,6 @@ public class CalcStandardStatistics extends LongProcessThread {
             table[i][2] = Integer.toString(result[i].words);
             table[i][3] = Integer.toString(result[i].charsWithoutSpaces);
             table[i][4] = Integer.toString(result[i].charsWithSpaces);
-            table[i][5] = Integer.toString(result[i].files);
         }
         return table;
     }

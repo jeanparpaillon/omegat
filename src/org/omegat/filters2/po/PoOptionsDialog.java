@@ -8,20 +8,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters2.po;
@@ -64,17 +63,10 @@ public class PoOptionsDialog extends javax.swing.JDialog {
 
         String allowBlank = options.get(PoFilter.OPTION_ALLOW_BLANK);
         allowBlankCB.setSelected("true".equalsIgnoreCase(allowBlank));
-        String allowEditingBlankSegment = options.get(PoFilter.OPTION_ALLOW_EDITING_BLANK_SEGMENT);
-        allowEditingBlankSegmentCB.setSelected("true".equalsIgnoreCase(allowEditingBlankSegment));
         String skipHeader = options.get(PoFilter.OPTION_SKIP_HEADER);
         skipHeaderCB.setSelected("true".equalsIgnoreCase(skipHeader));
         String autoFillInPluralStatement = options.get(PoFilter.OPTION_AUTO_FILL_IN_PLURAL_STATEMENT);
         autoFillInPluralStatementCB.setSelected("true".equalsIgnoreCase(autoFillInPluralStatement));
-        if ("true".equalsIgnoreCase(options.get(PoFilter.OPTION_FORMAT_MONOLINGUAL))) {
-            formatMonolingualRB.setSelected(true);
-        } else {
-            formatStandardRB.setSelected(true);
-        }
 
         // Handle escape key to close the window
         KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
@@ -105,9 +97,7 @@ public class PoOptionsDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed"
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
         buttonPanel = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
@@ -115,10 +105,6 @@ public class PoOptionsDialog extends javax.swing.JDialog {
         allowBlankCB = new javax.swing.JCheckBox();
         skipHeaderCB = new javax.swing.JCheckBox();
         autoFillInPluralStatementCB = new javax.swing.JCheckBox();
-        jLabel1 = new javax.swing.JLabel();
-        formatStandardRB = new javax.swing.JRadioButton();
-        formatMonolingualRB = new javax.swing.JRadioButton();
-        allowEditingBlankSegmentCB = new javax.swing.JCheckBox();
 
         setTitle(OStrings.getString("POFILTER_OPTIONS_TITLE")); // NOI18N
         setResizable(false);
@@ -149,87 +135,28 @@ public class PoOptionsDialog extends javax.swing.JDialog {
         getContentPane().add(buttonPanel, java.awt.BorderLayout.SOUTH);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 3, 3, 3));
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+        jPanel1.setLayout(new java.awt.GridLayout(0, 1, 0, 3));
 
         org.openide.awt.Mnemonics.setLocalizedText(allowBlankCB, OStrings.getString("POFILTER_ALLOW_BLANK")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel1.add(allowBlankCB, gridBagConstraints);
-
+        jPanel1.add(allowBlankCB);
         org.openide.awt.Mnemonics.setLocalizedText(skipHeaderCB, OStrings.getString("POFILTER_SKIP_HEADER")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel1.add(skipHeaderCB, gridBagConstraints);
-
+        jPanel1.add(skipHeaderCB);
         org.openide.awt.Mnemonics.setLocalizedText(autoFillInPluralStatementCB, OStrings.getString("POFILTER_AUTO_FILL_IN_PLURAL_STATEMENT")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel1.add(autoFillInPluralStatementCB, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, OStrings.getString("POFILTER_FORMAT_LABEL")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel1.add(jLabel1, gridBagConstraints);
-
-        buttonGroup1.add(formatStandardRB);
-        org.openide.awt.Mnemonics.setLocalizedText(formatStandardRB, OStrings.getString("POFILTER_FORMAT_STANDARD")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel1.add(formatStandardRB, gridBagConstraints);
-
-        buttonGroup1.add(formatMonolingualRB);
-        org.openide.awt.Mnemonics.setLocalizedText(formatMonolingualRB, OStrings.getString("POFILTER_FORMAT_MONOLINGUAL")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel1.add(formatMonolingualRB, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(allowEditingBlankSegmentCB, OStrings.getString("POFILTER_ALLOW_BLANK_SEGMENT")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel1.add(allowEditingBlankSegmentCB, gridBagConstraints);
+        jPanel1.add(autoFillInPluralStatementCB);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
-        setLocationRelativeTo(null);
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        java.awt.Dimension dialogSize = getSize();
+        setLocation((screenSize.width-dialogSize.width)/2,(screenSize.height-dialogSize.height)/2);
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_okButtonActionPerformed
     {
         options.put(PoFilter.OPTION_ALLOW_BLANK, Boolean.toString(allowBlankCB.isSelected()));
-        options.put(PoFilter.OPTION_ALLOW_EDITING_BLANK_SEGMENT, Boolean.toString(allowEditingBlankSegmentCB.isSelected()));
         options.put(PoFilter.OPTION_SKIP_HEADER, Boolean.toString(skipHeaderCB.isSelected()));
         options.put(PoFilter.OPTION_AUTO_FILL_IN_PLURAL_STATEMENT, Boolean.toString(autoFillInPluralStatementCB.isSelected()));
-        options.put(PoFilter.OPTION_FORMAT_MONOLINGUAL, Boolean.toString(formatMonolingualRB.isSelected()));
 
         doClose(RET_OK);
     }// GEN-LAST:event_okButtonActionPerformed
@@ -253,17 +180,12 @@ public class PoOptionsDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox allowBlankCB;
-    private javax.swing.JCheckBox allowEditingBlankSegmentCB;
+    private javax.swing.JCheckBox skipHeaderCB;
     private javax.swing.JCheckBox autoFillInPluralStatementCB;
-    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JRadioButton formatMonolingualRB;
-    private javax.swing.JRadioButton formatStandardRB;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton okButton;
-    private javax.swing.JCheckBox skipHeaderCB;
     // End of variables declaration//GEN-END:variables
 
     private int returnStatus = RET_CANCEL;

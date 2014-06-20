@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "../../../docbook-xml-4.5/docbookx.dtd">
 <chapter id="chapter.menu">
-  <title>Menù e scorciatoie da tastiera</title>
+  <title>Menu e scorciatoie da tastiera</title>
 
   <section id="ch04.main.menu">
     <title><indexterm class="singular">
-        <primary>Menù</primary>
-      </indexterm>Menù principale</title>
+        <primary>Menu</primary>
+      </indexterm>Menu principale</title>
 
-    <para>Tutte le funzioni di OmegaT sono accessibili tramite la barra dei menù, posta sopra la finestra dell'Editor. La maggior parte delle funzioni è anche accessibile utilizzando le scorciatoie da tastiera. Le scorciatoie da tastiera sono attivabili premendo il tasto <keycap>Ctrl</keycap> e una lettera. Alcune scorciatoie prevedono l'uso di altri tasti. Per ragioni di leggibilità, i tasti alfabetici vengono qui rappresentati in maiuscolo. <keycap>Ctrl</keycap> vale per i sistemi operativi Windows, UNIX e simili a UNIX dotati di tastiere che prevedono il tasto <keycap>Ctrl</keycap> o <keycap>Control</keycap>. Gli utenti di Mac dovrebbero invece usare il <keycombo><keycap>tasto</keycap> <keycap>Cmd</keycap>  </keycombo>. Nelle tastiere Apple, il tasto &quot;Cmd&quot; presenta la dicitura &quot;comando&quot; o la figura di una mela.</para>
+    <para>Tutte le funzioni di OmegaT sono accessibili tramite la barra dei menu, posta sopra la finestra dell'Editor. La maggior parte delle funzioni è anche accessibile utilizzando le scorciatoie da tastiera. Le scorciatoie da tastiera sono attivabili premendo il tasto <keycap>Ctrl</keycap> e una lettera. Alcune scorciatoie prevedono l'uso di altri tasti. Per ragioni di leggibilità, i tasti alfabetici vengono qui rappresentati in maiuscolo. <keycap>Ctrl</keycap> vale per i sistemi operativi Windows, UNIX e simili a UNIX dotati di tastiere che prevedono il tasto <keycap>Ctrl</keycap> o <keycap>Control</keycap>. Gli utenti di Mac dovrebbero invece usare il <keycombo><keycap>tasto</keycap> <keycap>Cmd</keycap>  </keycombo>. Nelle tastiere Apple, il tasto &quot;Cmd&quot; presenta la dicitura &quot;comando&quot; o la figura di una mela.</para>
 
     <para>È possibile personalizzare le scorciatoie esistenti o aggiungerne di nuove in base alle proprie preferenze. <link linkend="ch04.shortcuts.customization">Vedere Appendice - Personalizzazione delle scorciatoie</link></para>
 
     <table colsep="1" id="table.main.menu">
-      <title>Menù principale</title>
+      <title>Menu principale</title>
 
       <tgroup cols="7" colsep="1">
         <tbody>
@@ -38,16 +38,16 @@
 
     <section id="submenu.Project">
       <title>Progetto<indexterm class="singular">
-          <primary>Menù</primary> <secondary>Progetto</secondary>
+          <primary>Menu</primary> <secondary>Progetto</secondary>
         </indexterm></title>
 
       <table colsep="1">
-        <title>Menù del progetto</title>
+        <title>Menu del progetto</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -75,7 +75,7 @@
 
               <entry/>
 
-              <entry>Copia i file selezionati nella cartella <filename>source</filename> e ricarica il progetto per caricare i nuovi file.</entry>
+              <entry>Copia i file selezionati nella cartella <filename>source</filename> e ricarica il progetto per caricare i nuovi file..</entry>
             </row>
 
             <row>
@@ -173,15 +173,15 @@
           <primary>Menu</primary> <secondary>Modifica</secondary>
         </indexterm></title>
 
-      <para>Nota: in questo menu non si trovano i comandi che appaiono comunemente nello stesso menù delle altre applicazioni (taglia/copia/incolla), anche se tali comandi saranno comunque disponibili tramite le scorciatoie da tastiera tradizionali. Per esempio:</para>
+      <para>Nota: in questo menu non si trovano i comandi che appaiono comunemente nello stesso menu delle altre applicazioni (taglia/copia/incolla), anche se tali comandi saranno comunque disponibili tramite le scorciatoie da tastiera tradizionali. Per esempio:</para>
 
       <table colsep="1">
         <title>Scorciatoie copia/taglia/incolla</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -229,9 +229,9 @@
         <title>Menu Modifica</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -333,7 +333,7 @@
                   <keycap>Maiusc</keycap> <keycap>Ctrl</keycap> <keycap>C</keycap>
                 </keycombo></entry>
 
-              <entry>Esporta la selezione attiva in un file di testo per successiva elaborazione. Se non è stato selezionato alcun testo, nel file viene copiato il segmento originale attivo. Quando l'utente chiude <application>OmegaT</application>, questo file non è vuoto, in modo da essere coerente col normale comportamento degli Appunti. Il contenuto esportato viene copiato nel file <filename>selection.txt</filename>, memorizzato nella cartella delle preferenze dell'utente (si veda <xref linkend="chapter.files.and.folders"/>).</entry>
+              <entry>Esporta la selezione attiva in un file di testo per successiva elaborazione. Se non è stato selezionato alcun testo, nel file viene copiato il segmento originale attivo. Quando l'utente chiude <application>OmegaT</application>, questo file non è vuoto, in modo da essere coerente col normale comportamento degli Appunti. Il contenuto esportato viene copiato nel file <filename>selection.txt</filename>, memorizzato nella cartella delle preferenze dell'utente (si veda <xref linkend="chapter.files.and.directories"/>).</entry>
             </row>
 
             <row>
@@ -402,16 +402,16 @@
 
     <section id="submenu.GoTo">
       <title>Vai<indexterm class="singular">
-          <primary>Menù</primary> <secondary>Vai</secondary>
+          <primary>Menu</primary> <secondary>Vai</secondary>
         </indexterm></title>
 
       <table colsep="1">
-        <title>Menù Vai</title>
+        <title>Menu Vai</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -496,14 +496,14 @@
 
     <section id="submenu.View">
       <title>Vista<indexterm class="singular">
-          <primary>Menù</primary> <secondary>Vista</secondary>
+          <primary>Menu</primary> <secondary>Vista</secondary>
         </indexterm></title>
 
       <table colsep="1">
-        <title>Menù Vista</title>
+        <title>Menu Vista</title>
 
         <tgroup cols="2" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
           <tbody>
             <row>
@@ -554,11 +554,11 @@
 
     <section id="submenu.Tools">
       <title>Strumenti<indexterm class="singular">
-          <primary>Menù</primary> <secondary>Strumenti</secondary>
+          <primary>Menu</primary> <secondary>Strumenti</secondary>
         </indexterm></title>
 
       <table colsep="1">
-        <title>Menù Strumenti</title>
+        <title>Menu Strumenti</title>
 
         <indexterm class="singular">
           <primary>Concordanze</primary> <secondary>Statistiche delle concordanze</secondary>
@@ -573,7 +573,7 @@
         </indexterm>
 
         <tgroup cols="2" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
           <tbody>
             <row>
@@ -606,14 +606,14 @@
 
     <section id="submenu.Options">
       <title><indexterm class="singular">
-          <primary>Menù</primary> <secondary>Opzioni</secondary>
+          <primary>Menu</primary> <secondary>Opzioni</secondary>
         </indexterm>Opzioni</title>
 
       <table colsep="1">
-        <title>Menù Opzioni</title>
+        <title>Menu Opzioni</title>
 
         <tgroup cols="2" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
           <tbody>
             <row>
@@ -724,14 +724,14 @@
 
     <section id="submenu.Help">
       <title>Aiuto<indexterm class="singular">
-          <primary>Menù</primary> <secondary>Aiuto</secondary>
+          <primary>Menu</primary> <secondary>Aiuto</secondary>
         </indexterm></title>
 
       <table colsep="1">
-        <title>Menù Aiuto</title>
+        <title>Menu Aiuto</title>
 
         <tgroup cols="2" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
           <tbody>
             <row>
@@ -803,9 +803,9 @@
         <title>Scorciatoie per la gestione del progetto</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -881,9 +881,9 @@
         <title>Modifica delle scorciatoie</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -999,7 +999,7 @@
                   <keycap>M</keycap>
                 </keycombo></entry>
 
-              <entry>Sostituisce il segmento di destinazione con la traduzione automatica dell'originale. Non esegue alcuna azione se gli strumenti di traduzione automatica sono disattivati (si veda Menù &gt; Opzioni &gt; Traduzione automatica).</entry>
+              <entry>Sostituisce il segmento di destinazione con la traduzione automatica dell'originale. Non esegue alcuna azione se gli strumenti di traduzione automatica sono disattivati (si veda Menu &gt; Opzioni &gt; Traduzione automatica).</entry>
             </row>
 
             <row>
@@ -1035,9 +1035,9 @@
         <title>Scorciatoie per gli spostamenti</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -1117,9 +1117,9 @@
         <title>Scorciatoie varie</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>

@@ -10,24 +10,22 @@
                2008 Martin Fleurke
                2011 Alex Buloichik
                2012 Wildrich Fourie
-               2013 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.data;
@@ -35,7 +33,6 @@ package org.omegat.core.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omegat.core.Core;
 import org.omegat.core.data.IProject.FileInfo;
 import org.omegat.core.segmentation.Rule;
 import org.omegat.core.segmentation.Segmenter;
@@ -75,7 +72,7 @@ public abstract class ParseEntry implements IParseCallback {
          * Flush queue.
          */
         for (ParseEntryQueueItem item : parseQueue) {
-            addSegment(item.id, item.segmentIndex, item.segmentSource, item.protectedParts, item.segmentTranslation,
+            addSegment(item.id, item.segmentIndex, item.segmentSource, item.segmentTranslation,
                     item.segmentTranslationFuzzy, item.comment, item.prevSegment, item.nextSegment, item.path);
         }
 
@@ -88,7 +85,6 @@ public abstract class ParseEntry implements IParseCallback {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void linkPrevNextSegments() {
         for (int i = 0; i < parseQueue.size(); i++) {
             ParseEntryQueueItem item = parseQueue.get(i);
@@ -124,16 +120,11 @@ public abstract class ParseEntry implements IParseCallback {
      *            reference during translation.
      * @param comment
      *            entry's comment, if format supports it
-     * @param path
-     *            path of entry infile
      * @param filter
      *            filter which produces entry
-     * @param protectedParts
-     *            protected parts  
      */
-    @Override
-    public void addEntry(String id, String source, String translation, boolean isFuzzy, String comment, String path,
-            IFilter filter, List<ProtectedPart> protectedParts) {
+    public void addEntry(String id, String source, String translation, boolean isFuzzy, String comment,
+            String path, IFilter filter) {
         if (StringUtil.isEmpty(source)) {
             // empty string - not need to save
             return;
@@ -141,23 +132,9 @@ public abstract class ParseEntry implements IParseCallback {
 
         ParseEntryResult tmp = new ParseEntryResult();
 
-        boolean removeSpaces = Core.getFilterMaster().getConfig().isRemoveSpacesNonseg();
-        source = stripSomeChars(source, tmp, m_config.isRemoveTags(), removeSpaces);
-        if (m_config.isRemoveTags() && protectedParts != null) {
-            for (int i = 0; i < protectedParts.size(); i++) {
-                ProtectedPart p = protectedParts.get(i);
-                String s = p.getTextInSourceSegment();
-                s = PatternConsts.OMEGAT_TAG.matcher(s).replaceAll("");
-                if (s.isEmpty()) {
-                    protectedParts.remove(i);
-                    i--;
-                } else {
-                    p.setTextInSourceSegment(s);
-                }
-            }
-        }
+        source = stripSomeChars(source, tmp, m_config.isRemoveTags());
         if (translation != null) {
-            translation = stripSomeChars(translation, tmp, m_config.isRemoveTags(), removeSpaces);
+            translation = stripSomeChars(translation, tmp, m_config.isRemoveTags());
         }
 
         if (m_config.isSentenceSegmentingEnabled()) {
@@ -166,18 +143,15 @@ public abstract class ParseEntry implements IParseCallback {
             Language sourceLang = m_config.getSourceLanguage();
             List<String> segments = Segmenter.segment(sourceLang, source, spaces, brules);
             if (segments.size() == 1) {
-                internalAddSegment(id, (short) 0, segments.get(0), translation, isFuzzy, comment, path,
-                        protectedParts);
+                internalAddSegment(id, (short) 0, segments.get(0), translation, isFuzzy, comment, path);
             } else {
                 for (short i = 0; i < segments.size(); i++) {
                     String onesrc = segments.get(i);
-                    List<ProtectedPart> segmentProtectedParts = ProtectedPart.extractFor(protectedParts,
-                            onesrc);
-                    internalAddSegment(id, i, onesrc, null, false, comment, path, segmentProtectedParts);
+                    internalAddSegment(id, i, onesrc, null, false, comment, path);
                 }
             }
         } else {
-            internalAddSegment(id, (short) 0, source, translation, isFuzzy, comment, path, protectedParts);
+            internalAddSegment(id, (short) 0, source, translation, isFuzzy, comment, path);
         }
     }
 
@@ -201,17 +175,16 @@ public abstract class ParseEntry implements IParseCallback {
      * @param filter
      *            filter which produces entry
      */
-    @Override
     public void addEntry(String id, String source, String translation, boolean isFuzzy, String comment,
             IFilter filter) {
-        addEntry(id, source, translation, isFuzzy, comment, null, filter, null);
+        addEntry(id, source, translation, isFuzzy, comment, null, filter);
     }
 
     /**
      * Add segment to queue because we possible need to link prev/next segments.
      */
     private void internalAddSegment(String id, short segmentIndex, String segmentSource, String segmentTranslation,
-            boolean segmentTranslationFuzzy, String comment, String path, List<ProtectedPart> protectedParts) {
+            boolean segmentTranslationFuzzy, String comment, String path) {
         if (segmentSource.length() == 0 || segmentSource.trim().length() == 0) {
             // skip empty segments
             return;
@@ -220,7 +193,6 @@ public abstract class ParseEntry implements IParseCallback {
         item.id = id;
         item.segmentIndex = segmentIndex;
         item.segmentSource = segmentSource;
-        item.protectedParts = protectedParts;
         item.segmentTranslation = segmentTranslation;
         item.segmentTranslationFuzzy = segmentTranslationFuzzy;
         item.comment = comment;
@@ -229,8 +201,7 @@ public abstract class ParseEntry implements IParseCallback {
     }
 
     /**
-     * Adds a segment to the project. If a translation is given, it it added to
-     * the projects TMX.
+     * Adds a segment to the project. If a translation is given, it it added to the projects TMX.
      * 
      * @param id
      *            ID of entry, if format supports it
@@ -238,13 +209,10 @@ public abstract class ParseEntry implements IParseCallback {
      *            Number of the segment-part of the original source string.
      * @param segmentSource
      *            Translatable source string
-     * @param protectedParts
-     *            protected parts
      * @param segmentTranslation
      *            translation of the source string, if format supports it
      * @param segmentTranslationFuzzy
-     *            fuzzy flag of translation of the source string, if format
-     *            supports it
+     *            fuzzy flag of translation of the source string, if format supports it
      * @param comment
      *            entry's comment, if format supports it
      * @param prevSegment
@@ -254,9 +222,8 @@ public abstract class ParseEntry implements IParseCallback {
      * @param path
      *            path of segment
      */
-    protected abstract void addSegment(String id, short segmentIndex, String segmentSource,
-            List<ProtectedPart> protectedParts, String segmentTranslation, boolean segmentTranslationFuzzy,
-            String comment, String prevSegment, String nextSegment, String path);
+    protected abstract void addSegment(String id, short segmentIndex, String segmentSource, String segmentTranslation,
+            boolean segmentTranslationFuzzy, String comment, String prevSegment, String nextSegment, String path);
 
     /**
      * Strip some chars for represent string in UI.
@@ -265,7 +232,7 @@ public abstract class ParseEntry implements IParseCallback {
      *            source string to strip chars
      * @return result
      */
-    static String stripSomeChars(final String src, final ParseEntryResult per, boolean removeTags, boolean removeSpaces) {
+    static String stripSomeChars(final String src, final ParseEntryResult per, boolean removeTags) {
         String r = src;
 
         /**
@@ -281,20 +248,16 @@ public abstract class ParseEntry implements IParseCallback {
          */
         int len = r.length();
         int b = 0;
-        if (removeSpaces) {
-            while (b < len && (Character.isWhitespace(r.charAt(b)) || r.charAt(b) == '\u00A0')) {
-                b++;
-            }
+        while (b < len && (Character.isWhitespace(r.charAt(b)) || r.charAt(b) == '\u00A0')) {
+            b++;
         }
         per.spacesAtBegin = b;
 
         int pos = len - 1;
         int e = 0;
-        if (removeSpaces) {
-            while (pos >= b && (Character.isWhitespace(r.charAt(pos)) || r.charAt(pos) == '\u00A0')) {
-                pos--;
-                e++;
-            }
+        while (pos >= b && (Character.isWhitespace(r.charAt(pos)) || r.charAt(pos) == '\u00A0')) {
+            pos--;
+            e++;
         }
         per.spacesAtEnd = e;
 
@@ -338,7 +301,6 @@ public abstract class ParseEntry implements IParseCallback {
         String id;
         short segmentIndex;
         String segmentSource;
-        List<ProtectedPart> protectedParts;
         String segmentTranslation;
         boolean segmentTranslationFuzzy;
         String comment;

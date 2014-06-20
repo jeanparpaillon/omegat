@@ -10,26 +10,23 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml.openxml;
 
-import org.omegat.filters3.Attribute;
-import org.omegat.filters3.Attributes;
 import org.omegat.filters3.xml.DefaultXMLDialect;
 
 /**
@@ -76,10 +73,6 @@ public class OpenXMLDialect extends DefaultXMLDialect {
             defineTranslatableTagAttribute("v:textpath", "string"); // WordArt
         }
 
-        if (options.getTranslateSlideLinks()) {
-            defineTranslatableTagAttribute("Relationship", "Target"); // PowerPoint, only if TargetMode is External
-        }
-        
         boolean aggregationEnabled = options.getAggregateTags();
         /*
          * The current OpenXML filter finds too many tags, usually causing what
@@ -91,30 +84,5 @@ public class OpenXMLDialect extends DefaultXMLDialect {
 
         // If defined in the options, set space preserving for all tags
         setForceSpacePreserving(options.getSpacePreserving());
-    }
-    
-    /**
-     * Returns for a given attribute of a given tag if the attribute should be
-     * translated with the given other attributes present. If the tagAttribute
-     * is returned by getTranslatable(Tag)Attributes(), this function is called
-     * to further test the attribute within its context. This allows for example
-     * the OpenXML filter to not translate the value attribute of Target, except if TargetMode is External
-     */
-    @Override
-    public Boolean validateTranslatableTagAttribute(String tag, String attribute, Attributes atts) {
-        // special case:
-        if ("Relationship".equalsIgnoreCase(tag) && attribute.equalsIgnoreCase("Target") ) {
-            
-                for (int i = 0; i < atts.size(); i++) {
-                    Attribute otherAttribute = atts.get(i);
-                    if ("TargetMode".equalsIgnoreCase(otherAttribute.getName())
-                            && "External".equalsIgnoreCase(otherAttribute.getValue())) {
-                        return super.validateTranslatableTagAttribute(tag, attribute, atts);
-                    }
-                }
-                // Do not translate if TargetMode is not External
-                return false;
-        }
-        return super.validateTranslatableTagAttribute(tag, attribute, atts);
     }
 }

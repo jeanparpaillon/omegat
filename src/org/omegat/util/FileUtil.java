@@ -6,24 +6,22 @@
  Copyright (C) 2008 Alex Buloichik
                2009 Didier Briel
                2012 Alex Buloichik, Didier Briel
-               2014 Alex Buloichik, Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
@@ -38,25 +36,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import org.omegat.gui.help.HelpFrame;
 
 /**
  * Files processing utilities.
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Didier Briel
- * @author Aaron Madlon-Kay
  */
 public class FileUtil {
     private static final int MAX_BACKUPS = 11;
@@ -148,33 +139,6 @@ public class FileUtil {
     }
 
     /**
-     * Read file as UTF-8 text.
-     */
-    public static String readTextFile(File file) throws IOException {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(file), OConsts.UTF8));
-
-        try {
-            StringWriter out = new StringWriter();
-            LFileCopy.copy(rd, out);
-            return out.toString();
-        } finally {
-            rd.close();
-        }
-    }
-
-    /**
-     * Write text in file using UTF-8.
-     */
-    public static void writeTextFile(File file, String text) throws IOException {
-        Writer wr = new OutputStreamWriter(new FileOutputStream(file), OConsts.UTF8);
-        try {
-            wr.write(text);
-        } finally {
-            wr.close();
-        }
-    }
-
-    /**
      * Find files in subdirectories.
      * 
      * @param dir
@@ -185,8 +149,7 @@ public class FileUtil {
      */
     public static List<File> findFiles(final File dir, final FileFilter filter) {
         final List<File> result = new ArrayList<File>();
-        Set<String> knownDirs = new HashSet<String>();
-        findFiles(dir, filter, result, knownDirs);
+        findFiles(dir, filter, result);
         return result;
     }
 
@@ -200,24 +163,12 @@ public class FileUtil {
      * @param result
      *            list of filtered found files
      */
-    private static void findFiles(final File dir, final FileFilter filter, final List<File> result,
-            final Set<String> knownDirs) {
-        String curr_dir;
-        try {
-            // check for recursive
-            curr_dir = dir.getCanonicalPath();
-            if (!knownDirs.add(curr_dir)) {
-                return;
-            }
-        } catch (IOException ex) {
-            Log.log(ex);
-            return;
-        }
+    private static void findFiles(final File dir, final FileFilter filter, final List<File> result) {
         File[] list = dir.listFiles();
         if (list != null) {
             for (File f : list) {
                 if (f.isDirectory()) {
-                    findFiles(f, filter, result, knownDirs);
+                    findFiles(f, filter, result);
                 } else {
                     if (filter.accept(f)) {
                         result.add(f);
@@ -255,93 +206,4 @@ public class FileUtil {
         }
         return fileAbs.substring(rootAbs.length());
     }
-    
-    /**
-     * Load a text file from the root of help.
-     * @param The name of the text file
-     * @return The content of the text file
-     */
-    public static String loadTextFileFromDoc(String textFile) {
-
-        // Get the license
-        URL url = HelpFrame.getHelpFileURL(null, textFile);
-        if (url == null) {
-            return HelpFrame.errorHaiku();
-        }
-
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(url.openStream(), OConsts.UTF8));
-            try {
-                StringWriter out = new StringWriter();
-                LFileCopy.copy(rd, out);
-                return out.toString();
-            } finally {
-                rd.close();
-            }
-        } catch (IOException ex) {
-            return HelpFrame.errorHaiku();
-        }
-
-    }
-
-    /**
-     * Recursively delete a directory and all of its contents.
-     * @param dir The directory to delete
-     */
-    public static void deleteTree(File dir) {
-        if (!dir.exists()) {
-            return;
-        }
-        if (!dir.isDirectory()) {
-            throw new IllegalArgumentException("Argument must be a directory.");
-        }
-        for (File file : dir.listFiles()) {
-            if (file.isFile()) {
-                file.delete();
-            } else if (file.isDirectory()) {
-                deleteTree(file);
-            }
-        }
-        dir.delete();
-    }
-
-    /**
-     * This method is taken from
-     * <a href="https://code.google.com/p/guava-libraries/">Google Guava</a>,
-     * which is licenced under the Apache License 2.0.
-     * 
-     * <p>Atomically creates a new directory somewhere beneath the system's
-     * temporary directory (as defined by the {@code java.io.tmpdir} system
-     * property), and returns its name.
-     *
-     * <p>Use this method instead of {@link File#createTempFile(String, String)}
-     * when you wish to create a directory, not a regular file.  A common pitfall
-     * is to call {@code createTempFile}, delete the file and create a
-     * directory in its place, but this leads a race condition which can be
-     * exploited to create security vulnerabilities, especially when executable
-     * files are to be written into the directory.
-     *
-     * <p>This method assumes that the temporary volume is writable, has free
-     * inodes and free blocks, and that it will not be called thousands of times
-     * per second.
-     *
-     * @return the newly-created directory
-     * @throws IllegalStateException if the directory could not be created
-     */
-    public static File createTempDir() {
-        File baseDir = new File(System.getProperty("java.io.tmpdir"));
-        String baseName = System.currentTimeMillis() + "-";
-
-        for (int counter = 0; counter < TEMP_DIR_ATTEMPTS; counter++) {
-            File tempDir = new File(baseDir, baseName + counter);
-            if (tempDir.mkdir()) {
-                return tempDir;
-            }
-        }
-        throw new IllegalStateException("Failed to create directory within "
-                + TEMP_DIR_ATTEMPTS + " attempts (tried "
-                + baseName + "0 to " + baseName + (TEMP_DIR_ATTEMPTS - 1) + ')');
-    }
-
-    private static int TEMP_DIR_ATTEMPTS = 10000;
 }

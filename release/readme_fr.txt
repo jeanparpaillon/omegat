@@ -1,7 +1,7 @@
 Ce document a été traduit par Didier Briel et Jean-Christophe Helary, copyright© 2007-2014.
 
 ==============================================================================
-  OmegaT 3.0, fichier « Lisez-moi »
+  OmegaT 2.0, fichier « Lisez-moi »
 
   1.  Informations à propos d'OmegaT
   2.  Qu'est ce qu'OmegaT ?
@@ -102,7 +102,7 @@ Pour ce faire, téléchargez le fichier suivant et exécutez-le :
 
 Il installera l'environnement approprié pour votre ordinateur et l'application elle-même lors de la première exécution. Il ne sera pas nécessaire d'être en ligne pour les lancements suivants.
 
-Durant l'installation, en fonction de votre système d'exploitation, vous recevrez peut-être plusieurs avertissements de sécurité. Le certificat est de « PnS Concept ». 
+Durant l'installation, en fonction de votre système d'exploitation, vous recevrez peut-être plusieurs avertissements de sécurité. Le certificat est auto-signé par « Didier Briel ». 
 Les autorisations que vous accordez à cette version (qui peuvent être mentionnées comme étant un « accès sans restriction à l'ordinateur ») sont identiques aux autorisations que vous donnez à la version locale, telle qu'installée par une des procédures décrites plus loin : elles autorisent l'accès au disque dur de l'ordinateur. Les clics suivants sur OmegaT.jnlp vérifieront l'existence de mises à jour, si vous êtes en ligne, les installeront le cas échéant et démarreront ensuite OmegaT. 
 
 Les méthodes et les moyens alternatifs pour télécharger et installer OmegaT sont indiqués ci-dessous. 
@@ -212,20 +212,16 @@ Contributions au code :
   Alex Buloichik (développeur principal)
   Sandra Jean Chua
   Thomas Cordonnier
-  Enrique Estévez Fernández
   Martin Fleurke  
   Wildrich Fourie
   Phillip Hall
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
-  Piotr Kulik
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
   Fabián Mandelbaum
-  Manfred Martin
   John Moran
   Maxym Mykhalchuk 
   Arno Peters
@@ -253,11 +249,14 @@ Autres contributions par :
 
 OmegaT utilise les bibliothèques suivantes :
   HTMLParser par Somik Raha, Derrick Oswald, etc. (licence LGPL)
+  MRJ Adapter par Steve Roy (licence LGPL)
   VLDocking Framework 2.1.4 par VLSolutions (licence CeCILL)
   Hunspell par László Németh et d'autres personnes (licence LGPL)
   JNA par Todd Fast, Timothy Wall et d'autres personnes (licence LGPL)
-  Swing-Layout 1.0.4 (licence LGPL)
+  Swing-Layout 1.0.2 (licence LGPL)
   Jmyspell 2.1.4 (licence LGPL)
+  JAXB (GPLv2 + classpath exception)
+  SJXP 1.0.2 (GPL v2)
   SVNKit 1.7.5 (licence TMate)
   Sequence Library (licence Sequence Library)
   ANTLR 3.4 (licence ANTLR 3)
@@ -266,21 +265,6 @@ OmegaT utilise les bibliothèques suivantes :
   JSch (licence JSch)
   Base64 (domaine public)
   Diff (GPL)
-  orion-ssh2-214 (licence Orion SSH for Java)
-  lucene-*.jar (licence Apache 2.0)
-  Les lemmatiseurs anglais (org.omegat.tokenizer.SnowballEnglishTokenizer et
-  org.omegat.tokenizer.LuceneEnglishTokenizer) utilisent des mots non significatifs d'Okapi
-(http://okapi.sourceforge.net) (licence LGPL)
-  tinysegmenter.jar (licence BSD modifiée)
-  commons-*.jar (licence Apache 2.0)
-  jWordSplitter (licence Apache 2.0)
-  LanguageTool.jar (licence LGPL)
-  morfologik-*.jar (licence Morfologik)
-  segment-1.4.1.jar (licence Segment)
-  pdfbox-app-1.8.1.jar (licence Apache 2.0)
-  KoreanAnalyzer-3x-120223.jar (licence Apache 2.0)
-  SuperTMXMerge-for_OmegaT.jar (licence LGPL)
-  groovy-all-2.2.2.jar (licence Apache 2.0)
 
 ==============================================================================
  5.  Est-ce qu'OmegaT vous pose problème ? Avez-vous besoin d'aide ?

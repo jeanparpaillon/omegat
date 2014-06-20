@@ -11,33 +11,28 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.filters3.Attributes;
-import org.omegat.filters3.Element;
-import org.omegat.filters3.Tag;
 import org.omegat.util.MultiMap;
 import org.xml.sax.InputSource;
 
@@ -64,11 +59,6 @@ public interface XMLDialect {
     Set<String> getPreformatTags();
 
     /**
-     * Returns the map of content based tags where key is tag name, value is tag type.
-     */
-    Map<String, Tag.Type> getContentBasedTags();
-
-    /**
      * Returns the set of tags that surround intact portions of document, that
      * should not be translated at all.
      * <p>
@@ -84,14 +74,6 @@ public interface XMLDialect {
      * Each entry in a set should be a String class.
      */
     Set<String> getOutOfTurnTags();
-
-    /**
-     * Returns shortcut string representation of the entry source. This is what
-     * the user translates. E.g. for
-     * <code>Here's &lt;b&gt;bold text&lt;/b&gt;</code> should return
-     * <code>Here's &lt;b0&gt;bold text&lt;/b0&gt;</code>.
-     */
-    String constructShortcuts(List<Element> elements, List<ProtectedPart> protectedParts);
 
     /**
      * Returns the multimap of translatable attributes of each tag.
@@ -124,19 +106,6 @@ public interface XMLDialect {
      * @return <code>true</code> or <code>false</code>
      */
     Boolean validateIntactTag(String tag, Attributes atts);
-
-    /**
-     * For a given tag, return wether the content of this tag should be
-     * translated, depending on the content of one attribute and the presence or
-     * absence of other attributes.
-     * 
-     * @param tag
-     *            The tag that could be translated
-     * @param atts
-     *            The list of the tag attributes
-     * @return <code>true</code> or <code>false</code>
-     */
-    Boolean validateContentBasedTag(String tag, Attributes atts);
 
     /**
      * For a given tag, return wether the content of this tag should be

@@ -7,24 +7,22 @@
                          Benjamin Siband, and Kim Bruning
                2007 Zoltan Bartko
                2008 Andrzej Sawula, Alex Buloichik
-               2014 Piotr Kulik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.main;
@@ -35,8 +33,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -47,9 +43,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import org.omegat.core.Core;
-import org.omegat.gui.editor.EditorController;
-import org.omegat.gui.filelist.ProjectFilesListController;
+import org.omegat.gui.filelist.ProjectFrame;
 import org.omegat.util.Log;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
@@ -72,21 +66,15 @@ import com.vlsolutions.swing.docking.event.DockableStateWillChangeListener;
  * @author Zoltan Bartko - bartkozoltan@bartkozoltan.com
  * @author Andrzej Sawula
  * @author Alex Buloichik (alex73mail@gmail.com)
- * @author Piotr Kulik
  */
 public class MainWindowUI {
     public static String UI_LAYOUT_FILE = "uiLayout.xml";
-    
-    public enum STATUS_BAR_MODE {
-        DEFAULT,
-        PERCENTAGE,
-    };
 
     /**
      * Create main UI panels.
      */
     public static void createMainComponents(final MainWindow mainWindow, final Font font) {
-        mainWindow.m_projWin = new ProjectFilesListController(mainWindow);
+        mainWindow.m_projWin = new ProjectFrame(mainWindow);
     }
 
     /**
@@ -116,46 +104,10 @@ public class MainWindowUI {
 
         mainWindow.statusLabel.setFont(new Font("MS Sans Serif", 0, 11));
 
-        final STATUS_BAR_MODE progressMode = STATUS_BAR_MODE.valueOf(
-                Preferences.getPreferenceEnumDefault(Preferences.SB_PROGRESS_MODE,
-                        STATUS_BAR_MODE.DEFAULT).name());
-
-        String statusText = "MW_PROGRESS_DEFAULT";
-        String tooltipText = "MW_PROGRESS_TOOLTIP";
-        if (progressMode == STATUS_BAR_MODE.PERCENTAGE) {
-            statusText = "MW_PROGRESS_DEFAULT_PERCENTAGE";
-            tooltipText = "MW_PROGRESS_TOOLTIP_PERCENTAGE";
-        }
-        Mnemonics.setLocalizedText(mainWindow.progressLabel, OStrings.getString(statusText));
-        mainWindow.progressLabel.setToolTipText(OStrings.getString(tooltipText));
-
+        Mnemonics.setLocalizedText(mainWindow.progressLabel, OStrings.getString("MW_PROGRESS_DEFAULT"));
+        mainWindow.progressLabel.setToolTipText(OStrings.getString("MW_PROGRESS_TOOLTIP"));
         mainWindow.progressLabel.setBorder(BorderFactory.createLineBorder(Color.black));
         mainWindow.progressLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-        mainWindow.progressLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                STATUS_BAR_MODE progressMode = STATUS_BAR_MODE.valueOf(
-                        Preferences.getPreferenceEnumDefault(Preferences.SB_PROGRESS_MODE,
-                                STATUS_BAR_MODE.DEFAULT).name());
-                progressMode = STATUS_BAR_MODE.values()[(progressMode.ordinal() + 1) % STATUS_BAR_MODE.values().length];
-
-                Preferences.setPreference(Preferences.SB_PROGRESS_MODE, progressMode);
-
-                String statusText = "MW_PROGRESS_DEFAULT";
-                String tooltipText = "MW_PROGRESS_TOOLTIP";
-                if (progressMode == STATUS_BAR_MODE.PERCENTAGE) {
-                    statusText = "MW_PROGRESS_DEFAULT_PERCENTAGE";
-                    tooltipText = "MW_PROGRESS_TOOLTIP_PERCENTAGE";
-                }
-
-                if (Core.getProject().isProjectLoaded()) {
-                    ((EditorController)Core.getEditor()).showStat();
-                } else {
-                    Core.getMainWindow().showProgressMessage(OStrings.getString(statusText));
-                }
-                ((MainWindow)Core.getMainWindow()).setProgressToolTipText(OStrings.getString(tooltipText));
-            }
-        });
 
         Mnemonics.setLocalizedText(mainWindow.lengthLabel, OStrings.getString("MW_SEGMENT_LENGTH_DEFAULT"));
         mainWindow.lengthLabel.setToolTipText(OStrings.getString("MW_SEGMENT_LENGTH_TOOLTIP"));

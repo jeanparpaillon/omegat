@@ -257,7 +257,7 @@
 
     <para>OmegaT est fourni sous forme de paquet et peut être téléchargé sur SourceForge. Il s'agit d'un paquet multiplateforme dans un format standard de Java. Il existe d'autres possibilités, telles que le paquet Linux .tar, un programme d'installation Windows (avec ou sans environnement d'exécution Java), un programme d'installation Mac OS X et un paquet de code source pour les développeurs.</para>
 
-    <para>Le paquet mutliplateforme peut être utilisé sur n'importe quelle plateforme possédant un environnement d'execution Java 1.6 opérationnel, y compris sur les plateformes pour lesquelles un paquet spécifique existe également. Il vous est fourni sous la forme d'un fichier compressé (archive zip ou tar) que vous devez extraire vers le dossier de votre choix pour procéder à l'installation. Généralement, le fichier peut être extrait par un double clic sur le paquet téléchargé. Une fois l'archive extraite, un dossier contenant les éléments suivants est créé :</para>
+    <para>Le paquet mutliplateforme peut être utilisé sur n'importe quelle plateforme possédant un environnement d'exécution Java 1.5 en fonctionnement, y compris sur les plates-formes pour lesquelles un paquet spécifique existe également. Il vous est fourni sous la forme d'un fichier compressé (archive zip ou tar) que vous devez extraire vers le dossier de votre choix pour procéder à l'installation. Généralement, le fichier peut être extrait par un double clic sur le paquet téléchargé. Une fois l'archive extraite, un dossier contenant les éléments suivants est créé :</para>
 
     <informaltable>
       <tgroup align="left" cols="2" rowsep="1">

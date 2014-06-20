@@ -1,60 +1,36 @@
 #!/usr/bin/kaptain
 
-# This version of the Kaptain OmegaT Launcher: 2014-04-28
+# This version of the Kaptain OmegaT Launcher: 2012-05-05.
 
 start "OmegaT Launcher" -> omticon top bottom ;
   top :tabbed  -> locs mem langs connect appearance about ;
-  bottom :horizontal -> button_bar ;
+  bottom :horizontal -> button_bar ; 
 
 omticon -> @icon("images/OmegaT.png") ;
 
 ### Locations tab
 
-locs :framed :vertical "Locations" -> javaloc jarfileloc optloc ;
-
+locs :framed "Locations" -> mandloc optloc ;
+mandloc "Mandatory locations" -> javaloc jarfileloc ;
 
 # Location of the Java runtime environment
 
-javaloc "Java runtime environment" -> java_list |! java_pick ;
-java_list :horizontal "System-wide Java installation" ->  @combow ("/usr/bin/java", `ls /usr/lib/jvm/*/jre/bin/java`) javaloc_help ;
-java_pick :horizontal "Custom Java installation" -> @infile("java")="/opt/omegat/jre/bin/java" ;
+javaloc :horizontal "Java runtime environment" -> @infile("java")="/opt/omegat/jre/bin/java" javaloc_help ;
 javaloc_help :dialog "Help" -> javaloc_m javaloc_hc ;
 javaloc_m :horizontal ->  javaloc_t ;
-javaloc_t "The current default assumes that you have used the linux-install.sh\n
-installation script and are using a local version of the JRE\n
-(i.e. you have installed OmegaT with JRE).\n
-If you want to use a system-wide version of Java, you can either select \n
-\"System-wide Java installation\" (possibly choosing one of the versions \n
-from drop-down menu), or replace \"/opt/omegat/jre/bin/java\" with \"java\"\n
-(provided Java is in your execution path). If you are using a system-wide \n
-version of Java that is NOT in your execution path,\n
-replace \"/opt/omegat/jre/bin/java\" with the full path\n
-of your java executable (in quotes) or browse and select it." -> @ ;
+javaloc_t "The current default assumes that you have used the linux-install.sh \n installation script and are using a local version of the JRE (i.e. \n you have installed OmegaT with JRE).\n If you are using a system-wide version of Java that is in your \n execution path, replace /opt/omegat/jre/bin/java with java.\n If you are using a system-wide version of Java that is NOT in your \n execution path, replace /opt/omegat/jre/bin/java with the full path of your \n java executable (in quotes). " -> @ ;
 javaloc_hc :horizontal -> @close="Close";
 
 
 # Location of the OmegaT.jar file (OmegaT version)
-# To make a particular OmegaT.jar file the default, replace =""
+# To make a particular OmegaT.jar file the default, replace ="OmegaT.jar"
 # with ="<full path of OmegaT.jar file>"
 
-jarfileloc :vertical "Location of OmegaT.jar" -> jarlist | ! jarpick ;
-jarlist :horizontal "System-wide OmegaT installation" -> @combow(`find -L /opt/omegat -name "OmegaT.*jar"`) jarfileloc_help ;
-jarpick :horizontal "Custom OmegaT installation"-> @infile("OmegaT.jar")="/opt/omegat/OmegaT-default/OmegaT.jar" @action(jvrs)="Ver.";
+jarfileloc :horizontal "Location of OmegaT.jar" -> @infile("OmegaT.jar")="OmegaT.jar" jarfileloc_help ;
 jarfileloc_help :dialog "Help" -> jarfileloc_m jarfileloc_hc ;
 jarfileloc_m :horizontal ->  jarfileloc_t ;
-jarfileloc_t "Location of the OmegaT program. This launcher defaults to the version\n
-installed with \"linux-install.sh\". You may use the drop-down menu \n
-to select one of OmegaT versions installed in /opt/omegat. You may also \n
-choose another version by browsing to and selecting the respective OmegaT.jar" -> @ ;
+jarfileloc_t "Location of the OmegaT program. Use this menu item to \nselect a different (installed) version of OmegaT, for example for testing." -> @ ;
 jarfileloc_hc :horizontal -> @close="Close" ;
-
-jvrs -> "cd `dirname " jarfileloc "` ; \
-echo \"#!/usr/bin/kaptain\" > /tmp/otver.kaptn ;\
-echo \"start \'\"Version\"\' -> ver button \;\" >> /tmp/otver.kaptn ;\
-echo \"button :horizontal -> @close=\'\"Close\"\';\" >> /tmp/otver.kaptn ;\
-echo \"ver \'\"$(grep -o -m1 \"OmegaT\\s*[\.0-9]*[0-9 a-z]*\" \.\/changes.txt)\"\' -> @ ;\" >> /tmp/otver.kaptn ;\
-kaptain /tmp/otver.kaptn && rm /tmp/otver.kaptn" ;
-
 
 # Optional file locations
 
@@ -70,11 +46,14 @@ configloc_hc :horizontal -> @close="Close" ;
 
 # Open a specific project at launch
 
-projectloc :horizontal "Open specified project immediately" -> @combow("", `IFS=$(echo "\n\b") && for i in $(find $HOME -name "omegat.project" -type f); do echo "\"$(dirname $i)\""; done`) projectloc_help ;
+projectloc :horizontal "Open specified project immediately" -> @directory projectloc_help ;
 projectloc_help :dialog "Help" -> projectloc_m projectloc_hc ;
 projectloc_m :horizontal ->  projectloc_t ;
 projectloc_t "Open a specific project immediately after launching OmegaT. \nUsualy superfluous in GUI mode." -> @ ;
 projectloc_hc :horizontal -> @close="Close" ;
+
+# fillloc -> @fill ;
+
 
 ### Memory tab
 
@@ -97,11 +76,11 @@ memory_hc :horizontal -> @close="Close" ;
 # Add language codes (that OmegaT has) or delete them.
 # The first one on the list becomes the default
 
-langs :framed "Languages" -> UI ;
+langs :framed "Languages" -> UI token ;
 
 UI "User interface" -> UIlang country languages_help ;
 
-UIlang "User interface language (nn)" -> @combow("en", "ar", "be", "ca", "cs", "cy", "da", "de", "el", "eo", "es", "eu", "fr", "gl", "hu", "id", "it", "ja", "nl", "pl", "pt", "ru", "sh", "sk", "sl", "sq", "sv", "tr", "uk", "zh") ;
+UIlang "User interface language (nn)" -> @combow("en", "ar", "ca", "de", "es", "eu", "fr", "hu", "it", "ja", "nl", "pl", "pt", "ru", "zh") ;
 
 # Selection of the user country
 
@@ -112,9 +91,26 @@ languages_m :horizontal ->  languages_t ;
 languages_t "Select the language of OmegaT's user interface. If no language \nis specified or a language is not available, OmegaT defaults first to the operating \nsystem language, then to English. Different country variants for the same language are not \nused at present." -> @ ;
 languages_hc :horizontal -> @close="Close" ;
 
+# Select source-language tokenizer
+# Default is none, insert a preferred default between the first quotes
+
+token "Tokenizers" -> SLtoken TLtoken token_help;
+
+SLtoken "Source-language tokenizer" -> @combow("", "org.omegat.plugins.tokenizer.LuceneArabicTokenizer", "org.omegat.plugins.tokenizer.LuceneArmenianTokenizer", "org.omegat.plugins.tokenizer.LuceneBasqueTokenizer", "org.omegat.plugins.tokenizer.LuceneBrazilianTokenizer", "org.omegat.plugins.tokenizer.LuceneBulgarianTokenizer", "org.omegat.plugins.tokenizer.LuceneCatalanTokenizer", "org.omegat.plugins.tokenizer.LuceneChineseTokenizer", "org.omegat.plugins.tokenizer.LuceneCJKTokenizer", "org.omegat.plugins.tokenizer.LuceneCzechTokenizer", "org.omegat.plugins.tokenizer.LuceneDanishTokenizer", "org.omegat.plugins.tokenizer.LuceneDutchTokenizer", "org.omegat.plugins.tokenizer.LuceneEnglishTokenizer", "org.omegat.plugins.tokenizer.LuceneFinnishTokenizer", "org.omegat.plugins.tokenizer.LuceneFrenchTokenizer", "org.omegat.plugins.tokenizer.LuceneGalicianTokenizer", "org.omegat.plugins.tokenizer.LuceneGermanTokenizer", "org.omegat.plugins.tokenizer.LuceneGreekTokenizer", "org.omegat.plugins.tokenizer.LuceneHindiTokenizer", "org.omegat.plugins.tokenizer.LuceneHungarianTokenizer", "org.omegat.plugins.tokenizer.LuceneIndonesianTokenizer", "org.omegat.plugins.tokenizer.LuceneIrishTokenizer", "org.omegat.plugins.tokenizer.LuceneItalianTokenizer", "org.omegat.plugins.tokenizer.LuceneJapaneseTokenizer", "org.omegat.plugins.tokenizer.LuceneLatvianTokenizer", "org.omegat.plugins.tokenizer.LuceneNorwegianTokenizer", "org.omegat.plugins.tokenizer.LucenePersianTokenizer", "org.omegat.plugins.tokenizer.LucenePortugueseTokenizer", "org.omegat.plugins.tokenizer.LuceneRomanianTokenizer", "org.omegat.plugins.tokenizer.LuceneRussianTokenizer", "org.omegat.plugins.tokenizer.LuceneSmartChineseTokenizer", "org.omegat.plugins.tokenizer.LuceneSpanishTokenizer", "org.omegat.plugins.tokenizer.LuceneSwedishTokenizer", "org.omegat.plugins.tokenizer.LuceneThaiTokenizer", "org.omegat.plugins.tokenizer.LuceneTurkishTokenizer", "org.omegat.plugins.tokenizer.SnowballDanishTokenizer", "org.omegat.plugins.tokenizer.SnowballDutchTokenizer", "org.omegat.plugins.tokenizer.SnowballEnglishTokenizer", "org.omegat.plugins.tokenizer.SnowballFinnishTokenizer", "org.omegat.plugins.tokenizer.SnowballFrenchTokenizer", "org.omegat.plugins.tokenizer.SnowballGerman2Tokenizer", "org.omegat.plugins.tokenizer.SnowballGermanTokenizer", "org.omegat.plugins.tokenizer.SnowballHungarianTokenizer", "org.omegat.plugins.tokenizer.SnowballItalianTokenizer", "org.omegat.plugins.tokenizer.SnowballNorwegianTokenizer", "org.omegat.plugins.tokenizer.SnowballPorterTokenizer", "org.omegat.plugins.tokenizer.SnowballPortugueseTokenizer", "org.omegat.plugins.tokenizer.SnowballRomanianTokenizer", "org.omegat.plugins.tokenizer.SnowballRussianTokenizer", "org.omegat.plugins.tokenizer.SnowballSpanishTokenizer", "org.omegat.plugins.tokenizer.SnowballSwedishTokenizer", "org.omegat.plugins.tokenizer.SnowballTurkishTokenizer") ;
+
+# Target language tokenizer
+# As SL tokenizer
+
+TLtoken "Target-language tokenizer" -> @combow("", "org.omegat.plugins.tokenizer.LuceneArabicTokenizer", "org.omegat.plugins.tokenizer.LuceneArmenianTokenizer", "org.omegat.plugins.tokenizer.LuceneBasqueTokenizer", "org.omegat.plugins.tokenizer.LuceneBrazilianTokenizer", "org.omegat.plugins.tokenizer.LuceneBulgarianTokenizer", "org.omegat.plugins.tokenizer.LuceneCatalanTokenizer", "org.omegat.plugins.tokenizer.LuceneChineseTokenizer", "org.omegat.plugins.tokenizer.LuceneCJKTokenizer", "org.omegat.plugins.tokenizer.LuceneCzechTokenizer", "org.omegat.plugins.tokenizer.LuceneDanishTokenizer", "org.omegat.plugins.tokenizer.LuceneDutchTokenizer", "org.omegat.plugins.tokenizer.LuceneEnglishTokenizer", "org.omegat.plugins.tokenizer.LuceneFinnishTokenizer", "org.omegat.plugins.tokenizer.LuceneFrenchTokenizer", "org.omegat.plugins.tokenizer.LuceneGalicianTokenizer", "org.omegat.plugins.tokenizer.LuceneGermanTokenizer", "org.omegat.plugins.tokenizer.LuceneGreekTokenizer", "org.omegat.plugins.tokenizer.LuceneHindiTokenizer", "org.omegat.plugins.tokenizer.LuceneHungarianTokenizer", "org.omegat.plugins.tokenizer.LuceneIndonesianTokenizer", "org.omegat.plugins.tokenizer.LuceneIrishTokenizer", "org.omegat.plugins.tokenizer.LuceneItalianTokenizer", "org.omegat.plugins.tokenizer.LuceneJapaneseTokenizer", "org.omegat.plugins.tokenizer.LuceneLatvianTokenizer", "org.omegat.plugins.tokenizer.LuceneNorwegianTokenizer", "org.omegat.plugins.tokenizer.LucenePersianTokenizer", "org.omegat.plugins.tokenizer.LucenePortugueseTokenizer", "org.omegat.plugins.tokenizer.LuceneRomanianTokenizer", "org.omegat.plugins.tokenizer.LuceneRussianTokenizer", "org.omegat.plugins.tokenizer.LuceneSmartChineseTokenizer", "org.omegat.plugins.tokenizer.LuceneSpanishTokenizer", "org.omegat.plugins.tokenizer.LuceneSwedishTokenizer", "org.omegat.plugins.tokenizer.LuceneThaiTokenizer", "org.omegat.plugins.tokenizer.LuceneTurkishTokenizer", "org.omegat.plugins.tokenizer.SnowballDanishTokenizer", "org.omegat.plugins.tokenizer.SnowballDutchTokenizer", "org.omegat.plugins.tokenizer.SnowballEnglishTokenizer", "org.omegat.plugins.tokenizer.SnowballFinnishTokenizer", "org.omegat.plugins.tokenizer.SnowballFrenchTokenizer", "org.omegat.plugins.tokenizer.SnowballGerman2Tokenizer", "org.omegat.plugins.tokenizer.SnowballGermanTokenizer", "org.omegat.plugins.tokenizer.SnowballHungarianTokenizer", "org.omegat.plugins.tokenizer.SnowballItalianTokenizer", "org.omegat.plugins.tokenizer.SnowballNorwegianTokenizer", "org.omegat.plugins.tokenizer.SnowballPorterTokenizer", "org.omegat.plugins.tokenizer.SnowballPortugueseTokenizer", "org.omegat.plugins.tokenizer.SnowballRomanianTokenizer", "org.omegat.plugins.tokenizer.SnowballRussianTokenizer", "org.omegat.plugins.tokenizer.SnowballSpanishTokenizer", "org.omegat.plugins.tokenizer.SnowballSwedishTokenizer", "org.omegat.plugins.tokenizer.SnowballTurkishTokenizer") ;
+
+token_help :dialog "Help" -> token_m token_hc ;
+token_m :horizontal ->  token_t ;
+token_t "The Tokenizers function is available only if the Tokenizers \nplugin has been installed. \nTokenizers enable OmegaT to recognize inflected forms of words, \nfor example in the glossary function." -> @ ;
+token_hc :horizontal -> @close="Close" ;
+
 ### Connectivity tab
 
-connect :framed "Connectivity" -> proxy gt ms mymem;
+connect :framed "Connectivity" -> proxy gt ;
 
 proxy "Proxy settings" -> proxyhost proxyport ;
 
@@ -137,29 +133,6 @@ gt_t "To use Google Translate within OmegaT, you must order \na password from Go
 gt_hc :horizontal -> @close="Close";
 
 
-# Microsoft Translator API key
-
-ms "Microsoft Translator settings" -> msi msk ms_help ;
-msi "Microsoft Translator API Client ID" -> @password="" ;
-msk "Microsoft Translator API Secret Key" -> @password="" ;
-
-
-ms_help :dialog "Help" -> ms_m ms_hc ;
-ms_m :horizontal ->  ms_t ;
-ms_t "To use Microsoft Translator within OmegaT, you must order \na client ID and a secret key from Microsoft Azure Marketplace \n(see https://datamarket.azure.com/dataset/bing/microsofttranslator) \nand enter them here." -> @ ;
-ms_hc :horizontal -> @close="Close";
-
-# MyMemory MT email address 
-
-mymem "MyMemory Machine Translation" -> mymem_em mymem_help ;
-mymem_em "Valid email address" -> @string="" ;
-
-mymem_help :dialog "Help" -> mymem_m mymem_hc ;
-mymem_m :horizontal -> mymem_t ;
-mymem_t "Provide your email address to be able to make \n1000 requests to MyMemory server a day \ninstead of 100" -> @ ;
-mymem_hc :horizontal -> @close="Close" ;
-
- 
 ### Appearance settings tab
 
 appearance :framed "Appearance" -> fontaa laf ;
@@ -186,37 +159,20 @@ aa_hc :horizontal -> @close="Close";
 
 laf "Look and Feel" -> deflaf | gtk | motif | laf_help ;
 deflaf "Default" -> " " ;
-gtk "GTK" -> " -Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel ";
+gtk "GTK" -> " -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel " ;
 motif "Motif" -> " -Dswing.defaultlaf=com.sun.java.swing.plaf.motif.MotifLookAndFeel " ;
 laf_help :dialog "Help" -> laf_m laf_hc ;
 laf_m :horizontal ->  laf_t ;
 laf_t "Modern Linux distributions attempt to create \na uniform look and feel, and you may notice little or no difference with these settings." -> @ ;
-laf_hc :horizontal -> @close="Close" ;
+laf_hc :horizontal -> @close="Close";
 
 
 ### About tab
 
+### About tab
+
 about :framed "About" -> general_t ;
-general_t "About the Kaptain OmegaT Launcher" -> @text (<<LONGTEXT
-Certain functions and settings of OmegaT are activated or configured at
-runtime, i.e. when OmegaT is launched, by means of command-line options.
-The Kaptain OmegaT Launcher is intended to make the use of these functions and
-settings easier for GNU/Linux users by providing a user-friendly user interface.
-Information on Kaptain and its syntax can be found at
-http://kaptain.sourceforge.net
-
-The Kaptain OmegaT Launcher is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.
-The text of the GNU General Public License is provided within OmegaT itself,
-with which this script is intended to be supplied.
-LONGTEXT
-) ;
+general_t "About the Kaptain OmegaT Launcher" -> @text="Certain functions and settings of OmegaT are activated or configured at runtime, \ni.e. when OmegaT is launched, by means of command-line options. The Kaptain \nOmegaT Launcher is intended to make the use of these functions and settings easier \nfor Linux users by providing a user-friendly user interface. Information on Kaptain \nand its syntax can be found at: kaptain.sourceforge.net.\n\nThe Kaptain OmegaT Launcher is free software; you can redistribute it and/or modify it \nunder the terms of the GNU General Public License as published by the Free Software \nFoundation; either version 2 of the License, or (at your option) any later version.\n\n(c) Marc Prior, 2012\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; \nwithout even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. \nThe text of the GNU General Public License is provided within OmegaT itself, with which \nthis script is intended to be supplied." ;
 
 
 ### Button bar
@@ -228,4 +184,4 @@ close_button -> @close="Cancel" ;
 
 ### Launch command
 
-omt -> javaloc " -jar " memory " -Duser.language=" UIlang " -Duser.country=" country " -Dgoogle.api.key=" gt " -Dmicrosoft.api.client_secret=" msk " -Dmicrosoft.api.client_id=" msi " -Dmymemory.api.email=" mymem " -Dhttp.proxyHost=" proxyhost " -Dhttp.proxyPort=" proxyport " -Dawt.useSystemAAFontSettings=" fontaa laf " " jarfileloc " " projectloc " --config-dir=" configloc ;
+omt -> javaloc " -jar " memory " -Duser.language=" UIlang " -Duser.country=" country " -Dgoogle.api.key=" gt " -Dhttp.proxyHost=" proxyhost " -Dhttp.proxyPort=" proxyport " -Dawt.useSystemAAFontSettings=" fontaa laf " " jarfileloc " " projectloc " --config-dir=" configloc " --ITokenizer=" SLtoken " --ITokenizerTarget=" TLtoken ;

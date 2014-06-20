@@ -7,24 +7,23 @@
                2007 Didier Briel and Tiago Saboga
                2007 Zoltan Bartko - bartkozoltan@bartkozoltan.com
                2008 Andrzej Sawula
-               2010-2013 Alex Buloichik
+               2010 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 package org.omegat.util;
 
@@ -142,45 +141,5 @@ public class StringUtil {
         } else {
             return str.substring(0, len) + "...";
         }
-    }
-
-    /**
-     * Returns first letter in lowercase. Usually used for create tag shortcuts.
-     */
-    public static char getFirstLetterLowercase(CharSequence s) {
-        if (s == null) {
-            return 0;
-        }
-
-        char f = 0;
-
-        for (int i = 0; i < s.length(); i++) {
-            if (Character.isLetter(s.charAt(i))) {
-                f = Character.toLowerCase(s.charAt(i));
-                break;
-            }
-        }
-
-        return f;
-    }
-
-    /**
-     * Checks if text contains substring after specified position.
-     */
-    public static boolean isSubstringAfter(String text, int pos, String substring) {
-        if (pos + substring.length() > text.length()) {
-            return false;
-        }
-        return substring.equals(text.substring(pos, pos + substring.length()));
-    }
-
-    /**
-     * Checks if text contains substring before specified position.
-     */
-    public static boolean isSubstringBefore(String text, int pos, String substring) {
-        if (pos - substring.length() < 0) {
-            return false;
-        }
-        return substring.equals(text.substring(pos - substring.length(), pos));
     }
 }

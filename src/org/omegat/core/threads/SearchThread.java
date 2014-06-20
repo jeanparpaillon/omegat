@@ -7,35 +7,36 @@
                2006 Henry Pijffers
                2009 Didier Briel
                2010 Martin Fleurke, Antonio Vilei, Didier Briel
-               2013 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.threads;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
 import org.omegat.core.Core;
+import org.omegat.core.search.SearchExpression;
+import org.omegat.core.search.SearchResultEntry;
 import org.omegat.core.search.Searcher;
 import org.omegat.filters2.TranslationException;
-import org.omegat.gui.search.SearchWindowController;
+import org.omegat.gui.search.SearchWindow;
 import org.omegat.util.Log;
 
 /**
@@ -49,22 +50,62 @@ import org.omegat.util.Log;
  * @author Martin Fleurke
  * @author Antonio Vilei
  */
-public class SearchThread extends LongProcessThread {
+public class SearchThread extends Thread implements Searcher.ISearchCheckStop {
     /**
      * Starts a new search. To search current project only, set rootDir to null.
      * 
      * @param window
      *            search window for display results
-     * @param expression
-     *            search expression
+     * @param text
+     *            string to search for
+     * @param rootDir
+     *            folder to search in
+     * @param recursive
+     *            search in subfolders of rootDir too
+     * @param exact
+     *            search for a substring, including wildcards (*?)
+     * @param keyword
+     *            search for keywords, including wildcards (*?)
+     * @param regex
+     *            search based on regular expressions
+     * @param caseSensitive
+     *            search case sensitive
+     * @param tm
+     *            search in legacy and orphan TM strings too
+     * @param allResults
+     *            include duplicate results
+     * @param searchSource
+     *            search in source text
+     * @param searchTarget
+     *            search in target text
+     * @param searchAuthor
+     *            search for tmx segments modified by author id/name
+     * @param author
+     *            string to search for in TMX attribute modificationId
+     * @param searchDateAfter
+     *            search for translation segments modified after the given date
+     * @param dateAfter
+     *            the date after which the modification date has to be
+     * @param searchDateBefore
+     *            search for translation segments modified before the given date
+     * @param dateBefore
+     *            the date before which the modification date has to be
+     * @param numberOfResults
+     *            the maximum number of results returned by the thread
      * @internal The main loop (in the run method) waits for the variable
      *           m_searching to be set to true. This variable is set to true in
      *           this function on successful setting of the search parameters.
      */
-    public SearchThread(SearchWindowController window, Searcher searcher) {
+    public SearchThread(SearchWindow window, String text, String rootDir, boolean recursive, boolean exact,
+            boolean keyword, boolean regex, boolean caseSensitive, boolean tm, boolean allResults,
+            boolean searchSource, boolean searchTarget, boolean searchNotes, boolean searchAuthor, String author,
+            boolean searchDateAfter, long dateAfter, boolean searchDateBefore, long dateBefore,
+            int numberOfResults) {
         m_window = window;
-        m_searcher = searcher;
-        m_searcher.setThread(this);
+
+        m_searchExpression = new SearchExpression(text, rootDir, recursive, exact, keyword, regex,
+                caseSensitive, tm, allResults, searchSource, searchTarget, searchNotes, searchAuthor, author,
+                searchDateAfter, dateAfter, searchDateBefore, dateBefore, numberOfResults);
     }
 
     // /////////////////////////////////////////////////////////
@@ -73,13 +114,14 @@ public class SearchThread extends LongProcessThread {
     public void run() {
         try {
             try {
-                m_searcher.search();
+                List<SearchResultEntry> resultsList = new Searcher(Core.getProject(), this)
+                        .getSearchResults(m_searchExpression);
 
-                checkInterrupted();
+                if (stopped) {
+                    return;
+                }
 
-                m_window.displaySearchResult(m_searcher);
-            } catch(LongProcessInterruptedException ex) {
-                // interrupted - nothing to do
+                m_window.displaySearchResult(resultsList);
             } catch (PatternSyntaxException e) {
                 // bad regexp input
                 // alert user to badness
@@ -101,6 +143,18 @@ public class SearchThread extends LongProcessThread {
         }
     }
 
-    private SearchWindowController m_window;
-    private Searcher m_searcher;
+    public boolean isStopped() {
+        return stopped;
+    }
+
+    /**
+     * Stop search.
+     */
+    public void fin() {
+        stopped = true;
+    }
+
+    private boolean stopped;
+    private SearchWindow m_window;
+    private SearchExpression m_searchExpression;
 }

@@ -19,13 +19,13 @@ Pode atopar información máis actualizada de OmegaT en
 
 Pode atopar asistencia para o usuario no grupo de usuarios de Yahoo, onde se 
 pode buscar nos arquivos sen precisar subscrición:
-     http://tech.groups.yahoo.com/group/OmegaT/
+     http://groups.yahoo.com/group/OmegaT/
 
 Se quere facer algunha petición de mellora (en inglés), pode facelo no sitio de SourceForge:
-     https://sourceforge.net/p/omegat/feature-requests/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520350
 
 Para informar dalgún erro atopado (en inglés), pode facelo no sitio web de SourceForge:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
 ==============================================================================
   2.  Que é OmegaT?
@@ -241,10 +241,10 @@ Para participar no desenvolvemento de OmegaT, contacte cos desenvolvedores en:
 Para traducir a interface de usuario de OmegaT, o manual de usuario ou calquera 
 documento relacionado, lea: 
       
-      http://www.omegat.org/en/howtos/localizing_omegat.php
+      http://www.omegat.org/en/translation-info.html
 
 e subscríbase á lista de tradutores:
-      https://lists.sourceforge.net/lists/listinfo/omegat-l10n
+      http://lists.sourceforge.net/mailman/listinfo/omegat-l10n
 
 Para contribuír de calquera outro modo, subscríbase primeiro ao grupo de usuarios en:
       http://tech.groups.yahoo.com/group/omegat/
@@ -265,7 +265,6 @@ Código contribuído por
   Alex Buloichik (desenvolvedor xefe)
   Sandra Jean Chua
   Thomas Cordonnier
-  Enrique Estévez Fernández
   Martin Fleurke  
   Wildrich Fourie
   Phillip Hall
@@ -273,7 +272,6 @@ Código contribuído por
   Thomas Huriaux
   Hans-Peter Jacobs
   Kyle Katarn
-  Piotr Kulik
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
@@ -306,10 +304,11 @@ mais non ve o seu nome nesta lista, por favor, contacta connosco.)
 
 OmegaT usa as seguintes bibliotecas:
   HTMLParser por Somik Raha, Derrick Oswald e outros (Licenza LGPL)
+  MRJ Adapter 1.0.8 por Steve Roy (Licenza LGPL)
   VLDocking Framework 2.1.4 por VLSolutions (Licenza CeCILL)
   Hunspell por László Németh e outros (Licenza LGPL)
   JNA by Todd Fast, Timothy Wall e outros (Licenza LGPL)
-  Swing-Layout 1.0.4 (Licenza LGPL)
+  Swing-Layout 1.0.2 (Licenza LGPL)
   Jmyspell 2.1.4 (Licenza LGPL)
   SVNKit 1.7.5 (Licenza TMate)
   Sequence Library (Licenza Sequence Library)
@@ -319,6 +318,7 @@ OmegaT usa as seguintes bibliotecas:
   JSch (Licenza JSch)
   Base64 (dominio público)
   Diff (GPL)
+  JSAP (LGPL)
   orion-ssh2-214 (SSH Orion para a licenza Java)
   lucene-*.jar (Licenza Apache 2.0)
   Os tokenizers ingleses (org.omegat.tokenizer.SnowballEnglishTokenizer e
@@ -328,11 +328,7 @@ OmegaT usa as seguintes bibliotecas:
   jWordSplitter (Licenza Apache 2.0)
   LanguageTool.jar (Licenza LGPL)
   morfologik-*.jar (Licenza Morfologik)
-  segment-1.4.1.jar (Licenza Segment)
-  pdfbox-app-1.8.1.jar (Licenza Apache 2.0)
-  KoreanAnalyzer-3x-120223.jar (Licenza Apache 2.0)
-  SuperTMXMerge-for_OmegaT.jar (Licenza LGPL)
-  groovy-all-2.2.2.jar (Licenza Apache 2.0)
+  segment-1.3.0.jar (Licenza Segment)
 
 ==============================================================================
  5.  Ten fallos o seu OmegaT? Precisa axuda?
@@ -357,10 +353,10 @@ Pode engadir copias de ficheiros, porcións do rexistro, capturas de pantalla, c
 cousa que pense que pode axudar aos desenvolvedores a atopar e arranxar o erro.
 
 Para navegar polos arquivos do grupo de usuarios, vaia a:
-     http://tech.groups.yahoo.com/group/OmegaT/
+     http://groups.yahoo.com/group/OmegaT/
 
 Para abrir a páxina de informe de erros e arquivar un novo informe dun erro se é necesario vaia a:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
 Para manterse informado do que está acontecendo no seu informe de erro pode rexistrarse como usuario de SourceForge.
 

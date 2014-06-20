@@ -5,24 +5,22 @@
 
  Copyright (C) 2010 Alex Buloichik, Didier Briel
                2011 Briac Pilpre, Alex Buloichik
-               2013 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.machinetranslators;
@@ -35,6 +33,7 @@ import java.util.regex.Pattern;
 
 import org.omegat.util.Language;
 import org.omegat.util.OStrings;
+import org.omegat.util.PatternConsts;
 import org.omegat.util.Preferences;
 import org.omegat.util.WikiGet;
 
@@ -127,7 +126,28 @@ public class Google2Translate extends BaseTranslate {
             tr = matcher.group(1);
         }
 
-        tr = cleanSpacesAroundTags(tr, text);
+        // Attempt to clean spaces added by GT
+        // Spaces after
+        Matcher tag = PatternConsts.OMEGAT_TAG_SPACE.matcher(tr);
+        while (tag.find()) {
+            String searchTag = tag.group();
+            if (text.indexOf(searchTag) == -1) { // The tag didn't appear with a
+                // trailing space in the source text
+                String replacement = searchTag.substring(0, searchTag.length() - 1);
+                tr = tr.replace(searchTag, replacement);
+            }
+        }
+
+        // Spaces before
+        tag = PatternConsts.SPACE_OMEGAT_TAG.matcher(tr);
+        while (tag.find()) {
+            String searchTag = tag.group();
+            if (text.indexOf(searchTag) == -1) { // The tag didn't appear with a
+                // leading space in the source text
+                String replacement = searchTag.substring(1, searchTag.length());
+                tr = tr.replace(searchTag, replacement);
+            }
+        }
 
         return tr;
     }

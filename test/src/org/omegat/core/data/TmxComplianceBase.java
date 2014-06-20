@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.data;
@@ -44,14 +43,12 @@ import junit.framework.TestCase;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
-import org.omegat.core.Core;
 import org.omegat.core.segmentation.SRX;
 import org.omegat.core.segmentation.Segmenter;
 import org.omegat.filters2.FilterContext;
 import org.omegat.filters2.IFilter;
 import org.omegat.filters2.IParseCallback;
 import org.omegat.filters2.ITranslateCallback;
-import org.omegat.filters2.master.FilterMaster;
 import org.omegat.filters2.text.TextFilter;
 
 /**
@@ -67,8 +64,6 @@ public abstract class TmxComplianceBase extends TestCase {
 
     @Before
     public void setUp() throws Exception {
-        Core.setFilterMaster(new FilterMaster(FilterMaster.createDefaultFiltersConfig()));
-
         outFile = new File("build/testdata/" + getClass().getSimpleName() + "-" + getName() + ".out");
         outFile.getParentFile().mkdirs();
         if (outFile.exists()) {
@@ -146,10 +141,6 @@ public abstract class TmxComplianceBase extends TestCase {
                 Assert.assertNotNull(e);
                 return e.translation;
             }
-            @Override
-            String getCurrentFile() {
-                return null;
-            }
         };
         filter.translateFile(new File("test/data/tmx/TMXComplianceKit/" + fileTextIn), outFile, config, fc,
                 cb);
@@ -165,8 +156,8 @@ public abstract class TmxComplianceBase extends TestCase {
                     String comment, IFilter filter) {
             }
 
-            public void addEntry(String id, String source, String translation, boolean isFuzzy, String comment,
-                    String path, IFilter filter, List<ProtectedPart> protectedParts) {
+            public void addEntry(String id, String source, String translation, boolean isFuzzy,
+                    String comment, String path, IFilter filter) {
                 result.addAll(Segmenter.segment(context.getSourceLang(), source, null, null));
             }
 

@@ -6,12 +6,6 @@
 	<!-- Build WebStart pack -->
 	<target name="pack" depends="clean" description="Build WebStart pack">
 		<property file="../../../webstart.properties" />
-		
-		<!-- Place an omegat.prefs in release/WebStart-specific to bundle defaults
-			 for new users. -->
-		<jar destfile="${root}/dist/OmegaT.jar" update="true">
-			<zipfileset dir="." includes="omegat.prefs" prefix="org/omegat/util/" />
-		</jar>
 
 		<mkdir dir="${root}/build/webstart" />
 		<copy todir="${root}/build/webstart">
@@ -22,8 +16,8 @@
 			</filterset>
 		</copy>
 
-		<copy todir="${root}/build/webstart" flatten="yes">
-			<fileset dir="${root}/lib" includes="**/*.jar" />
+		<copy todir="${root}/build/webstart">
+			<fileset dir="${root}/lib" includes="*.jar" />
 			<fileset dir="${root}/lib-mnemonics/dist" includes="**/*.jar" />
 			<fileset dir="${root}/dist" includes="OmegaT.jar" />
 		</copy>

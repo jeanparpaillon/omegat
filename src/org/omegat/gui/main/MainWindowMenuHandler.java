@@ -10,55 +10,43 @@
                2009 Didier Briel, Alex Buloichik
                2010 Wildrich Fourie, Didier Briel
                2012 Wildrich Fourie, Guido Leenders, Didier Briel
-               2013 Zoltan Bartko, Didier Briel, Yu Tang
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.main;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 
+import org.jdesktop.swingworker.SwingWorker;
 import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
 import org.omegat.core.KnownException;
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
-import org.omegat.core.search.SearchMode;
 import org.omegat.core.segmentation.SRX;
 import org.omegat.core.spellchecker.ISpellChecker;
-import org.omegat.core.tagvalidation.ErrorReport;
 import org.omegat.filters2.master.FilterMaster;
-import org.omegat.filters2.master.PluginUtils;
 import org.omegat.gui.dialogs.AboutDialog;
-import org.omegat.gui.dialogs.AutotextAutoCompleterOptionsDialog;
-import org.omegat.gui.dialogs.CharTableAutoCompleterOptionsDialog;
 import org.omegat.gui.dialogs.ExternalTMXMatchesDialog;
 import org.omegat.gui.dialogs.FontSelectionDialog;
-import org.omegat.gui.dialogs.GlossaryAutoCompleterOptionsDialog;
-import org.omegat.gui.dialogs.LastChangesDialog;
-import org.omegat.gui.dialogs.LogDialog;
 import org.omegat.gui.dialogs.SaveOptionsDialog;
 import org.omegat.gui.dialogs.SpellcheckerConfigurationDialog;
 import org.omegat.gui.dialogs.TagValidationOptionsDialog;
@@ -70,7 +58,7 @@ import org.omegat.gui.editor.EditorSettings;
 import org.omegat.gui.editor.IEditor;
 import org.omegat.gui.filters2.FiltersCustomizer;
 import org.omegat.gui.help.HelpFrame;
-import org.omegat.gui.search.SearchWindowController;
+import org.omegat.gui.search.SearchWindow;
 import org.omegat.gui.segmentation.SegmentationCustomizer;
 import org.omegat.gui.stat.StatisticsWindow;
 import org.omegat.util.FileUtil;
@@ -95,7 +83,6 @@ import org.omegat.util.StringUtil;
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Didier Briel
  * @author Wildrich Fourie
- * @author Yu Tang
  */
 public class MainWindowMenuHandler {
     private final MainWindow mainWindow;
@@ -161,36 +148,7 @@ public class MainWindowMenuHandler {
      * Create translated documents.
      */
     public void projectCompileMenuItemActionPerformed() {
-        if (Preferences.isPreference(Preferences.TAGS_VALID_REQUIRED)) {
-            List<ErrorReport> stes = Core.getTagValidation().listInvalidTags();
-            if (stes != null) {
-                Core.getTagValidation().displayTagValidationErrors(stes, OStrings.getString("TF_MESSAGE_COMPILE"));
-                return;
-            }
-        }
-
         ProjectUICommands.projectCompile();
-    }
-
-    /**
-     * Create current translated document.
-     */
-    public void projectSingleCompileMenuItemActionPerformed() {
-        String midName = Core.getEditor().getCurrentFile();
-        if (StringUtil.isEmpty(midName)) {
-            return;
-        }
-
-        String sourcePattern = StaticUtils.escapeNonRegex(midName);
-        if (Preferences.isPreference(Preferences.TAGS_VALID_REQUIRED)) {
-            List<ErrorReport> stes = Core.getTagValidation().listInvalidTags(sourcePattern);
-            if (stes != null) {
-                Core.getTagValidation().displayTagValidationErrors(stes, OStrings.getString("TF_MESSAGE_COMPILE"));
-                return;
-            }
-        }
-
-        ProjectUICommands.projectSingleCompile(sourcePattern);
     }
 
     /** Edits project's properties */
@@ -204,7 +162,16 @@ public class MainWindowMenuHandler {
             return;
         }
 
-        mainWindow.m_projWin.setActive(!mainWindow.m_projWin.isActive());
+        // if the project window is not shown or in the background, show it
+        if (!mainWindow.m_projWin.isActive()) {
+            mainWindow.m_projWin.buildDisplay();
+            mainWindow.m_projWin.setVisible(true);
+            mainWindow.m_projWin.toFront();
+        }
+        // otherwise hide it
+        else {
+            mainWindow.m_projWin.setVisible(false);
+        }
     }
 
     /**
@@ -247,8 +214,6 @@ public class MainWindowMenuHandler {
                 }
 
                 CoreEvents.fireApplicationShutdown();
-
-                PluginUtils.unloadPlugins();
 
                 return null;
             }
@@ -345,20 +310,8 @@ public class MainWindowMenuHandler {
             selection = selection.trim();
         }
 
-        SearchWindowController search = new SearchWindowController(mainWindow, selection, SearchMode.SEARCH);
-        mainWindow.addSearchWindow(search);
-    }
-
-    public void editReplaceInProjectMenuItemActionPerformed() {
-        if (!Core.getProject().isProjectLoaded())
-            return;
-
-        String selection = Core.getEditor().getSelectedText();
-        if (selection != null) {
-            selection = selection.trim();
-        }
-
-        SearchWindowController search = new SearchWindowController(mainWindow, selection, SearchMode.REPLACE);
+        SearchWindow search = new SearchWindow(mainWindow, selection);
+        search.setVisible(true);
         mainWindow.addSearchWindow(search);
     }
 
@@ -387,34 +340,12 @@ public class MainWindowMenuHandler {
         Core.getMatcher().setActiveMatch(4);
     }
 
-    /** Set active match to the next one */
-    public void editSelectFuzzyNextMenuItemActionPerformed() {
-        Core.getMatcher().setNextActiveMatch();
-    }
-    
-    /** Set active match to the previous one */
-    public void editSelectFuzzyPrevMenuItemActionPerformed() {
-        Core.getMatcher().setPrevActiveMatch();
-    }
-
     public void editMultipleDefaultActionPerformed() {
         Core.getEditor().setAlternateTranslationForCurrentEntry(false);
     }
     
     public void editMultipleAlternateActionPerformed() {
         Core.getEditor().setAlternateTranslationForCurrentEntry(true);
-    }
-
-    public void editRegisterUntranslatedMenuItemActionPerformed() {
-        Core.getEditor().registerUntranslated();
-    }
-
-    public void editRegisterEmptyMenuItemActionPerformed() {
-        Core.getEditor().registerEmptyTranslation();
-    }
-
-    public void editRegisterIdenticalMenuItemActionPerformed() {
-        Core.getEditor().registerIdenticalTranslation();
     }
 
     public void cycleSwitchCaseMenuItemActionPerformed() {
@@ -435,10 +366,6 @@ public class MainWindowMenuHandler {
 
     public void gotoNextUntranslatedMenuItemActionPerformed() {
         Core.getEditor().nextUntranslatedEntry();
-    }
-
-    public void gotoNextTranslatedMenuItemActionPerformed() {
-        Core.getEditor().nextTranslatedEntry();
     }
 
     public void gotoNextSegmentMenuItemActionPerformed() {
@@ -616,11 +543,6 @@ public class MainWindowMenuHandler {
                         mainWindow.menu.viewMarkBidiCheckBoxMenuItem.isSelected());
     }
 
-    public void viewMarkAutoPopulatedCheckBoxMenuItemActionPerformed() {
-        Core.getEditor().getSettings()
-                .setMarkAutoPopulated(mainWindow.menu.viewMarkAutoPopulatedCheckBoxMenuItem.isSelected());
-    }
-
     public void viewDisplayModificationInfoNoneRadioButtonMenuItemActionPerformed() {
         Core.getEditor().getSettings()
                 .setDisplayModificationInfo(EditorSettings.DISPLAY_MODIFICATION_INFO_NONE);
@@ -637,49 +559,19 @@ public class MainWindowMenuHandler {
     }
 
     public void toolsValidateTagsMenuItemActionPerformed() {
-        Core.getTagValidation().displayTagValidationErrors(Core.getTagValidation().listInvalidTags(), null);
-    }
-
-    public void toolsSingleValidateTagsMenuItemActionPerformed() {
-        String midName = Core.getEditor().getCurrentFile();
-        List<ErrorReport> stes = null;
-        if (!StringUtil.isEmpty(midName)) {
-            String sourcePattern = StaticUtils.escapeNonRegex(midName);
-            stes = Core.getTagValidation().listInvalidTags(sourcePattern);
-        }
-        Core.getTagValidation().displayTagValidationErrors(stes, null);
+        Core.getTagValidation().validateTags();
     }
 
     /**
      * Identify all the placeholders in the source text and automatically inserts them into the target text.
      */
     public void editTagPainterMenuItemActionPerformed() {
-        SourceTextEntry ste = Core.getEditor().getCurrentEntry();
 
-        // insert tags
-        String tr = Core.getEditor().getCurrentTranslation();
-        for (ProtectedPart pp : ste.getProtectedParts()) {
-            if (!tr.contains(pp.getTextInSourceSegment())) {
-                Core.getEditor().insertText(pp.getTextInSourceSegment());
-            }
-        }
-    }
+        String sourceText = Core.getEditor().getCurrentEntry().getSrcText();
+        String placeholderString = StaticUtils.buildPaintPlaceholderList(sourceText);
 
-    public void editTagNextMissedMenuItemActionPerformed() {
-        String trans = Core.getEditor().getCurrentTranslation();
-        if (trans == null) {
-            return;
-        }
-
-        SourceTextEntry ste = Core.getEditor().getCurrentEntry();
-
-        // insert next tag
-        String tr = Core.getEditor().getCurrentTranslation();
-        for (ProtectedPart pp : ste.getProtectedParts()) {
-            if (!tr.contains(pp.getTextInSourceSegment())) {
-                Core.getEditor().insertText(pp.getTextInSourceSegment());
-                break;
-            }
+        if (!placeholderString.equals("")) {
+            Core.getEditor().insertText(placeholderString);
         }
     }
 
@@ -689,10 +581,6 @@ public class MainWindowMenuHandler {
 
     public void toolsShowStatisticsMatchesMenuItemActionPerformed() {
         new StatisticsWindow(StatisticsWindow.STAT_TYPE.MATCHES).setVisible(true);
-    }
-
-    public void toolsShowStatisticsMatchesPerFileMenuItemActionPerformed() {
-        new StatisticsWindow(StatisticsWindow.STAT_TYPE.MATCHES_PER_FILE).setVisible(true);
     }
 
     public void optionsTabAdvanceCheckBoxMenuItemActionPerformed() {
@@ -713,18 +601,6 @@ public class MainWindowMenuHandler {
     public void optionsTransTipsExactMatchMenuItemActionPerformed() {
         Preferences.setPreference(Preferences.TRANSTIPS_EXACT_SEARCH,
                 mainWindow.menu.optionsTransTipsExactMatchMenuItem.isSelected());
-    }
-
-    public void optionsAutoCompleteGlossaryMenuItemActionPerformed() {
-        new GlossaryAutoCompleterOptionsDialog(mainWindow).setVisible(true);
-    }
-
-    public void optionsAutoCompleteAutoTextMenuItemActionPerformed() {
-        new AutotextAutoCompleterOptionsDialog(mainWindow).setVisible(true);
-    }
-
-    public void optionsAutoCompleteCharTableMenuItemActionPerformed() {
-        new CharTableAutoCompleterOptionsDialog(mainWindow).setVisible(true);
     }
 
     /**
@@ -908,20 +784,6 @@ public class MainWindowMenuHandler {
         new AboutDialog(mainWindow).setVisible(true);
     }
 
-    /**
-     * Shows Last changes
-     */
-    public void helpLastChangesMenuItemActionPerformed() {
-        new LastChangesDialog(mainWindow).setVisible(true);
-    }
-
-    /**
-     * Show log
-     */
-    public void helpLogMenuItemActionPerformed() {
-        new LogDialog(mainWindow).setVisible(true);
-    }
-    
     /**
      * Displays the dialog to set login and password for proxy.
      */

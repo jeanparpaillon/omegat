@@ -4,24 +4,22 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2008 Alex Buloichik
-               2013 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util.logging;
@@ -59,7 +57,6 @@ import org.omegat.util.StaticUtils;
  * @author Alex Buloichik (alex73mail@gmail.com)
  */
 public class OmegaTFileHandler extends StreamHandler {
-    private String logFileName;
     private File lockFile;
     private FileOutputStream lockStream;
     private final long maxSize;
@@ -91,12 +88,6 @@ public class OmegaTFileHandler extends StreamHandler {
         openFiles(new File(StaticUtils.getConfigDir(), "logs"));
     }
 
-   /**
-    * @return the name of the current log file
-    */
-    public String getOmegaTLogFileName(){
-       return logFileName;
-   }
     /**
      * Open log file and lock.
      */
@@ -104,10 +95,9 @@ public class OmegaTFileHandler extends StreamHandler {
         dir.mkdirs();
         for (int instanceIndex = 0; instanceIndex < 100; instanceIndex++) {
             String fileName = "OmegaT" + (instanceIndex > 0 ? ("-" + instanceIndex) : "");
-            
+
             lockFile = new File(dir, fileName + ".log.lck");
-            logFileName = fileName;
-            
+
             // try to create lock file
             lockStream = new FileOutputStream(lockFile);
             if (lockStream.getChannel().tryLock() != null) {

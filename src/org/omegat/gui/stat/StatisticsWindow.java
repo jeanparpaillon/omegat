@@ -8,20 +8,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.stat;
@@ -62,7 +61,7 @@ import org.omegat.util.gui.DockingUI;
 public class StatisticsWindow extends JDialog {
 
     public static enum STAT_TYPE {
-        STANDARD, MATCHES, MATCHES_PER_FILE
+        STANDARD, MATCHES
     };
 
     private JProgressBar progressBar;
@@ -82,11 +81,7 @@ public class StatisticsWindow extends JDialog {
             break;
         case MATCHES:
             setTitle(OStrings.getString("CT_STATSMATCH_WindowHeader"));
-            thread = new CalcMatchStatistics(this, false);
-            break;
-        case MATCHES_PER_FILE:
-            setTitle(OStrings.getString("CT_STATSMATCH_PER_FILE_WindowHeader"));
-            thread = new CalcMatchStatistics(this, true);
+            thread = new CalcMatchStatistics(this);
             break;
         }
 
@@ -138,28 +133,15 @@ public class StatisticsWindow extends JDialog {
         });
     }
 
-    public void displayData(final String result) {
+    public void displayData(final String result, final boolean end) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                if (end) {
+                    progressBar.setValue(100);
+                    progressBar.setString("");
+                    progressBar.setVisible(false);
+                }
                 output.setText(result);
-            }
-        });
-    }
-
-    public void appendData(final String result) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                output.append(result);
-            }
-        });
-    }
-
-    public void finishData() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                progressBar.setValue(100);
-                progressBar.setString("");
-                progressBar.setVisible(false);
                 output.setCaretPosition(0);
             }
         });

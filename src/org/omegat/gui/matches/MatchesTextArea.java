@@ -7,24 +7,22 @@
                2007 Zoltan Bartko
                2011 John Moran
                2012 Alex Buloichik, Jean-Christophe Helary, Didier Briel, Thomas Cordonnier, Aaron Madlon-Kay
-               2013 Zoltan Bartko, Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.matches;
@@ -39,8 +37,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -53,11 +49,11 @@ import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.StringData;
 import org.omegat.core.data.TMXEntry;
 import org.omegat.core.matching.DiffDriver.TextRun;
+import org.omegat.core.matching.ITokenizer;
 import org.omegat.core.matching.NearString;
 import org.omegat.gui.common.EntryInfoThreadPane;
 import org.omegat.gui.main.DockableScrollPane;
 import org.omegat.gui.main.MainWindow;
-import org.omegat.tokenizer.ITokenizer;
 import org.omegat.util.Log;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
@@ -99,7 +95,8 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
 
     private final List<Integer> delimiters = new ArrayList<Integer>();
     private final List<Integer> sourcePos = new ArrayList<Integer>();
-    private final List<Map<Integer, List<TextRun>>> diffInfos = new ArrayList<Map<Integer, List<TextRun>>>();
+    private final List<Integer> diffPos = new ArrayList<Integer>();
+    private final List<List<TextRun>> diffInfos = new ArrayList<List<TextRun>>();
     private int activeMatch;
 
     private final MainWindow mw;
@@ -137,6 +134,7 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
         matches.clear();
         delimiters.clear();
         sourcePos.clear();
+        diffPos.clear();
         diffInfos.clear();
 
         if (newMatches == null) {
@@ -146,7 +144,7 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
 
         matches.addAll(newMatches);
         delimiters.add(0);
-        StringBuilder displayBuffer = new StringBuilder();
+        StringBuffer displayBuffer = new StringBuffer();
 
         MatchesVarExpansion template = new MatchesVarExpansion(Preferences.getPreferenceDefault(Preferences.EXT_TMX_MATCH_TEMPLATE, MatchesVarExpansion.DEFAULT_TEMPLATE));
         
@@ -155,6 +153,7 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
             MatchesVarExpansion.Result result = template.apply(match, i + 1);
             displayBuffer.append(result.text);
             sourcePos.add(result.sourcePos);
+            diffPos.add(result.diffPos);
             diffInfos.add(result.diffInfo);
 
             if (i < (newMatches.size() - 1))
@@ -185,7 +184,6 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
     /**
      * {@inheritDoc}
      */
-    @Override
     public NearString getActiveMatch() {
         UIThreadsUtil.mustBeSwingThread();
 
@@ -207,7 +205,6 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
      * @param targetMatch The target of the match
      * @return The target match with numbers possibly substituted
      */
-    @Override
     public String substituteNumbers(String source, String sourceMatch, String targetMatch) {
 
         ITokenizer sourceTok = Core.getProject().getSourceTokenizer();
@@ -304,7 +301,7 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
             String percentage_s = Preferences.getPreferenceDefault(Preferences.BEST_MATCH_MINIMAL_SIMILARITY,
                     Preferences.BEST_MATCH_MINIMAL_SIMILARITY_DEFAULT);
             // <HP-experiment>
-            int percentage;
+            int percentage = 0;
             try {
                 // int
                 percentage = Integer.parseInt(percentage_s);
@@ -317,7 +314,7 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
             }
             // </HP-experiment>
             NearString thebest = matches.get(0);
-            if (thebest.scores[0].score >= percentage) {
+            if (thebest.score >= percentage) {
                 SourceTextEntry currentEntry = Core.getEditor().getCurrentEntry();
                 TMXEntry te = Core.getProject().getTranslationInfo(currentEntry);
                 if (!te.isTranslated()) {
@@ -344,7 +341,6 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
      * Sets the index of an active match. It basically highlights the fuzzy
      * match string selected. (numbers start from 0)
      */
-    @Override
     public void setActiveMatch(int activeMatch) {
         UIThreadsUtil.mustBeSwingThread();
 
@@ -369,52 +365,44 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
         
         // Apply sourceText styling
         if (sourcePos.get(activeMatch) != -1) {
-            Token[] tokens = tokenizer.tokenizeAllExactly(match.source);
-            // fix for bug 1586397
-            byte[] attributes = match.attr;
-            for (int i = 0; i < tokens.length; i++) {
-                Token token = tokens[i];
-                int tokstart = start + sourcePos.get(activeMatch) + token.getOffset();
-                int toklength = token.getLength();
-                if ((attributes[i] & StringData.UNIQ) != 0) {
-                    doc.setCharacterAttributes(tokstart, toklength, ATTRIBUTES_CHANGED, false);
-                } else if ((attributes[i] & StringData.PAIR) != 0) {
-                    doc.setCharacterAttributes(tokstart, toklength, ATTRIBUTES_UNCHANGED, false);
-                }
-            }
+	        Token[] tokens = tokenizer.tokenizeAllExactly(match.source);
+	        // fix for bug 1586397
+	        byte[] attributes = match.attr;
+	        for (int i = 0; i < tokens.length; i++) {
+	            Token token = tokens[i];
+	            int tokstart = start + sourcePos.get(activeMatch) + token.getOffset();
+	            int toklength = token.getLength();
+	            if ((attributes[i] & StringData.UNIQ) != 0) {
+	                doc.setCharacterAttributes(tokstart, toklength, ATTRIBUTES_CHANGED, false);
+	            } else if ((attributes[i] & StringData.PAIR) != 0) {
+	                doc.setCharacterAttributes(tokstart, toklength, ATTRIBUTES_UNCHANGED, false);
+	            }
+	        }
         }
         
         // Apply diff styling to ALL diffs, with colors only for activeMatch
-        // Iterate through (up to) 5 fuzzy matches
-        for (int i = 0; i < diffInfos.size(); i++) {
-            Map<Integer, List<TextRun>> diffInfo = diffInfos.get(i);
-            // Iterate through each diff variant (${diff}, ${diffReversed}, ...)
-            for (Entry<Integer, List<TextRun>> e : diffInfo.entrySet()) {
-                int diffPos = e.getKey();
-                if (diffPos != -1 && diffInfo != null) {
-                    // Iterate through each style chunk (added or deleted)
-                    for (TextRun r : e.getValue()) {
-                        int tokstart = delimiters.get(i) + diffPos + r.start;
-                        switch (r.type) {
-                        case DELETE:
-                            doc.setCharacterAttributes(
-                                tokstart,
-                                r.length,
-                                i == activeMatch ? ATTRIBUTES_DELETED_ACTIVE : ATTRIBUTES_DELETED_INACTIVE,
-                                false);
-                            break;
-                        case INSERT:
-                            doc.setCharacterAttributes(
-                                tokstart,
-                                r.length,
-                                i == activeMatch ? ATTRIBUTES_INSERTED_ACTIVE : ATTRIBUTES_INSERTED_INACTIVE,
-                                false);
-                        case NOCHANGE:
-                            // Nothing
-                        }
-                    }
-                }
-            }
+        for (int i = 0; i < diffPos.size(); i++) {
+	        List<TextRun> diffInfo = diffInfos.get(i);
+	        if (diffPos.get(i) != -1 && diffInfo != null) {
+		        for (TextRun r : diffInfo) {
+		        	int tokstart = delimiters.get(i) + diffPos.get(i) + r.start;
+		        	switch (r.type) {
+		        	case DELETE:
+		        		doc.setCharacterAttributes(
+		        				tokstart,
+		        				r.length,
+		        				i == activeMatch ? ATTRIBUTES_DELETED_ACTIVE : ATTRIBUTES_DELETED_INACTIVE,
+		        				false);
+		        		break;
+		        	case INSERT:
+		        		doc.setCharacterAttributes(
+		        				tokstart,
+		        				r.length,
+		        				i == activeMatch ? ATTRIBUTES_INSERTED_ACTIVE : ATTRIBUTES_INSERTED_INACTIVE,
+		        				false);
+		        	}
+		        }
+	    	}
         }
 
         doc.setCharacterAttributes(start, end - start, ATTRIBUTES_SELECTED, false);
@@ -479,30 +467,9 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
         // create the menu
         JPopupMenu popup = new JPopupMenu();
 
-        NearString m = matches.get(clickedItem);
-        if (m.projs.length > 1) {
-            JMenuItem item = popup.add(OStrings.getString("MATCHES_PROJECTS"));
-            item.setEnabled(false);
-            for (int i = 0; i < m.projs.length; i++) {
-                String proj = m.projs[i];
-                StringBuilder b = new StringBuilder();
-                if (proj.equals("")) {
-                    b.append(OStrings.getString("MATCHES_THIS_PROJECT"));
-                } else {
-                    b.append(proj);
-                }
-                b.append(" ");
-                b.append(m.scores[i].toString());
-                JMenuItem pItem = popup.add(b.toString());
-                pItem.setEnabled(false);
-            }
-            popup.addSeparator();
-        }
-        
         JMenuItem item = popup.add(OStrings.getString("MATCHES_INSERT"));
         item.addActionListener(new ActionListener() {
             // the action: insert this match
-            @Override
             public void actionPerformed(ActionEvent e) {
                 setActiveMatch(clickedItem);
                 mw.doInsertTrans();
@@ -511,7 +478,6 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
 
         item = popup.add(OStrings.getString("MATCHES_REPLACE"));
         item.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 setActiveMatch(clickedItem);
                 mw.doRecycleTrans();
@@ -521,14 +487,13 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
         popup.addSeparator();
 
         final NearString ns = matches.get(clickedItem);
-        String proj = ns.projs[0];
+        String proj = ns.proj;
 
         item = popup.add(OStrings.getString("MATCHES_GO_TO_SEGMENT_SOURCE"));
 
         if (StringUtil.isEmpty(proj)) {
             final IProject project = Core.getProject();
             item.addActionListener(new ActionListener() {
-                @Override
                 public void actionPerformed(ActionEvent e) {
                     /*
                      * Goto segment with contains matched source. Since it enough rarely executed code, it
@@ -564,25 +529,5 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
         }
 
         popup.show(this, clickedPoint.x, clickedPoint.y);
-    }
-    
-    /**
-     * Make the next match active
-     */
-    @Override
-    public void setNextActiveMatch() {
-        if (activeMatch < matches.size()-1) {
-            setActiveMatch(activeMatch+1);
-}
-    }
-
-    /**
-     * Make the previous match active
-     */
-    @Override
-    public void setPrevActiveMatch() {
-        if (activeMatch > 0) {
-            setActiveMatch(activeMatch-1);
-        }
     }
 }

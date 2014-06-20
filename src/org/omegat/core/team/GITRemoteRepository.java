@@ -4,31 +4,31 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2012 Alex Buloichik
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 package org.omegat.core.team;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Logger;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,12 +38,9 @@ import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
-import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.errors.UnsupportedCredentialItem;
 import org.eclipse.jgit.lib.ProgressMonitor;
@@ -74,11 +71,8 @@ import org.omegat.util.gui.DockingUI;
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Martin Fleurke
- * @author Aaron Madlon-Kay
  */
 public class GITRemoteRepository implements IRemoteRepository {
-    private static final Logger LOGGER = Logger.getLogger(GITRemoteRepository.class.getName());
-
     protected static String LOCAL_BRANCH = "master";
     protected static String REMOTE_BRANCH = "origin/master";
     protected static String REMOTE = "origin";
@@ -94,7 +88,7 @@ public class GITRemoteRepository implements IRemoteRepository {
     }
 
     public boolean isFilesLockingAllowed() {
-        return true;
+        return false;
     }
 
     public GITRemoteRepository(File localDirectory) throws Exception {
@@ -107,11 +101,7 @@ public class GITRemoteRepository implements IRemoteRepository {
         } catch (Exception e) {}
 
         this.localDirectory = localDirectory;
-        CredentialsProvider prevProvider = CredentialsProvider.getDefault();
         myCredentialsProvider = new MyCredentialsProvider(this);
-        if (prevProvider instanceof MyCredentialsProvider) {
-            myCredentialsProvider.setCredentials(((MyCredentialsProvider)prevProvider).credentials);
-        }
         CredentialsProvider.setDefault(myCredentialsProvider);
         File localRepositoryDirectory = getLocalRepositoryRoot(localDirectory);
         if (localRepositoryDirectory != null) {
@@ -120,7 +110,6 @@ public class GITRemoteRepository implements IRemoteRepository {
     }
 
     public void checkoutFullProject(String repositoryURL) throws Exception {
-        Log.logInfoRB("GIT_START", "clone");
         CloneCommand c = Git.cloneRepository();
         c.setURI(repositoryURL);
         c.setDirectory(localDirectory);
@@ -158,8 +147,6 @@ public class GITRemoteRepository implements IRemoteRepository {
             config.setString("core", null, "autocrlf", "input");
         }
         config.save();
-        myCredentialsProvider.saveCredentials();
-        Log.logInfoRB("GIT_FINISH", "clone");
     }
 
     static public boolean deleteDirectory(File path) {
@@ -178,39 +165,20 @@ public class GITRemoteRepository implements IRemoteRepository {
       }
 
     public boolean isChanged(File file) throws Exception {
-        Log.logInfoRB("GIT_START", "status");
         String relativeFile = FileUtil.computeRelativePath(repository.getWorkTree(), file);
         Status status = new Git(repository).status().call();
-        Log.logInfoRB("GIT_FINISH", "status");
-        boolean result = status.getModified().contains(relativeFile);
-        Log.logDebug(LOGGER, "GIT modified status of {0} is {1}", relativeFile, result);
-        return result;
+        return status.getModified().contains(relativeFile);
     }
 
     public boolean isUnderVersionControl(File file) throws Exception {
-        boolean result = file.exists();
         String relativeFile = FileUtil.computeRelativePath(repository.getWorkTree(), file);
         Status status = new Git(repository).status().call();
-
-        if (status.getAdded().contains(relativeFile) || status.getModified().contains(relativeFile)
-                || status.getChanged().contains(relativeFile)
-                || status.getConflicting().contains(relativeFile)
-                || status.getMissing().contains(relativeFile) || status.getRemoved().contains(relativeFile)) {
-            result = true;
-        }
-        if (status.getUntracked().contains(relativeFile)) {
-            result = false;
-        }
-        Log.logDebug(LOGGER, "GIT file {0} is under version control: {1}", relativeFile, result);
-        return result;
+        return !status.getUntracked().contains(relativeFile);
     }
-    
-    public void setCredentials(Credentials credentials) {
-        if (credentials == null) {
-            return;
-        }
-        myCredentialsProvider.setCredentials(credentials);
-        setReadOnly(credentials.readOnly);
+
+    public void setCredentials(String username, String password, boolean forceSavePlainPassword) {
+        //we use internal credentials provider, so this function is never called. Nothing to implement.
+        //if this function IS called, then we should implement myCredentialsProvider.setUsername/password()
     }
 
     public void setReadOnly(boolean value) {
@@ -224,8 +192,6 @@ public class GITRemoteRepository implements IRemoteRepository {
         Ref remoteBranch = repository.getRef(REMOTE_BRANCH);
         RevCommit headCommit = walk.lookupCommit(localBranch.getObjectId());
         RevCommit upstreamCommit = walk.lookupCommit(remoteBranch.getObjectId());
-        Log.logDebug(LOGGER, "GIT HEAD rev: {0}", headCommit.getName());
-        Log.logDebug(LOGGER, "GIT origin/master rev: {0}", upstreamCommit.getName());
 
         LogCommand cmd = new Git(repository).log().addRange(upstreamCommit, headCommit);
         Iterable<RevCommit> commitsToUse = cmd.call();
@@ -234,13 +200,11 @@ public class GITRemoteRepository implements IRemoteRepository {
             last = commit;
         }
         RevCommit commonBase = last != null ? last.getParent(0) : upstreamCommit;
-        Log.logDebug(LOGGER, "GIT commonBase rev: {0}", commonBase.getName());
         return commonBase.getName();
     }
 
     public void restoreBase(File[] files) throws Exception {
         String baseRevisionId = getBaseRevisionId(files[0]);
-        Log.logDebug(LOGGER, "GIT restore base {0} for {1}", baseRevisionId, (Object) files);
         //undo local changes of specific file.
         CheckoutCommand checkoutCommand = new Git(repository).checkout();
         for (File f: files) {
@@ -253,14 +217,7 @@ public class GITRemoteRepository implements IRemoteRepository {
     }
 
     public void reset() throws Exception {
-        Log.logInfoRB("GIT_START", "reset");
-        try {
-            new Git(repository).reset().setMode(ResetCommand.ResetType.HARD).call();
-            Log.logInfoRB("GIT_FINISH", "reset");
-        } catch (Exception ex) {
-            Log.logErrorRB("GIT_ERROR", "reset", ex.getMessage());
-            checkAndThrowException(ex);
-        }
+        new Git(repository).reset().setMode(ResetCommand.ResetType.HARD).call();
     }
 
     public void updateFullProject() throws NetworkException, Exception {
@@ -383,48 +340,80 @@ public class GITRemoteRepository implements IRemoteRepository {
      * CredentialsProvider that will ask user for credentials when required,
      * and can store the credentials to plain text file.
       */
-    private static class MyCredentialsProvider extends CredentialsProvider {
-        
+    private class MyCredentialsProvider extends CredentialsProvider {
         GITRemoteRepository gitRemoteRepository;
-        File credentialsFile;
-        
-        private Credentials credentials;
+        /**
+         * Name of file to store credentials in (when asked)
+         */
+        String credentialsFilename;
+
+        /**
+         * key in properties file that contains credentials
+         */
+        private final String pkey_username = "username";
+        private final String pkey_password = "password";
+        private final String pkey_fingerprint = "RSAkeyfingerprint";
+
+        /**
+         * Currently used username
+         */
+        private String username;
+        /**
+         * Currently used password
+         */
+        private char[] password;
+
+        /**
+         * Fingerprint of git server.
+         */
+        private String fingerprint;
+
+        private boolean saveCredentialsToPlainText = false;
 
         public MyCredentialsProvider(GITRemoteRepository repo) {
             super();
             this.gitRemoteRepository = repo;
-            if (repo != null) {
-                credentialsFile = new File(gitRemoteRepository.localDirectory, "credentials.properties");
+            readCredentials();
+        }
+
+        /**
+         * reads username, password and host fingerprint from plain text file.
+         */
+        private void readCredentials() {
+            credentialsFilename = gitRemoteRepository.localDirectory+File.separator+"credentials.properties";
+            File credentialsFile = new File(credentialsFilename);
+            if (credentialsFile.canRead()) {
+                Properties p = new Properties();
+                try {
+                    p.load(new FileInputStream(credentialsFile));
+                    username = p.getProperty(pkey_username);
+                    password = p.getProperty(pkey_password).toCharArray();
+                    fingerprint = p.getProperty(pkey_fingerprint);
+                    saveCredentialsToPlainText = true;
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        
-        public void setCredentials(Credentials credentials) {
-            if (credentials == null) {
-                return;
+
+        /**
+         * Saves username, password and fingerprint (if known) to plain text file.
+         */
+        private void saveCredentialsToPlainTextFile() {
+            Properties p = new Properties();
+            p.setProperty(pkey_username, username);
+            p.setProperty(pkey_password, String.valueOf(password));
+            if (fingerprint != null) {
+                p.setProperty(pkey_fingerprint, fingerprint);
             }
-            this.credentials = credentials.clone();
-        }
-        
-        private void loadCredentials() {
-            if (credentialsFile == null || !credentialsFile.exists()) {
-                credentials = new Credentials();
-                return;
-            }
+            File credentialsFile = new File(credentialsFilename);
             try {
-                credentials = Credentials.fromFile(credentialsFile);
-            } catch (FileNotFoundException ex) {
-                credentials = new Credentials();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        
-        private void saveCredentials() {
-            if (credentials == null || credentialsFile == null || !credentials.saveAsPlainText) {
-                return;
-            }
-            try {
-                credentials.saveToPlainTextFile(credentialsFile);
+                if (!credentialsFile.exists()) {
+                    credentialsFile.createNewFile();
+                }
+                p.store(new FileOutputStream(credentialsFile), "git remote access credentials for OmegaT project");
             } catch (FileNotFoundException e) {
                 Core.getMainWindow().displayErrorRB(e, "TEAM_ERROR_SAVE_CREDENTIALS", null, "TF_ERROR");
             } catch (IOException e) {
@@ -435,36 +424,33 @@ public class GITRemoteRepository implements IRemoteRepository {
         @Override
         public boolean get(URIish uri, CredentialItem... items)
                 throws UnsupportedCredentialItem {
-            if (credentials == null) {
-                loadCredentials();
-            }
             boolean ok = false;
             //theoretically, username can be unknown, but in practice it is always set, so not requested.
             for (CredentialItem i : items) {
                 if (i instanceof CredentialItem.Username) {
-                    if (credentials.username==null) {
+                    if (username==null) {
                         ok = askCredentials(uri.getUser());
                         if (!ok) {
                             throw new UnsupportedCredentialItem(uri, OStrings.getString("TEAM_CREDENTIALS_DENIED"));
                         }
                     }
-                    ((CredentialItem.Username) i).setValue(credentials.username);
+                    ((CredentialItem.Username) i).setValue(username);
                     continue;
                 } else if (i instanceof CredentialItem.Password) {
-                    if (credentials.password==null) {
+                    if (password==null) {
                         ok = askCredentials(uri.getUser());
                         if (!ok) {
                             throw new UnsupportedCredentialItem(uri, OStrings.getString("TEAM_CREDENTIALS_DENIED"));
                         }
                     }
-                    ((CredentialItem.Password) i).setValue(credentials.password);
-                    if (credentials.password != null) {
-                        uri.setPass(new String(credentials.password));
+                    ((CredentialItem.Password) i).setValue(password);
+                    if (password != null) {
+                        uri.setPass(new String(password));
                     }
                     continue;
                 } else if (i instanceof CredentialItem.StringType) {
                     if (i.getPromptText().equals("Password: ")) {
-                        if (credentials.password==null) {
+                        if (password==null) {
                             if (!ok) {
                                 ok = askCredentials(uri.getUser());
                                 if (!ok) {
@@ -472,7 +458,7 @@ public class GITRemoteRepository implements IRemoteRepository {
                                 }
                             }
                         }
-                        ((CredentialItem.StringType) i).setValue(new String(credentials.password));
+                        ((CredentialItem.StringType) i).setValue(new String(password));
                         continue;
                     }
                 } else if (i instanceof CredentialItem.YesNoType) {
@@ -480,18 +466,27 @@ public class GITRemoteRepository implements IRemoteRepository {
                     //RSA key fingerprint is e2:d3:84:d5:86:e7:68:69:a0:aa:a6:ad:a3:a0:ab:a2.
                     //Are you sure you want to continue connecting?
                     String promptText = i.getPromptText();
-                    String promptedFingerprint = extractFingerprint(promptText);
-                    if (promptedFingerprint.equals(credentials.fingerprint)) {
-                        ((CredentialItem.YesNoType) i).setValue(true);
-                        continue;
+                    String promptedFingerprint = null;
+                    Pattern p = Pattern.compile("The authenticity of host '.*' can't be established\\.\\nRSA key fingerprint is (([0-9a-f]{2}:){15}[0-9a-f]{2})\\.\\nAre you sure you want to continue connecting\\?");
+                    Matcher fingerprintMatcher = p.matcher(promptText);
+                    if (fingerprintMatcher.find()) {
+                        int start = fingerprintMatcher.start(1);
+                        int end = fingerprintMatcher.end(1);
+                        promptedFingerprint = promptText.substring(start, end);
+                        if (promptedFingerprint.equals(this.fingerprint)) {
+                            ((CredentialItem.YesNoType) i).setValue(true);
+                            continue;
+                        }
                     }
                     int choice = Core.getMainWindow().showConfirmDialog(promptText, null, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                     if (choice==JOptionPane.YES_OPTION) {
                         ((CredentialItem.YesNoType) i).setValue(true);
                         if (promptedFingerprint != null) {
-                            credentials.fingerprint = promptedFingerprint;
+                            this.fingerprint = promptedFingerprint;
                         }
-                        saveCredentials();
+                        if (saveCredentialsToPlainText) {
+                            saveCredentialsToPlainTextFile();
+                        }
                     } else {
                         ((CredentialItem.YesNoType) i).setValue(false);
                     }
@@ -533,7 +528,7 @@ public class GITRemoteRepository implements IRemoteRepository {
         private boolean askCredentials(String usernameInUri) {
             TeamUserPassDialog userPassDialog = new TeamUserPassDialog(Core.getMainWindow().getApplicationFrame());
             DockingUI.displayCentered(userPassDialog);
-            userPassDialog.descriptionTextArea.setText(OStrings.getString(credentials.username==null ? "TEAM_USERPASS_FIRST" : "TEAM_USERPASS_WRONG"));
+            userPassDialog.descriptionTextArea.setText(OStrings.getString(this.username==null ? "TEAM_USERPASS_FIRST" : "TEAM_USERPASS_WRONG"));
             //if username is already available in uri, then we will not be asked for an username, so we cannot change it.
             if (usernameInUri != null && !"".equals(usernameInUri)) {
                 userPassDialog.userText.setText(usernameInUri);
@@ -542,14 +537,13 @@ public class GITRemoteRepository implements IRemoteRepository {
             }
             userPassDialog.setVisible(true);
             if (userPassDialog.getReturnStatus() == TeamUserPassDialog.RET_OK) {
-                credentials.username = userPassDialog.userText.getText();
-                credentials.password = userPassDialog.passwordField.getPassword();
-                credentials.readOnly = userPassDialog.cbReadOnly.isSelected();
-                if (gitRemoteRepository != null) {
-                    gitRemoteRepository.setReadOnly(credentials.readOnly);
+                username = userPassDialog.userText.getText();
+                password = userPassDialog.passwordField.getPassword();
+                gitRemoteRepository.setReadOnly(userPassDialog.cbReadOnly.isSelected());
+                saveCredentialsToPlainText = userPassDialog.cbForceSavePlainPassword.isSelected();
+                if (saveCredentialsToPlainText) {
+                    saveCredentialsToPlainTextFile();
                 }
-                credentials.saveAsPlainText = userPassDialog.cbForceSavePlainPassword.isSelected();
-                saveCredentials();
                 return true;
             } else {
                 return false;
@@ -558,61 +552,9 @@ public class GITRemoteRepository implements IRemoteRepository {
 
         public void reset(URIish uri) {
             //reset is called after 5 authorization failures. After 3 resets, the transport gives up.
-            credentials.clear();
+            username = null;
+            password = null;
         }
 
-    }
-
-    private static String extractFingerprint(String text) {
-        Pattern p = Pattern.compile("The authenticity of host '.*' can't be established\\.\\nRSA key fingerprint is (([0-9a-f]{2}:){15}[0-9a-f]{2})\\.\\nAre you sure you want to continue connecting\\?");
-        Matcher fingerprintMatcher = p.matcher(text);
-        if (fingerprintMatcher.find()) {
-            int start = fingerprintMatcher.start(1);
-            int end = fingerprintMatcher.end(1);
-            return text.substring(start, end);
-        }
-        return null;
-    }
-    
-
-    /**
-     * Determines whether or not the supplied URL represents a valid Git repository.
-     * 
-     * <p>Does the equivalent of <code>git ls-remote <i>url</i></code>.
-     * 
-     * @param url URL of supposed remote repository
-     * @return true if repository appears to be valid, false otherwise
-     */
-    public static boolean isGitRepository(String url, Credentials credentials)
-            throws AuthenticationException {
-        // Heuristics to save some waiting time
-        if (url.startsWith("svn://") || url.startsWith("svn+")) {
-            return false;
-        }
-        File temp = FileUtil.createTempDir();
-        try {
-            // A temporary local repository appears to be required even though
-            // we're just calling `git ls-remote`.
-            Repository repo = Git.init().setDirectory(temp).call().getRepository();
-            if (credentials != null) {
-                MyCredentialsProvider provider = new MyCredentialsProvider(null);
-                provider.setCredentials(credentials);
-                CredentialsProvider.setDefault(provider);
-            }
-            new LsRemoteCommand(repo).setRemote(url).call();
-        } catch (TransportException ex) {
-            if (ex.getMessage().endsWith("not authorized") || ex.getMessage().endsWith("Auth fail")) {
-                throw new AuthenticationException(ex);
-            }
-            return false;
-        } catch (GitAPIException ex) {
-            throw new AuthenticationException(ex);
-        } catch (JGitInternalException ex) {
-            // Happens if the URL is a Subversion URL like svn://...
-            return false;
-        } finally {
-            FileUtil.deleteTree(temp);
-        }
-        return true;
     }
 }

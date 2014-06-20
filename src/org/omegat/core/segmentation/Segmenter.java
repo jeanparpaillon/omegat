@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.segmentation;
@@ -72,9 +71,6 @@ public final class Segmenter {
      */
     public static List<String> segment(Language lang, String paragraph, List<StringBuffer> spaces,
             List<Rule> brules) {
-        if (paragraph == null) {
-            return null;
-        }
         List<String> segments = breakParagraph(lang, paragraph, brules);
         List<String> sentences = new ArrayList<String>(segments.size());
         if (spaces == null)
@@ -178,7 +174,7 @@ public final class Segmenter {
 
         Matcher bbm = null;
         if (rule.getBeforebreak() != null)
-                bbm = rule.getCompiledBeforebreak().matcher(paragraph);
+            bbm = rule.getCompiledBeforebreak().matcher(paragraph);
         Matcher abm = null;
         if (rule.getAfterbreak() != null)
             abm = rule.getCompiledAfterbreak().matcher(paragraph);
@@ -293,13 +289,11 @@ public final class Segmenter {
 
             if (CJK_LANGUAGES.contains(targetLang.getLanguageCode().toUpperCase(Locale.ENGLISH))) {
                 Rule rule = brules.get(i - 1);
-                if (res.length() > 0) {
-                    char lastChar = res.charAt(res.length() - 1);
-                    if ((lastChar != '.')
-                            && (!PatternConsts.SPACY_REGEX.matcher(rule.getBeforebreak()).matches() || !PatternConsts.SPACY_REGEX
-                                    .matcher(rule.getAfterbreak()).matches()))
-                        sp.setLength(0);
-                }
+                char lastChar = res.charAt(res.length() - 1);
+                if ((lastChar != '.')
+                        && (!PatternConsts.SPACY_REGEX.matcher(rule.getBeforebreak()).matches() || !PatternConsts.SPACY_REGEX
+                                .matcher(rule.getAfterbreak()).matches()))
+                    sp.setLength(0);
             } else if (CJK_LANGUAGES.contains(sourceLang.getLanguageCode().toUpperCase(Locale.ENGLISH))
                     && sp.length() == 0)
                 sp.append(" ");
@@ -317,18 +311,15 @@ public final class Segmenter {
             Language targetLang, String targetEntry, List<String> sourceSegments, List<String> targetSegments) {
         if (needResegment) {
             List<String> srcSegments = Segmenter.segment(sourceLang, sourceEntry, null, null);
-            if (targetEntry != null) { // There is no translation for this entry, because for instance it's a note
-                                       // on an untranslated entry
-                List<String> tarSegments = Segmenter.segment(targetLang, targetEntry, null, null);
+            List<String> tarSegments = Segmenter.segment(targetLang, targetEntry, null, null);
 
-                if (srcSegments.size() == tarSegments.size()) {
-                    sourceSegments.addAll(srcSegments);
-                    targetSegments.addAll(tarSegments);
-                    return;
-                }
+            if (srcSegments.size() == tarSegments.size()) {
+                sourceSegments.addAll(srcSegments);
+                targetSegments.addAll(tarSegments);
+                return;
             }
         }
-        // No need to resegment, or segments counts not equals, or no translation
+        // not need to resegment, or segments counts not equals
         sourceSegments.add(sourceEntry);
         targetSegments.add(targetEntry);
 

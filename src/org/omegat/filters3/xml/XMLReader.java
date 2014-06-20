@@ -8,20 +8,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml;
@@ -31,7 +30,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.regex.Matcher;
@@ -61,17 +59,9 @@ public class XMLReader extends Reader {
     /** Inner encoding. */
     private String encoding;
 
-    /** EOL chars used in source file. */
-    private String eol;
-
     /** Returns detected encoding. */
     public String getEncoding() {
         return encoding;
-    }
-
-    /** Returns detected EOL chars. */
-    public String getEol() {
-        return eol;
     }
 
     /**
@@ -96,7 +86,7 @@ public class XMLReader extends Reader {
      *            The encoding to use if we can't autodetect.
      */
     public XMLReader(File file, String encoding) throws IOException {
-        reader = createReader(file, encoding);
+        reader = new BufferedReader(createReader(file, encoding));
     }
 
     /**
@@ -114,7 +104,7 @@ public class XMLReader extends Reader {
      * <p>
      * Note that we cannot detect UTF-16 encoding, if there's no BOM!
      */
-    private BufferedReader createReader(File file, String defaultEncoding) throws IOException {
+    private Reader createReader(File file, String defaultEncoding) throws IOException {
         // BOM detection
         BufferedInputStream is = new BufferedInputStream(new FileInputStream(file));
 
@@ -133,7 +123,7 @@ public class XMLReader extends Reader {
 
         is.reset();
         if (encoding != null) {
-            return createReaderAndDetectEOL(is, encoding);
+            return new InputStreamReader(is, encoding);
         }
 
         is.mark(OConsts.READ_AHEAD_LIMIT);
@@ -149,50 +139,15 @@ public class XMLReader extends Reader {
 
         is.reset();
         if (encoding != null) {
-            return createReaderAndDetectEOL(is, encoding);
+            return new InputStreamReader(is, encoding);
         }
 
         // UTF-8 if we couldn't detect it ourselves
         try {
-            return createReaderAndDetectEOL(is, OConsts.UTF8);
+            return new InputStreamReader(is, OConsts.UTF8);
         } catch (Exception e) {
-            return createReaderAndDetectEOL(is, null);
+            return new InputStreamReader(is);
         }
-    }
-
-    private BufferedReader createReaderAndDetectEOL(InputStream is, String encoding) throws IOException {
-        BufferedReader rd = new BufferedReader(encoding != null ? new InputStreamReader(is, encoding)
-                : new InputStreamReader(is), OConsts.READ_AHEAD_LIMIT);
-        rd.mark(OConsts.READ_AHEAD_LIMIT);
-
-        for (int i = 0; i < OConsts.READ_AHEAD_LIMIT; i++) {
-            char ch = (char) rd.read();
-            if (ch == '\r' || ch == '\n') {
-                if (eol == null) {
-                    eol = "";
-                } else if (eol.charAt(0) == ch) {
-                    // duplicate char - this is second line
-                    rd.reset();
-                    return rd;
-                }
-                eol += ch;
-                if (eol.length() == 2) {
-                    // second char - latest
-                    rd.reset();
-                    return rd;
-                }
-            } else {
-                if (eol != null) {
-                    rd.reset();
-                    return rd;
-                }
-            }
-        }
-
-        // no eols found - assume '\n'
-        eol = "\n";
-        rd.reset();
-        return rd;
     }
 
     public void close() throws IOException {

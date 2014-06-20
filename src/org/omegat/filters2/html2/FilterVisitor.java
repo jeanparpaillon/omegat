@@ -8,24 +8,22 @@
                2010 Didier Briel
                2011 Didier Briel, Martin Fleurke
                2012 Didier Briel, Martin Fleurke
-               2013 Didier Briel, Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters2.html2;
@@ -46,9 +44,7 @@ import org.htmlparser.Node;
 import org.htmlparser.Remark;
 import org.htmlparser.Tag;
 import org.htmlparser.Text;
-import org.htmlparser.nodes.TextNode;
 import org.htmlparser.visitors.NodeVisitor;
-import org.omegat.core.Core;
 import org.omegat.util.OStrings;
 import org.omegat.util.PatternConsts;
 import org.omegat.util.StaticUtils;
@@ -186,9 +182,8 @@ public class FilterVisitor extends NodeVisitor {
             if (isParagraphTag(tag) && text)
                 endup();
 
-            if (isPreformattingTag(tag) || Core.getFilterMaster().getConfig().isPreserveSpaces()) {
+            if (isPreformattingTag(tag))
                 preformatting = true;
-            }
             // Translate attributes of tags if they are not null.
             maybeTranslateAttribute(tag, "abbr");
             maybeTranslateAttribute(tag, "alt");
@@ -216,7 +211,6 @@ public class FilterVisitor extends NodeVisitor {
                     //then translate the value
                     maybeTranslateAttribute(tag, "value");
                 }
-                maybeTranslateAttribute(tag, "placeholder");
             }
             // Special handling of meta-tag: depending on the other attributes
             // the contents-attribute should or should not be translated.
@@ -272,8 +266,7 @@ public class FilterVisitor extends NodeVisitor {
     @Override
     public void visitStringNode(Text string) {
         recurse = true;
-        // nbsp is special case - process it like usual spaces
-        String trimmedtext = entitiesToChars(string.getText()).replace((char) 160, ' ').trim();
+        String trimmedtext = string.getText().trim();
         if (trimmedtext.length() > 0) {
             // Hack around HTMLParser not being able to handle XHTML
             // RFE pending:
@@ -453,6 +446,15 @@ public class FilterVisitor extends NodeVisitor {
             firstgood++;
         }
 
+        // writing out all tags before the "first good" one
+        for (int i = 0; i < firstgood; i++) {
+            Node node = all.get(i);
+            if (node instanceof Tag)
+                writeout("<" + node.getText() + ">");
+            else
+                writeout(compressWhitespace(node.getText()));
+        }
+
         // detecting the last ending tag in 'afters'
         // that has its starting in the paragraph
         // all after this "last good" is simply writen out
@@ -497,59 +499,6 @@ public class FilterVisitor extends NodeVisitor {
             lastgood--;
         }
 
-        boolean changed = true;
-        while (changed) {
-            changed = false;
-            boolean removeTags = Core.getFilterMaster().getConfig().isRemoveTags();
-            if (!removeTags) {
-                for (int i = 0; i < firstgood; i++) {
-                    Node node = all.get(i);
-                    if (node instanceof Tag) {
-                        firstgood = i;
-                        changed = true;
-                        break;
-                    }
-                }
-                for (int i = all.size() - 1; i > lastgood; i--) {
-                    Node node = all.get(i);
-                    if (node instanceof Tag) {
-                        lastgood = i;
-                        changed = true;
-                        break;
-                    }
-                }
-            }
-
-            boolean removeSpacesAround = Core.getFilterMaster().getConfig().isRemoveSpacesNonseg();
-            if (!removeSpacesAround) {
-                for (int i = 0; i < firstgood; i++) {
-                    Node node = all.get(i);
-                    if (node instanceof TextNode) {
-                        firstgood = i;
-                        changed = true;
-                        break;
-                    }
-                }
-                for (int i = all.size() - 1; i > lastgood; i--) {
-                    Node node = all.get(i);
-                    if (node instanceof TextNode) {
-                        lastgood = i;
-                        changed = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // writing out all tags before the "first good" one
-        for (int i = 0; i < firstgood; i++) {
-            Node node = all.get(i);
-            if (node instanceof Tag)
-                writeout("<" + node.getText() + ">");
-            else
-                writeout(compressWhitespace(node.getText()));
-        }
-
         // appending all tags until "last good" one to paragraph text
         StringBuffer paragraph = new StringBuffer();
         // appending all tags starting from "first good" one to paragraph text
@@ -590,12 +539,7 @@ public class FilterVisitor extends NodeVisitor {
                     break;
                 }
             }
-            
-            if (Core.getFilterMaster().getConfig().isRemoveSpacesNonseg()) {
-                compressed = StaticUtils.compressSpaces(uncompressed);
-            } else {
-                compressed = uncompressed;
-            }
+            compressed = StaticUtils.compressSpaces(uncompressed);
         }
 
         // getting the translation

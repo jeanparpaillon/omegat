@@ -6,24 +6,22 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2012 Guido Leenders, Didier Briel
                2013 Aaron Madlon-Kay, Yu Tang
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.data;
@@ -33,7 +31,6 @@ import gen.core.filters.Filters;
 import java.io.File;
 
 import org.omegat.core.segmentation.SRX;
-import org.omegat.filters2.master.PluginUtils;
 import org.omegat.util.Language;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
@@ -60,13 +57,14 @@ public class ProjectProperties {
     }
 
     /** Default constructor to initialize fields (to get no NPEs). */
-    public ProjectProperties(File projectDir) throws Exception {
-        setProjectName(projectDir.getCanonicalFile().getName());
+    public ProjectProperties(File projectDir) {
+        setProjectName(projectDir.getName());
         setProjectRoot(projectDir.getAbsolutePath() + File.separator);
         setSourceRoot(projectRoot + OConsts.DEFAULT_SOURCE + File.separator);
         setTargetRoot(projectRoot + OConsts.DEFAULT_TARGET + File.separator);
         setGlossaryRoot(projectRoot + OConsts.DEFAULT_GLOSSARY + File.separator);
-        setWriteableGlossary(projectRoot + OConsts.DEFAULT_GLOSSARY + File.separator + OConsts.DEFAULT_W_GLOSSARY);
+        setWriteableGlossary(projectRoot + OConsts.DEFAULT_GLOSSARY + File.separator +
+                projectDir.getName() + OConsts.DEFAULT_W_GLOSSARY);
         setTMRoot(projectRoot + OConsts.DEFAULT_TM + File.separator);
         setDictRoot(projectRoot + OConsts.DEFAULT_DICT + File.separator);
 
@@ -89,9 +87,6 @@ public class ProjectProperties {
         }
 
         projectSRX = SRX.loadSRX(new File(getProjectInternal(), SRX.CONF_SENTSEG));
-
-        setSourceTokenizer(PluginUtils.getTokenizerClassForLanguage(getSourceLanguage()));
-        setTargetTokenizer(PluginUtils.getTokenizerClassForLanguage(getTargetLanguage()));
     }
 
 	/** Returns The Target (Compiled) Files Directory */
@@ -134,22 +129,6 @@ public class ProjectProperties {
     public void setWriteableGlossary(String writeableGlossaryFile) {
         if (!StringUtil.isEmpty(writeableGlossaryFile)) {
             this.writeableGlossaryFile = writeableGlossaryFile;
-        }
-    }
-
-    public boolean isDefaultWriteableGlossaryFile() {
-        return writeableGlossaryFile.equals(computeDefaultWriteableGlossaryFile());
-    }
-
-    public String computeDefaultWriteableGlossaryFile() {
-        // Default glossary file name depends on where glossaryDir is:
-        //  - Inside project folder: glossary.txt
-        //  - Outside project folder: ${projectName}-glossary.txt
-        String glossaryDir = getGlossaryRoot();
-        if (glossaryDir.startsWith(projectRoot)) {
-            return glossaryDir + OConsts.DEFAULT_W_GLOSSARY;
-        } else {
-            return glossaryDir + projectName + OConsts.DEFAULT_W_GLOSSARY_SUFF;
         }
     }
 
@@ -261,38 +240,6 @@ public class ProjectProperties {
      */
     public void setTargetLanguage(String targetLanguage) {
         this.targetLanguage = new Language(targetLanguage);
-    }
-
-    /**
-     * Returns the class name of the source language tokenizer for the Project.
-     */
-    public Class<?> getSourceTokenizer() {
-        if (sourceTokenizer == null) {
-            Class<?> cls = PluginUtils.getTokenizerClassForLanguage(getSourceLanguage());
-            setSourceTokenizer(cls);
-        }
-        return sourceTokenizer;
-    }
-
-    /**
-     * Sets the class name of the source language tokenizer for the Project.
-     */
-    public void setSourceTokenizer(Class<?> sourceTokenizer) {
-        this.sourceTokenizer = sourceTokenizer;
-    }
-
-    /**
-     * Returns the class name of the target language tokenizer for the Project.
-     */
-    public Class<?> getTargetTokenizer() {
-        return targetTokenizer;
-    }
-
-    /**
-     * Sets the class name of the target language tokenizer for the Project.
-     */
-    public void setTargetTokenizer(Class<?> targetTokenizer) {
-        this.targetTokenizer = targetTokenizer;
     }
 
     /**
@@ -460,9 +407,6 @@ public class ProjectProperties {
 
     private Language sourceLanguage;
     private Language targetLanguage;
-
-    private Class<?> sourceTokenizer;
-    private Class<?> targetTokenizer;
 
     private boolean sentenceSegmentingOn;
     private boolean supportDefaultTranslations;
