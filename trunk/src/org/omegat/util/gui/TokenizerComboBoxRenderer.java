@@ -26,9 +26,9 @@
 package org.omegat.util.gui;
 
 import java.awt.Component;
+import javax.swing.DefaultListCellRenderer;
 
 import javax.swing.JList;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 /**
  * A class that renders a tokenizer combo box.
@@ -36,7 +36,7 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
  * @author Aaron Madlon-Kay
  */
 @SuppressWarnings("serial")
-public class TokenizerComboBoxRenderer extends BasicComboBoxRenderer {
+public class TokenizerComboBoxRenderer extends DelegatingComboBoxRenderer {
     public Component getListCellRendererComponent(JList list, Object value, // value
                                                                             // to
                                                                             // display
@@ -46,12 +46,11 @@ public class TokenizerComboBoxRenderer extends BasicComboBoxRenderer {
     {
         if (value instanceof Class<?>) {
             Class<?> cls = (Class<?>) value;
-            setText(cls.getSimpleName());
+            return super.getListCellRendererComponent(list, cls.getSimpleName(), index, isSelected, cellHasFocus);
         } else if (value instanceof String) {
-            setText((String) value);
+            return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         } else {
             throw new RuntimeException("Unsupported type in tokenizer combobox");
         }
-        return this;
     }
 }
