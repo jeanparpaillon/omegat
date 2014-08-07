@@ -10,36 +10,38 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters2.html2;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import javax.swing.AbstractAction;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import org.omegat.util.OStrings;
-import org.omegat.util.gui.StaticUIUtils;
 
 /**
  * Modal dialog to edit (X)HTML filter options.
@@ -89,12 +91,15 @@ public class EditOptionsDialog extends javax.swing.JDialog {
         removeCommentsCB.setSelected(options.getRemoveComments());
         compressWhitespaceCB.setSelected(options.getCompressWhitespace());
 
-        StaticUIUtils.setEscapeAction(this, new AbstractAction() {
-            @Override
+        // Handle escape key to close the window
+        KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escapeAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 doClose(RET_CANCEL);
             }
-        });
+        };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
+        getRootPane().getActionMap().put("ESCAPE", escapeAction);
     }
 
     private HTMLOptions options;
@@ -136,6 +141,8 @@ public class EditOptionsDialog extends javax.swing.JDialog {
         translateHreflangCB = new javax.swing.JCheckBox();
         translateValueCB = new javax.swing.JCheckBox();
         translateButtonValueCB = new javax.swing.JCheckBox();
+        removeCommentsCB = new javax.swing.JCheckBox();
+        compressWhitespaceCB = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         paragraphOnBrCB = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
@@ -144,8 +151,6 @@ public class EditOptionsDialog extends javax.swing.JDialog {
         skipMetaTF = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         ignoreTagsTF = new javax.swing.JTextField();
-        compressWhitespaceCB = new javax.swing.JCheckBox();
-        removeCommentsCB = new javax.swing.JCheckBox();
 
         setTitle(OStrings.getString("HTML_Filter_Options")); // NOI18N
         setResizable(false);
@@ -243,16 +248,20 @@ public class EditOptionsDialog extends javax.swing.JDialog {
         jPanel1.add(jLabel6);
         jPanel1.add(ignoreTagsTF);
 
+        compressWhitespaceCB.setSelected(false);
         org.openide.awt.Mnemonics.setLocalizedText(compressWhitespaceCB, OStrings.getString("HTML_COMPRESS_WHITESPACE")); // NOI18N
         jPanel1.add(compressWhitespaceCB);
 
+        removeCommentsCB.setSelected(false);
         org.openide.awt.Mnemonics.setLocalizedText(removeCommentsCB, OStrings.getString("HTML_REMOVE_COMMENTS")); // NOI18N
         jPanel1.add(removeCommentsCB);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
-        setLocationRelativeTo(null);
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        java.awt.Dimension dialogSize = getSize();
+        setLocation((screenSize.width-dialogSize.width)/2,(screenSize.height-dialogSize.height)/2);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -326,7 +335,6 @@ public class EditOptionsDialog extends javax.swing.JDialog {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JCheckBox compressWhitespaceCB;
     private javax.swing.JRadioButton ifHasHeaderRB;
     private javax.swing.JRadioButton ifHasMetaRB;
     private javax.swing.JTextField ignoreTagsTF;
@@ -340,7 +348,6 @@ public class EditOptionsDialog extends javax.swing.JDialog {
     private javax.swing.JRadioButton neverRB;
     private javax.swing.JButton okButton;
     private javax.swing.JCheckBox paragraphOnBrCB;
-    private javax.swing.JCheckBox removeCommentsCB;
     private javax.swing.JTextField skipMetaTF;
     private javax.swing.JTextField skipRegExpTF;
     private javax.swing.JCheckBox translateButtonValueCB;
@@ -349,5 +356,7 @@ public class EditOptionsDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox translateLangCB;
     private javax.swing.JCheckBox translateSrcCB;
     private javax.swing.JCheckBox translateValueCB;
+    private javax.swing.JCheckBox compressWhitespaceCB;
+    private javax.swing.JCheckBox removeCommentsCB;
     // End of variables declaration//GEN-END:variables
 }

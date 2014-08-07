@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 package org.omegat.util;
 
@@ -45,7 +44,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.omegat.core.data.ProjectProperties;
-import org.omegat.core.data.RealProjectTest;
+import org.omegat.core.data.TMXEntry;
 import org.omegat.filters.TestFilterBase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -85,7 +84,7 @@ public class TMXWriterTest extends TestFilterBase {
 
         TMXWriter2 wr = new TMXWriter2(outFile, new Language("en-US"), new Language("be-BY"), false, true,
                 false);
-        wr.writeEntry(in, "test", RealProjectTest.createEmptyTMXEntry(), null);
+        wr.writeEntry(in, "test", new TMXEntry(null, null, null, 0, null, true), null);
         wr.close();
 
         load(new ArrayList<String>(), null, false, false);
@@ -95,10 +94,10 @@ public class TMXWriterTest extends TestFilterBase {
         TMXWriter2 wr = new TMXWriter2(outFile, new Language("en-US"), new Language("be-BY"), false, true,
                 false);
 
-        wr.writeEntry("source", "target", RealProjectTest.createEmptyTMXEntry(), null);
-        wr.writeEntry("1<a1/>2", "zz", RealProjectTest.createEmptyTMXEntry(), null);
-        wr.writeEntry("3<a1>4</a1>5", "zz", RealProjectTest.createEmptyTMXEntry(), null);
-        wr.writeEntry("6<a1>7", "zz", RealProjectTest.createEmptyTMXEntry(), null);
+        wr.writeEntry("source", "target", new TMXEntry(null, null, null, 0, null, true), null);
+        wr.writeEntry("1<a1/>2", "zz", new TMXEntry(null, null, null, 0, null, true), null);
+        wr.writeEntry("3<a1>4</a1>5", "zz", new TMXEntry(null, null, null, 0, null, true), null);
+        wr.writeEntry("6<a1>7", "zz", new TMXEntry(null, null, null, 0, null, true), null);
 
         wr.close();
 
@@ -149,7 +148,7 @@ public class TMXWriterTest extends TestFilterBase {
 
             TMXWriter2 wr = new TMXWriter2(outFile, new Language("en-US"), new Language("be-BY"), false,
                     true, false);
-            wr.writeEntry("source", "tar\nget", RealProjectTest.createEmptyTMXEntry(), null);
+            wr.writeEntry("source", "tar\nget", new TMXEntry(null, null, null, 0, null, true), null);
             wr.close();
 
             StringBuilder text = new StringBuilder();

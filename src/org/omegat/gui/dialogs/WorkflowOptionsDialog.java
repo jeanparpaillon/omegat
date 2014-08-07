@@ -10,31 +10,36 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.dialogs;
 
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.KeyStroke;
 
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
-import org.omegat.util.gui.StaticUIUtils;
 
 /**
  * 
@@ -53,7 +58,17 @@ public class WorkflowOptionsDialog extends JDialog {
     public WorkflowOptionsDialog(Frame parent) {
         super(parent, true);
 
-        StaticUIUtils.setEscapeClosable(this);
+        // HP
+        // Handle escape key to close the window
+        KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escapeAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
+        getRootPane().getActionMap().put("ESCAPE", escapeAction);
+        // END HP
 
         initComponents();
 
@@ -84,9 +99,6 @@ public class WorkflowOptionsDialog extends JDialog {
         stopOnAlternativeTranslation.setSelected(Preferences.
                 isPreference(Preferences.STOP_ON_ALTERNATIVE_TRANSLATION));
         convertNumbers.setSelected(Preferences.isPreference(Preferences.CONVERT_NUMBERS));
-        allowTagEditing.setSelected(Preferences.isPreference(Preferences.ALLOW_TAG_EDITING));
-        tagValidateOnLeave.setSelected(Preferences.isPreference(Preferences.TAG_VALIDATE_ON_LEAVE));
-        cbSaveAutoStatus.setSelected(Preferences.isPreference(Preferences.SAVE_AUTO_STATUS));
         invalidate();
         pack();
     }
@@ -121,9 +133,6 @@ public class WorkflowOptionsDialog extends JDialog {
         insertFuzzyCheckBox = new javax.swing.JCheckBox();
         exportCurrentSegment = new javax.swing.JCheckBox();
         stopOnAlternativeTranslation = new javax.swing.JCheckBox();
-        allowTagEditing = new javax.swing.JCheckBox();
-        tagValidateOnLeave = new javax.swing.JCheckBox();
-        cbSaveAutoStatus = new javax.swing.JCheckBox();
 
         setTitle(OStrings.getString("GUI_TITLE_Workflow_Options")); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -145,7 +154,7 @@ public class WorkflowOptionsDialog extends JDialog {
         getContentPane().add(similarityLabel, gridBagConstraints);
 
         similaritySpinner.setEnabled(false);
-        similaritySpinner.setValue(90);
+        similaritySpinner.setValue(new Integer(90));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -180,7 +189,7 @@ public class WorkflowOptionsDialog extends JDialog {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 20;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(14, 4, 4, 4);
@@ -194,7 +203,7 @@ public class WorkflowOptionsDialog extends JDialog {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 20;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(14, 4, 4, 4);
@@ -226,6 +235,7 @@ public class WorkflowOptionsDialog extends JDialog {
         defaultRadio.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(defaultRadio, OStrings.getString("WF_OPTION_INSERT_SOURCE")); // NOI18N
         defaultRadio.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        defaultRadio.setMargin(new java.awt.Insets(0, 0, 0, 0));
         defaultRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radiosActionPerformed(evt);
@@ -243,6 +253,7 @@ public class WorkflowOptionsDialog extends JDialog {
         ourButtonGroup.add(leaveEmptyRadio);
         org.openide.awt.Mnemonics.setLocalizedText(leaveEmptyRadio, OStrings.getString("WF_OPTION_INSERT_NOTHTHING")); // NOI18N
         leaveEmptyRadio.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        leaveEmptyRadio.setMargin(new java.awt.Insets(0, 0, 0, 0));
         leaveEmptyRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radiosActionPerformed(evt);
@@ -314,41 +325,10 @@ public class WorkflowOptionsDialog extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         getContentPane().add(stopOnAlternativeTranslation, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(allowTagEditing, OStrings.getString("WF_TAG_EDITING")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.ipadx = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-        getContentPane().add(allowTagEditing, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(tagValidateOnLeave, OStrings.getString("WG_TAG_VALIDATE_ON_LEAVE")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.ipadx = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-        getContentPane().add(tagValidateOnLeave, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(cbSaveAutoStatus, OStrings.getString("WG_SAVE_AUTO_STATUS")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.ipadx = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-        getContentPane().add(cbSaveAutoStatus, gridBagConstraints);
-
         pack();
-        setLocationRelativeTo(null);
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        java.awt.Dimension dialogSize = getSize();
+        setLocation((screenSize.width-dialogSize.width)/2,(screenSize.height-dialogSize.height)/2);
     }// </editor-fold>//GEN-END:initComponents
 
     private void radiosActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_radiosActionPerformed
@@ -376,9 +356,6 @@ public class WorkflowOptionsDialog extends JDialog {
         Preferences.setPreference(Preferences.STOP_ON_ALTERNATIVE_TRANSLATION,
                 stopOnAlternativeTranslation.isSelected());
         Preferences.setPreference(Preferences.CONVERT_NUMBERS, convertNumbers.isSelected());
-        Preferences.setPreference(Preferences.ALLOW_TAG_EDITING, allowTagEditing.isSelected());
-        Preferences.setPreference(Preferences.TAG_VALIDATE_ON_LEAVE, tagValidateOnLeave.isSelected());
-        Preferences.setPreference(Preferences.SAVE_AUTO_STATUS, cbSaveAutoStatus.isSelected());
 
         doClose(RET_OK);
     }// GEN-LAST:event_okButtonActionPerformed
@@ -401,10 +378,8 @@ public class WorkflowOptionsDialog extends JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox allowTagEditing;
     private javax.swing.JCheckBox allowTranslationEqualToSource;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JCheckBox cbSaveAutoStatus;
     private javax.swing.JCheckBox convertNumbers;
     private javax.swing.JRadioButton defaultRadio;
     private javax.swing.JTextArea descriptionTextArea;
@@ -418,7 +393,6 @@ public class WorkflowOptionsDialog extends JDialog {
     private javax.swing.JLabel similarityLabel;
     private javax.swing.JSpinner similaritySpinner;
     private javax.swing.JCheckBox stopOnAlternativeTranslation;
-    private javax.swing.JCheckBox tagValidateOnLeave;
     // End of variables declaration//GEN-END:variables
 
     private int returnStatus = RET_CANCEL;

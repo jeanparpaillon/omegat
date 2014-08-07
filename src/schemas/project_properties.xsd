@@ -15,7 +15,6 @@
 		<xs:complexType>
 			<xs:all>
 				<xs:element name="source_dir" type="xs:string"/>
-				<xs:element name="source_dir_excludes" minOccurs="0" type="masks"/>
 				<xs:element name="target_dir" type="xs:string"/>
 				<xs:element name="tm_dir" type="xs:string"/>
 				<xs:element name="glossary_dir" type="xs:string"/>
@@ -23,8 +22,6 @@
 				<xs:element name="dictionary_dir" type="xs:string"/>
 				<xs:element name="source_lang" type="xs:string"/>
 				<xs:element name="target_lang" type="xs:string"/>
-				<xs:element name="source_tok" type="xs:string"/>
-				<xs:element name="target_tok" type="xs:string"/>
 				<xs:element name="sentence_seg" type="xs:boolean" minOccurs="0"/>
 				<xs:element name="support_default_translations" type="xs:boolean" minOccurs="0"/>
 				<xs:element name="remove_tags" type="xs:boolean" minOccurs="0"/>
@@ -33,10 +30,4 @@
 			<xs:attribute name="version" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:complexType name="masks">
-		<xs:sequence>
-			<xs:element name="mask" type="xs:string" minOccurs="0"
-				maxOccurs="unbounded" />
-		</xs:sequence>
-	</xs:complexType>
 </xs:schema>

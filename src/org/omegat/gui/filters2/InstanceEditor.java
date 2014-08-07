@@ -7,35 +7,40 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.filters2;
 
 import java.awt.Dialog;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
 
 import org.omegat.filters2.AbstractFilter;
 import org.omegat.filters2.master.FilterMaster;
 import org.omegat.util.OStrings;
-import org.omegat.util.gui.StaticUIUtils;
 import org.openide.awt.Mnemonics;
 
 /**
@@ -67,7 +72,17 @@ public class InstanceEditor extends JDialog {
         else
             hintTextArea.setVisible(false);
 
-        StaticUIUtils.setEscapeClosable(this);
+        // HP
+        // Handle escape key to close the window
+        KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escapeAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
+        getRootPane().getActionMap().put("ESCAPE", escapeAction);
+        // END HP
 
         pack();
     }
@@ -287,7 +302,7 @@ public class InstanceEditor extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(jLabel3, gridBagConstraints);
 
-        sourceEncodingField.setModel(new DefaultComboBoxModel(FilterMaster.getSupportedEncodings().toArray()));
+        sourceEncodingField.setModel(new DefaultComboBoxModel(new Vector(FilterMaster.getSupportedEncodings())));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -304,7 +319,7 @@ public class InstanceEditor extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(jLabel6, gridBagConstraints);
 
-        targetEncodingField.setModel(new DefaultComboBoxModel(FilterMaster.getSupportedEncodings().toArray()));
+        targetEncodingField.setModel(new DefaultComboBoxModel(new Vector(FilterMaster.getSupportedEncodings())));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -314,7 +329,9 @@ public class InstanceEditor extends JDialog {
         getContentPane().add(targetEncodingField, gridBagConstraints);
 
         pack();
-        setLocationRelativeTo(null);
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        java.awt.Dimension dialogSize = getSize();
+        setLocation((screenSize.width-dialogSize.width)/2,(screenSize.height-dialogSize.height)/2);
     }// </editor-fold>//GEN-END:initComponents
 
     private void insertButtonActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_insertButtonActionPerformed

@@ -8,24 +8,24 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.editor.mark;
 
+import java.util.regex.Pattern;
 import org.omegat.core.Core;
 import org.omegat.util.OStrings;
 import org.omegat.util.gui.Styles;
@@ -46,7 +46,7 @@ public class WhitespaceMarkerFactory {
         public SpaceMarker() throws Exception {
             PAINTER = new SymbolPainter(Styles.COLOR_WHITESPACE, "\u00B7"); //·•
             toolTip = null; //don't overdo it. Space occurs many times.
-            patternChar = ' ';
+            pattern = Pattern.compile(" ");
         }
         protected boolean isEnabled() {
             return Core.getEditor().getSettings().isMarkWhitespace();
@@ -60,7 +60,7 @@ public class WhitespaceMarkerFactory {
         public TabMarker() throws Exception {
             PAINTER = new SymbolPainter(Styles.COLOR_WHITESPACE, "\u00BB"); //»
             toolTip = OStrings.getString("MARKER_TAB");
-            patternChar = '\t';
+            pattern = Pattern.compile("\\t");
         }
         protected boolean isEnabled() {
             return Core.getEditor().getSettings().isMarkWhitespace();
@@ -78,7 +78,7 @@ public class WhitespaceMarkerFactory {
         public LFMarker() throws Exception {
             PAINTER = new SymbolPainter(Styles.COLOR_WHITESPACE, "\u00B6"); //¶␊
             toolTip = "LF";
-            patternChar = '\n';
+            pattern = Pattern.compile("\\n");
         }
         protected boolean isEnabled() {
             return Core.getEditor().getSettings().isMarkWhitespace();

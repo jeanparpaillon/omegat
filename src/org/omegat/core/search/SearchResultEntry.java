@@ -4,24 +4,22 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2010 Antonio Vilei
-               2014 Piotr Kulik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.search;
@@ -44,20 +42,16 @@ public class SearchResultEntry {
      *            Source text of the corresponding entry within a project
      * @param target
      *            Target text of the corresponding entry within a project
-     * @param note
-     *            Note text of the corresponding entry within a project
      */
     public SearchResultEntry(int num, String preamble, String srcPrefix, String src, String target,
-            String note, SearchMatch[] srcMatch, SearchMatch[] targetMatch, SearchMatch[] noteMatch) {
+            SearchMatch[] srcMatch, SearchMatch[] targetMatch) {
         m_num = num;
         m_preamble = preamble;
         m_srcPrefix = srcPrefix;
         m_src = src;
         m_target = target;
-        m_note = note;
         m_srcMatch = srcMatch;
         m_targetMatch = targetMatch;
-        m_noteMatch = noteMatch;
     }
 
     /**
@@ -75,10 +69,6 @@ public class SearchResultEntry {
     public String getPreamble() {
         return (m_preamble);
     }
-    
-    public void setPreamble(String preamble) {
-        m_preamble = preamble;
-    }
 
     /** Returns the source text of the corresponding entry within a project. */
     public String getSrcText() {
@@ -88,11 +78,6 @@ public class SearchResultEntry {
     /** Returns the target text of the corresponding entry within a project. */
     public String getTranslation() {
         return (m_target);
-    }
-
-    /** Returns the note text of the corresponding entry within a project. */
-    public String getNote() {
-        return (m_note);
     }
 
     public String getSrcPrefix() {
@@ -107,17 +92,11 @@ public class SearchResultEntry {
         return m_targetMatch;
     }
 
-    public SearchMatch[] getNoteMatch() {
-        return m_noteMatch;
-    }
-
     private int m_num;
     private String m_preamble;
     private String m_srcPrefix;
     private String m_src;
     private String m_target;
-    private String m_note;
     private SearchMatch[] m_srcMatch;
     private SearchMatch[] m_targetMatch;
-    private SearchMatch[] m_noteMatch;
 }

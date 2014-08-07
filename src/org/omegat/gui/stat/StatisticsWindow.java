@@ -8,20 +8,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.stat;
@@ -29,16 +28,20 @@ package org.omegat.gui.stat;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import org.omegat.core.Core;
@@ -47,7 +50,6 @@ import org.omegat.core.statistics.CalcStandardStatistics;
 import org.omegat.core.threads.LongProcessThread;
 import org.omegat.util.OStrings;
 import org.omegat.util.gui.DockingUI;
-import org.omegat.util.gui.StaticUIUtils;
 
 /**
  * Display match statistics window and save data to file.
@@ -59,7 +61,7 @@ import org.omegat.util.gui.StaticUIUtils;
 public class StatisticsWindow extends JDialog {
 
     public static enum STAT_TYPE {
-        STANDARD, MATCHES, MATCHES_PER_FILE
+        STANDARD, MATCHES
     };
 
     private JProgressBar progressBar;
@@ -79,11 +81,7 @@ public class StatisticsWindow extends JDialog {
             break;
         case MATCHES:
             setTitle(OStrings.getString("CT_STATSMATCH_WindowHeader"));
-            thread = new CalcMatchStatistics(this, false);
-            break;
-        case MATCHES_PER_FILE:
-            setTitle(OStrings.getString("CT_STATSMATCH_PER_FILE_WindowHeader"));
-            thread = new CalcMatchStatistics(this, true);
+            thread = new CalcMatchStatistics(this);
             break;
         }
 
@@ -104,13 +102,16 @@ public class StatisticsWindow extends JDialog {
         output.setFont(new Font("Monospaced", Font.PLAIN, Core.getMainWindow().getApplicationFont().getSize()));
         p.add(new JScrollPane(output), BorderLayout.CENTER);
 
-        StaticUIUtils.setEscapeAction(this, new AbstractAction() {
-            @Override
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escapeAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 thread.fin();
                 dispose();
             }
-        });
+        };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
+        getRootPane().getActionMap().put("ESCAPE", escapeAction);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -125,7 +126,6 @@ public class StatisticsWindow extends JDialog {
 
     public void showProgress(final int percent) {
         SwingUtilities.invokeLater(new Runnable() {
-            @Override
             public void run() {
                 progressBar.setValue(percent);
                 progressBar.setString(percent + "%");
@@ -133,31 +133,15 @@ public class StatisticsWindow extends JDialog {
         });
     }
 
-    public void displayData(final String result) {
+    public void displayData(final String result, final boolean end) {
         SwingUtilities.invokeLater(new Runnable() {
-            @Override
             public void run() {
+                if (end) {
+                    progressBar.setValue(100);
+                    progressBar.setString("");
+                    progressBar.setVisible(false);
+                }
                 output.setText(result);
-            }
-        });
-    }
-
-    public void appendData(final String result) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                output.append(result);
-            }
-        });
-    }
-
-    public void finishData() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setValue(100);
-                progressBar.setString("");
-                progressBar.setVisible(false);
                 output.setCaretPosition(0);
             }
         });

@@ -261,7 +261,7 @@
 
     <para>OmegaT es supplite como un pacchetto que pote esser discargate ab SourceForge. Ci es considerate un pacchetto independente ab platteformas in un forma Java standard. Le alternativas comprende un pacchetto .tar Linux, un installator Windows – con o sin un Java Runtime Environment (JRE) –, un installator Mac OS X, e un pacchetto codice fonte pro le disveloppatores.</para>
 
-    <para>Le pacchetto independente ab platteformas pote esser usate sur omne platteforma con un ambiente runtime Java 1.6 functionante, includite le platteformas pro le qual existe alsi un pacchetto specific. Illo es fornite como file comprimite (archivo zip o tar) que tu debe extraher al plica de tu election pro le installation. Le file pote habitualmente esser extrahite per clic duplice sur le pacchetto discargate. Un vice que le archivo esseva extrahite, es create un plica continente le contentos sequente:</para>
+    <para>Le pacchetto, independente ab platteformas, pote esser usate sur omne platteforma con un ambiente runtime Java 1.5 functionante, includite le platteformas pro le qual existe alsi un pacchetto specific. Illo es fornite como file comprimite (archivo zip o tar) que tu debe extraher al plica de tu election pro le installation. Le file pote habitualmente esser extrahite per clic duplice sur le pacchetto discargate. Un vice que le archivo esseva extrahite, es create un plica continente le contentos sequente:</para>
 
     <informaltable>
       <tgroup align="left" cols="2" rowsep="1">

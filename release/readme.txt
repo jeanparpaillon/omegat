@@ -1,7 +1,7 @@
 ﻿@@TRANSLATION_NOTICE@@
 
 ==============================================================================
-  OmegaT 3.0, Read Me file
+  OmegaT 2.0, Read Me file
 
   1.  Information about OmegaT
   2.  What is OmegaT?
@@ -116,7 +116,7 @@ It will install the correct environment for your computer and the application
 itself on the first run. Later calls do not need to be online.
 
 During the installation, depending on your operating system, you may receive 
-several security warnings. The certificate is by "PnS Concept". 
+several security warnings. The certificate is self-signed by "Didier Briel". 
 The permissions you give to this version (which might be mentioned as an 
 "unrestricted access to the computer") are identical  to permissions you give 
 to the local version, as installed by a procedure, described later: they allow 
@@ -272,20 +272,16 @@ Code has been contributed by
   Alex Buloichik (lead developer)
   Sandra Jean Chua
   Thomas Cordonnier
-  Enrique Estévez Fernández
   Martin Fleurke  
   Wildrich Fourie
   Phillip Hall
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
-  Piotr Kulik
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
   Fabián Mandelbaum
-  Manfred Martin
   John Moran
   Maxym Mykhalchuk 
   Arno Peters
@@ -314,35 +310,22 @@ but you don't see your name on the lists, feel free to contact us.)
 
 OmegaT uses the following libraries:
   HTMLParser 1.6 by Somik Raha, Derrick Oswald and others (LGPL License)
-  VLDocking Framework 3.0.4 (LGPL License)
+  MRJ Adapter 1.0.8 by Steve Roy (LGPL License)
+  VLDocking Framework 2.1.4 by VLSolutions (CeCILL License)
   Hunspell by László Németh and others (LGPL License)
   JNA by Todd Fast, Timothy Wall and others (LGPL License)
-  Swing-Layout 1.0.4 (LGPL License)
+  Swing-Layout 1.0.2 (LGPL License)
   Jmyspell 2.1.4 (LGPL License)
-  SVNKit 1.8.5 (TMate License)
+  JAXB (GPLv2 + classpath exception)
+  SJXP 1.0.2 (GPL v2)
+  SVNKit 1.7.5 (TMate License)
   Sequence Library (Sequence Library License)
   ANTLR 3.4 (ANTLR 3 license)
-  SQLJet 1.1.10 (GPL v2)
+  SQLJet 1.1.3 (GPL v2)
   JGit (Eclipse Distribution License)
   JSch (JSch License)
   Base64 (public domain)
   Diff (GPL)
-  trilead-ssh2-1.0.0-build217 (Trilead SSH license)
-  lucene-*.jar (Apache License 2.0)
-  The English tokenizers (org.omegat.tokenizer.SnowballEnglishTokenizer and
-  org.omegat.tokenizer.LuceneEnglishTokenizer) use stop words from Okapi
-(http://okapi.sourceforge.net) (LGPL license)
-  tinysegmenter.jar (Modified BSD license)
-  commons-*.jar (Apache License 2.0)
-  jWordSplitter (Apache License 2.0)
-  LanguageTool.jar (LGPL license)
-  morfologik-*.jar (Morfologik license)
-  segment-1.4.1.jar (Segment license)
-  pdfbox-app-1.8.1.jar (Apache License 2.0)
-  KoreanAnalyzer-3x-120223.jar (Apache License 2.0)
-  SuperTMXMerge-for_OmegaT.jar (LGPL license)
-  groovy-all-2.2.2.jar (Apache Licence 2.0)
-  slf4j (MIT License)
 
 ==============================================================================
  5.  Is OmegaT bugging you? Do you need help?

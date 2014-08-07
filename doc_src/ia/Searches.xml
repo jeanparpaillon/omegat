@@ -96,7 +96,7 @@
 
     <variablelist>
       <varlistentry>
-        <term>Cerca Exacte</term>
+        <term>Cerca &amp;Exacte</term>
 
         <listitem>
           <para>Recerca pro le segmentos continente le linea de character exacte que tu ha specificate. Un recerca exacte quere pro un phrase, id es si plure parolas son entrate, illos son trovate solmente si illos occurre in justo celle sequentia. Usante le recerca per parola clave con <literal>open file</literal> trovara assi omne occurrentias del linea de character  <emphasis><literal>open file</literal></emphasis> ma non <emphasis><literal>file opened</literal></emphasis> o <emphasis><literal>open input file</literal></emphasis>.</para>
@@ -160,22 +160,4 @@
 
     <para>Tu pote haber plure Fenestras de Recerca aperte al mesme tempore. Tu pote rapidemente vider lor contentos querente a lor titulo: il continera le termino de recerca usate.</para>
   </section>
-  
-  <section id="search.filter">
-    <title>Entratas filtro in editor conforme al recerca</title>
-    
-    <para>Pro plus facile navigation in le recerca resultato imponite, tu pote applicar le recerca al editor. Pulsa le button <emphasis role="bold">Filtro</emphasis> sur le fundo pro limitar le entratas monstrate in le fenestra Modifica pro illos que concorda le recerca currente. Tu pote usar le navigation normal pro adir per exemplo le segmento (non rendite) successive que concorda le criterios de recerca.</para>
-  
-   <para>NB:</para>
-   
-    <itemizedlist>
-      <listitem>Un recerca pote esser limitate a 1000 articulos, assi si tu recerca sur un phrase commun, le editor monstra solmente illes 1000 entratas concordante, e non omne les entratas que concorda le criterios de recerca.</listitem>
-      <listitem>Un file pote haber nulle entratas concordante, assi illo monstrara se vacue.</listitem>
-      <listitem>Si un recerca elimina le duplicatos, ille duplicatos non essera in le Editor.</listitem>
-    </itemizedlist>
-    
-    <para>Pro remover un filtro, pressa le button <emphasis role="bold">Remove filtro</emphasis>, o recarga le projecto.</para>
- </section>
-      
-    
 </chapter>

@@ -6,32 +6,27 @@
  Copyright (C) 2009 Alex Buloichik
                2009 Didier Briel
                2010 Wildrich Fourie
-               2013 Zoltan Bartko
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.editor;
 
 import java.awt.Cursor;
-import java.awt.Toolkit;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -52,18 +47,16 @@ import javax.swing.text.ComponentView;
 import javax.swing.text.Element;
 import javax.swing.text.IconView;
 import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.ParagraphView;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.Utilities;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
+import javax.swing.undo.UndoManager;
 
 import org.omegat.core.CoreEvents;
-import org.omegat.core.data.ProtectedPart;
-import org.omegat.core.data.SourceTextEntry;
-import org.omegat.gui.editor.autocompleter.AutoCompleter;
 import org.omegat.util.StaticUtils;
-import org.omegat.util.StringUtil;
 import org.omegat.util.gui.DockingUI;
 
 /**
@@ -72,21 +65,18 @@ import org.omegat.util.gui.DockingUI;
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Didier Briel
  * @author Wildrich Fourie
- * @author Zoltan Bartko
  */
 @SuppressWarnings("serial")
 public class EditorTextArea3 extends JEditorPane {
 
     /** Undo Manager to store edits */
-    protected final TranslationUndoManager undoManager = new TranslationUndoManager(this);
+    protected final UndoManager undoManager = new UndoManager();
 
     protected final EditorController controller;
 
     protected final List<PopupMenuConstructorInfo> popupConstructors = new ArrayList<PopupMenuConstructorInfo>();
 
     protected String currentWord;
-
-    protected AutoCompleter autoCompleter = new AutoCompleter(this);
 
     public EditorTextArea3(EditorController controller) {
         this.controller = controller;
@@ -129,6 +119,11 @@ public class EditorTextArea3 extends JEditorPane {
         setToolTipText("");
     }
 
+    /** Orders to cancel all Undoable edits. */
+    public void cancelUndo() {
+        undoManager.die();
+    }
+
     /**
      * Return OmDocument instead just a Document. If editor was not initialized
      * with OmDocument, it will contains other Document implementation. In this
@@ -142,72 +137,50 @@ public class EditorTextArea3 extends JEditorPane {
         }
     }
 
-    /**
-     * Return true if the specified position is within the active translation
-     * @param position
-     * @return 
-     */
-    public boolean isInActiveTranslation(int position) {
-        return (position >= getOmDocument().getTranslationStart()
-                && position <= getOmDocument().getTranslationEnd());
-    }
-
     protected MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (autoCompleter.isVisible()) {
-                autoCompleter.hidePopup();
-            }
             // where is the mouse
             int mousepos = viewToModel(e.getPoint());
             if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-                boolean changed = controller.goToSegmentAtLocation(getCaretPosition());
-                if (!changed) {
-                    if (selectTag(mousepos)) {
-                        e.consume();
-                    }
-                }
+                controller.goToSegmentAtLocation(mousepos);
             }
             if (e.isPopupTrigger() || e.getButton() == MouseEvent.BUTTON3) {
-                JPopupMenu popup = makePopupMenu(mousepos);
+                PopupMenuConstructorInfo[] cons;
+                synchronized (popupConstructors) {
+                    /**
+                     * Copy constructors - for disable blocking in the procesing
+                     * time.
+                     */
+                    cons = popupConstructors.toArray(new PopupMenuConstructorInfo[popupConstructors.size()]);
+                }
+
+                boolean isInActiveTranslation = mousepos >= getOmDocument().getTranslationStart()
+                        && mousepos <= getOmDocument().getTranslationEnd();
+                boolean isInActiveEntry;
+                int ae = controller.displayedEntryIndex;
+                SegmentBuilder sb = controller.m_docSegList[ae];
+                if (sb.isActive()) {
+                    isInActiveEntry = mousepos >= sb.getStartPosition() && mousepos <= sb.getEndPosition();
+                } else {
+                    isInActiveEntry = false;
+                }
+
+                JPopupMenu popup = new JPopupMenu();
+                for (PopupMenuConstructorInfo c : cons) {
+                    // call each constructor
+                    c.constructor.addItems(popup, EditorTextArea3.this, mousepos, isInActiveEntry,
+                            isInActiveTranslation, sb);
+                }
+
+                DockingUI.removeUnusedMenuSeparators(popup);
+
                 if (popup.getComponentCount() > 0) {
                     popup.show(EditorTextArea3.this, (int) e.getPoint().getX(), (int) e.getPoint().getY());
                 }
             }
         }
     };
-
-    private JPopupMenu makePopupMenu(int pos) {
-        
-        PopupMenuConstructorInfo[] cons;
-        synchronized (popupConstructors) {
-            /**
-             * Copy constructors - for disable blocking in the procesing
-             * time.
-             */
-            cons = popupConstructors.toArray(new PopupMenuConstructorInfo[popupConstructors.size()]);
-        }
-
-        boolean isInActiveEntry;
-        int ae = controller.displayedEntryIndex;
-        SegmentBuilder sb = controller.m_docSegList[ae];
-        if (sb.isActive()) {
-            isInActiveEntry = pos >= sb.getStartPosition() && pos <= sb.getEndPosition();
-        } else {
-            isInActiveEntry = false;
-        }
-
-        JPopupMenu popup = new JPopupMenu();
-        for (PopupMenuConstructorInfo c : cons) {
-            // call each constructor
-            c.constructor.addItems(popup, EditorTextArea3.this, pos, isInActiveEntry,
-                    isInActiveTranslation(pos), sb);
-        }
-
-        DockingUI.removeUnusedMenuSeparators(popup);
-
-        return popup;
-    }
 
     /**
      * Add new constructor into list and sort full list by priority.
@@ -231,7 +204,8 @@ public class EditorTextArea3 extends JEditorPane {
     protected void processKeyEvent(KeyEvent e) {
         int keyEvent = e.getID();
         if (keyEvent == KeyEvent.KEY_RELEASED) {
-            // key released
+            // key released. Only now the translation start/end positions have been updated according to keydown events
+            reformatTranslation();
             super.processKeyEvent(e);
             return;
         } else if (keyEvent == KeyEvent.KEY_TYPED) {
@@ -247,32 +221,19 @@ public class EditorTextArea3 extends JEditorPane {
         Document3 doc = getOmDocument();
 
         // non-standard processing
-        if (autoCompleter.processKeys(e)) {
-            // The AutoCompleter needs special treatment.
-            processed = true;
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_CONTEXT_MENU, 0)
-                || (mac && StaticUtils.isKey(e, KeyEvent.VK_ESCAPE, InputEvent.SHIFT_MASK))) {
-            // Context Menu key for contextual (right-click) menu (Shift+Esc on Mac)
-            JPopupMenu popup = makePopupMenu(getCaretPosition());
-            if (popup.getComponentCount() > 0) {
-                popup.show(EditorTextArea3.this,
-                        (int) getCaret().getMagicCaretPosition().getX(),
-                        (int) getCaret().getMagicCaretPosition().getY());
-                processed = true;
-            }
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_TAB, 0)) {
+        if (isKey(e, KeyEvent.VK_TAB, 0)) {
             // press TAB when 'Use TAB to advance'
             if (controller.settings.isUseTabForAdvance()) {
                 controller.nextEntry();
                 processed = true;
             }
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_TAB, InputEvent.SHIFT_MASK)) {
+        } else if (isKey(e, KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK)) {
             // press Shift+TAB when 'Use TAB to advance'
             if (controller.settings.isUseTabForAdvance()) {
                 controller.prevEntry();
                 processed = true;
             }
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_ENTER, 0)) {
+        } else if (isKey(e, KeyEvent.VK_ENTER, 0)) {
             // press ENTER
             if (!controller.settings.isUseTabForAdvance()) {
                 controller.nextEntry();
@@ -280,85 +241,71 @@ public class EditorTextArea3 extends JEditorPane {
             } else {
                 processed = true;
             }
-        } else if ((StaticUtils.isKey(e, KeyEvent.VK_ENTER,
-                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()))) {
+        } else if ((!mac && isKey(e, KeyEvent.VK_ENTER, KeyEvent.CTRL_MASK))
+                || (mac && isKey(e, KeyEvent.VK_ENTER, KeyEvent.META_MASK))) {
             // press Ctrl+ENTER (Cmd+Enter for MacOS)
             if (!controller.settings.isUseTabForAdvance()) {
                 controller.prevEntry();
                 processed = true;
             }
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_ENTER, InputEvent.SHIFT_MASK)) {
+        } else if (isKey(e, KeyEvent.VK_ENTER, KeyEvent.SHIFT_MASK)) {
             // convert Shift+Enter event to straight enter key
             KeyEvent ke = new KeyEvent(e.getComponent(), e.getID(), e.getWhen(), 0, KeyEvent.VK_ENTER, '\n');
             super.processKeyEvent(ke);
             processed = true;
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_A,
-                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
+        } else if ((!mac && isKey(e, KeyEvent.VK_A, KeyEvent.CTRL_MASK))
+                || (mac && isKey(e, KeyEvent.VK_A, KeyEvent.META_MASK))) {
             // handling Ctrl+A manually (Cmd+A for MacOS)
             setSelectionStart(doc.getTranslationStart());
             setSelectionEnd(doc.getTranslationEnd());
             processed = true;
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_O, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK)) {
+        } else if (isKey(e, KeyEvent.VK_O, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK)) {
             // handle Ctrl+Shift+O - toggle orientation LTR-RTL
             Cursor oldCursor = this.getCursor();
             this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             controller.toggleOrientation();
             this.setCursor(oldCursor);
             processed = true;
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_BACK_SPACE,
-                mac ? InputEvent.ALT_MASK : InputEvent.CTRL_MASK)) {
+        } else if ((!mac && isKey(e, KeyEvent.VK_BACK_SPACE, KeyEvent.CTRL_MASK))
+                || (mac && isKey(e, KeyEvent.VK_BACK_SPACE, KeyEvent.ALT_MASK))) {
             // handle Ctrl+Backspace (Alt+Backspace for MacOS)
             try {
-                processed = wholeTagDelete(false);
-                if (!processed) {
-                    int offset = getCaretPosition();
-                    int prevWord = Utilities.getPreviousWord(this, offset);
-                    int c = Math.max(prevWord, doc.getTranslationStart());
-                    setSelectionStart(c);
-                    setSelectionEnd(offset);
-                    replaceSelection("");
+                int offset = getCaretPosition();
+                int prevWord = Utilities.getPreviousWord(this, offset);
+                int c = Math.max(prevWord, doc.getTranslationStart());
+                setSelectionStart(c);
+                setSelectionEnd(offset);
+                replaceSelection("");
 
-                    processed = true;
-                }
+                processed = true;
             } catch (BadLocationException ex) {
                 // do nothing
             }
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_DELETE,
-                mac ? InputEvent.ALT_MASK : InputEvent.CTRL_MASK)) {
+        } else if ((!mac && isKey(e, KeyEvent.VK_DELETE, KeyEvent.CTRL_MASK))
+                || (mac && isKey(e, KeyEvent.VK_DELETE, KeyEvent.ALT_MASK))) {
             // handle Ctrl+Backspace (Alt+Delete for MacOS)
             try {
-                processed = wholeTagDelete(true);
-                if (!processed) {
-                    int offset = getCaretPosition();
-                    int nextWord = Utilities.getNextWord(this, offset);
-                    int c = Math.min(nextWord, doc.getTranslationEnd());
-                    setSelectionStart(offset);
-                    setSelectionEnd(c);
-                    replaceSelection("");
+                int offset = getCaretPosition();
+                int nextWord = Utilities.getNextWord(this, offset);
+                int c = Math.min(nextWord, doc.getTranslationEnd());
+                setSelectionStart(offset);
+                setSelectionEnd(c);
+                replaceSelection("");
 
-                    processed = true;
-                }
+                processed = true;
             } catch (BadLocationException ex) {
                 // do nothing
             }
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_PAGE_UP,
-                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
+        } else if ((!mac && isKey(e, KeyEvent.VK_PAGE_UP, KeyEvent.CTRL_MASK))
+                || (mac && isKey(e, KeyEvent.VK_PAGE_UP, KeyEvent.META_MASK))) {
             // Ctrl+PgUp - to the begin of document(Cmd+PgUp for MacOS)
             setCaretPosition(0);
             processed = true;
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_PAGE_DOWN,
-                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
+        } else if ((!mac && isKey(e, KeyEvent.VK_PAGE_DOWN, KeyEvent.CTRL_MASK))
+                || (mac && isKey(e, KeyEvent.VK_PAGE_DOWN, KeyEvent.META_MASK))) {
             // Ctrl+PgDn - to the end of document(Cmd+PgDn for MacOS)
             setCaretPosition(getOmDocument().getLength());
             processed = true;
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_LEFT, mac ? InputEvent.ALT_MASK : InputEvent.CTRL_MASK)
-                || StaticUtils.isKey(e, KeyEvent.VK_LEFT, (mac ? InputEvent.ALT_MASK : InputEvent.CTRL_MASK) | InputEvent.SHIFT_MASK)) {
-            // Ctrl+Left - skip to the end of tag (Alt+Left for MacOS)
-            processed = moveCursorOverTag((e.getModifiers() & KeyEvent.SHIFT_MASK) != 0, false);
-        } else if (StaticUtils.isKey(e, KeyEvent.VK_RIGHT, mac ? InputEvent.ALT_MASK : InputEvent.CTRL_MASK)
-                || StaticUtils.isKey(e, KeyEvent.VK_RIGHT, (mac ? InputEvent.ALT_MASK : InputEvent.CTRL_MASK) | InputEvent.SHIFT_MASK)) {
-            // Ctrl+Right - skip to the end of tag (Alt+Right for MacOS)
-            processed = moveCursorOverTag((e.getModifiers() & KeyEvent.SHIFT_MASK) != 0, true);
         }
 
         // leave standard processing if need
@@ -397,122 +344,30 @@ public class EditorTextArea3 extends JEditorPane {
     }
 
     /**
-     * Move cursor over tag(possible, with selection)
-     * 
-     * @param withShift
-     *            true if selection need
-     * @param checkTagStart
-     *            true if check tag start, false if check tag end
-     * @return true if tag processed
+     * Formats placeholders in translation
      */
-    boolean moveCursorOverTag(boolean withShift, boolean checkTagStart) {
+    private void reformatTranslation() {
         Document3 doc = getOmDocument();
-        SourceTextEntry ste = doc.controller.getCurrentEntry();
-        String text = doc.extractTranslation();
-        int off = getCaretPosition() - doc.getTranslationStart();
-        // iterate by 'protected parts'
-        if (ste != null) {
-            for (ProtectedPart pp : ste.getProtectedParts()) {
-                if (checkTagStart) {
-                    if (StringUtil.isSubstringAfter(text, off, pp.getTextInSourceSegment())) {
-                        int pos = off + doc.getTranslationStart() + pp.getTextInSourceSegment().length();
-                        if (withShift) {
-                            getCaret().moveDot(pos);
-                        } else {
-                            getCaret().setDot(pos);
-                        }
-                        return true;
-                    }
-                } else {
-                    if (StringUtil.isSubstringBefore(text, off, pp.getTextInSourceSegment())) {
-                        int pos = off + doc.getTranslationStart() - pp.getTextInSourceSegment().length();
-                        if (withShift) {
-                            getCaret().moveDot(pos);
-                        } else {
-                            getCaret().setDot(pos);
-                        }
-                        return true;
-                    }
-                }
-            }
+        String trans = doc.extractTranslation();
+
+        //there are issues when formatting rtl text. Don't do it, we use markers in that case.
+        //for slightly better performance, check here on orientation.
+        if (trans != null && controller.currentOrientation == Document3.ORIENTATION.ALL_LTR) {
+            //prevent the formatting to become an undoable thing, by removing the undomanager temporary
+            getOmDocument().removeUndoableEditListener(undoManager);
+
+            int start = doc.getTranslationStart();
+            int end = doc.getTranslationEnd();
+
+            int ae = controller.displayedEntryIndex;
+            SegmentBuilder sb = controller.m_docSegList[ae];
+            sb.formatText(trans, start, end, false);
+
+            //enable undo manager again.
+            getOmDocument().addUndoableEditListener(undoManager);
         }
-        return false;
     }
 
-    /**
-     * Whole tag delete before or after cursor
-     * 
-     * @param checkTagStart
-     *            true if check tag start, false if check tag end
-     * @return true if tag deleted
-     */
-    boolean wholeTagDelete(boolean checkTagStart) throws BadLocationException {
-        Document3 doc = getOmDocument();
-        SourceTextEntry ste = doc.controller.getCurrentEntry();
-        String text = doc.extractTranslation();
-        int off = getCaretPosition() - doc.getTranslationStart();
-        // iterate by 'protected parts'
-        if (ste != null) {
-            for (ProtectedPart pp : ste.getProtectedParts()) {
-                if (checkTagStart) {
-                    if (StringUtil.isSubstringAfter(text, off, pp.getTextInSourceSegment())) {
-                        int pos = off + doc.getTranslationStart();
-                        doc.remove(pos, pp.getTextInSourceSegment().length());
-                        return true;
-                    }
-                } else {
-                    if (StringUtil.isSubstringBefore(text, off, pp.getTextInSourceSegment())) {
-                        int pos = off + doc.getTranslationStart() - pp.getTextInSourceSegment().length();
-                        doc.remove(pos, pp.getTextInSourceSegment().length());
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Try to select full tag on specified position, in the source and
-     * translation part of segment.
-     * 
-     * @param pos
-     *            position
-     * @return true if selected
-     */
-    boolean selectTag(int pos) {
-        int s = controller.getSegmentIndexAtLocation(pos);
-        if (s < 0) {
-            return false;
-        }
-        SegmentBuilder segment = controller.m_docSegList[s];
-        if (pos < segment.getStartPosition() || pos >= segment.getEndPosition()) {
-            return false;
-        }
-        SourceTextEntry ste = getOmDocument().controller.getCurrentEntry();
-        if (ste != null) {
-            try {
-                String text = getOmDocument().getText(segment.getStartPosition(),
-                        segment.getEndPosition() - segment.getStartPosition());
-                int off = pos - segment.getStartPosition();
-                if (off < 0 || off >= text.length()) {
-                    return false;
-                }
-                for (ProtectedPart pp : ste.getProtectedParts()) {
-                    int p = -1;
-                    while ((p = text.indexOf(pp.getTextInSourceSegment(), p + 1)) >= 0) {
-                        if (p <= off && off < p + pp.getTextInSourceSegment().length()) {
-                            p += segment.getStartPosition();
-                            select(p, p + pp.getTextInSourceSegment().length());
-                            return true;
-                        }
-                    }
-                }
-            } catch (BadLocationException ex) {
-            }
-        }
-        return false;
-    }
 
     /**
      * Checks whether the selection & caret is inside editable text, and changes
@@ -554,7 +409,6 @@ public class EditorTextArea3 extends JEditorPane {
                 setCaretPosition(end);
             }
         }
-        autoCompleter.updatePopup();
     }
 
     /**
@@ -577,6 +431,21 @@ public class EditorTextArea3 extends JEditorPane {
      */
     private void fixSelectionEnd(int end) {
         setSelectionEnd(end);
+    }
+
+    /**
+     * Check if specified key pressed.
+     * 
+     * @param e
+     *            pressed key event
+     * @param code
+     *            required key code
+     * @param modifiers
+     *            required modifiers
+     * @return true if checked key pressed
+     */
+    private static boolean isKey(KeyEvent e, int code, int modifiers) {
+        return e.getKeyCode() == code && e.getModifiers() == modifiers;
     }
 
     /**

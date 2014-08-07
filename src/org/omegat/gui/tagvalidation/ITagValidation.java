@@ -3,32 +3,26 @@
           with fuzzy matching, translation memory, keyword search, 
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2008-2013 Alex Buloichik
+ Copyright (C) 2008 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.tagvalidation;
-
-import java.util.List;
-
-import org.omegat.core.data.SourceTextEntry;
-import org.omegat.core.tagvalidation.ErrorReport;
 
 /**
  * Interface for tag validation.
@@ -37,37 +31,8 @@ import org.omegat.core.tagvalidation.ErrorReport;
  */
 public interface ITagValidation {
     /**
-     * Get invalid tags entries.
-     * 
-     * @return list of entries with invalid tags, or null if all entries are
-     *         valid
+     * Get invalid tags list and show them.
+     * @return true when all tags are valid, false otherwise
      */
-    List<ErrorReport> listInvalidTags();
-
-    /**
-     * Get invalid tags entries from specified files corresponding to sourcePattern.
-     * 
-     * @param sourcePattern
-     *            The regexp of files to validate
-     * @return list of entries with invalid tags, or null if all entries are
-     *         valid
-     */
-    List<ErrorReport> listInvalidTags(String sourcePattern);
-
-    /**
-     * Checks invalid tags for one entry.
-     * 
-     * @param ste
-     *            entry
-     * @return true if all tags are valid
-     */
-    boolean checkInvalidTags(SourceTextEntry ste);
-
-    /**
-     * Show invalid tags entries.
-     * 
-     * @param invalidTagsEntries
-     *            list of invalid tags entries(from listInvalidTags() method)
-     */
-    void displayTagValidationErrors(List<ErrorReport> invalidTagsEntries, String message);
+    boolean validateTags();
 }

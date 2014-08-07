@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.filters2;
@@ -31,24 +30,31 @@ import gen.core.filters.Filter;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 
+import org.omegat.core.Core;
 import org.omegat.filters2.IFilter;
 import org.omegat.filters2.master.FilterMaster;
 import org.omegat.filters2.master.OneFilterTableModel;
 import org.omegat.util.OStrings;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
-import org.omegat.util.gui.StaticUIUtils;
 
 /**
  * Editor for a single filter. Filter is a class that allows for reading and
@@ -68,7 +74,17 @@ public class FilterEditor extends JDialog implements ListSelectionListener {
         super(parent, true);
         this.filter = FilterMaster.cloneFilter(filter);
 
-        StaticUIUtils.setEscapeClosable(this);
+        // HP
+        // Handle escape key to close the window
+        KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escapeAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
+        getRootPane().getActionMap().put("ESCAPE", escapeAction);
+        // END HP
 
         initComponents();
 
@@ -102,10 +118,9 @@ public class FilterEditor extends JDialog implements ListSelectionListener {
     }
 
     private JComboBox encodingComboBox() {
-        return new JComboBox(FilterMaster.getSupportedEncodings().toArray());
+        return new JComboBox(new Vector<String>(FilterMaster.getSupportedEncodings()));
     }
 
-    @Override
     public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting())
             return;
@@ -333,7 +348,7 @@ public class FilterEditor extends JDialog implements ListSelectionListener {
     private void toDefaultsButtonActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_toDefaultsButtonActionPerformed
     {// GEN-HEADEREND:event_toDefaultsButtonActionPerformed
         try {
-            filter = FilterMaster.getDefaultSettingsFromFilter(filter.getClassName());
+            filter = Core.getFilterMaster().getDefaultSettingsFromFilter(filter.getClassName());
             instances.setModel(new OneFilterTableModel(filter));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,

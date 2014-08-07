@@ -8,20 +8,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml;
@@ -31,9 +30,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
-import org.omegat.core.data.ProtectedPart;
 import org.omegat.util.Language;
 import org.xml.sax.Attributes;
 
@@ -48,7 +45,7 @@ interface Translator {
      * The method the Handler would call to pass translatable content to OmegaT
      * core and receive translation.
      */
-    String translate(String s, List<ProtectedPart> protectedParts);
+    String translate(String s);
 
     /**
      * Creates a special XML-encoding-aware reader of an input file.
@@ -114,10 +111,5 @@ interface Translator {
      */
     void text(String text);
     
-    /**
-     * Returns true if current section should be ignored by parser.
-     */
-    boolean isInIgnored();
-
     Language getTargetLanguage();
 }

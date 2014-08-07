@@ -9,41 +9,45 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.dialogs;
 
 import java.awt.Cursor;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultListModel;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
 import org.omegat.core.spellchecker.DictionaryManager;
 import org.omegat.util.Language;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
-import org.omegat.util.gui.StaticUIUtils;
 
 /**
  * @author Zoltan Bartko
@@ -65,7 +69,7 @@ public class SpellcheckerConfigurationDialog extends javax.swing.JDialog {
     /**
      * the project's current language
      */
-    private final Language currentLanguage;
+    private Language currentLanguage;
 
     /**
      * The dictionary manager
@@ -75,7 +79,7 @@ public class SpellcheckerConfigurationDialog extends javax.swing.JDialog {
     /**
      * the language list model
      */
-    private final DefaultListModel languageListModel;
+    private DefaultListModel languageListModel;
 
     public int getReturnStatus() {
         return returnStatus;
@@ -93,7 +97,17 @@ public class SpellcheckerConfigurationDialog extends javax.swing.JDialog {
     public SpellcheckerConfigurationDialog(Frame parent, Language current) {
         super(parent, true);
 
-        StaticUIUtils.setEscapeClosable(this);
+        // HP
+        // Handle escape key to close the window
+        KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escapeAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
+        getRootPane().getActionMap().put("ESCAPE", escapeAction);
+        // END HP
 
         initComponents();
         this.pack();
@@ -124,7 +138,7 @@ public class SpellcheckerConfigurationDialog extends javax.swing.JDialog {
     /**
      * Updates the language list based on the directory text field
      */
-    public final void updateLanguageList() {
+    public void updateLanguageList() {
         String dirName = directoryTextField.getText();
 
         // should we do anything?

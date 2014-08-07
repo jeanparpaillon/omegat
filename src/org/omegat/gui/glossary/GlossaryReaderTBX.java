@@ -8,27 +8,25 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.glossary;
 
 import gen.core.tbx.Descrip;
 import gen.core.tbx.DescripGrp;
-import gen.core.tbx.Hi;
 import gen.core.tbx.LangSet;
 import gen.core.tbx.Martif;
 import gen.core.tbx.Note;
@@ -40,9 +38,7 @@ import gen.core.tbx.Tig;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -54,7 +50,6 @@ import javax.xml.transform.sax.SAXSource;
 import org.omegat.core.Core;
 import org.omegat.util.Language;
 import org.omegat.util.OStrings;
-import org.omegat.util.Preferences;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLFilterImpl;
@@ -82,20 +77,9 @@ public class GlossaryReaderTBX {
         SAX_FACTORY.setValidating(false);
     }
 
-    public static List<GlossaryEntry> read(final File file, boolean priorityGlossary) throws Exception {
+    public static List<GlossaryEntry> read(final File file) throws Exception {
         Martif tbx = load(file);
-        return readMartif(tbx, priorityGlossary);
-    }
 
-    public static List<GlossaryEntry> read(final String data, boolean priorityGlossary) throws Exception {
-        Martif tbx = loadFromString(data);
-        return readMartif(tbx, priorityGlossary);
-    }
-
-    public static List<GlossaryEntry> readMartif(final Martif tbx, boolean priorityGlossary) throws Exception {
-        if (tbx.getText() == null) {
-            return Collections.emptyList();
-        }
         String sLang = Core.getProject().getProjectProperties().getSourceLanguage().getLanguageCode();
         String tLang = Core.getProject().getProjectProperties().getTargetLanguage().getLanguageCode();
 
@@ -144,11 +128,11 @@ public class GlossaryReaderTBX {
             for (String s : sTerms) {
                 boolean addedForLang = false;
                 for (String t : tTerms) {
-                    result.add(new GlossaryEntry(s, t, comment.toString(), priorityGlossary));
+                    result.add(new GlossaryEntry(s, t, comment.toString()));
                     addedForLang = true;
                 }
                 if (!addedForLang) { // An entry is created just to get the definition
-                    result.add(new GlossaryEntry(s, "", comment.toString(), priorityGlossary));
+                    result.add(new GlossaryEntry(s, "", comment.toString()));
                 }
             }
             sTerms.clear();
@@ -166,24 +150,10 @@ public class GlossaryReaderTBX {
             String line = null;
             if (o instanceof Descrip) {
                 Descrip d = (Descrip) o;
-                if ("context".equalsIgnoreCase(d.getType())) {
-                    if (Preferences.isPreferenceDefault(Preferences.GLOSSARY_TBX_DISPLAY_CONTEXT, true)) {
-                        line = d.getType() + ": " + readContent(d.getContent());
-                    }
-                } else {
-                    line = d.getType() + ": " + readContent(d.getContent());
-                }
+                line = d.getType() + ": " + readContent(d.getContent());
             } else if (o instanceof DescripGrp) {
                 DescripGrp dg = (DescripGrp) o;
-                if (dg.getDescrip() != null) {
-                    if ("context".equalsIgnoreCase(dg.getDescrip().getType())) {
-                        if (Preferences.isPreferenceDefault(Preferences.GLOSSARY_TBX_DISPLAY_CONTEXT, true)) {
-                            line = dg.getDescrip().getType() + ": " + readContent(dg.getDescrip().getContent());
-                        }
-                    } else {
-                        line = dg.getDescrip().getType() + ": " + readContent(dg.getDescrip().getContent());
-                    }
-                }
+                line = dg.getDescrip().getType() + ": " + readContent(dg.getDescrip().getContent());
             } else if (o instanceof TermNote) {
                 TermNote tn = (TermNote) o;
                 line = readContent(tn.getContent());
@@ -209,12 +179,7 @@ public class GlossaryReaderTBX {
     protected static String readContent(final List<Object> content) {
         StringBuilder res = new StringBuilder();
         for (Object o : content) {
-            if (o instanceof Hi) {
-                Hi hi = (Hi) o;
-                res.append(" *").append(hi.getContent()).append("* ");
-            } else {
-                res.append(o.toString());
-            }
+            res.append(o.toString());
         }
         return res.toString();
     }
@@ -238,19 +203,6 @@ public class GlossaryReaderTBX {
         } finally {
             in.close();
         }
-    }
-
-    static Martif loadFromString(String data) throws Exception {
-        Unmarshaller unm = TBX_CONTEXT.createUnmarshaller();
-
-        SAXParser parser = SAX_FACTORY.newSAXParser();
-
-        NamespaceFilter xmlFilter = new NamespaceFilter(parser.getXMLReader());
-        xmlFilter.setContentHandler(unm.getUnmarshallerHandler());
-
-        SAXSource source = new SAXSource(xmlFilter, new InputSource(new StringReader(data)));
-
-        return (Martif) unm.unmarshal(source);
     }
 
     public static class NamespaceFilter extends XMLFilterImpl {

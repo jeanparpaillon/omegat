@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3;
@@ -31,14 +30,12 @@ package org.omegat.filters3;
  * @author Maxym Mykhalchuk
  */
 public abstract class Tag implements Element {
-    public enum Type {
-        /** Begin of a paired tag. */
-        BEGIN,
-        /** End of a paired tag. */
-        END,
-        /** Standalone tag. */
-        ALONE
-    };
+    /** Begin of a paired tag. */
+    public static final int TYPE_BEGIN = 1;
+    /** End of a paired tag. */
+    public static final int TYPE_END = 2;
+    /** Standalone tag. */
+    public static final int TYPE_ALONE = 3;
 
     private String tag;
 
@@ -57,15 +54,15 @@ public abstract class Tag implements Element {
             return Character.toString(getTag().charAt(0));
     }
 
-    private Type type;
+    private int type;
 
     /** Returns type of this tag. */
-    public Type getType() {
+    public int getType() {
         return type;
     }
 
     /** Sets type of this tag. */
-    public void setType(Type type) {
+    public void setType(int type) {
         this.type = type;
     }
 
@@ -74,30 +71,6 @@ public abstract class Tag implements Element {
     /** Returns tag's attributes. */
     public Attributes getAttributes() {
         return attributes;
-    }
-
-    /**
-     * Returns attribute value by name.
-     */
-    public String getAttribute(String name) {
-        for (Attribute a : attributes.list) {
-            if (name.equals(a.getName())) {
-                return a.getValue();
-            }
-        }
-        return null;
-    }
-
-    /** Attributes of correspondent start tag. */
-    private Attributes startAttributes;
-
-    /** Returns tag's attributes. */
-    public Attributes getStartAttributes() {
-        return startAttributes;
-    }
-
-    public void setStartAttributes(Attributes startAttributes) {
-        this.startAttributes = startAttributes;
     }
 
     private int index;
@@ -118,7 +91,7 @@ public abstract class Tag implements Element {
     }
 
     /** Creates a new instance of Tag */
-    public Tag(String tag, String shortcut, Type type, Attributes attributes) {
+    public Tag(String tag, String shortcut, int type, Attributes attributes) {
         this.tag = tag;
         this.shortcut = shortcut;
         this.type = type;
@@ -136,13 +109,13 @@ public abstract class Tag implements Element {
     public String toTMX() {
         String tmxtag;
         switch (getType()) {
-        case BEGIN:
+        case TYPE_BEGIN:
             tmxtag = "bpt";
             break;
-        case END:
+        case TYPE_END:
             tmxtag = "ept";
             break;
-        case ALONE:
+        case TYPE_ALONE:
             tmxtag = "ph";
             break;
         default:
@@ -176,11 +149,11 @@ public abstract class Tag implements Element {
         StringBuffer buf = new StringBuffer();
 
         buf.append("&amp;lt;");
-        if (Type.END == getType())
+        if (TYPE_END == getType())
             buf.append("/");
         buf.append(getTag());
         buf.append(getAttributes().toString());
-        if (Type.ALONE == getType())
+        if (TYPE_ALONE == getType())
             buf.append("/");
         buf.append("&amp;gt;");
 
@@ -195,11 +168,11 @@ public abstract class Tag implements Element {
         StringBuffer buf = new StringBuffer();
 
         buf.append("<");
-        if (Type.END == getType())
+        if (TYPE_END == getType())
             buf.append("/");
         buf.append(getShortcut());
         buf.append(getIndex());
-        if (Type.ALONE == getType())
+        if (TYPE_ALONE == getType())
             buf.append("/");
         buf.append(">");
 

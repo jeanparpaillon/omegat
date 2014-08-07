@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 /**************************************************************************
- OmegaT - Computer Assisted Translation (CAT) tool 
-          with fuzzy matching, translation memory, keyword search, 
-          glossaries, and translation leveraging into updated projects.
-
+ OmegaT - Java based Computer Assisted Translation (CAT) tool
  Copyright (C) 2000-2007 Keith Godfrey and Maxym Mykhalchuk
                2008-2010 Alex Buloichik, Didier Briel  
                2011 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **************************************************************************/
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+**************************************************************************/
 -->
 <!-- 
  Default segmentation rules and exceptions
@@ -4303,30 +4299,7 @@
         </rule>
       </languagerule>
       
-       <!-- RU
-      Russian non-break rules
-      including http://sourceforge.net/support/tracker.php?aid=2835535 -->
-
-      <languagerule languagerulename="Russian">
-        <rule break="no">
-          <beforebreak>(?i)т\.е\.</beforebreak>
-          <afterbreak>\s</afterbreak>
-        </rule>
-        <rule break="no">
-          <beforebreak>(?i)т\.к\.</beforebreak>
-          <afterbreak>\s</afterbreak>
-        </rule>
-        <rule break="no">
-          <beforebreak>рт\.ст\.</beforebreak>
-          <afterbreak>\s</afterbreak>
-        </rule>
-        <rule break="no">
-          <beforebreak>рт\.\sст\.</beforebreak>
-          <afterbreak>\s</afterbreak>
-        </rule>
-      </languagerule>
-      
-     <!-- SV
+      <!-- SV
       Swedish non-break rules, contributed by Per Tunedal -->
 
       <languagerule languagerulename="Swedish">
@@ -4624,26 +4597,26 @@
         </rule>
       </languagerule>
 
-      <!-- ZH
-      Chinese non-break rules
-      http://sourceforge.net/p/omegat/feature-requests/945/ -->
+      <!-- RU
+      Russian non-break rules
+      including http://sourceforge.net/support/tracker.php?aid=2835535 -->
 
-      <languagerule languagerulename="Chinese">
+      <languagerule languagerulename="Russian">
         <rule break="no">
-          <beforebreak>[。？！—]</beforebreak>
-          <afterbreak>[’”"」）』？—]</afterbreak>
+          <beforebreak>(?i)т\.е\.</beforebreak>
+          <afterbreak>\s</afterbreak>
         </rule>
         <rule break="no">
-          <beforebreak>[、,.．]</beforebreak>
-          <afterbreak>.</afterbreak>
+          <beforebreak>(?i)т\.к\.</beforebreak>
+          <afterbreak>\s</afterbreak>
         </rule>
-
-      <!-- ZH
-      Chinese break rules -->
-
-        <rule break="yes">
-          <beforebreak>[。？！]</beforebreak>
-          <afterbreak>.</afterbreak>
+        <rule break="no">
+          <beforebreak>рт\.ст\.</beforebreak>
+          <afterbreak>\s</afterbreak>
+        </rule>
+        <rule break="no">
+          <beforebreak>рт\.\sст\.</beforebreak>
+          <afterbreak>\s</afterbreak>
         </rule>
       </languagerule>
 
@@ -4706,7 +4679,6 @@
       <languagemap languagepattern="PL.*" languagerulename="Polish"/>
       <languagemap languagepattern="RU.*" languagerulename="Russian"/>
       <languagemap languagepattern="SV.*" languagerulename="Swedish"/>
-      <languagemap languagepattern="ZH.*" languagerulename="Chinese"/>
       <languagemap languagepattern=".*" languagerulename="Default"/>
       <languagemap languagepattern=".*" languagerulename="Text"/>
       <languagemap languagepattern=".*" languagerulename="HTML"/>

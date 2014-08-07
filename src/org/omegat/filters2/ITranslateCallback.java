@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters2;
@@ -32,11 +31,10 @@ package org.omegat.filters2;
  */
 public interface ITranslateCallback {
     /**
-     * Set current pass number
+     * Set current pass number, i.e. 1 or 2.
      * 
      * Any filter called in one-pass mode by default. But if it require second pass for support prev/next
      * segments, it can set flag 'needSecondPass'.
-     * @param pass The current path number, i.e., 1 or 2
      */
     void setPass(int pass);
 
@@ -61,11 +59,6 @@ public interface ITranslateCallback {
 
     /**
      * Old call without path, for compatibility
-     * @param id
-     *              ID in source file, or null if ID not supported by format
-     * @param source
-     *              source entry text
-     * @return translation or null if translation not exist
      */
     String getTranslation(String id, String source);
 

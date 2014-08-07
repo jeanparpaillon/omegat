@@ -4,24 +4,22 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
-               2014 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters2.text;
@@ -33,7 +31,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
-import org.omegat.core.Core;
 import org.omegat.filters2.AbstractFilter;
 import org.omegat.filters2.FilterContext;
 import org.omegat.filters2.Instance;
@@ -47,7 +44,6 @@ import org.omegat.util.OStrings;
  * 
  * @author Keith Godfrey
  * @author Maxym Mykhalchuk
- * @author Didier Briel
  */
 public class TextFilter extends AbstractFilter {
 
@@ -56,7 +52,7 @@ public class TextFilter extends AbstractFilter {
      */
     public static final String SEGMENT_BREAKS = "BREAKS";
     /**
-     * Default. Text filter should segmentOn text into paragraphs on empty lines.
+     * Defult. Text filter should segmentOn text into paragraphs on empty lines.
      */
     public static final String SEGMENT_EMPTYLINES = "EMPTYLINES";
     /**
@@ -65,45 +61,20 @@ public class TextFilter extends AbstractFilter {
     public static final String SEGMENT_NEVER = "NEVER";
 
     public static final String OPTION_SEGMENT_ON = "segmentOn";
-    
-    /**
-     * Length at which a line break should occur in target documents
-     */
-    public static final String OPTION_LINE_LENGTH = "lineLength";
-    
-    /**
-     * Maximum line length in target documents
-     */
-    public static final String OPTION_MAX_LINE_LENGTH = "maxLineLength";
 
-    
-    /**
-     * Register plugin into OmegaT.
-     */
-    public static void loadPlugins() {
-        Core.registerFilterClass(TextFilter.class);
-    }
-
-    public static void unloadPlugins() {
-    }
-
-    @Override
     public String getFileFormatName() {
         return OStrings.getString("TEXTFILTER_FILTER_NAME");
     }
 
-    @Override
     public Instance[] getDefaultInstances() {
         return new Instance[] { new Instance("*.txt"), new Instance("*.txt1", OConsts.ISO88591, OConsts.ISO88591),
                 new Instance("*.txt2", OConsts.ISO88592, OConsts.ISO88592), new Instance("*.utf8", OConsts.UTF8, OConsts.UTF8) };
     }
 
-    @Override
     public boolean isSourceEncodingVariable() {
         return true;
     }
 
-    @Override
     public boolean isTargetEncodingVariable() {
         return true;
     }
@@ -121,34 +92,14 @@ public class TextFilter extends AbstractFilter {
         if (ch != 0xFEFF)
             in.reset();
 
-        int lineLength, maxLineLength;
-        try {
-            lineLength = Integer.parseInt(processOptions.get(TextFilter.OPTION_LINE_LENGTH));
-        } catch (Exception ex) {
-            lineLength = 0;
-        }
-        try {
-            maxLineLength = Integer.parseInt(processOptions.get(TextFilter.OPTION_MAX_LINE_LENGTH));
-        } catch (Exception ex) {
-            maxLineLength = 0;
-        }
-        Writer output;
-        if (lineLength != 0 && maxLineLength != 0) {
-            output = new LineLengthLimitWriter(out, lineLength, maxLineLength, Core.getProject()
-                    .getTargetTokenizer());
-        } else {
-            output = out;
-        }
-
         String segmentOn = processOptions.get(TextFilter.OPTION_SEGMENT_ON);
         if (SEGMENT_BREAKS.equals(segmentOn)) {
-            processSegLineBreaks(in, output);
+            processSegLineBreaks(in, out);
         } else if (SEGMENT_NEVER.equals(segmentOn)) {
-            processNonSeg(in, output);
+            processNonSeg(in, out);
         } else {
-            processSegEmptyLines(in, output);
+            processSegEmptyLines(in, out);
         }
-        output.close();
     }
 
     /** Process the file without segmenting it. */

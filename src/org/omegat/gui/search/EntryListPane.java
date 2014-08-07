@@ -6,24 +6,22 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2006-2007 Henry Pijffers
                2010 Alex Buloichik, Didier Briel
-               2014 Piotr Kulik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.search;
@@ -44,8 +42,6 @@ import javax.swing.text.DefaultStyledDocument;
 import org.omegat.core.Core;
 import org.omegat.core.search.SearchMatch;
 import org.omegat.core.search.SearchResultEntry;
-import org.omegat.core.search.Searcher;
-import org.omegat.util.Log;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
@@ -112,10 +108,8 @@ class EntryListPane extends JTextPane {
     /**
      * Show search result for user
      */
-    public void displaySearchResult(Searcher searcher, int numberOfResults) {
+    public void displaySearchResult(List<SearchResultEntry> entries, int numberOfResults) {
         UIThreadsUtil.mustBeSwingThread();
-
-        m_searcher = searcher;
 
         this.numberOfResults = numberOfResults;
 
@@ -123,13 +117,13 @@ class EntryListPane extends JTextPane {
         m_entryList.clear();
         m_offsetList.clear();
 
-        if (searcher == null || searcher.getSearchResults() == null) {
+        if (entries == null) {
             // empty marks - just reset
             setText("");
             return;
         }
 
-        currentlyDisplayedMatches = new DisplayMatches(searcher.getSearchResults());
+        currentlyDisplayedMatches = new DisplayMatches(entries);
     }
 
     protected class DisplayMatches implements Runnable {
@@ -156,14 +150,12 @@ class EntryListPane extends JTextPane {
 
             for (SearchResultEntry e : entries) {
                 addEntry(m_stringBuf, e.getEntryNum(), e.getPreamble(), e.getSrcPrefix(), e.getSrcText(),
-                        e.getTranslation(), e.getNote(), e.getSrcMatch(), e.getTargetMatch(), e.getNoteMatch());
+                        e.getTranslation(), e.getSrcMatch(), e.getTargetMatch());
             }
 
             try {
-                doc.remove(0, doc.getLength());
                 doc.insertString(0, m_stringBuf.toString(), null);
             } catch (Exception ex) {
-                Log.log(ex);
             }
             setDocument(doc);
             setCaretPosition(0);
@@ -177,8 +169,7 @@ class EntryListPane extends JTextPane {
 
         // add entry text - remember what its number is and where it ends
         public void addEntry(StringBuilder m_stringBuf, int num, String preamble, String srcPrefix,
-                String src, String loc, String note, SearchMatch[] srcMatches,
-                SearchMatch[] targetMatches, SearchMatch[] noteMatches) {
+                String src, String loc, SearchMatch[] srcMatches, SearchMatch[] targetMatches) {
             if (m_stringBuf.length() > 0)
                 m_stringBuf.append("---------\n");
 
@@ -191,7 +182,7 @@ class EntryListPane extends JTextPane {
                 }
                 if (srcMatches != null) {
                     for (SearchMatch m : srcMatches) {
-                        m.move(m_stringBuf.length());
+                        m.start += m_stringBuf.length();
                         matches.add(m);
                     }
                 }
@@ -202,23 +193,11 @@ class EntryListPane extends JTextPane {
                 m_stringBuf.append("-- ");
                 if (targetMatches != null) {
                     for (SearchMatch m : targetMatches) {
-                        m.move(m_stringBuf.length());
+                        m.start += m_stringBuf.length();
                         matches.add(m);
                     }
                 }
                 m_stringBuf.append(loc);
-                m_stringBuf.append('\n');
-            }
-
-            if (note != null && !note.equals("")) {
-                m_stringBuf.append("= ");
-                if (noteMatches != null) {
-                    for (SearchMatch m : noteMatches) {
-                        m.move(m_stringBuf.length());
-                        matches.add(m);
-                    }
-                }
-                m_stringBuf.append(note);
                 m_stringBuf.append('\n');
             }
 
@@ -236,7 +215,7 @@ class EntryListPane extends JTextPane {
 
             List<SearchMatch> display = matches.subList(0, Math.min(MARKS_PER_REQUEST, matches.size()));
             for (SearchMatch m : display) {
-                doc.setCharacterAttributes(m.getStart(), m.getLength(), FOUND_MARK, true);
+                doc.setCharacterAttributes(m.start, m.length, FOUND_MARK, true);
             }
             display.clear();
 
@@ -289,11 +268,6 @@ class EntryListPane extends JTextPane {
         return m_entryList;
     }
 
-    public Searcher getSearcher() {
-        return m_searcher;
-    }
-
-    private volatile Searcher m_searcher;
     private final List<Integer> m_entryList = new ArrayList<Integer>();
     private final List<Integer> m_offsetList = new ArrayList<Integer>();
     private DisplayMatches currentlyDisplayedMatches;

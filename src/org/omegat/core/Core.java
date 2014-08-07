@@ -8,26 +8,24 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,28 +35,19 @@ import org.omegat.core.spellchecker.ISpellChecker;
 import org.omegat.core.spellchecker.SpellChecker;
 import org.omegat.core.threads.IAutoSave;
 import org.omegat.core.threads.SaveThread;
-import org.omegat.filters2.IFilter;
 import org.omegat.filters2.master.FilterMaster;
-import org.omegat.filters2.master.PluginUtils;
 import org.omegat.gui.comments.CommentsTextArea;
-import org.omegat.gui.comments.IComments;
 import org.omegat.gui.dictionaries.DictionariesTextArea;
 import org.omegat.gui.editor.EditorController;
 import org.omegat.gui.editor.IEditor;
-import org.omegat.gui.editor.autotext.Autotext;
 import org.omegat.gui.editor.mark.BidiMarkerFactory;
-import org.omegat.gui.editor.mark.ComesFromAutoTMMarker;
 import org.omegat.gui.editor.mark.IMarker;
 import org.omegat.gui.editor.mark.NBSPMarker;
-import org.omegat.gui.editor.mark.ProtectedPartsMarker;
 import org.omegat.gui.editor.mark.RemoveTagMarker;
-import org.omegat.gui.editor.mark.ReplaceMarker;
+import org.omegat.gui.editor.mark.TagMarker;
 import org.omegat.gui.editor.mark.WhitespaceMarkerFactory;
-import org.omegat.gui.exttrans.IMachineTranslation;
 import org.omegat.gui.exttrans.MachineTranslateTextArea;
-import org.omegat.gui.glossary.GlossaryManager;
 import org.omegat.gui.glossary.GlossaryTextArea;
-import org.omegat.gui.glossary.TransTipsMarker;
 import org.omegat.gui.main.ConsoleWindow;
 import org.omegat.gui.main.IMainWindow;
 import org.omegat.gui.main.MainWindow;
@@ -69,9 +58,6 @@ import org.omegat.gui.notes.INotes;
 import org.omegat.gui.notes.NotesTextArea;
 import org.omegat.gui.tagvalidation.ITagValidation;
 import org.omegat.gui.tagvalidation.TagValidationTool;
-import org.omegat.tokenizer.ITokenizer;
-import org.omegat.util.Preferences;
-import org.omegat.util.StaticUtils;
 
 /**
  * Class which contains all components instances.
@@ -99,22 +85,18 @@ public class Core {
     private static IAutoSave saveThread;
 
     private static GlossaryTextArea glossary;
-    private static GlossaryManager glossaryManager;
     private static MachineTranslateTextArea machineTranslatePane;
     @SuppressWarnings("unused")
     private static DictionariesTextArea dictionaries;
     @SuppressWarnings("unused")
     private static MultipleTransPane multiple;
     private static INotes notes;
-    private static IComments comments;
+    @SuppressWarnings("unused")
+    private static CommentsTextArea comments;
 
     private static Map<String, String> cmdLineParams;
 
-    private static List<String> pluginsLoadingErrors = Collections.synchronizedList(new ArrayList<String>());
-
     private static final List<IMarker> markers = new ArrayList<IMarker>();
-
-    private static Autotext autoText = new Autotext(StaticUtils.getConfigDir() + Preferences.AC_AUTOTEXT_FILE_NAME);
 
     /** Get project instance. */
     public static IProject getProject() {
@@ -171,25 +153,12 @@ public class Core {
     public static GlossaryTextArea getGlossary() {
         return glossary;
     }
-
-    public static GlossaryManager getGlossaryManager() {
-        return glossaryManager;
-    }
-
+    
     /** Get notes instance. */
     public static INotes getNotes() {
         return notes;
     }
 
-    /**
-     * Get comments area
-     * 
-     * @return the comment area
-     */
-    public static IComments getComments() {
-        return comments;
-    }
-    
     /**
      * Initialize application components.
      */
@@ -203,10 +172,9 @@ public class Core {
         MainWindow me = new MainWindow();
         mainWindow = me;
 
-        Core.registerMarker(new ProtectedPartsMarker());
+        Core.registerMarker(new TagMarker());
         Core.registerMarker(new RemoveTagMarker());
         Core.registerMarker(new NBSPMarker());
-        Core.registerMarker(new TransTipsMarker());
         Core.registerMarker(new WhitespaceMarkerFactory.SpaceMarker());
         Core.registerMarker(new WhitespaceMarkerFactory.TabMarker());
         Core.registerMarker(new WhitespaceMarkerFactory.LFMarker());
@@ -215,15 +183,12 @@ public class Core {
         Core.registerMarker(new BidiMarkerFactory.PDFMarker());
         Core.registerMarker(new BidiMarkerFactory.LROMarker());
         Core.registerMarker(new BidiMarkerFactory.RLOMarker());
-        Core.registerMarker(new ReplaceMarker());
-        Core.registerMarker(new ComesFromAutoTMMarker());
 
         // 3. Initialize other components. They add themselves to the main window.
         editor = new EditorController(me);
         tagValidation = new TagValidationTool(me);
         matcher = new MatchesTextArea(me);
         glossary = new GlossaryTextArea();
-        glossaryManager = new GlossaryManager(glossary);
         notes = new NotesTextArea(me);
         comments = new CommentsTextArea(me);
         machineTranslatePane = new MachineTranslateTextArea();
@@ -280,39 +245,5 @@ public class Core {
 
     public static Map<String, String> getParams() {
         return cmdLineParams;
-    }
-
-    public static void registerFilterClass(Class<? extends IFilter> clazz) {
-        PluginUtils.getFilterClasses().add(clazz);
-    }
-
-    public static void registerMachineTranslationClass(Class<? extends IMachineTranslation> clazz) {
-        PluginUtils.getMachineTranslationClasses().add(clazz);
-    }
-
-    public static void registerMarkerClass(Class<? extends IMarker> clazz) {
-        PluginUtils.getMarkerClasses().add(clazz);
-    }
-
-    public static void registerTokenizerClass(Class<? extends ITokenizer> clazz) {
-        PluginUtils.getTokenizerClasses().add(clazz);
-    }
-
-    /**
-     * Get all plugin loading errors.
-     */
-    public static List<String> getPluginsLoadingErrors() {
-        return pluginsLoadingErrors;
-    }
-
-    /**
-     * Any plugin can call this method for say about error on loading.
-     */
-    public static void pluginLoadingError(String errorText) {
-        pluginsLoadingErrors.add(errorText);
-    }
-
-    public static Autotext getAutoText() {
-        return autoText;
     }
 }

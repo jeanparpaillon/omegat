@@ -10,20 +10,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.help;
@@ -31,6 +30,7 @@ package org.omegat.gui.help;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
@@ -41,18 +41,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Random;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
-import org.omegat.util.gui.StaticUIUtils;
 import org.openide.awt.Mnemonics;
 
 /**
@@ -92,7 +97,6 @@ public class HelpFrame extends JFrame {
 
         m_homeButton = new JButton();
         m_homeButton.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 m_historyList.add(m_filename);
                 displayHome();
@@ -102,7 +106,6 @@ public class HelpFrame extends JFrame {
 
         m_backButton = new JButton();
         m_backButton.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 if (m_historyList.size() > 0) {
                     URL u = m_historyList.remove(m_historyList.size() - 1);
@@ -115,7 +118,6 @@ public class HelpFrame extends JFrame {
 
         m_closeButton = new JButton();
         m_closeButton.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
             }
@@ -128,10 +130,19 @@ public class HelpFrame extends JFrame {
         bbut.add(m_closeButton);
         cp.add(bbut, "North");
 
-        StaticUIUtils.setEscapeClosable(this);
+        // HP
+        // Handle escape key to close the window
+        KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escapeAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
+        getRootPane().getActionMap().put("ESCAPE", escapeAction);
+        // END HP
 
         m_helpPane.addHyperlinkListener(new HyperlinkListener() {
-            @Override
             public void hyperlinkUpdate(HyperlinkEvent he) {
                 if (he.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                     m_historyList.add(m_filename);
@@ -182,7 +193,7 @@ public class HelpFrame extends JFrame {
         return r;
     }
 
-    public final void displayHome() {
+    public void displayHome() {
         if (m_home != null) {
             // home was already displayed, we know URL
             displayURL(m_home);
@@ -212,7 +223,7 @@ public class HelpFrame extends JFrame {
     private void gotoLink(String link) {
         if (link.startsWith("http://")) {
             String txt = "<b>" + link + "</b>";
-            StringBuilder buf = new StringBuilder();
+            StringBuffer buf = new StringBuffer();
             buf.append("<html><body><p>");
             buf.append(StaticUtils.format(OStrings.getString("HF_ERROR_EXTLINK_TITLE"), new Object[] { txt }));
             buf.append("<p>");
@@ -256,7 +267,7 @@ public class HelpFrame extends JFrame {
     }
 
     // immortalize the BeOS 404 messages (some modified a bit for context)
-    public static String errorHaiku() {
+    private String errorHaiku() {
         int id = new Random().nextInt(11) + 1;
         return OStrings.getString("HF_HAIKU_" + id);
     }
@@ -369,7 +380,6 @@ public class HelpFrame extends JFrame {
         Preferences.setPreference(Preferences.HELPWINDOW_Y, getY());
     }
 
-    @Override
     public void processWindowEvent(WindowEvent w) {
         int evt = w.getID();
         if (evt == WindowEvent.WINDOW_CLOSING || evt == WindowEvent.WINDOW_CLOSED) {
@@ -379,9 +389,9 @@ public class HelpFrame extends JFrame {
         super.processWindowEvent(w);
     }
 
-    private final JEditorPane m_helpPane;
-    private final JButton m_closeButton;
-    private final JButton m_homeButton;
+    private JEditorPane m_helpPane;
+    private JButton m_closeButton;
+    private JButton m_homeButton;
     private JButton m_backButton;
     private List<URL> m_historyList;
 

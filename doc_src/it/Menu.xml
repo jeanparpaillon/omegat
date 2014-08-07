@@ -45,9 +45,9 @@
         <title>Menu del progetto</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -75,7 +75,7 @@
 
               <entry/>
 
-              <entry>Copia i file selezionati nella cartella <filename>source</filename> e ricarica il progetto per caricare i nuovi file.</entry>
+              <entry>Copia i file selezionati nella cartella <filename>source</filename> e ricarica il progetto per caricare i nuovi file..</entry>
             </row>
 
             <row>
@@ -179,9 +179,9 @@
         <title>Scorciatoie copia/taglia/incolla</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -229,9 +229,9 @@
         <title>Menu Modifica</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -333,7 +333,7 @@
                   <keycap>Maiusc</keycap> <keycap>Ctrl</keycap> <keycap>C</keycap>
                 </keycombo></entry>
 
-              <entry>Esporta la selezione attiva in un file di testo per successiva elaborazione. Se non è stato selezionato alcun testo, nel file viene copiato il segmento originale attivo. Quando l'utente chiude <application>OmegaT</application>, questo file non è vuoto, in modo da essere coerente col normale comportamento degli Appunti. Il contenuto esportato viene copiato nel file <filename>selection.txt</filename>, memorizzato nella cartella delle preferenze dell'utente (si veda <xref linkend="chapter.files.and.folders"/>).</entry>
+              <entry>Esporta la selezione attiva in un file di testo per successiva elaborazione. Se non è stato selezionato alcun testo, nel file viene copiato il segmento originale attivo. Quando l'utente chiude <application>OmegaT</application>, questo file non è vuoto, in modo da essere coerente col normale comportamento degli Appunti. Il contenuto esportato viene copiato nel file <filename>selection.txt</filename>, memorizzato nella cartella delle preferenze dell'utente (si veda <xref linkend="chapter.files.and.directories"/>).</entry>
             </row>
 
             <row>
@@ -409,9 +409,9 @@
         <title>Menu Vai</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -503,7 +503,7 @@
         <title>Menu Vista</title>
 
         <tgroup cols="2" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
           <tbody>
             <row>
@@ -573,7 +573,7 @@
         </indexterm>
 
         <tgroup cols="2" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
           <tbody>
             <row>
@@ -613,7 +613,7 @@
         <title>Menu Opzioni</title>
 
         <tgroup cols="2" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
           <tbody>
             <row>
@@ -731,7 +731,7 @@
         <title>Menu Aiuto</title>
 
         <tgroup cols="2" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
           <tbody>
             <row>
@@ -803,9 +803,9 @@
         <title>Scorciatoie per la gestione del progetto</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -881,9 +881,9 @@
         <title>Modifica delle scorciatoie</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -911,7 +911,7 @@
             </row>
 
             <row>
-              <entry>Seleziona concordanza parziale #N</entry>
+              <entry>Seleziona concordanza fuzzy #N</entry>
 
               <entry><keycombo>
                   <keycap>Ctrl</keycap>
@@ -919,7 +919,7 @@
                   <keycap>#N</keycap>
                 </keycombo></entry>
 
-              <entry>#N è una cifra da 1 a 5. La scorciatoia seleziona la concordanza N visualizzata all'interno della finestra delle concordanze (per impostazione predefinita, viene selezionata la prima dell'elenco)</entry>
+              <entry>#N è una cifra da 1 a 5. La scorciatoia seleziona la corrispondenza N visualizzata all'interno della finestra delle concordanze (per impostazione predefinita, viene selezionata la prima dell'elenco)</entry>
             </row>
 
             <row>
@@ -1035,9 +1035,9 @@
         <title>Scorciatoie per gli spostamenti</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>
@@ -1117,9 +1117,9 @@
         <title>Scorciatoie varie</title>
 
         <tgroup cols="3" colsep="1">
-          <colspec align="left" colnum="1"/>
+          <colspec align="left" colnum="1" colwidth="100"/>
 
-          <colspec align="left" colnum="2"/>
+          <colspec align="left" colnum="2" colwidth="100"/>
 
           <tbody>
             <row>

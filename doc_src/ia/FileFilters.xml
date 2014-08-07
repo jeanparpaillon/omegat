@@ -88,7 +88,7 @@
 
     <itemizedlist>
       <listitem>
-        <para><emphasis>Adde o rescribe le declaration de codification in le files HTML e XHTML:</emphasis>: frequentemente le files de destination debe haber le collection de codification del character differente de illo in le file fonte (sia que isto es definite explicitemente o implicite). Con iste option le traductor pote specificar, si le files de destination debe haber le declaration de codification includite. Per exemplo, si le filtro del file specifica UTF8 ut le schema de codification pro le files de destination, seliger Semper assecurara que iste information es includite in le files rendite.</para>
+        <para><emphasis>Adde o rescribe le declaration de codification in le files HTML e XHTML:</emphasis>: frequentemente le files de destination debe haber le collection del character de codification differente de illo del file fonte (sia que isto es definite explicitemente o implicite). Con iste option le traductor pote specificar, si le files de destination debe haber le declaration de codification includite. Per exemplo, si le filtro del file specifica UTF8 ut le schema de codification pro le files de destination, seliger Semper assecurara que iste information es includite in le files rendite.</para>
       </listitem>
     </itemizedlist>
 
@@ -212,7 +212,7 @@
 
     <itemizedlist>
       <listitem>
-        <para><emphasis>Segmentation a paragrapho sur interruptiones de linea, lineas vacue o nunquam:</emphasis></para>
+        <para><emphasis>Segmentation a paragrapho sur interruptiones de linea, lineas vacue o nunquam</emphasis>:</para>
 
         <para>si le regulas de segmentation son active, le texto essera ulteriormente segmentate secundo le option seligite ci.</para>
       </listitem>

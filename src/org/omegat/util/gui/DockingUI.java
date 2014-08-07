@@ -6,31 +6,28 @@
  Copyright (C) 2000-2006 Keith Godfrey, Maxym Mykhalchuk, Henry Pijffers, 
                          Benjamin Siband, and Kim Bruning
                2007 Zoltan Bartko
-               2008 Andrzej Sawula, Alex Buloichik
-               2009-2010 Alex Buloichik
-               2014 Yu Tang
+               2008 Andrzej Sawula
+ Portions copyright 2008 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Window;
@@ -40,27 +37,14 @@ import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.UIManager;
-import javax.swing.plaf.ColorUIResource;
 
 import org.omegat.core.Core;
 import org.omegat.util.OStrings;
 
-import com.vlsolutions.swing.docking.AutoHidePolicy;
-import com.vlsolutions.swing.docking.AutoHidePolicy.ExpandMode;
 import com.vlsolutions.swing.docking.ui.DockingUISettings;
 
 /**
  * Docking UI support.
- * @author Keith Godfrey
- * @author Maxym Mykhalchuk
- * @author Henry Pijffers
- * @author Benjamin Siband
- * @author Kim Bruning
- * @author Zoltan Bartko
- * @author Andrzej Sawula
- * @author Alex Buloichik
- * @author Yu Tang
- * 
  */
 public class DockingUI {
 
@@ -69,7 +53,6 @@ public class DockingUI {
      */
     public static void initialize() {
         DockingUISettings.getInstance().installUI();
-        AutoHidePolicy.getPolicy().setExpandMode(ExpandMode.EXPAND_ON_ROLLOVER);
         UIManager.put("DockViewTitleBar.minimizeButtonText", OStrings.getString("DOCKING_HINT_MINIMIZE"));
         UIManager.put("DockViewTitleBar.maximizeButtonText", OStrings.getString("DOCKING_HINT_MAXIMIZE"));
         UIManager.put("DockViewTitleBar.restoreButtonText", OStrings.getString("DOCKING_HINT_RESTORE"));
@@ -129,25 +112,6 @@ public class DockingUI {
         UIManager.put("DockingDesktop.floatActionAccelerator", null);
 
         UIManager.put("DragControler.detachCursor", getIcon("undock.gif").getImage());
-
-        // to ensure DockViewTitleBar title readability
-        Color textColor = UIManager.getColor("InternalFrame.inactiveTitleForeground");
-        Color backColor = UIManager.getColor("Panel.background");
-        if (textColor!= null && backColor!=null) { // One of these could be null
-            if (textColor.equals(backColor)) {
-                float[] hsb = Color.RGBtoHSB(textColor.getRed(),
-                        textColor.getGreen(), textColor.getBlue(), null);
-                float brightness = hsb[2]; // darkest 0.0f <--> 1.0f brightest
-                if (brightness >= 0.5f) {
-                    brightness -= 0.5f;    // to darker
-                } else {
-                    brightness += 0.5f;    // to brighter
-                }
-                int rgb = Color.HSBtoRGB(hsb[0], hsb[1], brightness);
-                ColorUIResource res = new ColorUIResource(rgb);
-                UIManager.put("InternalFrame.inactiveTitleForeground", res);
-            }
-        }
     }
 
     /**

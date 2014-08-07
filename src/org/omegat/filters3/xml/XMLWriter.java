@@ -8,20 +8,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.filters3.xml;
@@ -60,9 +59,6 @@ public class XMLWriter extends Writer {
     /** Replacement string for XML header */
     private String XML_HEADER;
 
-    /** Detected EOL chars. */
-    private String eol;
-
     /**
      * Creates new XMLWriter.
      * 
@@ -71,7 +67,7 @@ public class XMLWriter extends Writer {
      * @param encoding
      *            encoding to write a file in
      */
-    public XMLWriter(File file, String encoding, String eol) throws FileNotFoundException, UnsupportedEncodingException {
+    public XMLWriter(File file, String encoding) throws FileNotFoundException, UnsupportedEncodingException {
         if (encoding == null)
             XML_HEADER = "<?xml version=\"1.0\"?>";
         else
@@ -87,7 +83,6 @@ public class XMLWriter extends Writer {
             osw = new OutputStreamWriter(fos, encoding);
 
         realWriter = new BufferedWriter(osw);
-        this.eol = eol;
     }
 
     /** The minimal size of already written HTML that will be appended headers */
@@ -127,7 +122,7 @@ public class XMLWriter extends Writer {
         if (signalAlreadyFlushed) {
             // already flushed, i.e. already wrote out the headers stuff
 
-            realWriter.write(fixEOL(buffer).toString());
+            realWriter.write(buffer.toString());
             buffer.setLength(0);
         } else if (signalClosing || buffer.length() >= minHeaderedBufferSize) {
             // else if we're closing or the buffer is big enough
@@ -137,35 +132,17 @@ public class XMLWriter extends Writer {
             String contents;
             Matcher matcher_header = PatternConsts.XML_HEADER.matcher(buffer);
             if (matcher_header.find()) {
-                contents = fixEOL(new StringBuffer(matcher_header.replaceFirst(XML_HEADER))).toString();
+                contents = matcher_header.replaceFirst(XML_HEADER);
             } else {
                 Log.log("Shouldn't happen! " + "XMLWriter: XML File does not contain XML header:\n"
                         + buffer.substring(0, Math.min(buffer.length(), 80)));
                 realWriter.write(XML_HEADER);
-                contents = fixEOL(buffer).toString();
+                contents = buffer.toString();
             }
 
             realWriter.write(contents);
             buffer.setLength(0);
         }
-    }
-
-    /**
-     * We assume that EOL is always '\n' after XML processing.
-     */
-    StringBuffer fixEOL(StringBuffer out) {
-        for (int i = 0; i < out.length(); i++) {
-            if (out.charAt(i) == '\n') {
-                // EOL
-                out.setCharAt(i, eol.charAt(0));
-                if (eol.length() > 1) {
-                    // eol more than 1 char - need to insert second
-                    out.insert(i + 1, eol.charAt(1));
-                    i++;
-                }
-            }
-        }
-        return out;
     }
 
     /**

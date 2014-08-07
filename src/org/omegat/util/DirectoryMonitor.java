@@ -3,36 +3,32 @@
           with fuzzy matching, translation memory, keyword search,
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2009-2014 Alex Buloichik
+ Copyright (C) 2009 Alex Buloichik
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /**
@@ -40,7 +36,6 @@ import java.util.logging.Logger;
  * some files changed.
  * 
  * @author Alex Buloichik <alex73mail@gmail.com>
- * @author Briac Pilpre
  */
 public class DirectoryMonitor extends Thread {
     /** Local logger. */
@@ -49,7 +44,6 @@ public class DirectoryMonitor extends Thread {
     private boolean stopped = false;
     protected final File dir;
     protected final Callback callback;
-    protected final DirectoryCallback directoryCallback;
     private final Map<String, FileInfo> existFiles = new TreeMap<String, FileInfo>();
     protected static final long LOOKUP_PERIOD = 1000;
 
@@ -62,16 +56,8 @@ public class DirectoryMonitor extends Thread {
     public DirectoryMonitor(final File dir, final Callback callback) {
         this.dir = dir;
         this.callback = callback;
-        this.directoryCallback = null;
     }
 
-    public DirectoryMonitor(final File dir, final Callback callback, final DirectoryCallback directoryCallback) {
-        this.dir = dir;
-        this.callback = callback;
-        // Can't call this(dir, callback) because fields are final.
-        this.directoryCallback = directoryCallback;
-    }
-    
     public File getDir() {
         return dir;
     }
@@ -102,20 +88,13 @@ public class DirectoryMonitor extends Thread {
         }
     }
 
-    public synchronized Set<File> getExistFiles() {
-        Set<File> result = new TreeSet<File>();
-        for (String fn : existFiles.keySet()) {
-            result.add(new File(fn));
-        }
-        return result;
-    }
-
     /**
-     * Process changes in directory. This method can be called before thread start for load all files from
+     * Proces changes in directory. This method can be called before thread start for load all files from
      * directory immediately.
+     * 
+     * DON'T EXECUTE IT WHEN THREAD STARTED ! Because working with map not synchronized.
      */
-    public synchronized void checkChanges() {
-    	boolean directoryChanged = false;
+    public void checkChanges() {
         // find deleted or changed files
         for (String fn : new ArrayList<String>(existFiles.keySet())) {
             if (stopped)
@@ -126,7 +105,6 @@ public class DirectoryMonitor extends Thread {
                 LOGGER.finer("File '" + f + "' removed");
                 existFiles.remove(fn);
                 callback.fileChanged(f);
-                directoryChanged = true;
             } else {
                 FileInfo fi = new FileInfo(f);
                 if (!fi.equals(existFiles.get(fn))) {
@@ -134,17 +112,13 @@ public class DirectoryMonitor extends Thread {
                     LOGGER.finer("File '" + f + "' changed");
                     existFiles.put(fn, fi);
                     callback.fileChanged(f);
-                    directoryChanged = true;
                 }
             }
         }
 
         // find new files
-        List<File> foundFiles = FileUtil.findFiles(dir, new FileFilter() {
-            public boolean accept(File pathname) {
-                return true;
-            }
-        });
+        List<File> foundFiles = new ArrayList<File>();
+        readDir(dir, foundFiles);
         for (File f : foundFiles) {
             if (stopped)
                 return;
@@ -154,13 +128,20 @@ public class DirectoryMonitor extends Thread {
                 LOGGER.finer("File '" + f + "' added");
                 existFiles.put(fn, new FileInfo(f));
                 callback.fileChanged(f);
-                directoryChanged = true;
             }
         }
-        
-        if (directoryCallback != null && directoryChanged)
-        {
-        	directoryCallback.directoryChanged(dir);
+    }
+
+    protected void readDir(final File dir, final List<File> found) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    readDir(f, found);
+                } else {
+                    found.add(f);
+                }
+            }
         }
     }
 
@@ -190,12 +171,5 @@ public class DirectoryMonitor extends Thread {
          * Called on any file changes - created, modified, deleted.
          */
         void fileChanged(File file);
-    }
-    
-    public interface DirectoryCallback {
-        /**
-         * Called once for every directory where a file was changed - created, modified, deleted.
-         */
-        void directoryChanged(File file);
     }
 }

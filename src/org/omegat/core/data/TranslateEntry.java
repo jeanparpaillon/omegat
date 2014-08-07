@@ -5,31 +5,28 @@
 
  Copyright (C) 2011 Alex Buloichik
                2012 Wildrich Fourie
-               2013 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.core.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.omegat.core.Core;
 
 import org.omegat.core.segmentation.Rule;
 import org.omegat.core.segmentation.Segmenter;
@@ -46,7 +43,6 @@ import org.omegat.util.StringUtil;
  * 
  * @author Alex Buloichik <alex73mail@gmail.com>
  * @author Wildrich Fourie
- * @author Didier Briel
  */
 public abstract class TranslateEntry implements ITranslateCallback {
 
@@ -67,9 +63,8 @@ public abstract class TranslateEntry implements ITranslateCallback {
     }
 
     /**
-     * {@inheritDoc}
+     * Set current pass number, i.e. 1 or 2.
      */
-    @Override
     public void setPass(int pass) {
         this.pass = pass;
         currentlyProcessedSegment = 0;
@@ -78,8 +73,6 @@ public abstract class TranslateEntry implements ITranslateCallback {
     protected void fileStarted() {
         currentlyProcessedSegment = 0;
     }
-    
-    abstract String getCurrentFile();
 
     protected void fileFinished() {
         if (currentlyProcessedSegment != translateQueue.size()) {
@@ -89,9 +82,13 @@ public abstract class TranslateEntry implements ITranslateCallback {
     }
     
     /**
-     * {@inheritDoc}
+     * Get translation for specified entry to write output file.
+     * 
+     * @param entry
+     *            entry ID
+     * @param source
+     *            source text
      */
-    @Override
     public String getTranslation(final String id, final String origSource, final String path) {
         ParseEntry.ParseEntryResult spr = new ParseEntry.ParseEntryResult();
 
@@ -99,12 +96,10 @@ public abstract class TranslateEntry implements ITranslateCallback {
         // Fetch removed tags if the options 
         // has been enabled.
         String tags = null;
-        if (m_config.isRemoveTags()) {
-            tags = StaticUtils.buildTagListForRemove(origSource);
-        }
+        if(m_config.isRemoveTags())
+            tags = StaticUtils.buildTagList(origSource);
         
-        boolean removeSpaces = Core.getFilterMaster().getConfig().isRemoveSpacesNonseg();
-        final String source = ParseEntry.stripSomeChars(origSource, spr, m_config.isRemoveTags(), removeSpaces);
+        final String source = ParseEntry.stripSomeChars(origSource, spr, m_config.isRemoveTags());
         
         StringBuffer res = new StringBuffer();
 
@@ -143,37 +138,11 @@ public abstract class TranslateEntry implements ITranslateCallback {
         // fix for bug 1462566
         String r = res.toString();
         
-        //- Word: anything placed before the leading tag is omitted in translated document
-        // https://sourceforge.net/p/omegat/bugs/634/
-        // This is a Word document, Remove Tags (from Project Properties) is not checked and Remove leading and 
-        // trailing tags (from File Filters) is not checked
-        if ((getCurrentFile().endsWith(".docx") || getCurrentFile().endsWith(".docm")) &&
-            !m_config.isRemoveTags() && !Core.getFilterMaster().getConfig().isRemoveTags()) {
-            // Locate the location of the first tag
-            String firstTag = StaticUtils.getFirstTag(r);
-            if (firstTag != null) { 
-                int locFirstTag = r.indexOf(firstTag);
-                // Is there text before that first tag?
-                if (locFirstTag > 0) {
-                    // Was the first tag between two words without any spaces around?
-                    String addSpace = "";
-                    if (!Character.isWhitespace(r.charAt(locFirstTag -1)) && 
-                        !Character.isWhitespace(r.charAt(locFirstTag + firstTag.length()))) {
-                        addSpace = " ";
-                    }
-                    // Move that first tag before the text, adding a space if needed.
-                    r = firstTag + r.substring(0, locFirstTag) + addSpace + r.substring(locFirstTag + firstTag.length());
-                }
-            }                           
-        }
-
-        
         // fix for bug 3487497; 
         // explicitly add the removed tags at 
         // the end of the translated string.
-        if (m_config.isRemoveTags()) {
+        if(tags != null)
             r += tags;
-        }
         
         if (spr.crlf) {
             r = r.replace("\n", "\r\n");
@@ -193,9 +162,14 @@ public abstract class TranslateEntry implements ITranslateCallback {
     }
 
     /**
-     * {@inheritDoc}
+     * Get translation for specified entry to write output file.
+     * Old call without path, for compatibility
+     *
+     * @param entry
+     *            entry ID
+     * @param source
+     *            source text
      */
-    @Override
     public String getTranslation(final String id, final String origSource) {
         return getTranslation(id, origSource, null);
     }
@@ -203,7 +177,6 @@ public abstract class TranslateEntry implements ITranslateCallback {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void linkPrevNextSegments() {
         for (int i = 0; i < translateQueue.size(); i++) {
             TranslateEntryQueueItem item = translateQueue.get(i);

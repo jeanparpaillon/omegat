@@ -11,7 +11,7 @@ OmegaT の日本語版は、以下の貢献者によって作成されました�
 ・1.8/2.0版 全体チェック 篠原 範子氏
 
 ==============================================================================
-  OmegaT 3.0 - お読みください
+  OmegaT 2.0 - お読みください
 
   1.  OmegaT について
   2.  OmegaT とは？
@@ -111,7 +111,7 @@ OmegaT の実行には、Java Runtime Environment（JRE）バージョン 1.5 �
 
 最初の実行時に、お使いのコンピューターに適した実行環境とアプリケーションを自動でインストールします。それ以降の実行時は、オンラインである必要はありません。
 
-インストール中、OS によってはいくつかのセキュリティ警告が表示される場合があります。証明書は「PnS Concept」によって署名されています。この（Java Web Start 版）実行ファイルに与える権限（「コンピューターへの無制限アクセス」と表示される可能性があります）は、通常のローカル版に対して適用するものと同一で、コンピューターのハードディスクにアクセスすることを許可するものです。インストール後は、OmegaT.jnlp をクリックすると、もしオンラインであればプログラムの更新がないか検索し、もしあればインストールした後、OmegaT を起動します。 
+インストール中、OS によってはいくつかのセキュリティ警告が表示される場合があります。証明書は「Didier Briel」による自己署名がなされています。この（Java Web Start 版）実行ファイルに与える権限（「コンピューターへの無制限アクセス」と表示される可能性があります）は、通常のローカル版に対して適用するものと同一で、コンピューターのハードディスクにアクセスすることを許可するものです。インストール後は、OmegaT.jnlp をクリックすると、もしオンラインであればプログラムの更新がないか検索し、もしあればインストールした後、OmegaT を起動します。 
 
 ダウンロードとインストールを行う他の方法は、下記に示す通りです。 
 
@@ -192,7 +192,6 @@ OmegaT の開発に協力したい場合、以下のサイトから開発者た�
       http://lists.sourceforge.net/lists/listinfo/omegat-development
 
 OmegaT のユーザーインターフェースや取扱説明書、他の関連文書の翻訳に協力したい場合、まず下記のファイルを読んでください：
-      
       http://www.omegat.org/en/howtos/localizing_omegat.php
 
 そして翻訳者のメーリングリストに参加してください：
@@ -217,20 +216,16 @@ OmegaT のユーザーインターフェースや取扱説明書、他の関連�
   Alex Buloichik（リード開発者）
   Sandra Jean Chua
   Thomas Cordonnier
-  Enrique Estévez Fernández
   Martin Fleurke  
   Wildrich Fourie
   Phillip Hall
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
-  Piotr Kulik
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
   Fabián Mandelbaum
-  Manfred Martin
   John Moran
   Maxym Mykhalchuk 
   Arno Peters
@@ -258,35 +253,22 @@ OmegaT のユーザーインターフェースや取扱説明書、他の関連�
 
 OmegaT は以下に示すライブラリを使用しています。
   Somik Raha, Derrick Oswald などによる HTMLParser 1.6（LGPL ライセンス）
-  VLDocking Framework 3.0.4（LGPL ライセンス）
+  Steve Roy による MRJ Adapter 1.0.8（LGPL ライセンス）
+  VLSolutions 社による VLDocking Framework 2.1.4（CeCILL ライセンス）
   László Németh などによる Hunspell（LGPL ライセンス）
   Todd Fast, Timothy Wall などによる JNA（LGPL ライセンス）
-  Swing-Layout 1.0.4（LGPL ライセンス）
+  Swing-Layout 1.0.2（LGPL ライセンス）
   Jmyspell 2.1.4（LGPL ライセンス）
-  SVNKit 1.8.5（TMate ライセンス）
+  JAXB（GPL v2 ライセンスと Classpath 例外）
+  SJXP 1.0.2（GPL v2 ライセンス）
+  SVNKit 1.7.5（TMate ライセンス）
   Sequence Library（Sequence Library ライセンス）
   ANTLR 3.4（ANTLR 3 ライセンス）
-  SQLJet 1.1.10（GPL v2 ライセンス）
+  SQLJet 1.1.3（GPL v2 ライセンス）
   JGit（Eclipse Distribution ライセンス）
   JSch（JSch ライセンス）
   Base64（パブリックドメイン）
   Diff（GPL ライセンス）
-  trilead-ssh2-1.0.0-build217（Trilead SSH ライセンス）
-  lucene-*.jar（Apache ライセンス 2.0）
-  英語用のトークナイザー（org.omegat.tokenizer.SnowballEnglishTokenizer および
-  org.omegat.tokenizer.LuceneEnglishTokenizer）が利用する 
-  Okapi（http://okapi.sourceforge.net）由来の stop words（LGPL ライセンス）
-  tinysegmenter.jar（修正 BSD ライセンス）
-  commons-*.jar（Apache ライセンス 2.0）
-  jWordSplitter（Apache ライセンス 2.0）
-  LanguageTool.jar（LGPL ライセンス）
-  morfologik-*.jar（Morfologik ライセンス）
-  segment-1.4.1.jar（Segment ライセンス）
-  pdfbox-app-1.8.1.jar（Apache ライセンス 2.0）
-  KoreanAnalyzer-3x-120223.jar（Apache ライセンス 2.0）
-  SuperTMXMerge-for_OmegaT.jar（LGPL ライセンス）
-  groovy-all-2.2.2.jar（Apache ライセンス 2.0）
-  slf4j（MIT ライセンス）
 
 ==============================================================================
  5.  バグかな？と思ったら

@@ -4,180 +4,40 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2012 Alex Buloichick
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.dialogs;
 
-import java.util.concurrent.CancellationException;
-
-import javax.swing.SwingWorker;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import org.omegat.core.Core;
-import org.omegat.core.team.GITRemoteRepository;
-import org.omegat.core.team.IRemoteRepository;
-import org.omegat.core.team.IRemoteRepository.Credentials;
-import org.omegat.core.team.RepositoryUtils.RepoTypeDetector;
-import org.omegat.core.team.SVNRemoteRepository;
-import org.omegat.util.Log;
 import org.omegat.util.OStrings;
-import org.omegat.util.StringUtil;
-import org.omegat.util.gui.OmegaTFileChooser;
-import org.omegat.util.gui.StaticUIUtils;
 
 /**
  *
  * @author Alex Buloichik (alex73mail@gmail.com)
- * @author Aaron Madlon-Kay
  */
 public class NewTeamProject extends javax.swing.JDialog {
-
-    
-    public Class<? extends IRemoteRepository> repoType = null;
-    public Credentials credentials = null;
-    private RepoTypeWorker repoTypeWorker = null;
-    private boolean detecting = false;
-    
     /**
      * Creates new form NewTeamProject
      */
     public NewTeamProject(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
-        txtRepositoryURL.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                clearRepo();
-            }
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                clearRepo();
-            }
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                clearRepo();
-            }
-        });
-        txtDirectory.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                updateDialog();
-            }
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                updateDialog();
-            }
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updateDialog();
-            }
-        });
-        
-        StaticUIUtils.setEscapeClosable(this);
     }
-    
-    private synchronized void detectRepo() {
-        if (detecting || !isVisible()) {
-            return;
-        }
-        String url = txtRepositoryURL.getText().trim();
-        if (StringUtil.isEmpty(url)) {
-            return;
-        }
-        if (url.startsWith("git!")) {
-            txtRepositoryURL.setText(url.substring("git!".length()));
-            detectedRepoLabel.setText(OStrings.getString("TEAM_DETECTED_REPO_GIT"));
-            repoType = GITRemoteRepository.class;
-        } else if (url.startsWith("svn!")) {
-            txtRepositoryURL.setText(url.substring("svn!".length()));
-            detectedRepoLabel.setText(OStrings.getString("TEAM_DETECTED_REPO_SVN"));
-            repoType = SVNRemoteRepository.class;
-        } else {
-            repoTypeWorker = new RepoTypeWorker(url);
-            repoTypeWorker.execute();
-        }
-    }
-    
-    private synchronized void startDetectingRepo() {
-        detecting = true;
-    }
-    
-    private synchronized void stopDetectingRepo() {
-        detecting = false;
-    }
-    
-    private void clearRepo() {
-        repoType = null;
-        detectedRepoLabel.setText(" ");
-        if (repoTypeWorker != null) {
-            repoTypeWorker.cancel(true);
-        }
-        updateDialog();
-    }
-    
-    
-    private class RepoTypeWorker extends SwingWorker<RepoTypeDetector, Object> {
-
-        private String url = null;
-
-        public RepoTypeWorker(String url) {
-            this.url = url;
-        }
-        
-        @Override
-        protected RepoTypeDetector doInBackground() throws Exception {
-            startDetectingRepo();
-            detectedRepoLabel.setText(OStrings.getString("TEAM_DETECTING_REPO"));
-            RepoTypeDetector detector = new RepoTypeDetector(url, credentials);
-            detector.execute();
-            return detector;
-        }
-
-        @Override
-        protected void done() {
-            String resultText = OStrings.getString("TEAM_DETECTED_REPO_UNKNOWN");
-            try {
-                RepoTypeDetector detector = get();
-                repoType = detector.repoType;
-                credentials = detector.credentials;
-                if (repoType != null) {
-                    if (repoType.equals(GITRemoteRepository.class)) {
-                        resultText = OStrings.getString("TEAM_DETECTED_REPO_GIT");
-                    } else if (repoType.equals(SVNRemoteRepository.class)) {
-                        resultText = OStrings.getString("TEAM_DETECTED_REPO_SVN");
-                    }
-                }
-            } catch (CancellationException ex) {
-                resultText = " ";
-            } catch (Exception ex) {
-                resultText = OStrings.getString("TEAM_ERROR_DETECTING_REPO");
-                Log.logErrorRB(ex, "TEAM_ERROR_DETECTING_REPO");
-            }
-            detectedRepoLabel.setText(resultText);
-            updateDialog();
-            stopDetectingRepo();
-        }
-    };
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -189,40 +49,58 @@ public class NewTeamProject extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        urlLabel = new javax.swing.JLabel();
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        rbSVN = new javax.swing.JRadioButton();
+        rbGIT = new javax.swing.JRadioButton();
+        jLabel2 = new javax.swing.JLabel();
         txtRepositoryURL = new javax.swing.JTextField();
-        detectedRepoLabel = new javax.swing.JLabel();
-        localFolderLabel = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         txtDirectory = new javax.swing.JTextField();
         btnDirectory = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         btnOk = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(OStrings.getString("TEAM_NEW_HEADER")); // NOI18N
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(urlLabel, OStrings.getString("TEAM_NEW_REPOSITORY_URL")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, OStrings.getString("TEAM_NEW_REPOSITORY_TYPE")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(jLabel1, gridBagConstraints);
+
+        buttonGroup1.add(rbSVN);
+        org.openide.awt.Mnemonics.setLocalizedText(rbSVN, OStrings.getString("TEAM_NEW_TYPE_SVN")); // NOI18N
+        jPanel1.add(rbSVN);
+
+        buttonGroup1.add(rbGIT);
+        org.openide.awt.Mnemonics.setLocalizedText(rbGIT, OStrings.getString("TEAM_NEW_TYPE_GIT")); // NOI18N
+        jPanel1.add(rbGIT);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(jPanel1, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, OStrings.getString("TEAM_NEW_REPOSITORY_URL")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(urlLabel, gridBagConstraints);
+        getContentPane().add(jLabel2, gridBagConstraints);
 
         txtRepositoryURL.setColumns(40);
         txtRepositoryURL.setToolTipText("");
-        txtRepositoryURL.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtRepositoryURLFocusLost(evt);
-            }
-        });
-        txtRepositoryURL.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtRepositoryURLActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -232,67 +110,35 @@ public class NewTeamProject extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(txtRepositoryURL, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(detectedRepoLabel, " ");
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, OStrings.getString("TEAM_NEW_DIRECTORY")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(jLabel3, gridBagConstraints);
+
+        txtDirectory.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(detectedRepoLabel, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(localFolderLabel, OStrings.getString("TEAM_NEW_DIRECTORY")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(localFolderLabel, gridBagConstraints);
-
-        txtDirectory.setToolTipText("");
-        txtDirectory.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtDirectoryFocusLost(evt);
-            }
-        });
-        txtDirectory.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtDirectoryActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
         getContentPane().add(txtDirectory, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(btnDirectory, "...");
-        btnDirectory.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDirectoryActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         getContentPane().add(btnDirectory, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(btnOk, OStrings.getString("BUTTON_OK")); // NOI18N
         btnOk.setEnabled(false);
-        btnOk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOkActionPerformed(evt);
-            }
-        });
         jPanel2.add(btnOk);
 
         org.openide.awt.Mnemonics.setLocalizedText(btnCancel, OStrings.getString("BUTTON_CANCEL")); // NOI18N
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
-            }
-        });
         jPanel2.add(btnCancel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -301,73 +147,33 @@ public class NewTeamProject extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         getContentPane().add(jPanel2, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(jPanel3, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void updateDialog() {
-        String repoUrl = txtRepositoryURL.getText();
-        if (repoUrl.trim().equals(" ")) {
-            detectedRepoLabel.setText("");
-        }
-        boolean enabled = repoType != null
-                && !StringUtil.isEmpty(repoUrl)
-                && !StringUtil.isEmpty(txtDirectory.getText());
-        btnOk.setEnabled(enabled);
-    }
-    
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        repoType = null;
-        if (credentials != null) {
-            credentials.clear();
-            credentials = null;
-        }
-        if (repoTypeWorker != null) {
-            repoTypeWorker.cancel(true);
-        }
-        dispose();
-    }//GEN-LAST:event_btnCancelActionPerformed
-
-    private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        dispose();
-        ok = true;
-    }//GEN-LAST:event_btnOkActionPerformed
-
-    private void btnDirectoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDirectoryActionPerformed
-        NewProjectFileChooser ndc = new NewProjectFileChooser();
-        int ndcResult = ndc.showSaveDialog(Core.getMainWindow().getApplicationFrame());
-        if (ndcResult == OmegaTFileChooser.APPROVE_OPTION) {
-            txtDirectory.setText(ndc.getSelectedFile().getPath());
-        }
-        updateDialog();
-    }//GEN-LAST:event_btnDirectoryActionPerformed
-
-    private void txtRepositoryURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRepositoryURLActionPerformed
-        detectRepo();
-    }//GEN-LAST:event_txtRepositoryURLActionPerformed
-
-    private void txtRepositoryURLFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtRepositoryURLFocusLost
-        detectRepo();
-    }//GEN-LAST:event_txtRepositoryURLFocusLost
-
-    private void txtDirectoryFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtDirectoryFocusLost
-        updateDialog();
-    }//GEN-LAST:event_txtDirectoryFocusLost
-
-    private void txtDirectoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDirectoryActionPerformed
-        updateDialog();
-    }//GEN-LAST:event_txtDirectoryActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnDirectory;
-    private javax.swing.JButton btnOk;
-    private javax.swing.JLabel detectedRepoLabel;
+    public javax.swing.JButton btnCancel;
+    public javax.swing.JButton btnDirectory;
+    public javax.swing.JButton btnOk;
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JLabel localFolderLabel;
+    private javax.swing.JPanel jPanel3;
+    public javax.swing.JRadioButton rbGIT;
+    public javax.swing.JRadioButton rbSVN;
     public javax.swing.JTextField txtDirectory;
     public javax.swing.JTextField txtRepositoryURL;
-    private javax.swing.JLabel urlLabel;
     // End of variables declaration//GEN-END:variables
 
     public boolean ok;

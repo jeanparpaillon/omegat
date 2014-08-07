@@ -1,7 +1,7 @@
-﻿Questa traduzione è frutto del lavoro di Valter Mura, copyright© 2014 e revisione di Valter Mura e Carmelo Serraino copyright© 2014.
+﻿Questa traduzione è frutto del lavoro di Valter Mura, copyright© 2012.
 
 ==============================================================================
-  File Leggimi di OmegaT 3.0
+  File Leggimi di OmegaT 2.0
 
   1.  Informazioni su OmegaT
   2.  Che cosa è OmegaT?
@@ -18,13 +18,13 @@ Le informazioni più aggiornate su OmegaT possono essere reperite accedendo a:
       http://www.omegat.org/
 
 Assistenza all'utente, nel gruppo utenti di Yahoo (multilingue), in cui è possibile ricercare negli archivi senza necessità di iscrizione:
-     http://tech.groups.yahoo.com/group/OmegaT/
+     http://groups.yahoo.com/group/OmegaT/
 
 Richieste di miglioramenti (in Inglese), nel sito SourceForge:
-     https://sourceforge.net/p/omegat/feature-requests/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520350
 
 Segnalazione errori (in Inglese), nel sito SourceForge:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
 ==============================================================================
   2.  Che cosa è OmegaT?
@@ -43,7 +43,7 @@ Le caratteristiche principali di OmegaT sono:
   - supporto dei correttori ortografici open source "al volo"
   - supporto dei dizionari StarDict
   - supporto dei servizi di traduzione automatica Google Translate
-  - documentazione ed esercitazioni chiare ed esaustive
+  - - documentazione ed esercitazioni chiare ed esaustive
   - localizzazione in più lingue
 
 OmegaT è in grado di riconoscere immediatamente i seguenti formati di file formattati:
@@ -52,7 +52,7 @@ OmegaT è in grado di riconoscere immediatamente i seguenti formati di file form
 
   - file di testo ASCII (.txt, ecc.)
   - testo codificato (*.UTF8)
-  - pacchetti risorsa Java (*.properties)
+  - Java resource bundles (*.properties)
   - file PO (*.po)
   - file INI (codice=valore) (*.ini)
   - file DTD (*.DTD)
@@ -62,24 +62,23 @@ OmegaT è in grado di riconoscere immediatamente i seguenti formati di file form
 
 - formati di file di testo con tag
 
-  - File OpenOffice.org / OpenDocument (*.odt, *.ott, *.ods, *.ots, *.odp, *.otp)
-  - File Microsoft Open XML (*.docx, *.xlsx, *.pptx)
-  - File (X)HTML (*.html, *.xhtml,*.xht)
+  - OpenOffice.org / OpenDocument (*.odt, *.ott, *.ods, *.ots, *.odp, *.otp)
+  - Microsoft Open XML (*.docx, *.xlsx, *.pptx)
+  - (X)HTML (*.html, *.xhtml,*.xht)
   - compilatore Help HTML (*.hhc, *.hhk)
-  - File DocBook (*.xml)
+  - DocBook (*.xml)
   - XLIFF monolingua (*.xlf, *.xliff, *.sdlxliff)
-  - File QuarkXPress CopyFlowGold (*.tag, *.xtg)
+  - QuarkXPress CopyFlowGold (*.tag, *.xtg)
   - file ResX (*.resx)
   - risorsa Android (*.xml)
-  - File LaTex (*.tex, *.latex)
+  - LaTex (*.tex, *.latex)
   - file di guida (*.xml) e manuale (*.hmxp)
-  - File LocManager (*.xml) Tipo3 
+  - Typo3 LocManager (*.xml)
   - localizzazione WiX (*.wxl)
-  - Fike Iceni Infix (*.xml)
+  - Iceni Infix (*.xml)
   - esportazione Flash XML (*.xml)
-  - File Wordfast TXML (*.txml)
+  - Wordfast TXML (*.txml)
   - Camtasia per Windows (*.camproj)
-  - File Visio (*.vxd)
 
 OmegaT può essere personalizzato per gestire anche altri tipi di formati di file.
 
@@ -102,7 +101,7 @@ A questo proposito, scaricare ed eseguire il file seguente:
 
 Esso installerà l'ambiente corretto per il proprio computer e l'applicazione per il primo avvio. Non è necessario eseguire online le chiamate successive.
 
-Durante l'installazione, in base al sistema operativo, si potrebbero ricevere diversi avvisi di sicurezza. Il certificato è rilasciato da "PnS Concept". 
+Durante l'installazione, in base al sistema operativo, si potrebbero ricevere diversi avvisi di sicurezza. Il certificato è firmato da "Didier Briel". 
 I permessi che si concedono a questa versione (che potremmo chiamare "accesso illimitato al computer") sono gli stessi che si attribuiscono alla versione locale, come installati da una procedura descritta in seguito: essi consentono l'accesso al disco rigido del computer. I clic successivi su OmegaT.jnlp verificheranno e installeranno gli aggiornamenti, se presenti, e avvieranno OmegaT. 
 
 Di seguito, sono descritti i metodi alternativi e gli strumenti per scaricare e installare OmegaT. 
@@ -168,10 +167,10 @@ Per partecipare allo sviluppo di OmegaT, mettersi in contatto con gli sviluppato
 
 Per tradurre l'interfaccia utente di OmegaT, il manuale per l'utente o altri documenti correlati, leggere:
       
-      http://www.omegat.org/en/howtos/localizing_omegat.php
+      http://www.omegat.org/en/translation-info.html
 
 e iscriversi all'elenco dei traduttori:
-      https://lists.sourceforge.net/lists/listinfo/omegat-l10n
+      http://lists.sourceforge.net/mailman/listinfo/omegat-l10n
 
 Per altri tipi di contributi, prima iscriversi al gruppo di utenti all'indirizzo:
       http://tech.groups.yahoo.com/group/omegat/
@@ -179,41 +178,34 @@ Per altri tipi di contributi, prima iscriversi al gruppo di utenti all'indirizzo
 Avrete così un'idea di che cosa accade nel mondo di OmegaT...
 
   OmegaT è un lavoro originale di Keith Godfrey.
-  Didier Briel è il gestore del progetto OmegaT.
+  Marc Prior è il coordinatore del progetto OmegaT.
 
 Elenco dei contributi precedenti (in ordine alfabetico)
 
 Contributi al codice:
-  (in ordine alfabetico)
+  Zoltan Bartko
   Volker Berlin
-  Didier Briel
+  Didier Briel (gestore dello sviluppo)
   Kim Bruning
   Alex Buloichik (sviluppatore primario)
   Sandra Jean Chua
   Thomas Cordonnier
-  Enrique Estévez Fernández
   Martin Fleurke  
   Wildrich Fourie
-  Phillip Hall
   Jean-Christophe Helary
   Thomas Huriaux
   Hans-Peter Jacobs
-  Kyle Katarn
-  Piotr Kulik
-  Ibai Lakunza Velasco
   Guido Leenders
-  Aaron Madlon-Kay
+  Ibai Lakunza Velasco
   Fabián Mandelbaum
-  Manfred Martin
   John Moran
   Maxym Mykhalchuk 
   Arno Peters
   Henry Pijffers 
   Briac Pilpré
   Tiago Saboga
-  Andrzej Sawuła
+  Andrzej Sawula
   Benjamin Siband
-  Yu Tang
   Rashid Umarov  
   Antonio Vilei
   Martin Wunderlich
@@ -225,42 +217,31 @@ Altri contributi:
   Jean-Christophe Helary (gestore della localizzazione)
   Vito Smolej (gestore della documentazione)
   Samuel Murray
-  Marc Prior (webmaster)
-  e tantissime altre persone che hanno contribuito
+  Marc Prior 
+  e molte, molte altre persone che hanno contribuito
 
 (se ritenete di aver contribuito in modo significativo al Progetto OmegaT ma il vostro nome non è presente nell'elenco, contattateci senza problemi).
 
 OmegaT usa le seguenti librerie:
-  HTMLParser 1.6 di Somik Raha, Derrick Oswald et al (licenza LGPL)
-  VLDocking Framework 3.0.4 (licenza LGPL)
+
+  HTMLParser di Somik Raha, Derrick Oswald et al (licenza LGPL)
+  http://sourceforge.net/projects/htmlparser
+
+  MRJ Adapter 1.0.8 di Steve Roy (licenza LGPL)
+  http://homepage.mac.com/sroy/mrjadapter/
+
+  VLDocking Framework 2.1.4 di VLSolutions (licenza CeCILL)
+  http://www.vlsolutions.com/en/products/docking/
+
   Hunspell di László Németh et al (licenza LGPL)
+
   JNA di Todd Fast, Timothy Wall et al (licenza LGPL)
-  Swing-Layout 1.0.4 (licenza LGPL)
+
+  Swing-Layout 1.0.2 (licenza LGPL)
+
   Jmyspell 2.1.4 (licenza LGPL)
-  SVNKit 1.7.5 (licenza TMate)
-  Sequence Library (licenza Sequence Library)
-  ANTLR 3.4 (licenza ANTLR 3)
-  SQLJet 1.1.3 (GPL v2)
-  JGit (licenza di distribuzione Eclipse)
-  JSch (licenza JSch)
-  Base64 (dominio pubblico)
-  Diff (GPL)
-  orion-ssh2-214 (licenza Orion SSH per Java)
-  lucene-*.jar (licenza Apache 2.0)
-  I tokenizer inglesi (org.omegat.tokenizer.SnowballEnglishTokenizer e
-  org.omegat.tokenizer.LuceneEnglishTokenizer) mutua le stop words da Okapi
-(http://okapi.sourceforge.net) (licenza LGPL)
-  tinysegmenter.jar (licenza BSD modificata)
-  commons-*.jar (licenza Apache 2.0)
-  jWordSplitter (licenza Apache 2.0)
-  LanguageTool.jar (licenza LGPL)
-  morfologik-*.jar (licenza Morfologik)
-  segment-1.4.1.jar (licenza Segment)
-  pdfbox-app-1.8.1.jar (licenza Apache 2.0)
-  KoreanAnalyzer-3x-120223.jar (licenza Apache 2.0)
-  SuperTMXMerge-for_OmegaT.jar (licenza LGPL)
-  groovy-all-2.2.2.jar (licenza Apache 2.0)
-  slf4j (licenza MIT)
+
+  JAXB 2.1.7 (GPLv2 + classpath exception)
 
 ==============================================================================
  5.  OmegaT genera problemi? Si ha bisogno di assistenza?
@@ -277,11 +258,11 @@ Una qualsiasi segnalazione di errore dovrebbe prevedere tre elementi:
 Si possono allegare copie di file, parti del file di registro, schermate e tutto ciò che si ritiene possa essere d'aiuto agli sviluppatori per il reperimento e la correzione dell'errore.
 
 Per accedere agli archivi del gruppo di utenti:
-     http://tech.groups.yahoo.com/group/OmegaT/
+     http://groups.yahoo.com/group/OmegaT/
 
 Per accedere alla pagina delle segnalazioni degli errori e registrare
 una nuova segnalazione di errore:
-     https://sourceforge.net/p/omegat/bugs/
+     http://sourceforge.net/tracker/?group_id=68187&atid=520347
 
 Per seguire il corso degli eventi relativi a una segnalazione di errore ci si dovrebbe iscrivere come utente Source Forge.
 

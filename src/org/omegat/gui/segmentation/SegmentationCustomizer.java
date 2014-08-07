@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.gui.segmentation;
@@ -29,12 +28,16 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.beans.ExceptionListener;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -46,7 +49,6 @@ import org.omegat.core.segmentation.datamodels.MappingRulesModel;
 import org.omegat.core.segmentation.datamodels.SegmentationRulesModel;
 import org.omegat.util.OStrings;
 import org.omegat.util.StaticUtils;
-import org.omegat.util.gui.StaticUIUtils;
 
 /**
  * Main dialog for for setting up sentence segmenting. The dialog is created as
@@ -82,12 +84,17 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
         this.projectSRX = projectSRX;
         this.editableSRX = isProjectSpecific && projectSRX != null ? projectSRX.clone() : userSRX.clone();
         
-        StaticUIUtils.setEscapeAction(this, new AbstractAction() {
-            @Override
+        // HP
+        // Handle escape key to close the window
+        KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escapeAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 cancelButtonActionPerformed(null);
             }
-        });
+        };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
+        getRootPane().getActionMap().put("ESCAPE", escapeAction);
+        // END HP
 
         initComponents();
         hintTextArea.setBackground(javax.swing.UIManager.getDefaults().getColor("Label.background"));
@@ -99,7 +106,6 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
 
         MappingRulesModel model = (MappingRulesModel) mapTable.getModel();
         model.addExceptionListener(new ExceptionListener() {
-            @Override
             public void exceptionThrown(Exception e) {
                 mapErrorsLabel.setText(e.getLocalizedMessage());
             }
@@ -165,7 +171,6 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
         MappingRulesModel model = new MappingRulesModel(editableSRX);
         mapTable.setModel(model);
         model.addExceptionListener(new ExceptionListener() {
-            @Override
             public void exceptionThrown(Exception e) {
                 mapErrorsLabel.setText(e.getLocalizedMessage());
             }
@@ -173,7 +178,6 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
         ruleTable.setModel(new DefaultTableModel());
     }
 
-    @Override
     public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting())
             return;
@@ -207,7 +211,6 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
                 SegmentationRulesModel model = new SegmentationRulesModel(maprule.getRules());
                 ruleTable.setModel(model);
                 model.addExceptionListener(new ExceptionListener() {
-                    @Override
                     public void exceptionThrown(Exception e) {
                         ruleErrorsLabel.setText(e.getLocalizedMessage());
                     }
@@ -629,8 +632,6 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
         commitTableEdits();
         SegmentationRulesModel model = (SegmentationRulesModel) ruleTable.getModel();
         model.addRow();
-        ruleTable.changeSelection(ruleTable.getRowCount() - 1, 0, false, false);
-        ruleTable.changeSelection(ruleTable.getRowCount() - 1, ruleTable.getColumnCount() - 1, false, true);
     }// GEN-LAST:event_ruleInsertButtonActionPerformed
 
     private void mapInsertButtonActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_mapInsertButtonActionPerformed
@@ -638,8 +639,6 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
         commitTableEdits();
         MappingRulesModel model = (MappingRulesModel) mapTable.getModel();
         model.addRow();
-        mapTable.changeSelection(mapTable.getRowCount() - 1, 0, false, false);
-        mapTable.changeSelection(mapTable.getRowCount() - 1, mapTable.getColumnCount() - 1, false, true);
     }// GEN-LAST:event_mapInsertButtonActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_okButtonActionPerformed

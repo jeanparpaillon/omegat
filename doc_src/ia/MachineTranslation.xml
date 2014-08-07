@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "../../../docbook-xml-4.5/docbookx.dtd">
 <chapter id="chapter.machine.translate">
-  <title>Traduction automatic<indexterm class="singular">
-      <primary>Traduction automatic</primary>
+  <title>Traduction automatica<indexterm class="singular">
+      <primary>Traduction automatica</primary>
     </indexterm></title>
 
   <section>
     <title>Introduction<indexterm class="singular">
-        <primary>Traduction automatic</primary> <secondary>Introduction</secondary>
+        <primary>Traduction automatica</primary> <secondary>Introduction</secondary>
       </indexterm></title>
 
     <para>Al contrario del memorias de traduction generate per le usator (como in le caso de <application>OmegaT</application>) le applicationes de Traduction Automatic usa instrumentos linguistic basate sur regulas pro crear un traduction del segmento fonte sin le necessitate de un memoria de traduction. Pro construer un modello de traduction son usate technicas statistic de saper, basate sur textos de origine e final. Le servicios de Traduction Automatic ha complite resultatos bon e constantemente melior in le evalutationes del recerca.</para>

@@ -6,25 +6,22 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2007 Zoltan Bartko
                2009 Didier Briel
-               2013 Guido Leenders
-               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package org.omegat.util;
@@ -42,7 +39,6 @@ import java.io.File;
  * @author Maxym Mykhalchuk
  * @author Zoltan Bartko (bartkozoltan@bartkozoltan.com)
  * @author Didier Briel
- * @author Guido Leenders
  */
 public class OConsts {
 
@@ -64,14 +60,7 @@ public class OConsts {
     public static final String HELP_DIR = "docs";
     public static final String HELP_LANG_INDEX = "languageIndex.html";
 
-    // licenses
-    public static final String LICENSE_FILE = "OmegaT-license.txt";
-    
-    // Last changes
-    public static final String LAST_CHANGES_FILE = "changes.txt";
-
     // status file consts
-    public static final String FILES_ORDER_FILENAME = "files_order.txt";
     public static final String STATUS_EXTENSION = "project_save.tmx";
     public static final String STATUS_RECOVER_EXTENSION = ".recover";
     public static final String BACKUP_EXTENSION = ".bak";
@@ -83,17 +72,12 @@ public class OConsts {
     public static final String DEFAULT_TARGET = "target";
     /** Project subfolder for glossaries default name. */
     public static final String DEFAULT_GLOSSARY = "glossary";
-    /** Default name for the project writeable glossary file (inside project) */
-    public static final String DEFAULT_W_GLOSSARY = "glossary.txt";
-    /** Default suffix for project writeable glossary file (outside of project)  */
-    public static final String DEFAULT_W_GLOSSARY_SUFF = "-glossary.txt";
+    /** Default name for the project writeable glossary file */
+    public static final String DEFAULT_W_GLOSSARY = "-glossary.txt";
     /** Project subfolder for legacy translation memories default name. */
     public static final String DEFAULT_TM = "tm";
     /** Project subfolder for automatically applied translation memories within the tm folder. */
     public static final String AUTO_TM = "auto";
-    /** Project subfolder for automatically applied translation memories within the tm folder. Existing
-        translation are overwritten */
-    public static final String AUTO_ENFORCE_TM = "enforce";
     /** Project subfolder for dictionaries default name. */
     public static final String DEFAULT_DICT = "dictionary";
     /** Project subfolder for project's translation memory. */
@@ -123,9 +107,6 @@ public class OConsts {
 
     /** The name of the file with project match statistics. */
     public static final String STATS_MATCH_FILENAME = "project_stats_match.txt";
-
-    /** The name of the file with project match statistics. */
-    public static final String STATS_MATCH_PER_FILE_FILENAME = "project_stats_match_per_file.txt";
 
     /** The name of the file with the ignored words: one ignored word per line */
     public static final String IGNORED_WORD_LIST_FILE_NAME = "ignored_words.txt";
@@ -170,17 +151,8 @@ public class OConsts {
      * The limit of bytes that AbstractFilter.isFileSupported may read. 8k (8192
      * bytes) for now, as this is the default buffer size for BufferedReader.
      */
-    public static final int READ_AHEAD_LIMIT = 65536;
+    public static final int READ_AHEAD_LIMIT = 8192;
 
-    /**
-     * The maximum level of parent directories considered a file related to
-     * a project can be rewritten in terms of a path relative to an absolute path.
-     *
-     * Files related to a project includes glossaries, which may be located outside
-     * of the project folder.
-     */
-    public static final int MAX_PARENT_DIRECTORIES_ABS2REL = 5;
-    
     /**
      * The name of the OmegaT Jar file. It is used to calculate the installation
      * directory.
@@ -191,7 +163,7 @@ public class OConsts {
      * Application debug classpath. It is used to calculate the installation
      * directory (in case of debugging -- the sources directory).
      */
-    public static final String DEBUG_CLASSPATH = File.separator + "classes";
+    public static final String DEBUG_CLASSPATH = "build" + File.separator + "classes";
 
     /** Encoding: "UTF-8". */
     public static final String UTF8 = "UTF-8";
@@ -201,8 +173,6 @@ public class OConsts {
     public static final String ISO88592 = "ISO-8859-2";
     /** Encoding: "UTF-16LE". */
     public static final String UTF16LE = "UTF-16LE";
-    /** Encoding: "ASCII". */
-    public static final String ASCII = "US-ASCII";
 
     public static final String REMOTE_SC_DICTIONARY_LIST_LOCATION = "http://download.services.openoffice.org/files/contrib/dictionaries/";
 

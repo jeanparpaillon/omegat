@@ -7,20 +7,19 @@
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
- This file is part of OmegaT.
-
- OmegaT is free software: you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- OmegaT is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  **************************************************************************/
 
 package svn;
@@ -41,16 +40,8 @@ import org.omegat.util.LFileCopy;
  */
 public class CopyrightTest extends TestCase {
     protected static final String[] MUST_EXIST = new String[] { "OmegaT - Computer Assisted Translation (CAT) tool",
-            "Copyright (C)", "Home page: http://www.omegat.org/", "This file is part of OmegaT",
-            "OmegaT is free software: you can redistribute it and/or modify",
-            "it under the terms of the GNU General Public License as published by",
-            "the Free Software Foundation, either version 3 of the License, or", "(at your option) any later version.",
-            "OmegaT is distributed in the hope that it will be useful,",
-            "but WITHOUT ANY WARRANTY; without even the implied warranty of",
-            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the",
-            "GNU General Public License for more details.",
-            "You should have received a copy of the GNU General Public License",
-            "along with this program.  If not, see <http://www.gnu.org/licenses/>." };
+            "Copyright (C)", "Home page: http://www.omegat.org/", "This program is free software",
+            "GNU General Public License" };
 
     public void testCopyright() throws Exception {
         List<File> sourceFiles = new ArrayList<File>();
@@ -60,10 +51,6 @@ public class CopyrightTest extends TestCase {
         for (File f : sourceFiles) {
             if (f.getPath().replace('\\', '/').startsWith("src/gen/")) {
                 // skip jaxb generated files
-                continue;
-            }
-            if (f.getPath().replace('\\', '/').endsWith("util/Base64.java")) {
-                // skip Base64.java (public domain)
                 continue;
             }
             LFileCopy.copy(f, fdata);
@@ -84,15 +71,8 @@ public class CopyrightTest extends TestCase {
 
     protected void list(File dir, List<File> files) {
         for (File f : dir.listFiles()) {
-            String fn = f.getName();
             if (f.getName().endsWith(".java")) {
                 files.add(f);
-            } else if (fn.equals("build.xml")) {
-                files.add(f);
-            } else if (fn.endsWith(".properties")) {
-                if (fn.startsWith("Version") || fn.startsWith("Bundle") || fn.startsWith("project")) {
-                    files.add(f);
-                }
             } else if (f.isDirectory()) {
                 list(f, files);
             }
