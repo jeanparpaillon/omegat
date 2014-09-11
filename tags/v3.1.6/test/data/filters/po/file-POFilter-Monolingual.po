@@ -1,6 +1,0 @@
-msgid "firstId"
-msgstr "first source"
-
-msgid "secondId"
-msgstr "second source"
-
