@@ -183,12 +183,13 @@ public class Rule implements Serializable {
 
     /** Indicates whether some other Rule is "equal to" this one. */
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Rule)) {
+        if (obj == null)
             return false;
+        else {
+            Rule that = (Rule) obj;
+            return this.breakRule == that.breakRule && this.getBeforebreak().equals(that.getBeforebreak())
+                    && this.getAfterbreak().equals(that.getAfterbreak());
         }
-        Rule that = (Rule) obj;
-        return this.breakRule == that.breakRule && this.getBeforebreak().equals(that.getBeforebreak())
-                && this.getAfterbreak().equals(that.getAfterbreak());
     }
 
     /** Returns a hash code value for the object. */

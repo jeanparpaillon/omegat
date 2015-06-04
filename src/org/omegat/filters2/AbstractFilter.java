@@ -7,7 +7,6 @@
                2006 Martin Wunderlich
                2011 Alex Buloichik, Didier Briel,
                2012 Guido Leenders
-               2015 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -64,7 +63,6 @@ import org.omegat.util.OStrings;
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Didier Briel
  * @author Guido Leenders
- * @author Aaron Madlon-Kay
  */
 public abstract class AbstractFilter implements IFilter {
 
@@ -418,15 +416,16 @@ public abstract class AbstractFilter implements IFilter {
      */
     protected void processFile(File inFile, File outFile, FilterContext fc) throws IOException,
             TranslationException {
-        String encoding = getInputEncoding(fc, inFile);
-        BufferedReader reader = createReader(inFile, encoding);
-        inEncodingLastParsedFile = encoding == null ? Charset.defaultCharset().name() : encoding;
+        inEncodingLastParsedFile = fc.getInEncoding();
+        BufferedReader reader = createReader(inFile, inEncodingLastParsedFile);
+        if (inEncodingLastParsedFile == null) {
+            inEncodingLastParsedFile = Charset.defaultCharset().name();
+        }
         try {
             BufferedWriter writer;
 
             if (outFile != null) {
-                String outEncoding = getOutputEncoding(fc);
-                writer = createWriter(outFile, outEncoding);
+                writer = createWriter(outFile, fc.getOutEncoding());
             } else {
                 writer = new NullBufferedWriter();
             }
@@ -439,45 +438,6 @@ public abstract class AbstractFilter implements IFilter {
         } finally {
             reader.close();
         }
-    }
-    
-    /**
-     * Get the input encoding. If it's not set in the FilterContext (setting is "&lt;auto>")
-     * and the filter allows ({@link #isSourceEncodingVariable()}), try to detect it. The result may be null.
-     * @param fc
-     * @param inFile
-     * @return
-     * @throws IOException
-     */
-    protected String getInputEncoding(FilterContext fc, File inFile) throws IOException {
-        String encoding = fc.getInEncoding();
-        if (encoding == null && isSourceEncodingVariable()) {
-            encoding = EncodingDetector.detectEncoding(inFile);
-        }
-        return encoding;
-    }
-    
-    /**
-     * Get the output encoding. If it's not set in the FilterContext (setting is "&lt;auto>")
-     * and the filter allows ({@link #isTargetEncodingVariable()}):
-     * <ul><li>Reuse the input encoding if it's Unicode
-     * <li>If the input was not Unicode, fall back to UTF-8.
-     * </ul>
-     * The result may be null.
-     * @param fc
-     * @return
-     */
-    protected String getOutputEncoding(FilterContext fc) {
-        String encoding = fc.getOutEncoding();
-        if (encoding == null && isTargetEncodingVariable()) {
-            // Use input encoding if it's Unicode; otherwise default to UTF-8
-            if (inEncodingLastParsedFile != null && inEncodingLastParsedFile.toLowerCase().startsWith("utf-")) {
-                encoding = inEncodingLastParsedFile;
-            } else {
-                encoding = "UTF-8";
-            }
-        }
-        return encoding;
     }
 
     public final void parseFile(File inFile, Map<String, String> config, FilterContext fc,

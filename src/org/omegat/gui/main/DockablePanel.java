@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2014 Alex Buloichik
-               2015 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -38,7 +37,6 @@ import com.vlsolutions.swing.docking.DockingConstants;
  * Dockable JPanel for a docking library.
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
- * @author Aaron Madlon-Kay
  */
 @SuppressWarnings("serial")
 public class DockablePanel extends JPanel implements Dockable {
@@ -47,7 +45,6 @@ public class DockablePanel extends JPanel implements Dockable {
     public DockablePanel(String key, String name, boolean detouchable) {
         dockKey = new DockKey(key, name, null, null, DockingConstants.HIDE_BOTTOM);
         dockKey.setFloatEnabled(detouchable);
-        dockKey.setCloseEnabled(false);
     }
 
     @Override

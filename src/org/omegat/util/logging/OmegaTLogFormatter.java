@@ -78,7 +78,7 @@ public class OmegaTLogFormatter extends Formatter {
         Random generator = new Random();
         generator.setSeed(System.currentTimeMillis()); // use current time as
         // seed
-        int random = generator.nextInt(Integer.MAX_VALUE);
+        int random = Math.abs(generator.nextInt());
 
         // convert the number to string, 5 chars max, pad with zero's if
         // necessary

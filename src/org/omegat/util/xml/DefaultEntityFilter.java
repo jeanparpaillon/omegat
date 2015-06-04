@@ -301,8 +301,8 @@ public class DefaultEntityFilter {
     }
 
     private static void addMapEntry(char val, String name) {
-        m_escMap.put(name, val);
-        m_charMap.put(val, name);
+        m_escMap.put(name, new Character(val));
+        m_charMap.put(new Character(val), name);
     }
 
     /**
@@ -324,7 +324,8 @@ public class DefaultEntityFilter {
         Character c = m_escMap.get(escapeSequence);
         if (c == null) {
             try {
-                return (char) Integer.valueOf(escapeSequence).intValue();
+                Integer i = new Integer(escapeSequence);
+                return (char) i.intValue();
             } catch (NumberFormatException e) {
                 // Unconvertable Entity
                 return 0;

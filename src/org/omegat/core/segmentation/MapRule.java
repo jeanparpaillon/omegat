@@ -123,13 +123,14 @@ public class MapRule implements Serializable {
 
     /** Indicates whether some other MapRule is "equal to" this one. */
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof MapRule)) {
+        if (obj == null)
             return false;
+        else {
+            MapRule that = (MapRule) obj;
+            return this.getPattern().equals(that.getPattern())
+                    && this.getLanguage().equals(that.getLanguage())
+                    && this.getRules().equals(that.getRules());
         }
-        MapRule that = (MapRule) obj;
-        return this.getPattern().equals(that.getPattern())
-                && this.getLanguage().equals(that.getLanguage())
-                && this.getRules().equals(that.getRules());
     }
 
     /** Returns a hash code value for the object. */

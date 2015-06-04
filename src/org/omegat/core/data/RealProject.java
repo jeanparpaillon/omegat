@@ -265,7 +265,7 @@ public class RealProject implements IProject {
             }
 
             loadTranslations();
-            setProjectModified(true);
+            m_modifiedFlag = true;
             saveProject(false);
 
             allProjectEntries = Collections.unmodifiableList(allProjectEntries);
@@ -350,7 +350,7 @@ public class RealProject implements IProject {
             // Project Loaded...
             Core.getMainWindow().showStatusMessageRB(null);
 
-            setProjectModified(false);
+            m_modifiedFlag = false;
         } catch (Exception e) {
             Log.logErrorRB(e, "TF_LOAD_ERROR");
             Core.getMainWindow().displayErrorRB(e, "TF_LOAD_ERROR");
@@ -621,8 +621,8 @@ public class RealProject implements IProject {
         try {
             Process p = Runtime.getRuntime().exec(StaticUtils.parseCLICommand(command));
             processCache.push(p);
-            CommandMonitor stdout = CommandMonitor.newStdoutMonitor(p);
-            CommandMonitor stderr = CommandMonitor.newStderrMonitor(p);
+            CommandMonitor stdout = CommandMonitor.StdoutMonitor(p);
+            CommandMonitor stderr = CommandMonitor.StderrMonitor(p);
             stdout.start();
             stderr.start();
         } catch (IOException e) {
@@ -684,7 +684,7 @@ public class RealProject implements IProject {
                         rebaseProject();
                     }
 
-                    setProjectModified(false);
+                    m_modifiedFlag = false;
                 } catch (KnownException ex) {
                     throw ex;
                 } catch (Exception e) {
@@ -1369,13 +1369,6 @@ public class RealProject implements IProject {
         return m_modifiedFlag;
     }
 
-    private void setProjectModified(boolean isModified) {
-        m_modifiedFlag = isModified;
-        if (isModified) {
-            CoreEvents.fireProjectChange(IProjectEventListener.PROJECT_CHANGE_TYPE.MODIFIED);
-        }
-    }
-    
     @Override
     public void setTranslation(final SourceTextEntry entry, final PrepareTMXEntry trans, boolean defaultTranslation, TMXEntry.ExternalLinked externalLinked) {
         if (trans == null) {
@@ -1414,7 +1407,7 @@ public class RealProject implements IProject {
             newTrEntry = new TMXEntry(trans, defaultTranslation, externalLinked);
         }
 
-        setProjectModified(true);
+        m_modifiedFlag = true;
 
         projectTMX.setTranslation(entry, newTrEntry, defaultTranslation);
 
@@ -1449,7 +1442,7 @@ public class RealProject implements IProject {
             projectTMX.setTranslation(entry, new TMXEntry(en, true, null), true);
         }
 
-        setProjectModified(true);
+        m_modifiedFlag = true;
     }
 
     public void iterateByDefaultTranslations(DefaultTranslationsIterator it) {

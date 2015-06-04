@@ -231,7 +231,7 @@ public class Handler extends DefaultHandler implements LexicalHandler, DeclHandl
             filename = inFile.getAbsolutePath();
         throw new SAXException("\n"
                 + StaticUtils.format(e.getMessage() + "\n" + OStrings.getString("XML_FATAL_ERROR"),
-                        new Object[] { filename, linenum }));
+                        new Object[] { filename, new Integer(linenum) }));
     }
 
     /**
@@ -388,13 +388,13 @@ public class Handler extends DefaultHandler implements LexicalHandler, DeclHandl
                 }
                 return entity;
             } else
-                return new InputSource(new java.io.StringReader(""));
+                return new InputSource(new java.io.StringReader(new String()));
         } else {
             InputSource source = dialect.resolveEntity(publicId, systemId);
             if (source != null)
                 return source;
             else
-                return new InputSource(new java.io.StringReader(""));
+                return new InputSource(new java.io.StringReader(new String()));
         }
     }
 

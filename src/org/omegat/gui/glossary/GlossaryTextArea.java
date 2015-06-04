@@ -9,7 +9,6 @@
                2010 Alex Buloichik
                2012 Jean-Christophe Helary
                2013 Aaron Madlon-Kay, Alex Buloichik
-               2015 Yu Tang, Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -31,9 +30,7 @@
 
 package org.omegat.gui.glossary;
 
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -44,13 +41,12 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.text.AttributeSet;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 
 import org.omegat.core.Core;
@@ -59,17 +55,12 @@ import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.StringEntry;
 import org.omegat.gui.common.EntryInfoThreadPane;
 import org.omegat.gui.dialogs.CreateGlossaryEntry;
-import org.omegat.gui.editor.EditorUtils;
 import org.omegat.gui.main.DockableScrollPane;
-import org.omegat.gui.main.MainWindow;
 import org.omegat.util.Log;
-import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.StringUtil;
 import org.omegat.util.gui.AlwaysVisibleCaret;
-import org.omegat.util.gui.DragTargetOverlay;
-import org.omegat.util.gui.DragTargetOverlay.FileDropInfo;
 import org.omegat.util.gui.Styles;
 import org.omegat.util.gui.UIThreadsUtil;
 
@@ -111,12 +102,11 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
     private CreateGlossaryEntry createGlossaryEntryDialog;
 
     /** Creates new form MatchGlossaryPane */
-    public GlossaryTextArea(final MainWindow mw) {
+    public GlossaryTextArea() {
         super(true);
 
         String title = OStrings.getString("GUI_MATCHWINDOW_SUBWINDOWTITLE_Glossary");
-        final DockableScrollPane scrollPane = new DockableScrollPane("GLOSSARY", title, this, true);
-        Core.getMainWindow().addDockable(scrollPane);
+        Core.getMainWindow().addDockable(new DockableScrollPane("GLOSSARY", title, this, true));
 
         setEditable(false);
         AlwaysVisibleCaret.apply(this);
@@ -137,32 +127,6 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
         addMouseListener(mouseListener);
 
         Core.getEditor().registerPopupMenuConstructors(300, new TransTipsPopup());
-        
-        DragTargetOverlay.apply(this, new FileDropInfo(mw, false) {
-            @Override
-            public boolean canAcceptDrop() {
-                return Core.getProject().isProjectLoaded();
-            }
-            @Override
-            public String getOverlayMessage() {
-                return OStrings.getString("DND_ADD_GLOSSARY_FILE");
-            }
-            @Override
-            public String getImportDestination() {
-                return Core.getProject().getProjectProperties().getGlossaryRoot();
-            }
-            @Override
-            public boolean acceptFile(File pathname) {
-                String name = pathname.getName().toLowerCase();
-                return name.endsWith(OConsts.EXT_CSV_UTF8) || name.endsWith(OConsts.EXT_TBX)
-                        || name.endsWith(OConsts.EXT_TSV_DEF) || name.endsWith(OConsts.EXT_TSV_TXT)
-                        || name.endsWith(OConsts.EXT_TSV_UTF8);
-            }
-            @Override
-            public Component getComponentToOverlay() {
-                return scrollPane;
-            }
-        });
     }
 
     @Override
@@ -208,7 +172,8 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
         UIThreadsUtil.mustBeSwingThread();
 
         if (entries == null) {
-            clear();
+            nowEntries = new ArrayList<GlossaryEntry>();
+            setText("");
             return;
         }
 
@@ -238,7 +203,6 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
 
     /** Clears up the pane. */
     public void clear() {
-        nowEntries = Collections.EMPTY_LIST;
         setText("");
     }
 
@@ -289,11 +253,6 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
     }
 
     public void showCreateGlossaryEntryDialog() {
-        Frame parent = Core.getMainWindow().getApplicationFrame();
-        showCreateGlossaryEntryDialog(parent);
-    }
-
-    public void showCreateGlossaryEntryDialog(final Frame parent) {
         CreateGlossaryEntry d = createGlossaryEntryDialog;
         if (d != null) {
             d.requestFocus();
@@ -303,7 +262,7 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
         ProjectProperties props = Core.getProject().getProjectProperties();
         final File out = new File(props.getWriteableGlossary());
 
-        final CreateGlossaryEntry dialog = new CreateGlossaryEntry(parent);
+        final CreateGlossaryEntry dialog = new CreateGlossaryEntry(Core.getMainWindow().getApplicationFrame());
         String txt = dialog.getGlossaryFileText().getText();
         txt = MessageFormat.format(txt, out.getAbsolutePath());
         dialog.getGlossaryFileText().setText(txt);
@@ -316,14 +275,7 @@ public class GlossaryTextArea extends EntryInfoThreadPane<List<GlossaryEntry>> {
 
             @Override
             public void windowGainedFocus(WindowEvent e) {
-                String sel = null;
-                Component component = parent.getMostRecentFocusOwner();
-                if (component instanceof JTextComponent) {
-                    sel = ((JTextComponent) component).getSelectedText();
-                    if (!StringUtil.isEmpty(sel)) {
-                        sel = EditorUtils.removeDirectionChars(sel);
-                    }
-                }
+                String sel = Core.getEditor().getSelectedText();
                 if (!StringUtil.isEmpty(sel)) {
                     if (StringUtil.isEmpty(dialog.getSourceText().getText())) {
                         dialog.getSourceText().setText(sel);

@@ -1,170 +1,13 @@
 ----------------------------------------------------------------------
- OmegaT 3.5
-----------------------------------------------------------------------
-  15 Enhancements
-   4 Bug fixes
-   6 Localisation updates
-----------------------------------------------------------------------
-3.5 vs 3.4
-
-  Implemented requests:
-
-  - Progress bar L10N improvement 
-  https://sourceforge.net/p/omegat/feature-requests/1055/
-
-  - Glossary input from Search window 
-  https://sourceforge.net/p/omegat/feature-requests/747/
-
-  - Highlighting search word in target segment 
-  https://sourceforge.net/p/omegat/feature-requests/890/
-
-  - Drag and drop to open project 
-  https://sourceforge.net/p/omegat/feature-requests/113/
-
-  - Drag and drop to add files to project
-  https://sourceforge.net/p/omegat/feature-requests/1091/
-
-  - Add confirmation for the button Reset all colours
-  https://sourceforge.net/p/omegat/feature-requests/1085/
-
-  - Option to remove "fuzziness" from glossary 
-  https://sourceforge.net/p/omegat/feature-requests/1033/
-
-  - Better Mac OS X integration
-  https://sourceforge.net/p/omegat/feature-requests/1092/
-
-  - Remove automatically mnemonics for CJK bundles under Mac
-  https://sourceforge.net/p/omegat/feature-requests/1049/
-
-  Other changes:
-
-  - There's an explanation message at the bottom of the Editor when
-Ctrl+Shift+O is pressed
-
-  - New script to clear SVN authentication data
-
-  - New OmegaT icon on the Mac
-
-  - Go to next/previous segment with key shortcuts work 
-in the Search result window just like in the Editor
-
-  - Alternatively to specifiy a project folder on the command line,
-it is now also possible to specify the path of an omegat.project file
-
-  - In the QA - Check rules script (check_rules.groovy), it is now
-possible to check linguistic (LangageTool) issues
-
-  - There's now a "Save as" button in Help > Log
-
-  - Read parameters from config file on startup, specified with 
---config-file=path/to/file
-
-  - There are two new search options at the bottom of the Search window.
-"Auto-sync with Editor". If checked, the Editor will go automatically to the 
-segment where the cursor is located in the search window.
-"Back to the initial segment on close". If checked, the Editor will go back 
-to the segment being current before the Search window was opened.
-
-  Bug fixes:
-
-  - Panel header title was white under Windows 7 with a classic theme
-
-  - Script files could be locked 
-  https://sourceforge.net/p/omegat/bugs/749/
-
-  - In statistics, scrollbars could cover table content
-
-  - Auto-completer popup size was often too small for its contents
-
-  Localisation updates:
-
-  - Dutch localisation updated to 3.4 update 1 (UI, documentation, readme)
-  - Russian localisation updated to 3.4 update 1 (UI, readme, scripts)
-  - Belarusian localisation updated to 3.5 (UI, readme, scripts)
-  - Japanese localisation updated to 3.5 (UI, documentation, scripts)
-  - Italian localisation updated to 3.4 update 1 (UI)
-
-----------------------------------------------------------------------
- OmegaT 3.4 (2015-04-20)
-----------------------------------------------------------------------
-  12 Enhancements
-   4 Bug fixes
-   3 Localisation updates
-----------------------------------------------------------------------
-3.4 vs 3.1.9 update 1
-
-  Implemented requests:
-
-  - Improve OmegaT look and feel
-  https://sourceforge.net/p/omegat/feature-requests/1082/  
-
-  - Better statistics layout for l10n UI 
-  https://sourceforge.net/p/omegat/feature-requests/820/
-
-  - Increase the size or better layout of the statistics window
-  https://sourceforge.net/p/omegat/feature-requests/656/
-
-  - Add Close button to Statistics window 
-  https://sourceforge.net/p/omegat/feature-requests/859/
-
-  - Automatically detect input file encoding when possible 
-  https://sourceforge.net/p/omegat/feature-requests/1075/
-
-  - Improve default output encoding settings 
-  https://sourceforge.net/p/omegat/feature-requests/1083/
-
-  - Improve fuzzy match difference granularity in Chinese
-  https://sourceforge.net/p/omegat/feature-requests/1077/
-
-  - Add option to ignore custom tags in statistics
-  https://sourceforge.net/p/omegat/feature-requests/937/
-
-  Other changes:
-
-  - New XML Spreadsheet 2003 filter. This allows translating Excel document
-exported in XML 2003 format. As the extension is .xml, other filters may
-"steal" the file. In that case, they have to be disabled. The XML 
-Spreadhsheet 2003 filter limits itself to documents where the first tag
-is "Workbook".
-
-  - In Options > File Filters, the filters used by the current project
-are displayed in bold
-
-  - New "Trafficlight" theme in the Switch Colour Theme script
-
-  - The font selected in Options > Fonts can be applied now also to statistics
-
-  Bug fixes:
-
-  - Editor title overflows with long filename 
-  https://sourceforge.net/p/omegat/bugs/739/
-
-  - Valid XML characters outside the BMP are stripped from input
-  https://sourceforge.net/p/omegat/bugs/740/
-
-  - Scripting window: now ScriptsDir is displayed like "foo\scripts" instead 
-of "foo\.\scripts"
-
-  - OmegaT does not look nice on Mac retina display 
-  https://sourceforge.net/p/omegat/bugs/712/
-
-  Localisation updates:
-
-  - Dutch localisation updated to 3.4 (UI, documentation, scripts, readme)
-  - Italian localisation updated to 3.4 (UI, documentation, scripts)
-  - Japanese localisation updated to 3.4 (UI, readme)
-
-----------------------------------------------------------------------
- OmegaT 3.1.9 update 2
  OmegaT 3.1.9 update 2 (2015-06-03)
 ----------------------------------------------------------------------
    2 Enhancements
-   2 Bug fixes
-   1 Localisation update
+   3 Bug fixes
+   2 Localisation updates
 ----------------------------------------------------------------------
 3.1.9 update 2 vs. 3.1.9 update 1
 
-  Implemented requests:
+  Other enhancements:
 
   - Updated LanguageTool to 2.2
 
@@ -180,9 +23,13 @@ entered as "CSV"
   - Too many duplicate segments in the popup menu
   https://sourceforge.net/p/omegat/bugs/744/
 
+  - Exclusion masks not working correctly under Windows 
+  https://sourceforge.net/p/omegat/bugs/746/
+
   Localisation updates:
 
- - Brazilian Portuguese localisation updated to 3.0.7 (UI, documentation, readme)
+  - Brazilian Portuguese localisation updated to 3.0.7 (UI, documentation, readme)
+  - Japanese localisation updated to 3.1.9 update 1 (UI)
 
 ----------------------------------------------------------------------
  OmegaT 3.1.9 update 1 (2015-04-15)

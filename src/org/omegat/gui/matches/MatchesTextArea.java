@@ -31,7 +31,7 @@
 
 package org.omegat.gui.matches;
 
-import java.awt.Component;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -39,7 +39,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,14 +62,11 @@ import org.omegat.gui.main.DockableScrollPane;
 import org.omegat.gui.main.MainWindow;
 import org.omegat.tokenizer.ITokenizer;
 import org.omegat.util.Log;
-import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.StringUtil;
 import org.omegat.util.Token;
 import org.omegat.util.gui.AlwaysVisibleCaret;
-import org.omegat.util.gui.DragTargetOverlay;
-import org.omegat.util.gui.DragTargetOverlay.FileDropInfo;
 import org.omegat.util.gui.Styles;
 import org.omegat.util.gui.UIThreadsUtil;
 
@@ -113,13 +109,12 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
     private final MainWindow mw;
 
     /** Creates new form MatchGlossaryPane */
-    public MatchesTextArea(final MainWindow mw) {
+    public MatchesTextArea(MainWindow mw) {
         super(true);
         this.mw = mw;
 
         String title = OStrings.getString("GUI_MATCHWINDOW_SUBWINDOWTITLE_Fuzzy_Matches");
-        final DockableScrollPane scrollPane = new DockableScrollPane("MATCHES", title, this, true);
-        Core.getMainWindow().addDockable(scrollPane);
+        Core.getMainWindow().addDockable(new DockableScrollPane("MATCHES", title, this, true));
 
         setEditable(false);
         AlwaysVisibleCaret.apply(this);
@@ -127,29 +122,6 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
         setMinimumSize(new Dimension(100, 50));
 
         addMouseListener(mouseListener);
-        
-        DragTargetOverlay.apply(this, new FileDropInfo(mw, false) {
-            @Override
-            public String getImportDestination() {
-                return Core.getProject().getProjectProperties().getTMRoot();
-            }
-            @Override
-            public boolean acceptFile(File pathname) {
-                return pathname.getName().toLowerCase().endsWith(OConsts.TMX_EXTENSION);
-            }
-            @Override
-            public String getOverlayMessage() {
-                return OStrings.getString("DND_ADD_TM_FILE");
-            }
-            @Override
-            public boolean canAcceptDrop() {
-                return Core.getProject().isProjectLoaded();
-            }
-            @Override
-            public Component getComponentToOverlay() {
-                return scrollPane;
-            }
-        });
     }
 
     @Override
@@ -165,11 +137,6 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
     protected void setFoundResult(final SourceTextEntry se, List<NearString> newMatches) {
         UIThreadsUtil.mustBeSwingThread();
         
-        if (newMatches == null) {
-            setText("");
-            return;
-        }
-        
         Collections.sort(newMatches, Collections.reverseOrder(new NearString.NearStringComparator()));
 
         activeMatch = -1;
@@ -177,6 +144,11 @@ public class MatchesTextArea extends EntryInfoThreadPane<List<NearString>> imple
         delimiters.clear();
         sourcePos.clear();
         diffInfos.clear();
+
+        if (newMatches == null) {
+            setText("");
+            return;
+        }
 
         matches.addAll(newMatches);
         delimiters.add(0);

@@ -12,7 +12,7 @@
                2012 Wildrich Fourie, Guido Leenders, Didier Briel
                2013 Zoltan Bartko, Didier Briel, Yu Tang
                2014 Aaron Madlon-Kay
-               2015 Yu Tang, Aaron Madlon-Kay, Didier Briel
+               2015 Yu Tang, Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -68,7 +68,7 @@ import org.omegat.gui.dialogs.LastChangesDialog;
 import org.omegat.gui.dialogs.LogDialog;
 import org.omegat.gui.dialogs.SaveOptionsDialog;
 import org.omegat.gui.dialogs.SpellcheckerConfigurationDialog;
-import org.omegat.gui.dialogs.TagProcessingOptionsDialog;
+import org.omegat.gui.dialogs.TagValidationOptionsDialog;
 import org.omegat.gui.dialogs.TeamOptionsDialog;
 import org.omegat.gui.dialogs.UserPassDialog;
 import org.omegat.gui.dialogs.ViewOptionsDialog;
@@ -141,7 +141,7 @@ public class MainWindowMenuHandler {
      * @author Maxym Mykhalchuk
      */
     public void projectImportMenuItemActionPerformed() {
-        mainWindow.doPromptImportSourceFiles();
+        mainWindow.doImportSourceFiles();
     }
 
     public void projectWikiImportMenuItemActionPerformed() {
@@ -682,23 +682,6 @@ public class MainWindowMenuHandler {
 
         Core.getGlossaryManager().forceReloadTBX();
     }
-    
-    public void optionsGlossaryExactMatchCheckBoxMenuItemActionPerformed() {
-        Preferences.setPreference(Preferences.GLOSSARY_NOT_EXACT_MATCH,
-                mainWindow.menu.optionsGlossaryExactMatchCheckBoxMenuItem.isSelected());
-        Preferences.save();
-        Core.getGlossaryManager().forceUpdateGlossary();
-
-    }
-    
-    public void optionsGlossaryStemmingCheckBoxMenuItemActionPerformed() {
-        Preferences.setPreference(Preferences.GLOSSARY_STEMMING,
-                mainWindow.menu.optionsGlossaryStemmingCheckBoxMenuItem.isSelected());
-        Preferences.save();
-        Core.getGlossaryManager().forceUpdateGlossary();
-
-    }
-
 
     /**
      * Displays the font dialog to allow selecting the font for source, target text (in main window) and for
@@ -805,21 +788,15 @@ public class MainWindowMenuHandler {
      * Displays the tag validation setup dialog to allow customizing the diverse tag validation options.
      */
     public void optionsTagValidationMenuItemActionPerformed() {
-        TagProcessingOptionsDialog tagProcessingOptionsDialog = new TagProcessingOptionsDialog(mainWindow);
-        tagProcessingOptionsDialog.setVisible(true);
+        TagValidationOptionsDialog tagValidationOptionsDialog = new TagValidationOptionsDialog(mainWindow);
+        tagValidationOptionsDialog.setVisible(true);
         
-        if (tagProcessingOptionsDialog.getReturnStatus() == TagProcessingOptionsDialog.RET_OK
+        if (tagValidationOptionsDialog.getReturnStatus() == TagValidationOptionsDialog.RET_OK
                 && Core.getProject().isProjectLoaded()) {
             // Redisplay according to new view settings
             Core.getEditor().getSettings().updateTagValidationPreferences();
-
-            // asking to reload a project
-            int res = JOptionPane.showConfirmDialog(mainWindow, OStrings.getString("MW_REOPEN_QUESTION"),
-                    OStrings.getString("MW_REOPEN_TITLE"), JOptionPane.YES_NO_OPTION);
-            if (res == JOptionPane.YES_OPTION) {
-                ProjectUICommands.projectReload();
-            }
         }
+        
     }
 
     /**

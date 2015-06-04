@@ -7,7 +7,6 @@
                2008 Alex Buloichik
                2009 Wildrich Fourie, Didier Briel, Alex Buloichik
                2013 Aaron Madlon-Kay, Alex Buloichik
-               2015 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -41,7 +40,6 @@ import org.omegat.core.data.SourceTextEntry;
 import org.omegat.gui.common.EntryInfoSearchThread;
 import org.omegat.tokenizer.DefaultTokenizer;
 import org.omegat.tokenizer.ITokenizer;
-import org.omegat.util.Preferences;
 import org.omegat.util.Token;
 
 /**
@@ -88,32 +86,24 @@ public class FindGlossaryThread extends EntryInfoSearchThread<List<GlossaryEntry
             return null;
         }
 
-        // Compute source entry tokens
+        // computer source entry tokens
         Token[] strTokens = tok.tokenizeWords(src, ITokenizer.StemmingMode.GLOSSARY);
-        if (!Preferences.isPreferenceDefault(Preferences.GLOSSARY_STEMMING, true)) {
-            strTokens = tok.tokenizeWords(src, ITokenizer.StemmingMode.NONE);
-        }
-        
 
         List<GlossaryEntry> entries = manager.getGlossaryEntries(src);
         if (entries != null) {
             for (GlossaryEntry glosEntry : entries) {
                 checkEntryChanged();
 
-                // Computer glossary entry tokens
+                // computer glossary entry tokens
                 String glosStr = glosEntry.getSrcText();
                 Token[] glosTokens = tok.tokenizeWords(glosStr, ITokenizer.StemmingMode.GLOSSARY);
-                if (!Preferences.isPreferenceDefault(Preferences.GLOSSARY_STEMMING, true)) {
-                    glosTokens = tok.tokenizeWords(glosStr, ITokenizer.StemmingMode.NONE);        
-                 }
                 int glosTokensN = glosTokens.length;
                 if (glosTokensN == 0)
                     continue;
 
-                if (DefaultTokenizer.isContainsAll(strTokens, glosTokens, 
-                        Preferences.isPreferenceDefault(Preferences.GLOSSARY_NOT_EXACT_MATCH, true))) {
+                if (DefaultTokenizer.isContainsAll(strTokens, glosTokens)) {
                     result.add(glosEntry);
-                }                    
+                }
             }
         }
 

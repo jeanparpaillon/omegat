@@ -4,7 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2013 Zoltan Bartko, Aaron Madlon-Kay
-               2014-2015 Aaron Madlon-Kay
+               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -53,9 +53,11 @@ abstract public class AbstractAutoCompleterView {
     /**
      * Creates a new auto-completer view.
      * @param name the name of this view
+     * @param completer the completer it belongs to
      */
-    public AbstractAutoCompleterView(String name) {
+    public AbstractAutoCompleterView(String name, AutoCompleter completer) {
         this.name = name;
+        this.completer = completer;
     }
     
     /**
@@ -63,14 +65,6 @@ abstract public class AbstractAutoCompleterView {
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * Set the AutoCompleter that this view belongs to.
-     * @param completer
-     */
-    public void setParent(AutoCompleter completer) {
-        this.completer = completer;
     }
 
     /**
@@ -87,7 +81,7 @@ abstract public class AbstractAutoCompleterView {
      * @param e the key event to process
      * @return true if a key has been processed, false if otherwise.
      */
-    public abstract boolean processKeys(KeyEvent e);
+    public abstract boolean processKeys(KeyEvent e, boolean visible);
     
     /**
      * return the size of the data list / array.
@@ -100,12 +94,6 @@ abstract public class AbstractAutoCompleterView {
      * @return 
      */
     public abstract int getPreferredHeight();
-    
-    /**
-     * get the preferred width of the component
-     * @return
-     */
-    public abstract int getPreferredWidth();
     
     /**
      * set the list or table data
@@ -141,15 +129,5 @@ abstract public class AbstractAutoCompleterView {
      */
     protected int getModifiedRowCount() {
         return Math.min(getRowCount(), AutoCompleter.pageRowCount);
-    }
-
-    /**
-     * Indicates whether or not the AutoCompleter should close by default when the
-     * user confirms a selection. Override and return false to keep the popup open.
-     * 
-     * @return Whether or not the AutoCompleter popup should close upon selection
-     */
-    public boolean shouldCloseOnSelection() {
-        return true;
     }
 }

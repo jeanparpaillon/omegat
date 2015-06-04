@@ -167,7 +167,7 @@ public class DirectoryMonitor extends Thread {
     /**
      * Information about exist file.
      */
-    protected static class FileInfo {
+    protected class FileInfo {
         public long lastModified, length;
 
         public FileInfo(final File file) {
@@ -177,9 +177,6 @@ public class DirectoryMonitor extends Thread {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null || !(obj instanceof FileInfo)) {
-                return false;
-            }
             FileInfo o = (FileInfo) obj;
             return lastModified == o.lastModified && length == o.length;
         }

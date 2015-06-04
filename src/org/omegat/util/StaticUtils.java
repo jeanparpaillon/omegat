@@ -9,7 +9,6 @@
                2012 Martin Fleurke, Didier Briel
                2013 Aaron Madlon-Kay, Zoltan Bartko, Didier Briel, Alex Buloichik
                2014 Aaron Madlon-Kay, Alex Buloichik
-               2015 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -58,7 +57,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.omegat.core.data.ProtectedPart;
-import org.omegat.core.statistics.StatisticsSettings;
 import org.omegat.util.Platform.OsType;
 
 /**
@@ -95,11 +93,8 @@ public class StaticUtils {
     private final static String SCRIPT_DIR = "script";
 
     /**
-     * Char which should be used instead protected parts. It should be non-letter char, to be able to have
-     * correct words counter.
-     * 
-     * This char can be placed around protected text for separate words inside protected text and words
-     * outside if there are no spaces between they.
+     * Char which should be used instead protected parts. It should be
+     * non-letter char, to be able to have correct words counter.
      */
     public static final char TAG_REPLACEMENT_CHAR = '\b';
     public static final String TAG_REPLACEMENT = "\b";
@@ -819,11 +814,7 @@ public class StaticUtils {
             ProtectedPart pp = new ProtectedPart();
             pp.setTextInSourceSegment(placeholderMatcher.group());
             pp.setDetailsFromSourceFile(placeholderMatcher.group());
-            if (StatisticsSettings.isCountingCustomTags()) {
-                pp.setReplacementWordsCountCalculation(placeholderMatcher.group());
-            } else {
-                pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
-            }
+            pp.setReplacementWordsCountCalculation(placeholderMatcher.group());
             pp.setReplacementUniquenessCalculation(placeholderMatcher.group());
             pp.setReplacementMatchCalculation(placeholderMatcher.group());
             result.add(pp);
@@ -852,7 +843,7 @@ public class StaticUtils {
      */
     public static String uuencode(byte[] buf) {
         if (buf.length <= 0)
-            return "";
+            return new String();
 
         StringBuilder res = new StringBuilder();
         res.append(buf[0]);
@@ -1095,9 +1086,9 @@ public class StaticUtils {
      * @return result stream
      */
     public static String fixChars(String str) {
-        StringBuilder sb = new StringBuilder(str.length());
-        for (int c, i = 0; i < str.length(); i += Character.charCount(c)) {
-            c = str.codePointAt(i);
+        char[] result = new char[str.length()];
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
             if (c < 0x20) {
                 if (c != 0x09 && c != 0x0A && c != 0x0D) {
                     c = ' ';
@@ -1108,9 +1099,9 @@ public class StaticUtils {
             } else {
                 c = ' ';
             }
-            sb.appendCodePoint(c);
+            result[i] = c;
         }
-        return sb.toString();
+        return new String(result);
     }
 
     /**
@@ -1224,15 +1215,6 @@ public class StaticUtils {
             result.add(arg.toString());
         }
         return result.toArray(new String[0]);
-    }
-
-    public static boolean isProjectDir(File f) {
-        if (f == null || f.getName().length() == 0) {
-            return false;
-        }
-        File projFile = new File(f.getAbsolutePath(), OConsts.FILE_PROJECT);
-        File internal = new File(f.getAbsolutePath(), OConsts.DEFAULT_INTERNAL);
-        return projFile.exists() && internal.isDirectory();
     }
     
 } // StaticUtils

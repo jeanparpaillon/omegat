@@ -207,6 +207,7 @@ public class SpellcheckerConfigurationDialog extends javax.swing.JDialog {
      */
     private void updateDetailPanel() {
         boolean enabled = autoSpellcheckCheckBox.isSelected();
+        detailPanel.setEnabled(enabled);
         contentLabel.setEnabled(enabled);
         directoryChooserButton.setEnabled(enabled);
         directoryLabel.setEnabled(enabled);

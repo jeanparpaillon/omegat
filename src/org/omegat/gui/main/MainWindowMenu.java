@@ -13,7 +13,6 @@
                2012 Wildrich Fourie, Guido Leenders, Martin Fleurke, Didier Briel
                2013 Zoltan Bartko, Didier Briel, Yu Tang
                2014 Aaron Madlon-Kay
-               2015 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -60,11 +59,11 @@ import org.omegat.core.CoreEvents;
 import org.omegat.core.events.IApplicationEventListener;
 import org.omegat.core.events.IProjectEventListener;
 import org.omegat.gui.editor.EditorSettings;
-import org.omegat.gui.shortcuts.PropertiesShortcuts;
 import org.omegat.util.Log;
 import org.omegat.util.OStrings;
 import org.omegat.util.Platform;
 import org.omegat.util.Preferences;
+import org.omegat.util.StaticUtils;
 import org.omegat.util.gui.OSXIntegration;
 import org.omegat.util.gui.Styles;
 import org.openide.awt.Mnemonics;
@@ -385,10 +384,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
 
         optionsGlossaryMenu
                 .add(optionsGlossaryTBXDisplayContextCheckBoxMenuItem = createCheckboxMenuItem("TF_OPTIONSMENU_GLOSSARY_TBX_DISPLAY_CONTEXT"));
-        optionsGlossaryMenu
-                .add(optionsGlossaryExactMatchCheckBoxMenuItem = createCheckboxMenuItem("TF_OPTIONSMENU_GLOSSARY_EXACT_MATCH"));
-        optionsGlossaryMenu
-                .add(optionsGlossaryStemmingCheckBoxMenuItem = createCheckboxMenuItem("TF_OPTIONSMENU_GLOSSARY_STEMMING"));
 
         optionsMenu.add(optionsTransTipsMenu = createMenu("TF_OPTIONSMENU_TRANSTIPS"));
         optionsTransTipsMenu
@@ -425,7 +420,7 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
         helpMenu.add(helpLogMenuItem = createMenuItem("TF_MENU_HELP_LOG"));
         
         setActionCommands();
-        new PropertiesShortcuts("/org/omegat/gui/main/MainMenuShortcuts.properties").bindKeyStrokes(mainMenu);
+        MainWindowMenuShortcuts.setShortcuts(mainMenu);
 
         if (Platform.isMacOSX()) {
             initMacSpecific();
@@ -495,10 +490,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
 
         optionsGlossaryTBXDisplayContextCheckBoxMenuItem.setSelected(Preferences.isPreferenceDefault(
                 Preferences.GLOSSARY_TBX_DISPLAY_CONTEXT, true));
-        optionsGlossaryExactMatchCheckBoxMenuItem.setSelected(Preferences.isPreferenceDefault(
-                Preferences.GLOSSARY_NOT_EXACT_MATCH, true));
-        optionsGlossaryStemmingCheckBoxMenuItem.setSelected(Preferences.isPreferenceDefault(
-                Preferences.GLOSSARY_STEMMING, true));        
     }
 
     /**
@@ -718,8 +709,6 @@ public class MainWindowMenu implements ActionListener, MenuListener, IMainMenu {
     JMenu optionsMachineTranslateMenu;
     JMenu optionsGlossaryMenu;
     JMenuItem optionsGlossaryTBXDisplayContextCheckBoxMenuItem;
-    JMenuItem optionsGlossaryExactMatchCheckBoxMenuItem;
-    JMenuItem optionsGlossaryStemmingCheckBoxMenuItem;
     JMenu optionsTransTipsMenu;
     JCheckBoxMenuItem optionsTransTipsEnableMenuItem;
     JCheckBoxMenuItem optionsTransTipsExactMatchMenuItem;
