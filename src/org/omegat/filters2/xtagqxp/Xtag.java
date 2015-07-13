@@ -27,7 +27,6 @@
 package org.omegat.filters2.xtagqxp;
 
 import org.omegat.filters3.Element;
-import org.omegat.util.StaticUtils;
 
 /**
  * A Xtag in a CopyFlow Gold for QuarkXPress source text.
@@ -83,11 +82,6 @@ public class Xtag implements Element {
             return shortcut;
         else
             return Character.toString(getTag().charAt(0));
-    }
-
-    public String toSafeCalcShortcut() {
-        return StaticUtils.TAG_REPLACEMENT_CHAR + getShortcut().replace('<', '_').replace('>', '_')
-                + StaticUtils.TAG_REPLACEMENT_CHAR;
     }
 
     private int index;

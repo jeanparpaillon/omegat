@@ -43,11 +43,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.dnd.DnDConstants;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -58,16 +53,12 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -87,7 +78,6 @@ import org.omegat.core.events.IEntryEventListener;
 import org.omegat.core.events.IFontChangedEventListener;
 import org.omegat.core.events.IProjectEventListener;
 import org.omegat.core.statistics.StatisticsInfo;
-import org.omegat.gui.editor.autocompleter.IAutoCompleter;
 import org.omegat.gui.editor.mark.CalcMarkersThread;
 import org.omegat.gui.editor.mark.ComesFromTMMarker;
 import org.omegat.gui.editor.mark.EntryMarks;
@@ -96,7 +86,6 @@ import org.omegat.gui.help.HelpFrame;
 import org.omegat.gui.main.DockablePanel;
 import org.omegat.gui.main.MainWindow;
 import org.omegat.gui.main.MainWindowUI;
-import org.omegat.gui.main.ProjectUICommands;
 import org.omegat.gui.tagvalidation.ITagValidation;
 import org.omegat.util.Language;
 import org.omegat.util.Log;
@@ -106,9 +95,6 @@ import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
 import org.omegat.util.Token;
-import org.omegat.util.gui.DragTargetOverlay;
-import org.omegat.util.gui.DragTargetOverlay.IDropInfo;
-import org.omegat.util.gui.StaticUIUtils;
 import org.omegat.util.gui.UIThreadsUtil;
 
 import com.vlsolutions.swing.docking.DockingDesktop;
@@ -149,8 +135,6 @@ public class EditorController implements IEditor {
     /** Dockable pane for editor. */
     private DockablePanel pane;
     private JScrollPane scrollPane;
-
-    private String title;
 
     private boolean dockableSelected;
 
@@ -207,7 +191,6 @@ public class EditorController implements IEditor {
         segmentExportImport = new SegmentExportImport(this);
 
         editor = new EditorTextArea3(this);
-        DragTargetOverlay.apply(editor, dropInfo);
         setFont(Core.getMainWindow().getApplicationFont());
 
         markerController = new MarkerController(this);
@@ -286,7 +269,7 @@ public class EditorController implements IEditor {
                 LOGGER.log(Level.SEVERE, "Uncatched exception in thread [" + t.getName() + "]", e);
             }
         });
-        
+
         EditorPopups.init(this);
     }
 
@@ -294,22 +277,8 @@ public class EditorController implements IEditor {
         pane = new DockablePanel("EDITOR", " ", false);
         pane.setComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
         pane.setMinimumSize(new Dimension(100, 100));
-        pane.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                updateTitle();
-            }
-        });
 
         scrollPane = new JScrollPane(editor);
-        Border panelBorder = UIManager.getBorder("OmegaTDockablePanel.border");
-        if (panelBorder != null) { 
-            scrollPane.setBorder(panelBorder);
-        }
-        Border viewportBorder = UIManager.getBorder("OmegaTDockablePanelViewport.border");
-        if (viewportBorder != null) {
-            scrollPane.setViewportBorder(viewportBorder);
-        }
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         pane.setLayout(new BorderLayout());
@@ -332,7 +301,8 @@ public class EditorController implements IEditor {
     private void updateState(SHOW_TYPE showType) {
         UIThreadsUtil.mustBeSwingThread();
 
-        JComponent data = null;
+        Component data = null;
+        String title = null;
 
         switch (showType) {
         case INTRO:
@@ -364,94 +334,14 @@ public class EditorController implements IEditor {
             break;
         }
 
-        updateTitle();
+        pane.setName(title);
         pane.setToolTipText(title);
 
         if (scrollPane.getViewport().getView() != data) {
-            if (UIManager.getBoolean("OmegaTDockablePanel.isProportionalMargins")) {
-                int size = data.getFont().getSize() / 2;
-                data.setBorder(new EmptyBorder(size, size, size, size));
-            }
             scrollPane.setViewportView(data);
         }
     }
 
-    private final IDropInfo dropInfo = new IDropInfo() {
-        
-        @Override
-        public DataFlavor getDataFlavor() {
-            return DataFlavor.javaFileListFlavor;
-        }
-        
-        @Override
-        public int getDnDAction() {
-            return DnDConstants.ACTION_COPY;
-        }
-        
-        @Override
-        public boolean handleDroppedObject(Object dropped) {
-            final List<File> files = (List<File>) dropped;
-            
-            // Only look at first file to determine intent to open project
-            File firstFile = files.get(0);
-            if (firstFile.getName().equals(OConsts.FILE_PROJECT)) {
-                firstFile = firstFile.getParentFile();
-            }
-            if (StaticUtils.isProjectDir(firstFile)) {
-                return handleDroppedProject(firstFile);
-            }
-            return handleDroppedFiles(files);
-        }
-        
-        private boolean handleDroppedProject(final File projDir) {
-            // Opening/closing might take a long time for team projects.
-            // Invoke later so we can return successfully right away.
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    ProjectUICommands.projectOpen(projDir, true);
-                }
-            });
-            return true;
-        }
-        
-        private boolean handleDroppedFiles(final List<File> files) {
-            if (!Core.getProject().isProjectLoaded()) {
-                return false;
-            }
-            // The import might take a long time if there are collision dialogs.
-            // Invoke later so we can return successfully right away.
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    mw.importFiles(Core.getProject().getProjectProperties().getSourceRoot(),
-                            files.toArray(new File[0]));
-                }
-            });
-            return true;
-        }
-        
-        @Override
-        public Component getComponentToOverlay() {
-            return scrollPane;
-        }
-        
-        @Override
-        public String getOverlayMessage() {
-            return Core.getProject().isProjectLoaded() ? OStrings.getString("DND_ADD_SOURCE_FILE")
-                    : OStrings.getString("DND_OPEN_PROJECT");
-        }
-        
-        @Override
-        public boolean canAcceptDrop() {
-            return true;
-        }
-    };
-    
-    private void updateTitle() {
-        pane.setName(StaticUIUtils.truncateToFit(title, pane, 70));
-    }
-    
     private void setFont(final Font font) {
         this.font = font;
         this.fontb = new Font(font.getFontName(), Font.BOLD, font.getSize());
@@ -584,15 +474,6 @@ public class EditorController implements IEditor {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public String getCurrentTargetFile() {
-        String currentSource = getCurrentFile();
-        if (currentSource == null) {
-            return null;
-        }
-        return Core.getProject().getTargetPathForSourceFile(currentSource);
     }
 
     /**
@@ -750,7 +631,7 @@ public class EditorController implements IEditor {
             CoreEvents.fireEntryNewFile(Core.getProject().getProjectFiles().get(displayedFileIndex).filePath);
         }
 
-        editor.autoCompleter.setVisible(false);
+        editor.autoCompleter.hidePopup();
         editor.repaint();
 
         // fire event about new segment activated
@@ -795,7 +676,7 @@ public class EditorController implements IEditor {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     markerController.reprocessImmediately(m_docSegList[displayedEntryIndex]);
-                    editor.autoCompleter.textDidChange();
+                    editor.autoCompleter.updatePopup();
                 }
             });
         }
@@ -876,17 +757,15 @@ public class EditorController implements IEditor {
         }
 
         StatisticsInfo stat = project.getStatistics();
-
+        StringBuilder pMsg = new StringBuilder(1024).append(" ");
         final MainWindowUI.STATUS_BAR_MODE progressMode =
                 Preferences.getPreferenceEnumDefault(Preferences.SB_PROGRESS_MODE,
                         MainWindowUI.STATUS_BAR_MODE.DEFAULT);
         
         if (progressMode == MainWindowUI.STATUS_BAR_MODE.DEFAULT) {
-            StringBuilder pMsg = new StringBuilder(1024).append(" ");
             pMsg.append(translatedInFile).append("/").append(fi.entries.size()).append(" (")
                     .append(stat.numberofTranslatedSegments).append("/").append(stat.numberOfUniqueSegments)
                     .append(", ").append(stat.numberOfSegmentsTotal).append(") ");
-            Core.getMainWindow().showProgressMessage(pMsg.toString());
         } else {
             /*
              * Percentage mode based on idea by Yu Tang
@@ -895,18 +774,25 @@ public class EditorController implements IEditor {
             java.text.NumberFormat nfPer = java.text.NumberFormat.getPercentInstance();
             nfPer.setRoundingMode(java.math.RoundingMode.DOWN);
             nfPer.setMaximumFractionDigits(1);
+            if (translatedUniqueInFile == 0) {
+                pMsg.append("0%");
+            } else {
+                pMsg.append(nfPer.format((double)translatedUniqueInFile / uniqueInFile));
+            }
+            pMsg.append(" (").append(uniqueInFile - translatedUniqueInFile)
+                    .append(OStrings.getString("MW_PROGRESS_LEFT_LABEL")).append(") / ");
 
-            String message = StaticUtils.format( OStrings.getString("MW_PROGRESS_DEFAULT_PERCENTAGE"),
-                    new Object[] { (translatedUniqueInFile == 0) ? "0%" :
-                            nfPer.format((double)translatedUniqueInFile / uniqueInFile),
-                    uniqueInFile - translatedUniqueInFile,
-                    (stat.numberofTranslatedSegments == 0) ? "0%" :
-                            nfPer.format((double)stat.numberofTranslatedSegments / stat.numberOfUniqueSegments),
-                    stat.numberOfUniqueSegments - stat.numberofTranslatedSegments,
-                    stat.numberOfSegmentsTotal });
-
-            Core.getMainWindow().showProgressMessage(message);
+            if (stat.numberofTranslatedSegments == 0) {
+                pMsg.append("0%");
+            } else {
+                pMsg.append(nfPer.format((double)stat.numberofTranslatedSegments / stat.numberOfUniqueSegments));
+            }
+            pMsg.append(" (").append(stat.numberOfUniqueSegments - stat.numberofTranslatedSegments)
+                    .append(OStrings.getString("MW_PROGRESS_LEFT_LABEL")).append(") ")
+                    .append(", ").append(stat.numberOfSegmentsTotal).append(" ");
         }
+
+        Core.getMainWindow().showProgressMessage(pMsg.toString());
     }
 
     /**
@@ -1636,7 +1522,6 @@ public class EditorController implements IEditor {
      * @param toWhat
      *            : lower, title, upper or cycle
      */
-    @Override
     public void changeCase(CHANGE_CASE_TO toWhat) {
         UIThreadsUtil.mustBeSwingThread();
 
@@ -1649,18 +1534,15 @@ public class EditorController implements IEditor {
         int translationEnd = editor.getOmDocument().getTranslationEnd();
 
         // both should be within the limits
-        if (end < translationStart || start > translationEnd) {
+        if (end < translationStart || start > translationEnd)
             return; // forget it, not worth the effort
-        }
 
         // adjust the bound which exceeds the limits
-        if (start < translationStart && end <= translationEnd) {
+        if (start < translationStart && end <= translationEnd)
             start = translationStart;
-        }
 
-        if (end > translationEnd && start >= translationStart) {
+        if (end > translationEnd && start >= translationStart)
             end = translationEnd;
-        }
 
         try {
             // no selection? make it the current word
@@ -1669,27 +1551,77 @@ public class EditorController implements IEditor {
                 end = EditorUtils.getWordEnd(editor, end);
 
                 // adjust the bound again
-                if (start < translationStart && end <= translationEnd) {
+                if (start < translationStart && end <= translationEnd)
                     start = translationStart;
-                }
 
-                if (end > translationEnd && start >= translationStart) {
+                if (end > translationEnd && start >= translationStart)
                     end = translationEnd;
-                }
             }
 
             editor.setSelectionStart(start);
             editor.setSelectionEnd(end);
 
             String selectionText = editor.getText(start, end - start);
-            String result = EditorUtils.doChangeCase(selectionText, toWhat);
-            if (selectionText.equals(result)) {
-                // Nothing changed
-                return;
+            // tokenize the selection
+            Token[] tokenList = Core.getProject().getTargetTokenizer()
+                    .tokenizeWordsForSpelling(selectionText);
+
+            StringBuffer buffer = new StringBuffer(selectionText);
+
+            if (toWhat == CHANGE_CASE_TO.CYCLE) {
+                int lower = 0;
+                int upper = 0;
+                int title = 0;
+                int other = 0;
+
+                for (Token token : tokenList) {
+                    String word = token.getTextFromString(selectionText);
+                    if (StringUtil.isLowerCase(word)) {
+                        lower++;
+                        continue;
+                    }
+                    if (StringUtil.isTitleCase(word)) {
+                        title++;
+                        continue;
+                    }
+                    if (StringUtil.isUpperCase(word)) {
+                        upper++;
+                        continue;
+                    }
+                    other++;
+                }
+
+                if (lower == 0 && title == 0 && upper == 0 && other == 0)
+                    return; // nothing to do here
+
+                if (lower != 0 && title == 0 && upper == 0)
+                    toWhat = CHANGE_CASE_TO.TITLE;
+
+                if (lower == 0 && title != 0 && upper == 0)
+                    toWhat = CHANGE_CASE_TO.UPPER;
+
+                if (lower == 0 && title == 0 && upper != 0)
+                    toWhat = CHANGE_CASE_TO.LOWER;
+
+                if (other != 0)
+                    toWhat = CHANGE_CASE_TO.UPPER;
+            }
+
+            int lengthIncrement = 0;
+
+            for (Token token : tokenList) {
+                // find out the case and change to the selected
+                String result = doChangeCase(token.getTextFromString(selectionText), toWhat);
+
+                // replace this token
+                buffer.replace(token.getOffset() + lengthIncrement, token.getLength() + token.getOffset()
+                        + lengthIncrement, result);
+
+                lengthIncrement += result.length() - token.getLength();
             }
 
             // ok, write it back to the editor document
-            editor.replaceSelection(result);
+            editor.replaceSelection(buffer.toString());
 
             editor.setCaretPosition(caretPosition);
 
@@ -1700,6 +1632,31 @@ public class EditorController implements IEditor {
             Log.log("bad location exception when changing case");
             Log.log(ble);
         }
+    }
+
+    /**
+     * perform the case change. Lowercase becomes titlecase, titlecase becomes uppercase, uppercase becomes
+     * lowercase. if the text matches none of these categories, it is uppercased.
+     * 
+     * @param input
+     *            : the string to work on
+     * @param toWhat
+     *            : one of the CASE_* values - except for case CASE_CYCLE.
+     */
+    private String doChangeCase(String input, CHANGE_CASE_TO toWhat) {
+        Locale locale = Core.getProject().getProjectProperties().getTargetLanguage().getLocale();
+
+        switch (toWhat) {
+        case LOWER:
+            return input.toLowerCase(locale);
+        case UPPER:
+            return input.toUpperCase(locale);
+        case TITLE:
+            // TODO: find out how to get a locale-aware title case
+            return Character.toTitleCase(input.charAt(0)) + input.substring(1).toLowerCase(locale);
+        }
+        // if everything fails
+        return input.toUpperCase(locale);
     }
 
     /**
@@ -1896,7 +1853,6 @@ public class EditorController implements IEditor {
                     .setComponentOrientation(EditorUtils.isRTL(language) ? ComponentOrientation.RIGHT_TO_LEFT
                             : ComponentOrientation.LEFT_TO_RIGHT);
             introPane.setEditable(false);
-            DragTargetOverlay.apply(introPane, dropInfo);
             introPane.setPage(HelpFrame.getHelpFileURL(language, OConsts.HELP_INSTANT_START));
         } catch (IOException e) {
             // editorScroller.setViewportView(editor);
@@ -1907,7 +1863,6 @@ public class EditorController implements IEditor {
         emptyProjectPane.setEditable(false);
         emptyProjectPane.setText(OStrings.getString("TF_INTRO_EMPTYPROJECT"));
         emptyProjectPane.setFont(Core.getMainWindow().getApplicationFont());
-        DragTargetOverlay.apply(emptyProjectPane, dropInfo);
     }
 
     /**
@@ -2103,7 +2058,7 @@ public class EditorController implements IEditor {
 
     @Override
     public void windowDeactivated() {
-        editor.autoCompleter.setVisible(false);
+        editor.autoCompleter.hidePopup();
     }
 
     /**
@@ -2256,10 +2211,5 @@ public class EditorController implements IEditor {
         public void cancel() {
             this.isCanceled = true;
         }
-    }
-
-    @Override
-    public IAutoCompleter getAutoCompleter() {
-        return editor.autoCompleter;
     }
 }

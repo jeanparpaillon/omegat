@@ -32,8 +32,6 @@ import java.util.List;
 
 import org.omegat.core.data.ProtectedPart;
 import org.omegat.core.statistics.StatCount;
-import org.omegat.core.statistics.Statistics;
-import org.omegat.core.statistics.StatisticsSettings;
 import org.omegat.filters3.Attributes;
 import org.omegat.filters3.Element;
 import org.omegat.filters3.Tag;
@@ -42,7 +40,6 @@ import org.omegat.filters3.xml.XMLContentBasedTag;
 import org.omegat.filters3.xml.XMLText;
 import org.omegat.filters3.xml.xliff.XLIFFOptions.ID_TYPE;
 import org.omegat.util.InlineTagHandler;
-import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
 
@@ -238,23 +235,18 @@ public class XLIFFDialect extends DefaultXMLDialect {
                 pp.setDetailsFromSourceFile(tag.toOriginal());
                 if (tagProtected) {
                     // protected text with related tags, like <m0>Acme</m0>
-                    if (StatisticsSettings.isCountingProtectedText()) {
-                        // Protected texts are counted, but related tags are not counted in the word count
-                        pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT
-                                + tag.getIntactContents().sourceToOriginal() + StaticUtils.TAG_REPLACEMENT);
-                    } else {
+                    if (StatCount.REMOVE_ALL_PROTECTED_PARTS) {
                         // All protected parts are not counted in the word count(default)
                         pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
+                    } else {
+                        // Protected texts are counted, but related tags are not counted in the word count
+                        pp.setReplacementWordsCountCalculation(tag.getIntactContents().sourceToOriginal());
                     }
                     pp.setReplacementUniquenessCalculation(StaticUtils.TAG_REPLACEMENT);
                     pp.setReplacementMatchCalculation(tag.getIntactContents().sourceToOriginal());
                 } else {
                     // simple tag, like <i0>
-                    if (StatisticsSettings.isCountingStandardTags()) {
-                        pp.setReplacementWordsCountCalculation(tag.toSafeCalcShortcut());
-                    } else {
-                        pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
-                    }
+                    pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
                     pp.setReplacementUniquenessCalculation(StaticUtils.TAG_REPLACEMENT);
                     pp.setReplacementMatchCalculation(StaticUtils.TAG_REPLACEMENT);
                 }
@@ -268,11 +260,7 @@ public class XLIFFDialect extends DefaultXMLDialect {
                 ProtectedPart pp = new ProtectedPart();
                 pp.setTextInSourceSegment(shortcut);
                 pp.setDetailsFromSourceFile(tag.toOriginal());
-                if (StatisticsSettings.isCountingStandardTags()) {
-                    pp.setReplacementWordsCountCalculation(tag.toSafeCalcShortcut());
-                } else {
-                    pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
-                }
+                pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
                 pp.setReplacementUniquenessCalculation(StaticUtils.TAG_REPLACEMENT);
                 pp.setReplacementMatchCalculation(StaticUtils.TAG_REPLACEMENT);
                 protectedParts.add(pp);

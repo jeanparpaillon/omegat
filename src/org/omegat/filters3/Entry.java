@@ -65,7 +65,7 @@ public class Entry {
     public void clear() {
         tagsDetected = false;
         elements.clear();
-        translation = "";
+        translation = new String();
         translatedEntry = null;
         textInstance = null;
     }
@@ -500,7 +500,7 @@ public class Entry {
     // //////////////////////////////////////////////////////////////////////////
 
     /** Translation in shortcut form. */
-    private String translation = "";
+    private String translation = new String();
 
     Entry translatedEntry = null;
 

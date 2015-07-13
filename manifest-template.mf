@@ -108,9 +108,6 @@ OmegaT-Plugin: filter
 Name: org.omegat.filters3.xml.visio.VisioFilter
 OmegaT-Plugin: filter
 
-Name: org.omegat.filters3.xml.xmlspreadsheet.XMLSpreadsheetFilter
-OmegaT-Plugin: filter
-
 Name: org.omegat.tokenizer.DefaultTokenizer
 OmegaT-Plugin: tokenizer
 

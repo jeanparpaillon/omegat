@@ -9,7 +9,6 @@
                2012 Martin Fleurke, Didier Briel
                2013 Aaron Madlon-Kay, Zoltan Bartko, Didier Briel, Alex Buloichik
                2014 Aaron Madlon-Kay, Alex Buloichik
-               2015 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -36,8 +35,6 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,16 +47,16 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
+import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.omegat.core.data.ProtectedPart;
-import org.omegat.core.statistics.StatisticsSettings;
 import org.omegat.util.Platform.OsType;
 
 /**
@@ -96,11 +93,8 @@ public class StaticUtils {
     private final static String SCRIPT_DIR = "script";
 
     /**
-     * Char which should be used instead protected parts. It should be non-letter char, to be able to have
-     * correct words counter.
-     * 
-     * This char can be placed around protected text for separate words inside protected text and words
-     * outside if there are no spaces between they.
+     * Char which should be used instead protected parts. It should be
+     * non-letter char, to be able to have correct words counter.
      */
     public static final char TAG_REPLACEMENT_CHAR = '\b';
     public static final String TAG_REPLACEMENT = "\b";
@@ -820,11 +814,7 @@ public class StaticUtils {
             ProtectedPart pp = new ProtectedPart();
             pp.setTextInSourceSegment(placeholderMatcher.group());
             pp.setDetailsFromSourceFile(placeholderMatcher.group());
-            if (StatisticsSettings.isCountingCustomTags()) {
-                pp.setReplacementWordsCountCalculation(placeholderMatcher.group());
-            } else {
-                pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
-            }
+            pp.setReplacementWordsCountCalculation(placeholderMatcher.group());
             pp.setReplacementUniquenessCalculation(placeholderMatcher.group());
             pp.setReplacementMatchCalculation(placeholderMatcher.group());
             result.add(pp);
@@ -853,7 +843,7 @@ public class StaticUtils {
      */
     public static String uuencode(byte[] buf) {
         if (buf.length <= 0)
-            return "";
+            return new String();
 
         StringBuilder res = new StringBuilder();
         res.append(buf[0]);
@@ -1058,42 +1048,33 @@ public class StaticUtils {
         }
     }
 
-    public static void extractFileFromJar(File archive, List<String> filenames, String destination)
+    public static void extractFileFromJar(String archive, List<String> filenames, String destination)
             throws IOException {
-        InputStream is = new FileInputStream(archive);
-        extractFileFromJar(is, filenames, destination);
-        is.close();
-    }
-    
-    public static void extractFileFromJar(InputStream in, List<String> filenames, String destination) throws IOException {
-        if (filenames == null || filenames.isEmpty()) {
-            throw new IllegalArgumentException("Caller must provide non-empty list of files to extract.");
-        }
-        List<String> toExtract = new ArrayList<String>(filenames);
-        JarInputStream jis = new JarInputStream(in);
+        // open the jar (zip) file
+        JarFile jar = new JarFile(archive);
+
         // parse the entries
-        JarEntry entry;
-        while ((entry = jis.getNextJarEntry()) != null) {
-            if (toExtract.contains(entry.getName())) {
+        Enumeration<JarEntry> entryEnum = jar.entries();
+        while (entryEnum.hasMoreElements()) {
+            JarEntry file = entryEnum.nextElement();
+            if (filenames.contains(file.getName())) {
                 // match found
-                File f = new File(destination, entry.getName());
-                f.getParentFile().mkdirs();
+                File f = new File(destination + File.separator + file.getName());
+                InputStream in = jar.getInputStream(file);
                 BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
 
                 byte[] byteBuffer = new byte[1024];
 
                 int numRead;
-                while ((numRead = jis.read(byteBuffer)) != -1) {
+                while ((numRead = in.read(byteBuffer)) != -1) {
                     out.write(byteBuffer, 0, numRead);
                 }
+
+                in.close();
                 out.close();
-                toExtract.remove(entry.getName());
             }
         }
-        jis.close();
-        if (!toExtract.isEmpty()) {
-            throw new FileNotFoundException("Failed to extract all of the specified files.");
-        }
+        jar.close();
     }
 
     /**
@@ -1105,9 +1086,9 @@ public class StaticUtils {
      * @return result stream
      */
     public static String fixChars(String str) {
-        StringBuilder sb = new StringBuilder(str.length());
-        for (int c, i = 0; i < str.length(); i += Character.charCount(c)) {
-            c = str.codePointAt(i);
+        char[] result = new char[str.length()];
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
             if (c < 0x20) {
                 if (c != 0x09 && c != 0x0A && c != 0x0D) {
                     c = ' ';
@@ -1118,9 +1099,9 @@ public class StaticUtils {
             } else {
                 c = ' ';
             }
-            sb.appendCodePoint(c);
+            result[i] = c;
         }
-        return sb.toString();
+        return new String(result);
     }
 
     /**
@@ -1234,15 +1215,6 @@ public class StaticUtils {
             result.add(arg.toString());
         }
         return result.toArray(new String[0]);
-    }
-
-    public static boolean isProjectDir(File f) {
-        if (f == null || f.getName().length() == 0) {
-            return false;
-        }
-        File projFile = new File(f.getAbsolutePath(), OConsts.FILE_PROJECT);
-        File internal = new File(f.getAbsolutePath(), OConsts.DEFAULT_INTERNAL);
-        return projFile.exists() && internal.isDirectory();
     }
     
 } // StaticUtils

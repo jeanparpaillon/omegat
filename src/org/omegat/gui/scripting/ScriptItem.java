@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2014 Briac Pilpre, Didier Briel
-               2015 Yu Tang
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -38,7 +37,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -83,9 +81,8 @@ public class ScriptItem extends File {
     }
 
     private void scanFileForDescription(File file) {
-        Scanner scan = null;
         try {
-            scan = new Scanner(file);
+            Scanner scan = new Scanner(file);
             scan.findInLine(":name\\s*=\\s*(.*)\\s+:description\\s*=\\s*(.*)");
             MatchResult results = scan.match();
             m_scriptName = results.group(1).trim();
@@ -95,33 +92,10 @@ public class ScriptItem extends File {
         } catch (FileNotFoundException e) {
             /* ignore - it should not happen here */
         }
-        finally {
-            if (scan != null)
-            {
-                scan.close();
-            }
-        }
     }
 
     public ResourceBundle getResourceBundle() {
-        if (m_res != null) {
-            return m_res;
-        }
-
-        // Create empty resource for confirmation
-        return new ResourceBundle() {
-            final String MISSING_BUNDLE_MESSAGE = "ResourceBundle (.properties file for localization) is missing.";
-
-            @Override
-            protected Object handleGetObject(String key) {
-                throw new MissingResourceException(MISSING_BUNDLE_MESSAGE, null, key);
-            }
-
-            @Override
-            public Enumeration<String> getKeys() {
-                throw new MissingResourceException(MISSING_BUNDLE_MESSAGE, null, null);
-            }
-        };
+        return m_res;
     }
 
     public String getScriptName() {

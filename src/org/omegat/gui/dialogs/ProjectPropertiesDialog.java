@@ -35,6 +35,7 @@ import gen.core.filters.Filters;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Label;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -59,6 +60,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.Scrollable;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
@@ -183,7 +185,7 @@ public class ProjectPropertiesDialog extends JDialog {
         // hinting message
         JTextArea m_messageArea = new JTextArea();
         m_messageArea.setEditable(false);
-        m_messageArea.setOpaque(false);
+        m_messageArea.setBackground(getBackground());
         m_messageArea.setFont(new Label().getFont());
         Box bMes = Box.createHorizontalBox();
         bMes.setBorder(emptyBorder);
@@ -214,7 +216,6 @@ public class ProjectPropertiesDialog extends JDialog {
             m_sourceLocaleField.setMaximumRowCount(20);
         m_sourceLocaleField.setEditable(true);
         m_sourceLocaleField.setRenderer(new LanguageComboBoxRenderer());
-        m_sourceLocaleField.setSelectedItem(projectProperties.getSourceLanguage());
         bL.add(m_sourceLocaleField);
 
         // Target language label
@@ -232,7 +233,6 @@ public class ProjectPropertiesDialog extends JDialog {
             m_targetLocaleField.setMaximumRowCount(20);
         m_targetLocaleField.setEditable(true);
         m_targetLocaleField.setRenderer(new LanguageComboBoxRenderer());
-        m_targetLocaleField.setSelectedItem(projectProperties.getTargetLanguage());
         bL.add(m_targetLocaleField);
 
         // Tokenizers box
@@ -328,11 +328,8 @@ public class ProjectPropertiesDialog extends JDialog {
         bB.add(bSTB);
 
         // Source tokenizer behavior field
-        Class<?> srcTokClass = projectProperties.getSourceTokenizer();
-        ITokenizer srcTok;
-        try {
-            srcTok = (ITokenizer) srcTokClass.newInstance();
-        } catch (Exception e) {
+        ITokenizer srcTok = Core.getProject().getSourceTokenizer();
+        if (srcTok == null) {
             srcTok = new DefaultTokenizer();
         }
         final JComboBox m_sourceTokenizerBehaviorField = new JComboBox(
@@ -399,11 +396,8 @@ public class ProjectPropertiesDialog extends JDialog {
         bB.add(bTTB);
 
         // Target tokenizer behavior field
-        Class<?> trgTokClass = projectProperties.getTargetTokenizer();
-        ITokenizer trgTok;
-        try {
-            trgTok = (ITokenizer) trgTokClass.newInstance();
-        } catch (Exception e) {
+        ITokenizer trgTok = Core.getProject().getTargetTokenizer();
+        if (trgTok == null) {
             trgTok = new DefaultTokenizer();
         }
         final JComboBox m_targetTokenizerBehaviorField = new JComboBox(
@@ -459,6 +453,9 @@ public class ProjectPropertiesDialog extends JDialog {
                 } catch (Exception ex) {
                 }
             }});
+        
+        m_sourceLocaleField.setSelectedItem(projectProperties.getSourceLanguage());
+        m_targetLocaleField.setSelectedItem(projectProperties.getTargetLanguage());
 
         centerBox.add(localesBox);
 
@@ -527,7 +524,7 @@ public class ProjectPropertiesDialog extends JDialog {
             m_externalCommandTextArea.setEditable(false);
             m_externalCommandTextArea.setToolTipText(OStrings.getString("PP_EXTERN_CMD_DISABLED_TOOLTIP"));
             m_externalCommandLabel.setToolTipText(OStrings.getString("PP_EXTERN_CMD_DISABLED_TOOLTIP"));
-            m_externalCommandTextArea.setBackground(getBackground());
+            m_externalCommandTextArea.setBackground(UIManager.getDefaults().getColor("Label.background"));
         }
         final JScrollPane m_externalCommandScrollPane = new JScrollPane();
         m_externalCommandScrollPane.setViewportView(m_externalCommandTextArea);
@@ -870,7 +867,10 @@ public class ProjectPropertiesDialog extends JDialog {
 
         setSize(9 * getWidth() / 8, getHeight() + 10);
         setResizable(true);
-        StaticUIUtils.fitInScreen(this);
+        Rectangle rect = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        if (getHeight() > rect.height) {
+            setSize(getWidth(), rect.height);
+        }
         DockingUI.displayCentered(this);
     }
 
@@ -1246,7 +1246,7 @@ public class ProjectPropertiesDialog extends JDialog {
         }
     }
 
-    private static class ScrollableBox extends Box implements Scrollable {
+    private class ScrollableBox extends Box implements Scrollable {
 
         public ScrollableBox(int axis) {
             super(axis);

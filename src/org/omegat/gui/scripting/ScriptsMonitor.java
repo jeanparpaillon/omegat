@@ -89,9 +89,7 @@ public class ScriptsMonitor implements DirectoryMonitor.DirectoryCallback, Direc
     }
 
     public void stop() {
-        if (m_monitor != null) {
-            m_monitor.fin();
-        }
+        m_monitor.fin();
     }
 
     /**

@@ -45,7 +45,7 @@ public class OneFilterTableModel extends AbstractTableModel {
     private final Filter filter;
     private boolean sourceEncodingVariable, targetEncodingVariable;
 
-    private static final String ENC_AUTO_NAME = OStrings.getString("ENCODING_AUTO");
+    private final String ENC_AUTO_NAME = OStrings.getString("ENCODING_AUTO");
 
     public OneFilterTableModel(final Filter f) {
         this.filter = f;

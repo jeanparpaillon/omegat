@@ -40,20 +40,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
 
 import org.omegat.core.Core;
-import org.omegat.core.CoreEvents;
-import org.omegat.core.events.IApplicationEventListener;
-import org.omegat.core.events.IProjectEventListener;
 import org.omegat.gui.editor.EditorController;
 import org.omegat.gui.filelist.ProjectFilesListController;
 import org.omegat.util.Log;
@@ -116,71 +111,6 @@ public class MainWindowUI {
     }
 
     /**
-     * Installs a {@link IProjectEventListener} that handles loading, storing,
-     * and restoring the main window layout when a project-specific layout is present.
-     */
-    public static void handlePerProjectLayouts(final MainWindow mainWindow) {
-        PerProjectLayoutHandler handler = new PerProjectLayoutHandler(mainWindow);
-        CoreEvents.registerProjectChangeListener(handler);
-        CoreEvents.registerApplicationEventListener(handler);
-    }
-    
-    private static class PerProjectLayoutHandler implements IProjectEventListener, IApplicationEventListener {
-
-        private final MainWindow mainWindow;
-        private boolean didApplyPerProjectLayout = false;
-        
-        public PerProjectLayoutHandler(MainWindow mainWindow) {
-            this.mainWindow = mainWindow;
-        }
-        
-        @Override
-        public void onApplicationStartup() {
-        }
-
-        @Override
-        public void onApplicationShutdown() {
-            // Project is not closed before shutdown, so we need to handle this separately
-            // from the onProjectChanged events.
-            if (Core.getProject().isProjectLoaded() && didApplyPerProjectLayout) {
-                loadScreenLayoutFromPreferences(mainWindow);
-                didApplyPerProjectLayout = false;
-            }
-        }            
-            
-        @Override
-        public void onProjectChanged(PROJECT_CHANGE_TYPE eventType) {
-            if (eventType == PROJECT_CHANGE_TYPE.CLOSE && didApplyPerProjectLayout) {
-                loadScreenLayoutFromPreferences(mainWindow);
-                didApplyPerProjectLayout = false;
-                return;
-            }
-            if (!Core.getProject().isProjectLoaded()) {
-                return;
-            }
-            File perProjLayout = getPerProjectLayout();
-            if (!perProjLayout.isFile()) {
-                return;
-            }
-            switch (eventType) {
-            case LOAD:
-                saveScreenLayout(mainWindow);
-                loadScreenLayout(mainWindow, perProjLayout);
-                didApplyPerProjectLayout = true;
-                break;
-            case SAVE:
-                saveScreenLayout(mainWindow, perProjLayout);
-            default:
-            }
-        }
-        
-        private File getPerProjectLayout() {
-            return new File(Core.getProject().getProjectProperties().getProjectInternal(),
-                    MainWindowUI.UI_LAYOUT_FILE);
-        }
-    }
-    
-    /**
      * Create swing UI components for status panel.
      */
     public static JPanel createStatusBar(final MainWindow mainWindow) {
@@ -188,24 +118,22 @@ public class MainWindowUI {
         mainWindow.progressLabel = new JLabel();
         mainWindow.lengthLabel = new JLabel();
 
-        mainWindow.statusLabel.setFont(mainWindow.statusLabel.getFont().deriveFont(11));
+        mainWindow.statusLabel.setFont(new Font("MS Sans Serif", 0, 11));
 
-        Border border = UIManager.getBorder("OmegaTStatusArea.border");
-        
         final STATUS_BAR_MODE progressMode = STATUS_BAR_MODE.valueOf(
                 Preferences.getPreferenceEnumDefault(Preferences.SB_PROGRESS_MODE,
                         STATUS_BAR_MODE.DEFAULT).name());
 
-        String statusText = OStrings.getString("MW_PROGRESS_DEFAULT");
+        String statusText = "MW_PROGRESS_DEFAULT";
         String tooltipText = "MW_PROGRESS_TOOLTIP";
         if (progressMode == STATUS_BAR_MODE.PERCENTAGE) {
-            statusText = OStrings.getProgressBarDefaultPrecentageText();
+            statusText = "MW_PROGRESS_DEFAULT_PERCENTAGE";
             tooltipText = "MW_PROGRESS_TOOLTIP_PERCENTAGE";
         }
-        Mnemonics.setLocalizedText(mainWindow.progressLabel, statusText);
+        Mnemonics.setLocalizedText(mainWindow.progressLabel, OStrings.getString(statusText));
         mainWindow.progressLabel.setToolTipText(OStrings.getString(tooltipText));
 
-        mainWindow.progressLabel.setBorder(border);
+        mainWindow.progressLabel.setBorder(BorderFactory.createLineBorder(Color.black));
         mainWindow.progressLabel.setHorizontalTextPosition(SwingConstants.CENTER);
         mainWindow.progressLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -217,17 +145,17 @@ public class MainWindowUI {
 
                 Preferences.setPreference(Preferences.SB_PROGRESS_MODE, progressMode);
 
-                String statusText = OStrings.getString("MW_PROGRESS_DEFAULT");
+                String statusText = "MW_PROGRESS_DEFAULT";
                 String tooltipText = "MW_PROGRESS_TOOLTIP";
                 if (progressMode == STATUS_BAR_MODE.PERCENTAGE) {
-                    statusText = OStrings.getProgressBarDefaultPrecentageText();
+                    statusText = "MW_PROGRESS_DEFAULT_PERCENTAGE";
                     tooltipText = "MW_PROGRESS_TOOLTIP_PERCENTAGE";
                 }
 
                 if (Core.getProject().isProjectLoaded()) {
                     ((EditorController)Core.getEditor()).showStat();
                 } else {
-                    Core.getMainWindow().showProgressMessage(statusText);
+                    Core.getMainWindow().showProgressMessage(OStrings.getString(statusText));
                 }
                 ((MainWindow)Core.getMainWindow()).setProgressToolTipText(OStrings.getString(tooltipText));
             }
@@ -236,7 +164,7 @@ public class MainWindowUI {
         Mnemonics.setLocalizedText(mainWindow.lengthLabel, OStrings.getString("MW_SEGMENT_LENGTH_DEFAULT"));
         mainWindow.lengthLabel.setToolTipText(OStrings.getString("MW_SEGMENT_LENGTH_TOOLTIP"));
         mainWindow.lengthLabel.setAlignmentX(1.0F);
-        mainWindow.lengthLabel.setBorder(border);
+        mainWindow.lengthLabel.setBorder(BorderFactory.createLineBorder(Color.black));
         mainWindow.lengthLabel.setFocusable(false);
 
         JPanel statusPanel2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -246,25 +174,18 @@ public class MainWindowUI {
         JPanel statusPanel = new JPanel(new BorderLayout());
         statusPanel.add(mainWindow.statusLabel, BorderLayout.CENTER);
         statusPanel.add(statusPanel2, BorderLayout.EAST);
-        statusPanel.setBorder(UIManager.getBorder("OmegaTMainWindowBottomMargin.border"));
 
-        Color bgColor = UIManager.getColor("AutoHideButtonPanel.background");
-        if (bgColor != null) {
-            statusPanel.setBackground(bgColor);
-            statusPanel2.setBackground(bgColor);
-        }
-        
         return statusPanel;
     }
 
     /**
-     * Initialize the size of OmegaT window, then load the layout prefs.
+     * Initialized the sizes of OmegaT window.
      * <p>
      * Assume screen size is 800x600 if width less than 900, and 1024x768 if
      * larger. Assume task bar at bottom of screen. If screen size saved,
      * recover that and use instead (18may04).
      */
-    public static void initializeScreenLayout(MainWindow mainWindow) {
+    public static void loadScreenLayout(final MainWindow mainWindow) {
         int x, y, w, h;
         // main window
         try {
@@ -298,68 +219,34 @@ public class MainWindowUI {
         }
         mainWindow.setBounds(x, y, w, h);
 
-        loadScreenLayoutFromPreferences(mainWindow);
-    }
-    
-    /**
-     * Load the main window layout from the global preferences file. Will reset to defaults
-     * if global preferences are not present or if an error occurs.
-     */
-    private static void loadScreenLayoutFromPreferences(MainWindow mainWindow) {
-        File uiLayoutFile = new File(StaticUtils.getConfigDir(), MainWindowUI.UI_LAYOUT_FILE);
+        File uiLayoutFile = new File(StaticUtils.getConfigDir() + MainWindowUI.UI_LAYOUT_FILE);
         if (uiLayoutFile.exists()) {
-            loadScreenLayout(mainWindow, uiLayoutFile);
+            try {
+                FileInputStream in = new FileInputStream(uiLayoutFile);
+                try {
+                    mainWindow.desktop.readXML(in);
+                } finally {
+                    in.close();
+                }
+            } catch (Exception e) {
+                Log.log(e);                     // In case something wrong happened, it's better to have a default
+                resetDesktopLayout(mainWindow); // screen than a blank one
+            }
         } else {
             resetDesktopLayout(mainWindow);
         }
     }
 
     /**
-     * Load the main window layout from the specified file. Convenience method for
-     * {@link #loadScreenLayout(MainWindow, InputStream)}.
+     * Stores screen layout (width, height, position, etc).
      */
-    private static void loadScreenLayout(MainWindow mainWindow, File uiLayoutFile) {
-        try {
-            loadScreenLayout(mainWindow, new FileInputStream(uiLayoutFile));
-        } catch (FileNotFoundException ex) {
-            Log.log(ex);
-        }
-    }
-    
-    /**
-     * Load the main window layout from the global preferences file. Will reset to defaults
-     * if an error occurs.
-     */
-    private static void loadScreenLayout(MainWindow mainWindow, InputStream in) {
-        try {
-            try {
-                mainWindow.desktop.readXML(in);
-            } finally {
-                in.close();
-            }
-        } catch (Exception e) {
-            Log.log(e);
-            resetDesktopLayout(mainWindow);
-        }
-    }
-
-    /**
-     * Stores main window layout (width, height, position, etc.) to global preferences.
-     */
-    public static void saveScreenLayout(MainWindow mainWindow) {
-        File uiLayoutFile = new File(StaticUtils.getConfigDir(), MainWindowUI.UI_LAYOUT_FILE);
-        saveScreenLayout(mainWindow, uiLayoutFile);
-    }
-    
-    /**
-     * Stores main window layout to the specified output file.
-     */
-    private static void saveScreenLayout(MainWindow mainWindow, File uiLayoutFile) {
+    public static void saveScreenLayout(final MainWindow mainWindow) {
         Preferences.setPreference(Preferences.MAINWINDOW_X, mainWindow.getX());
         Preferences.setPreference(Preferences.MAINWINDOW_Y, mainWindow.getY());
         Preferences.setPreference(Preferences.MAINWINDOW_WIDTH, mainWindow.getWidth());
         Preferences.setPreference(Preferences.MAINWINDOW_HEIGHT, mainWindow.getHeight());
 
+        File uiLayoutFile = new File(StaticUtils.getConfigDir() + MainWindowUI.UI_LAYOUT_FILE);
         try {
             FileOutputStream out = new FileOutputStream(uiLayoutFile);
             try {
@@ -373,9 +260,24 @@ public class MainWindowUI {
     }
 
     /**
-     * Restores main window layout to the default values (distinct from global preferences).
+     * Restores defaults for all dockable parts. May be expanded in the future
+     * to reset the entire GUI to its defaults.
+     * 
+     * Note: The current implementation is just a quick hack, due to
+     * insufficient knowledge of the docking framework library.
+     * 
+     * @author Henry Pijffers (henry.pijffers@saxnot.com)
      */
-    public static void resetDesktopLayout(MainWindow mainWindow) {
-        loadScreenLayout(mainWindow, MainWindowUI.class.getResourceAsStream("DockingDefaults.xml"));
+    public static void resetDesktopLayout(final MainWindow mainWindow) {
+        try {
+            InputStream in = MainWindowUI.class.getResourceAsStream("DockingDefaults.xml");
+            try {
+                mainWindow.desktop.readXML(in);
+            } finally {
+                in.close();
+            }
+        } catch (Exception exception) {
+            Log.log(exception);
+        }
     }
 }

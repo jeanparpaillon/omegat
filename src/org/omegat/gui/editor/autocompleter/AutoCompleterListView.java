@@ -4,7 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2013 Zoltan Bartko, Aaron Madlon-Kay
-               2014-2015 Aaron Madlon-Kay
+               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -27,7 +27,6 @@ package org.omegat.gui.editor.autocompleter;
 
 import java.awt.Component;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -36,11 +35,10 @@ import java.util.List;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
-import javax.swing.JScrollBar;
 import javax.swing.ListModel;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
+import javax.swing.text.BadLocationException;
 
+import org.omegat.gui.editor.EditorTextArea3;
 import org.omegat.tokenizer.ITokenizer;
 import org.omegat.util.OStrings;
 import org.omegat.util.StaticUtils;
@@ -55,60 +53,69 @@ import org.omegat.util.Token;
 public abstract class AutoCompleterListView extends AbstractAutoCompleterView {
     
     private static JList list;
+    private static CellRenderer renderer;
 
     ListModel listModel = new DefaultListModel();
     
     private static AutoCompleterItem NO_SUGGESTIONS = new AutoCompleterItem(
             OStrings.getString("AC_NO_SUGGESTIONS"), null, 0);
     
-    public AutoCompleterListView(String name) {
-        super(name);
+    public AutoCompleterListView(String name, AutoCompleter completer) {
+        super(name,completer);
         getList().setFocusable(false);
     }
     
     public JList getList() {
         if (list == null) {
             list = new JList();
-            list.setCellRenderer(new CellRenderer());
-            list.addMouseListener(mouseAdapter);
+            list.setFixedCellHeight(12);
+            renderer = new CellRenderer(this);
+            list.setCellRenderer(renderer);
+            list.addMouseListener(new MouseAdapter() {
+            	@Override
+            	public void mouseClicked(MouseEvent e) {
+            		if (e.getClickCount() == 2) {
+            			Point p = e.getPoint();
+            			int i = list.locationToIndex(p);
+            			if (list.getSelectedIndex() == i && list.getCellBounds(i, i).contains(p)) {
+            				completer.doSelection();
+            			}
+            		}
+            	}
+			});
         }
         return list;
     }
     
-    private final MouseAdapter mouseAdapter = new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 2) {
-                Point p = e.getPoint();
-                int i = list.locationToIndex(p);
-                if (list.getSelectedIndex() == i && list.getCellBounds(i, i).contains(p)) {
-                    completer.doSelection();
-                }
-            }
-        }
-    };
-    
     @Override
-    public boolean processKeys(KeyEvent e) {
+    public boolean processKeys(KeyEvent e, boolean visible) {
         if (StaticUtils.isKey(e, KeyEvent.VK_UP, 0)) {
             // process key UP
-            selectPreviousPossibleValue();
+            if (visible) {
+                selectPreviousPossibleValue();
+            }
             return true;
         }
 
         if (StaticUtils.isKey(e, KeyEvent.VK_DOWN, 0)) {
             // process key DOWN
-            selectNextPossibleValue();
+            if (visible) {
+                selectNextPossibleValue();
+            }
             return true;
         }
 
         if (StaticUtils.isKey(e, KeyEvent.VK_PAGE_UP, 0)) {
-            selectPreviousPossibleValueByPage();
+            if (visible) {
+                selectPreviousPossibleValueByPage();
+            }
             return true;
         }
 
         if (StaticUtils.isKey(e, KeyEvent.VK_PAGE_DOWN, 0)) {
-            selectNextPossibleValueByPage();
+            if (visible) {
+                selectNextPossibleValueByPage();
+            }
             return true;
         }
 
@@ -163,21 +170,12 @@ public abstract class AutoCompleterListView extends AbstractAutoCompleterView {
     
     @Override
     public int getPreferredHeight() {
-        Rectangle bounds = getList().getCellBounds(0, 0);
-        return (int) (getModifiedRowCount() * (bounds == null ? getList().getFont().getSize() : bounds.getHeight()));
+        int height = getModifiedRowCount() * getList().getFont().getSize();
+        return Math.max(height, 50);
     }
     
     @Override
-    public int getPreferredWidth() {
-        int width = getList().getPreferredSize().width;
-        JScrollBar bar = completer.scroll.getVerticalScrollBar();
-        if (bar != null) {
-            width += bar.getPreferredSize().width;
-        }
-        return width;
-    };
-    
-    protected void setData(List<AutoCompleterItem> entryList) {
+    public void setData(List<AutoCompleterItem> entryList) {
         getList().setListData(entryList.toArray());
         if (!entryList.isEmpty()) {
             getList().setSelectedIndex(0);
@@ -193,24 +191,32 @@ public abstract class AutoCompleterListView extends AbstractAutoCompleterView {
     
     @Override
     public Component getViewContent() {
+        renderer.view = this;
         getList().setVisibleRowCount(getModifiedRowCount());
         return getList();
     }
     
     @Override
     public boolean updateViewData() {
-        List<AutoCompleterItem> entryList = computeListData(getLeadingText(), false);    
-        if (entryList.isEmpty()) {
-            entryList.add(NO_SUGGESTIONS);
+        EditorTextArea3 editor = completer.getEditor();
+        try {
+            int offset = editor.getCaretPosition();
+            int translationStart = editor.getOmDocument().getTranslationStart();
+            
+            String prevText = editor.getDocument().getText(translationStart, offset - translationStart);
+            
+            List<AutoCompleterItem> entryList = computeListData(prevText);
+            
+            if (entryList.isEmpty()) {
+                entryList.add(NO_SUGGESTIONS);
+            }
+            setData(entryList);
+            
+            return !entryList.isEmpty();
+        } catch (BadLocationException ex) {
+            // what now?
+            return false;
         }
-        setData(entryList);
-        
-        return !entryList.isEmpty();
-    }
-    
-    @Override
-    public boolean shouldPopUp() {
-        return !computeListData(getLeadingText(), true).isEmpty();
     }
     
     protected String getLastToken(String text) {
@@ -221,7 +227,7 @@ public abstract class AutoCompleterListView extends AbstractAutoCompleterView {
         if (tokens.length != 0) {
             Token lastToken = tokens[tokens.length - 1];
             String lastString = text.substring(lastToken.getOffset()).trim();
-            if (!lastString.isEmpty()) {
+            if (lastString.length() > 0) {
                 token = lastString;
             }
         }
@@ -233,7 +239,7 @@ public abstract class AutoCompleterListView extends AbstractAutoCompleterView {
      * @param prevText the text in the editing field up to the cursor location
      * @return a list of AutoCompleterItems.
      */
-    public abstract List<AutoCompleterItem> computeListData(String prevText, boolean contextualOnly);
+    public abstract List<AutoCompleterItem> computeListData(String prevText);
     
     /**
      * Each view should determine how to print a view item.
@@ -242,21 +248,22 @@ public abstract class AutoCompleterListView extends AbstractAutoCompleterView {
      */
     public abstract String itemToString(AutoCompleterItem item);
     
-    private static final Border LIST_MARGIN_BORDER = new EmptyBorder(0, 5, 0, 5);
     
     @SuppressWarnings("serial")
-    private class CellRenderer extends DefaultListCellRenderer {
+    class CellRenderer extends DefaultListCellRenderer {
+        private AutoCompleterListView view;
+        
+        public CellRenderer(AutoCompleterListView view) {
+            this.view = view;
+        }
         
         @Override
         public Component getListCellRendererComponent(JList list, Object value,
                 int index, boolean isSelected, boolean cellHasFocus) {
-            setBorder(LIST_MARGIN_BORDER);
             if (value == NO_SUGGESTIONS) {
                 setText(((AutoCompleterItem)value).payload);
             } else {
-                AutoCompleterListView aclView = (AutoCompleterListView) completer.getCurrentView();
-                AutoCompleterItem acItem = (AutoCompleterItem) value;
-                setText(aclView.itemToString(acItem));
+                setText(view.itemToString((AutoCompleterItem)value));
             }
             if (isSelected) {
                 setBackground(list.getSelectionBackground());

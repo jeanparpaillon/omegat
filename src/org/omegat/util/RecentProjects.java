@@ -35,6 +35,8 @@ import java.util.List;
 import javax.swing.JMenuItem;
 
 import org.omegat.core.Core;
+import org.omegat.core.CoreEvents;
+import org.omegat.core.events.IProjectEventListener;
 import org.omegat.gui.main.IMainWindow;
 import org.omegat.gui.main.ProjectUICommands;
 
@@ -92,7 +94,12 @@ public class RecentProjects {
                 recentProjectMenuItem.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        ProjectUICommands.projectOpen(new File(project), true);
+                        if (Core.getProject().isProjectLoaded()) {
+                            CoreEvents.registerProjectChangeListener(new CloseThenOpen(project));
+                            ProjectUICommands.projectClose();
+                        } else {
+                            ProjectUICommands.projectOpen(new File(project));
+                        }
                     }
                 });
                 recentMenu.add(recentProjectMenuItem);
@@ -114,6 +121,23 @@ public class RecentProjects {
         }
         updateMenu();
         saveToPrefs();
+    }
+
+    private static class CloseThenOpen implements IProjectEventListener {
+        
+        private final String project;
+        
+        public CloseThenOpen(String project) {
+            this.project = project;
+        }
+        
+        @Override
+        public void onProjectChanged(PROJECT_CHANGE_TYPE eventType) {
+            if (eventType == PROJECT_CHANGE_TYPE.CLOSE) {
+                ProjectUICommands.projectOpen(new File(project));
+                CoreEvents.unregisterProjectChangeListener(this);
+            }
+        }
     }
     
 }

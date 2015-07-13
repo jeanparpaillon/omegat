@@ -73,7 +73,7 @@ public class ConsoleWindow implements IMainWindow {
 
         final String msg;
         if (messageKey == null) {
-            msg = " ";
+            msg = new String() + ' ';
         } else {
             if (params != null) {
                 msg = StaticUtils.format(OStrings.getString(messageKey), params);

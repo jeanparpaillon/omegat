@@ -31,14 +31,16 @@
 package org.omegat.gui.filelist;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -50,8 +52,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,13 +62,16 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.DocumentEvent;
@@ -75,6 +80,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -94,14 +100,10 @@ import org.omegat.core.statistics.StatisticsInfo;
 import org.omegat.gui.main.MainWindow;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
+import org.omegat.util.Platform;
 import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
-import org.omegat.util.gui.DragTargetOverlay;
-import org.omegat.util.gui.DragTargetOverlay.FileDropInfo;
-import org.omegat.util.gui.OSXIntegration;
 import org.omegat.util.gui.StaticUIUtils;
-import org.omegat.util.gui.TableColumnSizer;
-import org.omegat.util.gui.DataTableStyling;
 import org.omegat.util.gui.UIThreadsUtil;
 
 /**
@@ -120,6 +122,16 @@ import org.omegat.util.gui.UIThreadsUtil;
  */
 @SuppressWarnings("serial")
 public class ProjectFilesListController {
+    private static final Color COLOR_STANDARD_FG = Color.BLACK;
+    private static final Color COLOR_STANDARD_BG = Color.WHITE;
+    private static final Color COLOR_CURRENT_FG = Color.BLACK;
+    private static final Color COLOR_CURRENT_BG = new Color(0xC8DDF2);
+    private static final Color COLOR_SELECTION_FG = Color.WHITE;
+    private static final Color COLOR_SELECTION_BG = new Color(0x2F77DA);
+    private static final Color COLOR_ALTERNATING_HILITE = new Color(245, 245, 245);
+    private static final Border TABLE_FOCUS_BORDER = new MatteBorder(1, 1, 1, 1, new Color(0x76AFE8));
+
+    private static final int LINE_SPACING = 6;
 
     private ProjectFilesList list;
     private AbstractTableModel modelFiles, modelTotal;
@@ -131,6 +143,10 @@ public class ProjectFilesListController {
 
     private Font defaultFont;
     
+    private int[] optimalColWidths;
+    private int cutoverWidth = -1;
+    private boolean didManuallyAdjustCols;
+
     public ProjectFilesListController(MainWindow parent) {
         m_parent = parent;
 
@@ -138,38 +154,6 @@ public class ProjectFilesListController {
 
         createTableFiles();
         createTableTotal();
-        
-        TableColumnSizer colSizer = TableColumnSizer.autoSize(list.tableFiles, 0, true);
-        colSizer.addColumnAdjustmentListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                propagateTableColumns();
-            }
-        });
-        
-        DragTargetOverlay.apply(list.tableFiles, new FileDropInfo(m_parent, true) {
-            @Override
-            public String getImportDestination() {
-                return Core.getProject().getProjectProperties().getSourceRoot();
-            }
-            @Override
-            public boolean canAcceptDrop() {
-                return Core.getProject().isProjectLoaded();
-            }
-
-            @Override
-            public String getOverlayMessage() {
-                return OStrings.getString("DND_ADD_SOURCE_FILE");
-            }
-            @Override
-            public boolean acceptFile(File path) {
-                return true;
-            }
-            @Override
-            public Component getComponentToOverlay() {
-                return list.tablesInnerPanel;
-            }
-        });
         
         defaultFont = list.tableFiles.getFont();
         if (Preferences.isPreference(Preferences.PROJECT_FILES_USE_FONT)) {
@@ -181,6 +165,23 @@ public class ProjectFilesListController {
         }
 
         list.tablesInnerPanel.setBorder(new JScrollPane().getBorder());
+        
+        if (!Platform.isMacOSX()) {
+            // Windows needs some extra colors set for consistency, but these
+            // ruin native LAF on OS X.
+            list.scrollFiles.getViewport().setBackground(COLOR_STANDARD_BG);
+            list.scrollFiles.setBackground(COLOR_STANDARD_BG);
+            list.tableFiles.getTableHeader().setBackground(COLOR_STANDARD_BG);
+        }
+        list.scrollFiles.getViewport().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (modelFiles == null) {
+                    return;
+                }
+                adjustTableColumns();
+            }
+        });
         
         // set the position and size
         initWindowLayout();
@@ -210,7 +211,7 @@ public class ProjectFilesListController {
             }
             @Override
             public void windowActivated(WindowEvent e) {
-                propagateTableColumns();
+                adjustTableColumns();
             }
         });
 
@@ -250,6 +251,7 @@ public class ProjectFilesListController {
         CoreEvents.registerEntryEventListener(new IEntryEventListener() {
             @Override
             public void onNewFile(String activeFileName) {
+                resetColWidthData();
                 list.tableFiles.repaint();
                 list.tableTotal.repaint();
                 modelTotal.fireTableDataChanged();
@@ -272,6 +274,9 @@ public class ProjectFilesListController {
                     newFont = defaultFont;
                 }
                 setFont(newFont);
+                if (Core.getProject().isProjectLoaded()) {
+                    adjustTableColumns();
+                }
             }
         });
 
@@ -476,14 +481,9 @@ public class ProjectFilesListController {
     public void setActive(boolean active) {
         if (active) {
             // moved current file selection here so it will be properly set on each activation
+            selectCurrentFile(Core.getProject().getProjectFiles());
             list.setVisible(true);
             list.toFront();
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    selectCurrentFile(Core.getProject().getProjectFiles());
-                }
-            });
         } else {
             list.setVisible(false);
         }
@@ -573,28 +573,135 @@ public class ProjectFilesListController {
         uiUpdateImportButtonStatus();
         list.setTitle(StaticUtils.format(OStrings.getString("PF_WINDOW_TITLE"), files.size()));
 
-        OSXIntegration.setProxyIcon(list.getRootPane(), new File(Core.getProject().getProjectProperties().getSourceRoot()));
-
         setTableFilesModel(files);
+        
+        resetColWidthData();
+        adjustTableColumns();
     }
 
     private void createTableFiles() {
-        DataTableStyling.applyColors(list.tableFiles);
+        applyColors(list.tableFiles);
         list.tableFiles.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
+
+    /**
+     * Calculate each column's ideal width, based on header and cells.
+     * Results are cached.
+     */
+    private void calculateOptimalColWidths() {
+        if (optimalColWidths != null) {
+            return;
+        }
+        optimalColWidths = new int[list.tableFiles.getColumnCount()];
+        
+        // See: https://tips4java.wordpress.com/2008/11/10/table-column-adjuster/
+        for (int column = 0; column < list.tableFiles.getColumnCount(); column++) {
+            TableColumn col = list.tableFiles.getColumnModel().getColumn(column);
+            int preferredWidth = col.getMinWidth();
+            int maxWidth = col.getMaxWidth();
+
+            for (int row = -1; row < list.tableFiles.getRowCount(); row++) {
+                TableCellRenderer cellRenderer;
+                Component c;
+                int margin = 5;
+                if (row == -1) {
+                    cellRenderer = col.getHeaderRenderer();
+                    if (cellRenderer == null) {
+                        cellRenderer = col.getCellRenderer();
+                    }
+                    if (cellRenderer == null) {
+                        cellRenderer = list.tableFiles.getDefaultRenderer(modelFiles.getColumnClass(column));
+                    }
+                    c = cellRenderer.getTableCellRendererComponent(list.tableFiles, col.getHeaderValue(), false, false, 0, column);
+                    // Add somewhat arbitrary margin to header because it gets truncated at a smaller width
+                    // than a regular cell does (Windows LAF more than OS X LAF).
+                    margin = 10;
+                } else {
+                    cellRenderer = list.tableFiles.getCellRenderer(row, column);
+                    c = list.tableFiles.prepareRenderer(cellRenderer, row, column);
+                }
+                
+                c.setBounds(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
+                int width = c.getPreferredSize().width + list.tableFiles.getIntercellSpacing().width + margin;
+                preferredWidth = Math.max(preferredWidth, width);
+
+                //  We've exceeded the maximum width, no need to check other rows
+                if (preferredWidth >= maxWidth) {
+                    preferredWidth = maxWidth;
+                    break;
+                }
+            }
+            optimalColWidths[column] = preferredWidth;
+        }
+    }
     
-    private void propagateTableColumns() {
+    private void resetColWidthData() {
+        optimalColWidths = null;
+        cutoverWidth = -1;
+    }
+    
+    /**
+     * Adjust the columns of the tables, propagating widths from tableFiles to
+     * tableTotal.
+     * 
+     * If possible, this optimally sizes the columns such that columns greater
+     * than 0 are only as big as necessary, and the rest of the space goes to
+     * column 0.
+     * 
+     * This auto-sizing only happens if it represents an improvement over the
+     * default sizing (gives more space to column 0), and only if the user has
+     * not manually adjusted column widths.
+     * 
+     * Once auto-sizing is invoked, the width at which it was first invoked is
+     * recorded as a boundary below which default sizing is used again.
+     */
+    private void adjustTableColumns() {
         // Set last column of tableTotal to match size of scrollbar.
         JScrollBar scrollbar = list.scrollFiles.getVerticalScrollBar();
         int sbWidth = scrollbar == null || !scrollbar.isVisible() ? 0 : scrollbar.getWidth();
         list.tableTotal.getColumnModel().getColumn(list.tableTotal.getColumnCount() - 1).setPreferredWidth(sbWidth);
         
-        // Propagate column sizes to totals table
-        for (int i = 0; i < list.tableFiles.getColumnCount(); i++) {
-            TableColumn srcCol = list.tableFiles.getColumnModel().getColumn(i);
-            TableColumn trgCol = list.tableTotal.getColumnModel().getColumn(i);
-            trgCol.setPreferredWidth(srcCol.getWidth());
+        calculateOptimalColWidths();
+        
+        int otherCols = 0;
+        for (int i = 1; i < optimalColWidths.length; i++) {
+            otherCols += optimalColWidths[i];
         }
+        
+        int remainderFirstColWidth = list.scrollFiles.getViewport().getWidth() - otherCols;
+                
+        if (shouldAutoSize(remainderFirstColWidth)) {
+            if (cutoverWidth == -1) {
+                cutoverWidth = list.scrollFiles.getViewport().getWidth();
+            }
+            list.tableFiles.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            list.tableFiles.getColumnModel().getColumn(0).setPreferredWidth(remainderFirstColWidth);
+            list.tableTotal.getColumnModel().getColumn(0).setPreferredWidth(remainderFirstColWidth);
+            for (int i = 1; i < optimalColWidths.length; i++) {
+                list.tableFiles.getColumnModel().getColumn(i).setPreferredWidth(optimalColWidths[i]);
+                list.tableTotal.getColumnModel().getColumn(i).setPreferredWidth(optimalColWidths[i]);
+            }
+        } else {
+            list.tableFiles.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+            for (int i = 0; i < list.tableFiles.getColumnCount(); i++) {
+                TableColumn srcCol = list.tableFiles.getColumnModel().getColumn(i);
+                TableColumn trgCol = list.tableTotal.getColumnModel().getColumn(i);
+                trgCol.setPreferredWidth(srcCol.getWidth());
+            }
+        }
+    }
+    
+    private boolean shouldAutoSize(int proposedFirstColWidth) {
+        if (didManuallyAdjustCols) {
+            return false;
+        }
+        if (proposedFirstColWidth > optimalColWidths[0]) {
+            return true;
+        }
+        if (cutoverWidth != -1) {
+            return list.scrollFiles.getViewport().getWidth() >= cutoverWidth;
+        }
+        return proposedFirstColWidth > list.tableFiles.getColumnModel().getColumn(0).getWidth();
     }
 
     private void setTableFilesModel(final List<IProject.FileInfo> files) {
@@ -659,19 +766,19 @@ public class ProjectFilesListController {
         TableColumnModel columns = new DefaultTableColumnModel();
         TableColumn cFile = new TableColumn(0, 150);
         cFile.setHeaderValue(OStrings.getString("PF_FILENAME"));
-        cFile.setCellRenderer(getTextCellRenderer(files));
+        cFile.setCellRenderer(new CustomRenderer(files, SwingConstants.LEFT, null));
         TableColumn cFilter = new TableColumn(1, 100);
         cFilter.setHeaderValue(OStrings.getString("PF_FILTERNAME"));
-        cFilter.setCellRenderer(getTextCellRenderer(files));
+        cFilter.setCellRenderer(new CustomRenderer(files, SwingConstants.LEFT, null));
         TableColumn cEncoding = new TableColumn(2, 50);
         cEncoding.setHeaderValue(OStrings.getString("PF_ENCODING"));
-        cEncoding.setCellRenderer(getTextCellRenderer(files));
+        cEncoding.setCellRenderer(new CustomRenderer(files, SwingConstants.LEFT, null));
         TableColumn cCount = new TableColumn(3, 50);
         cCount.setHeaderValue(OStrings.getString("PF_NUM_SEGMENTS"));
-        cCount.setCellRenderer(getNumberCellRenderer(files));
+        cCount.setCellRenderer(new CustomRenderer(files, SwingConstants.RIGHT, ",##0"));
         TableColumn cUnique = new TableColumn(4, 50);
         cUnique.setHeaderValue(OStrings.getString("PF_NUM_UNIQUE_SEGMENTS"));
-        cUnique.setCellRenderer(getNumberCellRenderer(files));
+        cUnique.setCellRenderer(new CustomRenderer(files, SwingConstants.RIGHT, ",##0"));
         columns.addColumn(cFile);
         columns.addColumn(cFilter);
         columns.addColumn(cEncoding);
@@ -684,11 +791,18 @@ public class ProjectFilesListController {
 
             @Override
             public void columnMarginChanged(ChangeEvent e) {
+                TableColumn col = list.tableFiles.getTableHeader().getResizingColumn();
+                if (col != null) {
+                    // User has manually resized a column. Don't try auto-sizing.
+                    didManuallyAdjustCols = true;
+                    adjustTableColumns();
+                }
             }
 
             @Override
             public void columnMoved(TableColumnModelEvent e) {
                 list.tableTotal.getColumnModel().moveColumn(e.getFromIndex(), e.getToIndex());
+                adjustTableColumns();
             }
 
             @Override
@@ -706,8 +820,8 @@ public class ProjectFilesListController {
     }
 
     private void createTableTotal() {
-        DataTableStyling.applyColors(list.tableTotal);
-        list.tableTotal.setBorder(new MatteBorder(1, 0, 0, 0, DataTableStyling.COLOR_ALTERNATING_HILITE));
+        applyColors(list.tableTotal);
+        list.tableTotal.setBorder(new MatteBorder(1, 0, 0, 0, COLOR_ALTERNATING_HILITE));
 
         modelTotal = new AbstractTableModel() {
             @Override
@@ -757,15 +871,15 @@ public class ProjectFilesListController {
 
         TableColumnModel columns = new DefaultTableColumnModel();
         TableColumn cFile = new TableColumn(0, 150);
-        cFile.setCellRenderer(getTextCellRenderer(null));
+        cFile.setCellRenderer(new CustomRenderer(null, SwingConstants.LEFT, null));
         TableColumn cFilter = new TableColumn(1, 100);
-        cFilter.setCellRenderer(getTextCellRenderer(null));
+        cFilter.setCellRenderer(new CustomRenderer(null, SwingConstants.LEFT, null));
         TableColumn cEncoding = new TableColumn(2, 50);
-        cEncoding.setCellRenderer(getTextCellRenderer(null));
+        cEncoding.setCellRenderer(new CustomRenderer(null, SwingConstants.LEFT, null));
         TableColumn cCount = new TableColumn(3, 50);
-        cCount.setCellRenderer(getNumberCellRenderer(null));
+        cCount.setCellRenderer(new CustomRenderer(null, SwingConstants.RIGHT, ",##0"));
         TableColumn cUnique = new TableColumn(4, 50);
-        cUnique.setCellRenderer(getNumberCellRenderer(null));
+        cUnique.setCellRenderer(new CustomRenderer(null, SwingConstants.RIGHT, ",##0"));
         TableColumn cScrollbarMargin = new TableColumn(5, 0);
         cScrollbarMargin.setCellRenderer(new CustomRenderer(null, SwingConstants.LEFT, null, false));
         columns.addColumn(cFile);
@@ -777,6 +891,14 @@ public class ProjectFilesListController {
         list.tableTotal.setColumnModel(columns);
     }
 
+    void applyColors(JTable table) {
+        table.setForeground(COLOR_STANDARD_FG);
+        table.setBackground(COLOR_STANDARD_BG);
+        table.setSelectionForeground(COLOR_SELECTION_FG);
+        table.setSelectionBackground(COLOR_SELECTION_BG);
+        table.setGridColor(COLOR_STANDARD_BG);
+    }
+
     /**
      * Imports the file/files/folder into project's source files.
      * 
@@ -784,7 +906,7 @@ public class ProjectFilesListController {
      * @author Maxym Mykhalchuk
      */
     private void doImportSourceFiles() {
-        m_parent.doPromptImportSourceFiles();
+        m_parent.doImportSourceFiles();
     }
 
     private void doWikiImport() {
@@ -815,28 +937,62 @@ public class ProjectFilesListController {
         list.setCursor(oldCursor);
     }
 
-    private TableCellRenderer getNumberCellRenderer(List<IProject.FileInfo> files) {
-        return new CustomRenderer(files, SwingConstants.RIGHT, DataTableStyling.NUMBER_FORMAT, true);
-    }
-    
-    private TableCellRenderer getTextCellRenderer(List<IProject.FileInfo> files) {
-        return new CustomRenderer(files, SwingConstants.LEFT, DataTableStyling.NUMBER_FORMAT, true);
-    }
-    
     /**
      * Render for table cells.
      */
-    private class CustomRenderer extends DataTableStyling.AlternatingHighlightRenderer {
+    private class CustomRenderer extends DefaultTableCellRenderer {
+        protected DecimalFormat pattern;
         private final List<IProject.FileInfo> files;
+        private final boolean doHighlight;
+
+        public CustomRenderer(List<IProject.FileInfo> files, final int alignment, final String decimalPattern) {
+            this(files, alignment, decimalPattern, true);
+        }
         
-        public CustomRenderer(List<IProject.FileInfo> files, int alignment, NumberFormat numberFormat,
+        public CustomRenderer(List<IProject.FileInfo> files, final int alignment, final String decimalPattern,
                 boolean doHighlight) {
-            super(alignment, numberFormat, doHighlight, DataTableStyling.FONT_NO_CHANGE);
             this.files = files;
+            setHorizontalAlignment(alignment);
+            if (decimalPattern != null) {
+                pattern = new DecimalFormat(decimalPattern);
+            }
+            this.doHighlight = doHighlight;
         }
 
         @Override
-        protected boolean isSpecialHighlightRow(int row) {
+        protected void setValue(Object value) {
+            if (pattern != null && value instanceof Number) {
+                super.setValue(pattern.format((Number) value));
+            } else {
+                super.setValue(value);
+            }
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                boolean hasFocus, int row, int column) {
+            Component result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+                    column);
+            if (isSelected) {
+                result.setForeground(table.getSelectionForeground());
+                result.setBackground(table.getSelectionBackground());
+            } else if (isCurrentFile(row)) {
+                result.setForeground(COLOR_CURRENT_FG);
+                result.setBackground(COLOR_CURRENT_BG);
+            } else if (row % 2 == 1 && doHighlight) {
+                result.setForeground(table.getForeground());
+                result.setBackground(COLOR_ALTERNATING_HILITE);
+            } else {
+                result.setForeground(table.getForeground());
+                result.setBackground(table.getBackground());
+            }
+            if (hasFocus && result instanceof JComponent) {
+                ((JComponent) result).setBorder(TABLE_FOCUS_BORDER);
+            }
+            return result;
+        }
+        
+        private boolean isCurrentFile(int row) {
             if (files == null) {
                 return false;
             }
@@ -852,9 +1008,12 @@ public class ProjectFilesListController {
     }
 
     private void setFont(Font font) {
-        DataTableStyling.applyFont(list.tableFiles, font);
-        DataTableStyling.applyFont(list.tableTotal, font.deriveFont(Font.BOLD));
+        list.tableFiles.setFont(font);
+        list.tableTotal.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
+        list.tableFiles.setRowHeight(font.getSize() + LINE_SPACING);
+        list.tableTotal.setRowHeight(font.getSize() + LINE_SPACING);
         list.statLabel.setFont(font);
+        resetColWidthData();
     }
 
     class Sorter extends RowSorter<IProject.FileInfo> {
@@ -1016,14 +1175,12 @@ public class ProjectFilesListController {
                         c = fe1.compareToIgnoreCase(fe2);
                         break;
                     case 3:
-                        int m1 = f1.entries.size();
-                        int m2 = f2.entries.size();
-                        c = m1 > m2 ? 1 : m1 < m2 ? -1 : 0;
+                        c = new Integer(f1.entries.size()).compareTo(f2.entries.size());
                         break;
                     case 4:
                         int n1 = stat.uniqueCountsByFile.get(f1.filePath);
                         int n2 = stat.uniqueCountsByFile.get(f2.filePath);
-                        c = n1 > n2 ? 1 : n1 < n2 ? -1 : 0;
+                        c = new Integer(n1).compareTo(n2);
                         break;
                     }
                     if (sortKey.getSortOrder() == SortOrder.DESCENDING) {

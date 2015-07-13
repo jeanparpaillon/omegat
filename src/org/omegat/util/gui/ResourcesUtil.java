@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2008 Alex Buloichik
-               2015 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -26,16 +25,14 @@
 
 package org.omegat.util.gui;
 
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.io.FileNotFoundException;
 import java.net.URL;
+
+import javax.swing.ImageIcon;
 
 /**
  * Utils for load resources from classpath.
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
- * @author Aaron Madlon-Kay
  */
 public class ResourcesUtil {
     /**
@@ -43,13 +40,9 @@ public class ResourcesUtil {
      * 
      * @param resourceName
      *            resource name
-     * @throws FileNotFoundException 
      */
-    public static Image getImage(final String resourceName) throws FileNotFoundException {
+    public static ImageIcon getIcon(final String resourceName) {
         URL resourceURL = ResourcesUtil.class.getResource(resourceName);
-        if (resourceURL == null) {
-            throw new FileNotFoundException(resourceName);
-        }
-        return Toolkit.getDefaultToolkit().getImage(resourceURL);
+        return new ImageIcon(resourceURL);
     }
 }

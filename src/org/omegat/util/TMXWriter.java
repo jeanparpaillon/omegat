@@ -116,7 +116,7 @@ public class TMXWriter {
             target = forceValidTMX ? StaticUtils.stripXmlTags(transEntry.translation) : transEntry.translation;
             source = StaticUtils.makeValidXML(source);
             target = StaticUtils.makeValidXML(target);
-            if (transEntry.note != null) {
+            if (note != null) {
                 note = forceValidTMX ? StaticUtils.stripXmlTags(transEntry.note) : transEntry.note;
                 note = StaticUtils.makeValidXML(note);
             }

@@ -86,7 +86,7 @@ class SegmentHistory {
                 }
             }
         }
-        history.add(segmentNumber);
+        history.add(new Integer(segmentNumber));
         pointer++;
     }
 
