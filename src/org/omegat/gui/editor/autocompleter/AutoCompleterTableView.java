@@ -4,7 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2013 Zoltan Bartko, Aaron Madlon-Kay
-               2014-2015 Aaron Madlon-Kay
+               2014 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -32,6 +32,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.JTable;
 
@@ -50,8 +51,8 @@ public abstract class AutoCompleterTableView extends AbstractAutoCompleterView {
      */
     private static JTable table;
     
-    public AutoCompleterTableView(String name) {
-        super(name);
+    public AutoCompleterTableView(String name, AutoCompleter completer) {
+        super(name,completer);
         getTable().changeSelection(0, 0, false, false);
     }
     
@@ -69,24 +70,22 @@ public abstract class AutoCompleterTableView extends AbstractAutoCompleterView {
             table.setCellSelectionEnabled(true);
             table.setFocusable(false);
             table.setTableHeader(null);
-            table.addMouseListener(mouseAdapter);
+            table.addMouseListener(new MouseAdapter() {
+            	@Override
+            	public void mouseClicked(MouseEvent e) {
+            		if (e.getClickCount() == 2) {
+            			Point p = e.getPoint();
+            			int r = table.rowAtPoint(p);
+            			int c = table.columnAtPoint(p);
+            			if (table.getSelectedRow() == r && table.getSelectedColumn() == c) {
+            				completer.doSelection();
+            			}
+            		}
+            	}
+			});
         }
         return table;
     }
-    
-    private final MouseAdapter mouseAdapter = new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 2) {
-                Point p = e.getPoint();
-                int r = table.rowAtPoint(p);
-                int c = table.columnAtPoint(p);
-                if (table.getSelectedRow() == r && table.getSelectedColumn() == c) {
-                    completer.doSelection();
-                }
-            }
-        }
-    };
     
     @Override
     public Component getViewContent() {
@@ -102,59 +101,79 @@ public abstract class AutoCompleterTableView extends AbstractAutoCompleterView {
     }
     
     @Override
-    public boolean processKeys(KeyEvent e) {
+    public boolean processKeys(KeyEvent e, boolean visible) {
         
         if (StaticUtils.isKey(e, KeyEvent.VK_UP, 0)) {
             // process key UP
-            selectPreviousPossibleValueUp();
+            if (visible) {
+                selectPreviousPossibleValueUp();
+            }
             return true;
         }
 
         if (StaticUtils.isKey(e, KeyEvent.VK_LEFT, 0)) {
             // process key LEFT
-            selectPreviousPossibleValueLeft();
+            if (visible) {
+                selectPreviousPossibleValueLeft();
+            }
             return true;
         }
         
         if (StaticUtils.isKey(e, KeyEvent.VK_DOWN, 0)) {
             // process key DOWN
-            selectNextPossibleValueDown();
+            if (visible) {
+                selectNextPossibleValueDown();
+            }
             return true;
         }
 
         if (StaticUtils.isKey(e, KeyEvent.VK_RIGHT, 0)) {
             // process key RIGHT
-            selectNextPossibleValueRight();
+            if (visible) {
+                selectNextPossibleValueRight();
+            }
             return true;
         }
         
         if (StaticUtils.isKey(e, KeyEvent.VK_PAGE_UP, 0)) {
-            selectPreviousPossibleValueByPage();
+            if (visible) {
+                selectPreviousPossibleValueByPage();
+            }
             return true;
         }
 
         if (StaticUtils.isKey(e, KeyEvent.VK_PAGE_DOWN, 0)) {
-            selectNextPossibleValueByPage();
+            if (visible) {
+                selectNextPossibleValueByPage();
+            }
             return true;
         }
         
         if (StaticUtils.isKey(e, KeyEvent.VK_HOME, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
-            selectFirstPossibleValue();
+            if (visible) {
+                selectFirstPossibleValue();
+            }
             return true;
         }
 
         if (StaticUtils.isKey(e, KeyEvent.VK_END, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())) {
-            selectLastPossibleValue();
+            if (visible) {
+                selectLastPossibleValue();
+            }
             return true;
         }
         
         if (StaticUtils.isKey(e, KeyEvent.VK_HOME, 0)) {
-            selectFirstPossibleValueInLine();
+            if (visible) {
+                selectFirstPossibleValueInLine();
+            }
             return true;
         }
 
         if (StaticUtils.isKey(e, KeyEvent.VK_END, 0)) {
-            selectLastPossibleValueInLine();
+            if (visible) {
+                selectLastPossibleValueInLine();
+            }
             return true;
         }
         
@@ -223,7 +242,7 @@ public abstract class AutoCompleterTableView extends AbstractAutoCompleterView {
         int size = getTable().getModel().getRowCount();
         setSelection(new Point(
                 p.x,
-                Math.min(p.y + AutoCompleter.PAGE_ROW_COUNT, size - 1)));
+                Math.min(p.y + AutoCompleter.pageRowCount, size - 1)));
     }
 
     /** 
@@ -259,7 +278,7 @@ public abstract class AutoCompleterTableView extends AbstractAutoCompleterView {
         
         setSelection(new Point(
                 p.x,
-                Math.max(p.y - AutoCompleter.PAGE_ROW_COUNT, 0)));
+                Math.max(p.y - AutoCompleter.pageRowCount, 0)));
     }
 
     @Override
@@ -269,12 +288,8 @@ public abstract class AutoCompleterTableView extends AbstractAutoCompleterView {
     
     @Override
     public int getPreferredHeight() {
-        return getModifiedRowCount() * getTable().getRowHeight();
-    }
-    
-    @Override
-    public int getPreferredWidth() {
-        return getTable().getPreferredSize().width;
+        int height = getModifiedRowCount() * getTable().getRowHeight();
+        return Math.max(height, 50);
     }
     
     @Override
@@ -285,5 +300,10 @@ public abstract class AutoCompleterTableView extends AbstractAutoCompleterView {
             return new AutoCompleterItem(selection.toString(), null, 0);
         }
         return new AutoCompleterItem((String) selection, null, 0);
+    }
+    
+    @Override
+    public void setData(List<AutoCompleterItem> entryList) {
+        
     }
 }

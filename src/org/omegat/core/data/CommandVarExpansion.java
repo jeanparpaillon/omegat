@@ -117,6 +117,6 @@ public class CommandVarExpansion extends VarExpansion<ProjectProperties> {
             vars.add(fixEnvarName(e.getKey()));
         }
         
-        COMMAND_VARIABLES = vars.toArray(new String[vars.size()]);
+        COMMAND_VARIABLES = vars.toArray(new String[0]);
     }
 }

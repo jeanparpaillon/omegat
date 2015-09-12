@@ -4,8 +4,7 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2009 Alex Buloichik
-               2012 Jean-Christophe Helary
-               2015 Aaron Madlon-Kay
+               2012 Jean-Christophe Helary 
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -63,7 +62,6 @@ import org.omegat.gui.common.EntryInfoThreadPane;
 import org.omegat.gui.main.DockableScrollPane;
 import org.omegat.tokenizer.ITokenizer;
 import org.omegat.util.OStrings;
-import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.Token;
 import org.omegat.util.gui.AlwaysVisibleCaret;
@@ -75,10 +73,9 @@ import org.omegat.util.gui.UIThreadsUtil;
  * 
  * @author Alex Buloichik <alex73mail@gmail.com>
  * @author Jean-Christophe Helary 
- * @author Aaron Madlon-Kay
  */
 @SuppressWarnings("serial")
-public class DictionariesTextArea extends EntryInfoThreadPane<List<DictionaryEntry>> implements IDictionaries {
+public class DictionariesTextArea extends EntryInfoThreadPane<List<DictionaryEntry>> {
 
 	private static final String EXPLANATION = OStrings.getString("GUI_DICTIONARYWINDOW_explanation");
 
@@ -283,21 +280,13 @@ public class DictionariesTextArea extends EntryInfoThreadPane<List<DictionaryEnt
             if (tok == null) {
                 return null;
             }
-            
+            Token[] tokenList = tok.tokenizeWords(src, ITokenizer.StemmingMode.NONE);
             Set<String> words = new TreeSet<String>();
-            if (Preferences.isPreferenceDefault(Preferences.DICTIONARY_FUZZY_MATCHING, true)) {
-                String[] tokenList = tok.tokenizeWordsForDictionary(src);
-                for (String tok : tokenList) {
-                    checkEntryChanged();
-                    words.add(tok);
-                }
-            } else {
-                Token[] tokenList = tok.tokenizeWords(src, ITokenizer.StemmingMode.NONE);
-                for (Token tok : tokenList) {
-                    checkEntryChanged();
-                    String w = tok.getTextFromString(src);
-                    words.add(w);
-                }
+            for (Token tok : tokenList) {
+                checkEntryChanged();
+                String w = src.substring(tok.getOffset(), tok.getOffset() + tok.getLength());
+
+                words.add(w);
             }
             List<DictionaryEntry> result = manager.findWords(words);
 

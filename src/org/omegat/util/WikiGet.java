@@ -58,7 +58,7 @@ public class WikiGet {
     public static String joinString(String separator, String[] items) {
         if (items.length < 1)
             return "";
-        StringBuilder joined = new StringBuilder();
+        StringBuffer joined = new StringBuffer();
         for (int i = 0; i < items.length; i++) {
             joined.append(items[i]);
             if (i != items.length - 1)
@@ -175,7 +175,7 @@ public class WikiGet {
      * @throws IOException 
      */
     public static String getURL(String target) throws IOException {
-        StringBuilder page = new StringBuilder();
+        StringBuffer page = new StringBuffer();
         URL url = new URL(target);
         InputStream in = url.openStream();
         byte[] b = new byte[4096];

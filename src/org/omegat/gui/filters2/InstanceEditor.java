@@ -35,7 +35,6 @@ import javax.swing.border.TitledBorder;
 import org.omegat.filters2.AbstractFilter;
 import org.omegat.filters2.master.FilterMaster;
 import org.omegat.util.OStrings;
-import org.omegat.util.StringUtil;
 import org.omegat.util.gui.DockingUI;
 import org.omegat.util.gui.StaticUIUtils;
 import org.openide.awt.Mnemonics;
@@ -64,8 +63,10 @@ public class InstanceEditor extends JDialog {
         sourceFilenameMaskField.setText("*.*");
         targetFilenamePatternField.setText("${filename}");
 
-        hintTextArea.setText(hint);
-        hintTextArea.setVisible(!StringUtil.isEmpty(hint));
+        if (hint != null && hint.length() != 0)
+            hintTextArea.setText(hint);
+        else
+            hintTextArea.setVisible(false);
 
         StaticUIUtils.setEscapeClosable(this);
 
@@ -193,11 +194,11 @@ public class InstanceEditor extends JDialog {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(buttonPanel, gridBagConstraints);
 
+        hintTextArea.setBackground(javax.swing.UIManager.getDefaults().getColor("Label.background"));
         hintTextArea.setEditable(false);
         hintTextArea.setFont(new JLabel().getFont());
         hintTextArea.setLineWrap(true);
         hintTextArea.setWrapStyleWord(true);
-        hintTextArea.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

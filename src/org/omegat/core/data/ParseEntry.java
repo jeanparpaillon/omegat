@@ -143,7 +143,6 @@ public abstract class ParseEntry implements IParseCallback {
 
         boolean removeSpaces = Core.getFilterMaster().getConfig().isRemoveSpacesNonseg();
         source = stripSomeChars(source, tmp, m_config.isRemoveTags(), removeSpaces);
-        source = StringUtil.normalizeUnicode(source);
         if (m_config.isRemoveTags() && protectedParts != null) {
             for (int i = 0; i < protectedParts.size(); i++) {
                 ProtectedPart p = protectedParts.get(i);
@@ -159,11 +158,10 @@ public abstract class ParseEntry implements IParseCallback {
         }
         if (translation != null) {
             translation = stripSomeChars(translation, tmp, m_config.isRemoveTags(), removeSpaces);
-            translation = StringUtil.normalizeUnicode(translation);
         }
 
         if (m_config.isSentenceSegmentingEnabled()) {
-            List<StringBuilder> spaces = new ArrayList<StringBuilder>();
+            List<StringBuffer> spaces = new ArrayList<StringBuffer>();
             List<Rule> brules = new ArrayList<Rule>();
             Language sourceLang = m_config.getSourceLanguage();
             List<String> segments = Segmenter.segment(sourceLang, source, spaces, brules);
@@ -214,7 +212,7 @@ public abstract class ParseEntry implements IParseCallback {
      */
     private void internalAddSegment(String id, short segmentIndex, String segmentSource, String segmentTranslation,
             boolean segmentTranslationFuzzy, String comment, String path, List<ProtectedPart> protectedParts) {
-        if (segmentSource.trim().isEmpty()) {
+        if (segmentSource.length() == 0 || segmentSource.trim().length() == 0) {
             // skip empty segments
             return;
         }
@@ -284,27 +282,23 @@ public abstract class ParseEntry implements IParseCallback {
         int len = r.length();
         int b = 0;
         if (removeSpaces) {
-            for (int cp; b < len; b += Character.charCount(cp)) {
-                cp = r.codePointAt(b);
-                if (!Character.isWhitespace(cp) && cp != '\u00A0') {
-                    break;
-                }
+            while (b < len && (Character.isWhitespace(r.charAt(b)) || r.charAt(b) == '\u00A0')) {
+                b++;
             }
         }
         per.spacesAtBegin = b;
 
-        int e = len;
+        int pos = len - 1;
+        int e = 0;
         if (removeSpaces) {
-            for (int cp; e > b; e -= Character.charCount(cp)) {
-                cp = r.codePointBefore(e);
-                if (!Character.isWhitespace(cp) && cp != '\u00A0') {
-                    break;
-                }
+            while (pos >= b && (Character.isWhitespace(r.charAt(pos)) || r.charAt(pos) == '\u00A0')) {
+                pos--;
+                e++;
             }
         }
-        per.spacesAtEnd = len - e;
+        per.spacesAtEnd = e;
 
-        r = r.substring(b, e);
+        r = r.substring(b, pos + 1);
 
         /*
          * Replacing all occurrences of single CR (\r) or CRLF (\r\n) by LF

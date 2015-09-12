@@ -110,15 +110,14 @@ public class TMXWriter {
         String source = null;
         String target = null;
         String note = null;
-        TMXDateParser dateParser = new TMXDateParser();
         for (Map.Entry<String, PrepareTMXEntry> en : data.entrySet()) {
             PrepareTMXEntry transEntry = en.getValue();
-            source = forceValidTMX ? TagUtil.stripXmlTags(en.getKey()) : en.getKey();
-            target = forceValidTMX ? TagUtil.stripXmlTags(transEntry.translation) : transEntry.translation;
+            source = forceValidTMX ? StaticUtils.stripXmlTags(en.getKey()) : en.getKey();
+            target = forceValidTMX ? StaticUtils.stripXmlTags(transEntry.translation) : transEntry.translation;
             source = StaticUtils.makeValidXML(source);
             target = StaticUtils.makeValidXML(target);
-            if (transEntry.note != null) {
-                note = forceValidTMX ? TagUtil.stripXmlTags(transEntry.note) : transEntry.note;
+            if (note != null) {
+                note = forceValidTMX ? StaticUtils.stripXmlTags(transEntry.note) : transEntry.note;
                 note = StaticUtils.makeValidXML(note);
             }
             // TO DO: This *possibly* converts occurrences in the actual text of
@@ -132,7 +131,7 @@ public class TMXWriter {
                     + transEntry.changer + "\""
                     : "");
             String changeDatePropertyString = (transEntry.changeDate != 0 ? " changedate=\""
-                    + dateParser.getTMXDate(transEntry.changeDate) + "\"" : "");
+                    + TMXDateParser.getTMXDate(transEntry.changeDate) + "\"" : "");
             out.println("    <tu>");
             out.println("      <tuv " + langAttr + "=\"" + sourceLocale + "\">");
             out.println("        <seg>" + source + "</seg>");
@@ -163,7 +162,7 @@ public class TMXWriter {
      */
     private static String makeLevelTwo(String segment) {
         // Create a storage buffer for the result
-        StringBuilder result = new StringBuilder(segment.length() * 2);
+        StringBuffer result = new StringBuffer(segment.length() * 2);
 
         // Find all single tags
         // Matcher match =

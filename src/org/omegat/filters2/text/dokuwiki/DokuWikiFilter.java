@@ -107,7 +107,7 @@ public class DokuWikiFilter extends AbstractFilter {
             String trimmed = line.trim();
 
             // skipping empty strings
-            if (trimmed.isEmpty()) {
+            if (trimmed.length() == 0) {
                 writeTranslate(outfile, text, lbpr);
                 outfile.write(line + lbpr.getLinebreak());
                 continue;
@@ -118,7 +118,7 @@ public class DokuWikiFilter extends AbstractFilter {
             if (headingLevel > 0) {
                 writeTranslate(outfile, text, lbpr);
                 String header = trimmed.substring(headingLevel, trimmed.length() - headingLevel).trim();
-                if (!header.isEmpty()) {
+                if (header.length() > 0) {
                     String trans = processEntry(header);
                     line = line.replace(header, trans);
                 }
@@ -148,9 +148,9 @@ public class DokuWikiFilter extends AbstractFilter {
                 writeTranslate(outfile, text, lbpr);
                 int start = 0;
                 int braceCount = 0;
-                for (int cp, i = 0; i < line.length(); i += Character.charCount(cp)) {
-                    cp = line.codePointAt(i);
-                    switch (cp) {
+                for (int i = 0; i < line.length(); i++) {
+                    char ch = line.charAt(i);
+                    switch (ch) {
                     case '|':
                     case '^':
                         if (braceCount == 0) {
@@ -160,8 +160,8 @@ public class DokuWikiFilter extends AbstractFilter {
                                 writeTranslate(outfile, value, null);
                                 outfile.write(' ');
                             }
-                            outfile.write(Character.toChars(cp));
-                            start = i + Character.charCount(cp);
+                            outfile.write(ch);
+                            start = i + 1;
                         }
                         break;
                     case '{':
@@ -195,21 +195,14 @@ public class DokuWikiFilter extends AbstractFilter {
      *            the lien to check
      * @return the level, 0 means no heading
      */
-    private static int getHeadingLevel(String line) {
+    private int getHeadingLevel(String line) {
         int level = 0;
-        int start = 0;
-        int end = line.length();
-        while (start < end) {
-            int scp = line.codePointAt(start);
-            int ecp = line.codePointBefore(end);
-            if (scp != '=' || ecp != '=') {
-                break;
-            }
-            start += Character.charCount(scp);
-            end -= Character.charCount(ecp);
+        int length = line.length() - 1;
+        while (level < length && line.charAt(level) == '=' && line.charAt(length) == '=') {
             level++;
+            length--;
         }
-        if (line.codePointCount(start, end) > 1) {
+        if (level < length) {
             return level;
         } else {
             return 0;
@@ -253,7 +246,7 @@ public class DokuWikiFilter extends AbstractFilter {
     private void writeTranslate(BufferedWriter outfile, String value, LinebreakPreservingReader lbpr)
             throws IOException {
         value = value.trim();
-        if (!value.isEmpty()) {
+        if (value.length() > 0) {
             while (true) {
                 // reduce all spaces to a single space
                 String newValue = value.replace("  ", " ");

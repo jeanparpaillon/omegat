@@ -12,7 +12,7 @@
                2012 Wildrich Fourie, Guido Leenders, Didier Briel
                2013 Zoltan Bartko, Didier Briel, Yu Tang
                2014 Aaron Madlon-Kay
-               2015 Yu Tang, Aaron Madlon-Kay, Didier Briel
+               2015 Yu Tang, Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -35,9 +35,6 @@
 package org.omegat.gui.main;
 
 import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Toolkit;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -48,6 +45,7 @@ import javax.swing.text.JTextComponent;
 import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
 import org.omegat.core.KnownException;
+import org.omegat.core.data.ProtectedPart;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
 import org.omegat.core.search.SearchMode;
@@ -70,7 +68,7 @@ import org.omegat.gui.dialogs.LastChangesDialog;
 import org.omegat.gui.dialogs.LogDialog;
 import org.omegat.gui.dialogs.SaveOptionsDialog;
 import org.omegat.gui.dialogs.SpellcheckerConfigurationDialog;
-import org.omegat.gui.dialogs.TagProcessingOptionsDialog;
+import org.omegat.gui.dialogs.TagValidationOptionsDialog;
 import org.omegat.gui.dialogs.TeamOptionsDialog;
 import org.omegat.gui.dialogs.UserPassDialog;
 import org.omegat.gui.dialogs.ViewOptionsDialog;
@@ -91,8 +89,6 @@ import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
-import org.omegat.util.TagUtil;
-import org.omegat.util.TagUtil.Tag;
 
 /**
  * Handler for main menu items.
@@ -145,7 +141,7 @@ public class MainWindowMenuHandler {
      * @author Maxym Mykhalchuk
      */
     public void projectImportMenuItemActionPerformed() {
-        mainWindow.doPromptImportSourceFiles();
+        mainWindow.doImportSourceFiles();
     }
 
     public void projectWikiImportMenuItemActionPerformed() {
@@ -226,119 +222,6 @@ public class MainWindowMenuHandler {
     private void flushExportedSegments() {
         FileUtil.writeScriptFile("", OConsts.SOURCE_EXPORT);
         FileUtil.writeScriptFile("", OConsts.TARGET_EXPORT);
-    }
-
-    public void projectAccessRootMenuItemActionPerformed() {
-        if (!Core.getProject().isProjectLoaded()) {
-            return;
-        }
-        String path = Core.getProject().getProjectProperties().getProjectRoot();
-        openFile(new File(path));
-    }
-
-    public void projectAccessDictionaryMenuItemActionPerformed() {
-        if (!Core.getProject().isProjectLoaded()) {
-            return;
-        }
-        String path = Core.getProject().getProjectProperties().getDictRoot();
-        openFile(new File(path));
-    }
-
-    public void projectAccessGlossaryMenuItemActionPerformed() {
-        if (!Core.getProject().isProjectLoaded()) {
-            return;
-        }
-        String path = Core.getProject().getProjectProperties().getGlossaryRoot();
-        openFile(new File(path));
-    }
-
-    public void projectAccessSourceMenuItemActionPerformed() {
-        if (!Core.getProject().isProjectLoaded()) {
-            return;
-        }
-        String path = Core.getProject().getProjectProperties().getSourceRoot();
-        openFile(new File(path));
-    }
-
-    public void projectAccessTargetMenuItemActionPerformed() {
-        if (!Core.getProject().isProjectLoaded()) {
-            return;
-        }
-        String path = Core.getProject().getProjectProperties().getTargetRoot();
-        openFile(new File(path));
-    }
-
-    public void projectAccessTMMenuItemActionPerformed() {
-        if (!Core.getProject().isProjectLoaded()) {
-            return;
-        }
-        String path = Core.getProject().getProjectProperties().getTMRoot();
-        openFile(new File(path));
-    }
-
-    public void projectAccessCurrentSourceDocumentMenuItemActionPerformed(int modifier) {
-        if (!Core.getProject().isProjectLoaded()) {
-            return;
-        }
-        String root = Core.getProject().getProjectProperties().getSourceRoot();
-        String path = Core.getEditor().getCurrentFile();
-        if (StringUtil.isEmpty(path)) {
-            return;
-        }
-        File toOpen = new File(root, path);
-        if ((modifier & Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) != 0) {
-            toOpen = toOpen.getParentFile();
-        }
-        openFile(toOpen);
-    }
-
-    public void projectAccessCurrentTargetDocumentMenuItemActionPerformed(int modifier) {
-        if (!Core.getProject().isProjectLoaded()) {
-            return;
-        }
-        String root = Core.getProject().getProjectProperties().getTargetRoot();
-        String path = Core.getEditor().getCurrentTargetFile();
-        if (StringUtil.isEmpty(path)) {
-            return;
-        }
-        File toOpen = new File(root, path);
-        if ((modifier & Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) != 0) {
-            toOpen = toOpen.getParentFile();
-        }
-        openFile(toOpen);
-    }
-
-    public void projectAccessWriteableGlossaryMenuItemActionPerformed(int modifier) {
-        if (!Core.getProject().isProjectLoaded()) {
-            return;
-        }
-        String path = Core.getProject().getProjectProperties().getWriteableGlossary();
-        if (StringUtil.isEmpty(path)) {
-            return;
-        }
-        File toOpen = new File(path);
-        if ((modifier & Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) != 0) {
-            toOpen = toOpen.getParentFile();
-        }
-        openFile(toOpen);
-    }
-
-    private void openFile(File path) {
-        try {
-            path = path.getCanonicalFile(); // Normalize file name in case it is displayed
-        } catch (Exception ex) {
-            // Ignore
-        }
-        if (!path.exists()) {
-            Core.getMainWindow().showStatusMessageRB("LFC_ERROR_FILE_DOESNT_EXIST", path);
-            return;
-        }
-        try {
-            Desktop.getDesktop().open(path);
-        } catch (Exception ex) {
-            Log.logErrorRB(ex, "RPF_ERROR");
-            Core.getMainWindow().displayErrorRB(ex, "RPF_ERROR");
-        }
     }
 
     /** Quits OmegaT */
@@ -685,11 +568,6 @@ public class MainWindowMenuHandler {
         Core.getEditor().getSettings()
                 .setMarkAutoPopulated(mainWindow.menu.viewMarkAutoPopulatedCheckBoxMenuItem.isSelected());
     }
-    
-    public void viewMarkFontFallbackCheckBoxMenuItemActionPerformed() {
-        Core.getEditor().getSettings()
-                .setDoFontFallback(mainWindow.menu.viewMarkFontFallbackCheckBoxMenuItem.isSelected());
-    }
 
     public void viewDisplayModificationInfoNoneRadioButtonMenuItemActionPerformed() {
         Core.getEditor().getSettings()
@@ -724,19 +602,33 @@ public class MainWindowMenuHandler {
      * Identify all the placeholders in the source text and automatically inserts them into the target text.
      */
     public void editTagPainterMenuItemActionPerformed() {
+        SourceTextEntry ste = Core.getEditor().getCurrentEntry();
+
         // insert tags
-        for (Tag tag : TagUtil.getAllTagsMissingFromTarget()) {
-            Core.getEditor().insertText(tag.tag);
+        String tr = Core.getEditor().getCurrentTranslation();
+        for (ProtectedPart pp : ste.getProtectedParts()) {
+            if (!tr.contains(pp.getTextInSourceSegment())) {
+                Core.getEditor().insertText(pp.getTextInSourceSegment());
+            }
         }
     }
 
     public void editTagNextMissedMenuItemActionPerformed() {
-        // insert next tag
-        List<Tag> tags = TagUtil.getAllTagsMissingFromTarget();
-        if (tags.isEmpty()) {
+        String trans = Core.getEditor().getCurrentTranslation();
+        if (trans == null) {
             return;
         }
-        Core.getEditor().insertText(tags.get(0).tag);
+
+        SourceTextEntry ste = Core.getEditor().getCurrentEntry();
+
+        // insert next tag
+        String tr = Core.getEditor().getCurrentTranslation();
+        for (ProtectedPart pp : ste.getProtectedParts()) {
+            if (!tr.contains(pp.getTextInSourceSegment())) {
+                Core.getEditor().insertText(pp.getTextInSourceSegment());
+                break;
+            }
+        }
     }
 
     public void toolsShowStatisticsStandardMenuItemActionPerformed() {
@@ -771,11 +663,6 @@ public class MainWindowMenuHandler {
                 mainWindow.menu.optionsTransTipsExactMatchMenuItem.isSelected());
     }
 
-    public void optionsAutoCompleteShowAutomaticallyItemActionPerformed() {
-        Preferences.setPreference(Preferences.AC_SHOW_SUGGESTIONS_AUTOMATICALLY,
-                mainWindow.menu.optionsAutoCompleteShowAutomaticallyItem.isSelected());
-    }
-    
     public void optionsAutoCompleteGlossaryMenuItemActionPerformed() {
         new GlossaryAutoCompleterOptionsDialog(mainWindow).setVisible(true);
     }
@@ -794,29 +681,6 @@ public class MainWindowMenuHandler {
         Preferences.save();
 
         Core.getGlossaryManager().forceReloadTBX();
-    }
-    
-    public void optionsGlossaryExactMatchCheckBoxMenuItemActionPerformed() {
-        Preferences.setPreference(Preferences.GLOSSARY_NOT_EXACT_MATCH,
-                mainWindow.menu.optionsGlossaryExactMatchCheckBoxMenuItem.isSelected());
-        Preferences.save();
-        Core.getGlossaryManager().forceUpdateGlossary();
-
-    }
-    
-    public void optionsGlossaryStemmingCheckBoxMenuItemActionPerformed() {
-        Preferences.setPreference(Preferences.GLOSSARY_STEMMING,
-                mainWindow.menu.optionsGlossaryStemmingCheckBoxMenuItem.isSelected());
-        Preferences.save();
-        Core.getGlossaryManager().forceUpdateGlossary();
-
-    }
-
-    public void optionsDictionaryFuzzyMatchingCheckBoxMenuItemActionPerformed() {
-        Preferences.setPreference(Preferences.DICTIONARY_FUZZY_MATCHING,
-                mainWindow.menu.optionsDictionaryFuzzyMatchingCheckBoxMenuItem.isSelected());
-        Preferences.save();
-        Core.getDictionaries().refresh();
     }
 
     /**
@@ -924,21 +788,15 @@ public class MainWindowMenuHandler {
      * Displays the tag validation setup dialog to allow customizing the diverse tag validation options.
      */
     public void optionsTagValidationMenuItemActionPerformed() {
-        TagProcessingOptionsDialog tagProcessingOptionsDialog = new TagProcessingOptionsDialog(mainWindow);
-        tagProcessingOptionsDialog.setVisible(true);
+        TagValidationOptionsDialog tagValidationOptionsDialog = new TagValidationOptionsDialog(mainWindow);
+        tagValidationOptionsDialog.setVisible(true);
         
-        if (tagProcessingOptionsDialog.getReturnStatus() == TagProcessingOptionsDialog.RET_OK
+        if (tagValidationOptionsDialog.getReturnStatus() == TagValidationOptionsDialog.RET_OK
                 && Core.getProject().isProjectLoaded()) {
             // Redisplay according to new view settings
             Core.getEditor().getSettings().updateTagValidationPreferences();
-
-            // asking to reload a project
-            int res = JOptionPane.showConfirmDialog(mainWindow, OStrings.getString("MW_REOPEN_QUESTION"),
-                    OStrings.getString("MW_REOPEN_TITLE"), JOptionPane.YES_NO_OPTION);
-            if (res == JOptionPane.YES_OPTION) {
-                ProjectUICommands.projectReload();
-            }
         }
+        
     }
 
     /**
@@ -999,10 +857,6 @@ public class MainWindowMenuHandler {
         MainWindowUI.resetDesktopLayout(mainWindow);
     }
 
-    public void optionsAccessConfigDirMenuItemActionPerformed() {
-        openFile(new File(StaticUtils.getConfigDir()));
-    }
-    
     /**
      * Show help.
      */

@@ -31,15 +31,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.omegat.util.StringUtil;
-
 /**
  * A class representing the language rules and their mapping to the segmentation
  * rules for each particular language.
  * 
  * @author Maxym Mykhalchuk
  */
-public class MapRule implements Serializable, Cloneable {
+public class MapRule implements Serializable {
     /** creates a new empty MapRule */
     public MapRule() {
     }
@@ -57,7 +55,9 @@ public class MapRule implements Serializable, Cloneable {
     /** Returns Language Name (to display it in a dialog). */
     public String getLanguage() {
         String res = LanguageCodes.getLanguageName(languageCode);
-        return StringUtil.isEmpty(res) ? languageCode : res;
+        if (res == null || res.length() == 0)
+            res = languageCode;
+        return res;
     }
 
     /** Sets Language Name */
@@ -123,13 +123,14 @@ public class MapRule implements Serializable, Cloneable {
 
     /** Indicates whether some other MapRule is "equal to" this one. */
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof MapRule)) {
+        if (obj == null)
             return false;
+        else {
+            MapRule that = (MapRule) obj;
+            return this.getPattern().equals(that.getPattern())
+                    && this.getLanguage().equals(that.getLanguage())
+                    && this.getRules().equals(that.getRules());
         }
-        MapRule that = (MapRule) obj;
-        return this.getPattern().equals(that.getPattern())
-                && this.getLanguage().equals(that.getLanguage())
-                && this.getRules().equals(that.getRules());
     }
 
     /** Returns a hash code value for the object. */

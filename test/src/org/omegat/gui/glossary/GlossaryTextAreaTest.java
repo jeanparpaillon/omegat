@@ -25,7 +25,6 @@
 
 package org.omegat.gui.glossary;
 
-import java.awt.HeadlessException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +38,6 @@ import org.omegat.gui.editor.EditorSettings;
 import org.omegat.gui.editor.IEditor;
 import org.omegat.gui.editor.IEditorFilter;
 import org.omegat.gui.editor.IPopupMenuConstructor;
-import org.omegat.gui.editor.autocompleter.IAutoCompleter;
 import org.omegat.gui.editor.mark.Mark;
 import org.omegat.util.Preferences;
 
@@ -52,50 +50,41 @@ public class GlossaryTextAreaTest extends TestCore {
      * Testing setGlossaryEntries of org.omegat.gui.main.GlossaryTextArea.
      */
     public void testSetGlossaryEntries() throws Exception {
-        try {
-            Preferences.setPreference(org.omegat.util.Preferences.TRANSTIPS, false);
-    
-            final List<GlossaryEntry> entries = new ArrayList<GlossaryEntry>();
-            entries.add(new GlossaryEntry("source1", "translation1", "", false));
-            entries.add(new GlossaryEntry("source2", "translation2", "comment2", false));
-            final GlossaryTextArea gta = new GlossaryTextArea(null);
-            SwingUtilities.invokeAndWait(new Runnable() {
-                public void run() {
-                    gta.setFoundResult(null, entries);
-                }
-            });
-            // Make sure representations of both entries are rendered
-            String GTATEXT = entries.get(0).toStyledString().text.toString() + "\n\n" +
-                             entries.get(1).toStyledString().text.toString() + "\n\n";
-            assertEquals(GTATEXT, gta.getText());
-        } catch (HeadlessException ignore) {
-            // Test will fail when run in a headless environment, but this test
-            // is not meaningful then anyway.
-        }
+        Preferences.setPreference(org.omegat.util.Preferences.TRANSTIPS, false);
+
+        final List<GlossaryEntry> entries = new ArrayList<GlossaryEntry>();
+        entries.add(new GlossaryEntry("source1", "translation1", "", false));
+        entries.add(new GlossaryEntry("source2", "translation2", "comment2", false));
+        final GlossaryTextArea gta = new GlossaryTextArea();
+        SwingUtilities.invokeAndWait(new Runnable() {
+            public void run() {
+                gta.setFoundResult(null, entries);
+            }
+        });
+        // Make sure representations of both entries are rendered
+        String GTATEXT = entries.get(0).toStyledString().text.toString() + "\n\n" +
+                         entries.get(1).toStyledString().text.toString() + "\n\n";
+        assertEquals(GTATEXT, gta.getText());
     }
 
     /**
      * Testing clear in org.omegat.gui.main.GlossaryTextArea.
      */
     public void testClear() throws Exception {
-        try {
-            Preferences.setPreference(org.omegat.util.Preferences.TRANSTIPS, false);
-    
-            final List<GlossaryEntry> entries = new ArrayList<GlossaryEntry>();
-            entries.add(new GlossaryEntry("source1", "translation1", "", false));
-            entries.add(new GlossaryEntry("source2", "translation2", "comment2", false));
-            final GlossaryTextArea gta = new GlossaryTextArea(null);
-            SwingUtilities.invokeAndWait(new Runnable() {
-                public void run() {
-                    gta.setFoundResult(null, entries);
-                }
-            });
-            gta.clear();
-            assertTrue(gta.getText().isEmpty());
-        } catch (HeadlessException ignore) {
-            // Test will fail when run in a headless environment, but this test
-            // is not meaningful then anyway.
-        }
+        Preferences.setPreference(org.omegat.util.Preferences.TRANSTIPS, false);
+
+        final List<GlossaryEntry> entries = new ArrayList<GlossaryEntry>();
+        entries.add(new GlossaryEntry("source1", "translation1", "", false));
+        entries.add(new GlossaryEntry("source2", "translation2", "comment2", false));
+        final GlossaryTextArea gta = new GlossaryTextArea();
+        SwingUtilities.invokeAndWait(new Runnable() {
+            public void run() {
+                gta.setFoundResult(null, entries);
+            }
+        });
+        gta.clear();
+        if (gta.getText().length() > 0)
+            fail("Glossary pane isn't empty.");
     }
 
     @Override
@@ -239,16 +228,6 @@ public class GlossaryTextAreaTest extends TestCore {
             
             @Override
             public void waitForCommit(int timeoutSeconds) {   
-            }
-
-            @Override
-            public IAutoCompleter getAutoCompleter() {
-                return null;
-            }
-
-            @Override
-            public String getCurrentTargetFile() {
-                return null;
             }
         });
     }

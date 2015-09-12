@@ -56,52 +56,72 @@ public class CoreEvents {
 
     /** Register listener. */
     public static void registerProjectChangeListener(final IProjectEventListener listener) {
-        projectEventListeners.add(listener);
+        synchronized (projectEventListeners) {
+            projectEventListeners.add(listener);
+        }
     }
 
     /** Unregister listener. */
     public static void unregisterProjectChangeListener(final IProjectEventListener listener) {
-        projectEventListeners.remove(listener);
+        synchronized (projectEventListeners) {
+            projectEventListeners.remove(listener);
+        }
     }
 
     /** Register listener. */
     public static void registerApplicationEventListener(final IApplicationEventListener listener) {
-        applicationEventListeners.add(listener);
+        synchronized (applicationEventListeners) {
+            applicationEventListeners.add(listener);
+        }
     }
 
     /** Unregister listener. */
     public static void unregisterApplicationEventListener(final IApplicationEventListener listener) {
-        applicationEventListeners.remove(listener);
+        synchronized (applicationEventListeners) {
+            applicationEventListeners.remove(listener);
+        }
     }
 
     /** Register listener. */
     public static void registerEntryEventListener(final IEntryEventListener listener) {
-        entryEventListeners.add(listener);
+        synchronized (entryEventListeners) {
+            entryEventListeners.add(listener);
+        }
     }
 
     /** Unregister listener. */
     public static void unregisterEntryEventListener(final IEntryEventListener listener) {
-        entryEventListeners.remove(listener);
+        synchronized (entryEventListeners) {
+            entryEventListeners.remove(listener);
+        }
     }
 
     /** Register listener. */
     public static void registerFontChangedEventListener(final IFontChangedEventListener listener) {
-        fontChangedEventListeners.add(listener);
+        synchronized (fontChangedEventListeners) {
+            fontChangedEventListeners.add(listener);
+        }
     }
 
     /** Unregister listener. */
     public static void unregisterFontChangedEventListener(final IFontChangedEventListener listener) {
-        fontChangedEventListeners.remove(listener);
+        synchronized (fontChangedEventListeners) {
+            fontChangedEventListeners.remove(listener);
+        }
     }
 
     /** Register listener. */
     public static void registerEditorEventListener(final IEditorEventListener listener) {
-        editorEventListeners.add(listener);
+        synchronized (editorEventListeners) {
+            editorEventListeners.add(listener);
+        }
     }
 
     /** Unregister listener. */
     public static void unregisterEditorEventListener(final IEditorEventListener listener) {
-        editorEventListeners.remove(listener);
+        synchronized (editorEventListeners) {
+            editorEventListeners.remove(listener);
+        }
     }
 
     /** Fire event. */
@@ -123,8 +143,10 @@ public class CoreEvents {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 Log.logInfoRB("LOG_INFO_EVENT_APPLICATION_STARTUP");
-                for (IApplicationEventListener listener : applicationEventListeners) {
-                    listener.onApplicationStartup();
+                synchronized (applicationEventListeners) {
+                    for (IApplicationEventListener listener : applicationEventListeners) {
+                        listener.onApplicationStartup();
+                    }
                 }
             }
         });
@@ -134,8 +156,10 @@ public class CoreEvents {
     public static void fireApplicationShutdown() {
         // We shouldn't invoke it later, because need to shutdown immediately.
         Log.logInfoRB("LOG_INFO_EVENT_APPLICATION_SHUTDOWN");
-        for (IApplicationEventListener listener : applicationEventListeners) {
-            listener.onApplicationShutdown();
+        synchronized (applicationEventListeners) {
+            for (IApplicationEventListener listener : applicationEventListeners) {
+                listener.onApplicationShutdown();
+            }
         }
     }
 
@@ -144,8 +168,10 @@ public class CoreEvents {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 Log.logInfoRB("LOG_INFO_EVENT_ENTRY_NEWFILE", activeFileName);
-                for (IEntryEventListener listener : entryEventListeners) {
-                    listener.onNewFile(activeFileName);
+                synchronized (entryEventListeners) {
+                    for (IEntryEventListener listener : entryEventListeners) {
+                        listener.onNewFile(activeFileName);
+                    }
                 }
             }
         });
@@ -156,8 +182,10 @@ public class CoreEvents {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 Log.logInfoRB("LOG_INFO_EVENT_ENTRY_ACTIVATED");
-                for (IEntryEventListener listener : entryEventListeners) {
-                    listener.onEntryActivated(newEntry);
+                synchronized (entryEventListeners) {
+                    for (IEntryEventListener listener : entryEventListeners) {
+                        listener.onEntryActivated(newEntry);
+                    }
                 }
             }
         });
@@ -168,8 +196,10 @@ public class CoreEvents {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 Log.logInfoRB("LOG_INFO_EVENT_FONT_CHANGED");
-                for (IFontChangedEventListener listener : fontChangedEventListeners) {
-                    listener.onFontChanged(newFont);
+                synchronized (fontChangedEventListeners) {
+                    for (IFontChangedEventListener listener : fontChangedEventListeners) {
+                        listener.onFontChanged(newFont);
+                    }
                 }
             }
         });
@@ -179,8 +209,10 @@ public class CoreEvents {
     public static void fireEditorNewWord(final String newWord) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                for (IEditorEventListener listener : editorEventListeners) {
-                    listener.onNewWord(newWord);
+                synchronized (editorEventListeners) {
+                    for (IEditorEventListener listener : editorEventListeners) {
+                        listener.onNewWord(newWord);
+                    }
                 }
             }
         });

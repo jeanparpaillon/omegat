@@ -64,7 +64,6 @@ public class EditorSettings {
     private boolean autoSpellChecking;
     private boolean viewSourceBold;
     private boolean markFirstNonUnique;
-    private boolean doFontFallback;
 
     public static String DISPLAY_MODIFICATION_INFO_NONE = "none";
     public static String DISPLAY_MODIFICATION_INFO_SELECTED = "selected";
@@ -91,7 +90,6 @@ public class EditorSettings {
         //options from menu options->view
         viewSourceBold = Preferences.isPreference(Preferences.VIEW_OPTION_SOURCE_ALL_BOLD);
         markFirstNonUnique = Preferences.isPreference(Preferences.VIEW_OPTION_UNIQUE_FIRST);
-        doFontFallback = Preferences.isPreference(Preferences.FONT_FALLBACK);
     }
 
     public char getAdvancerChar() {
@@ -204,10 +202,6 @@ public class EditorSettings {
     public boolean isMarkBidi() {
         return markBidi;
     }
-    
-    public boolean isDoFontFallback() {
-        return doFontFallback;
-    }
 
     public void setDisplaySegmentSources(boolean displaySegmentSources) {
         UIThreadsUtil.mustBeSwingThread();
@@ -284,20 +278,6 @@ public class EditorSettings {
 
         this.markBidi = markBidi;
         Preferences.setPreference(Preferences.MARK_BIDI, markBidi);
-
-        if (Core.getProject().isProjectLoaded()) {
-            parent.loadDocument();
-            parent.activateEntry();
-        }
-    }
-    
-    public void setDoFontFallback(boolean doFontFalback) {
-        UIThreadsUtil.mustBeSwingThread();
-
-        parent.commitAndDeactivate();
-
-        this.doFontFallback = doFontFalback;
-        Preferences.setPreference(Preferences.FONT_FALLBACK, doFontFalback);
 
         if (Core.getProject().isProjectLoaded()) {
             parent.loadDocument();
@@ -521,7 +501,7 @@ public class EditorSettings {
      * @return
      */
     public AttributeSet getSegmentMarkerAttributeSet() {
-        return Styles.createAttributeSet(Styles.EditorColor.COLOR_SEGMENT_MARKER_FG.getColor(), Styles.EditorColor.COLOR_SEGMENT_MARKER_BG.getColor(), true, false);
+        return Styles.createAttributeSet(null, null, true, false);
     }
     /**
      * Returns font attributes for other laguages translation.

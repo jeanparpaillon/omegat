@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.htmlparser.Attribute;
 import org.htmlparser.Node;
@@ -275,7 +274,7 @@ public class FilterVisitor extends NodeVisitor {
         recurse = true;
         // nbsp is special case - process it like usual spaces
         String trimmedtext = entitiesToChars(string.getText()).replace((char) 160, ' ').trim();
-        if (!trimmedtext.isEmpty()) {
+        if (trimmedtext.length() > 0) {
             // Hack around HTMLParser not being able to handle XHTML
             // RFE pending:
             // http://sourceforge.net/tracker/index.php?func=detail&aid=1227222&group_id=24399&atid=381402
@@ -552,7 +551,7 @@ public class FilterVisitor extends NodeVisitor {
         }
 
         // appending all tags until "last good" one to paragraph text
-        StringBuilder paragraph = new StringBuilder();
+        StringBuffer paragraph = new StringBuffer();
         // appending all tags starting from "first good" one to paragraph text
         for (int i = firstgood; i <= lastgood; i++) {
             Node node = all.get(i);
@@ -579,19 +578,15 @@ public class FilterVisitor extends NodeVisitor {
         // (This changes the layout, therefore it is an option)
         if (!preformatting) {
 
-            for (int cp, i = 0; i < size; i += Character.charCount(cp)) {
-                cp = uncompressed.codePointAt(i);
-                if (!Character.isWhitespace(cp)) {
-                    spacePrefix = i == 0 ? "" : uncompressed.substring(0,
-                            options.getCompressWhitespace() ? Math.min(i, uncompressed.offsetByCodePoints(i, 1)) : i);
+            for (int i = 0; i < size; i++) {
+                if (!Character.isWhitespace(uncompressed.charAt(i))) {
+                    spacePrefix = uncompressed.substring(0, (options.getCompressWhitespace() ? Math.min(i,1) : i));
                     break;
                 }
             }
-            for (int cp, i = size; i > 0; i -= Character.charCount(cp)) {
-                cp = uncompressed.codePointBefore(i);
-                if (!Character.isWhitespace(cp)) {
-                    spacePostfix = i == size ? "" : uncompressed.substring(i,
-                            options.getCompressWhitespace() ? Math.min(uncompressed.offsetByCodePoints(i, 1), size) : size);
+            for (int i = size - 1; i > 0; i--) {
+                if (!Character.isWhitespace(uncompressed.charAt(i))) {
+                    spacePostfix = uncompressed.substring(i + 1, (options.getCompressWhitespace() ? Math.min(i + 2, size) : size));
                     break;
                 }
             }
@@ -651,8 +646,8 @@ public class FilterVisitor extends NodeVisitor {
     /**
      * Creates and stores a shortcut for the tag.
      */
-    private void shortcut(Tag tag, StringBuilder paragraph) {
-        StringBuilder result = new StringBuilder();
+    private void shortcut(Tag tag, StringBuffer paragraph) {
+        StringBuffer result = new StringBuffer();
         result.append('<');
         int n = -1;
         if (tag.isEndTag()) {
@@ -688,11 +683,10 @@ public class FilterVisitor extends NodeVisitor {
         // special handling for BR tag, as it's given a two-char shortcut
         // to allow for its segmentation in sentence-segmentation mode
         // idea by Jean-Christophe Helary
-        if ("BR".equals(tag.getTagName())) {
+        if ("BR".equals(tag.getTagName()))
             result.append("br");
-        } else {
-            result.appendCodePoint(Character.toLowerCase(tag.getTagName().codePointAt(0)));
-        }
+        else
+            result.append(Character.toLowerCase(tag.getTagName().charAt(0)));
 
         result.append(n);
         if (tag.isEmptyXmlTag()) // This only detects tags that already have a
@@ -745,7 +739,7 @@ public class FilterVisitor extends NodeVisitor {
      * Whitespace text is simply added to the queue.
      */
     private void queueTranslatable(Text text) {
-        if (!text.toHtml().trim().isEmpty()) {
+        if (text.toHtml().trim().length() > 0) {
             translatable.addAll(afters);
             afters.clear();
             translatable.add(text);
@@ -818,289 +812,270 @@ public class FilterVisitor extends NodeVisitor {
 
     /** Named HTML Entities and corresponding numeric character references */
     private static final Object ENTITIES[][] = {
-            { "quot", 34 },
-            { "amp", 38 },
-            { "lt", 60 },
-            { "gt", 62 },
+            { "quot", new Integer(34) },
+            { "amp", new Integer(38) },
+            { "lt", new Integer(60) },
+            { "gt", new Integer(62) },
 
             // Latin Extended-A
-            { "OElig", 338 }, // latin capital ligature OE, U+0152
+            { "OElig", new Integer(338) }, // latin capital ligature OE, U+0152
                                            // ISOlat2
-            { "oelig", 339 }, // latin small ligature oe, U+0153
+            { "oelig", new Integer(339) }, // latin small ligature oe, U+0153
                                            // ISOlat2
             // ligature is a misnomer, this is a separate character in some
             // languages
-            { "Scaron", 352 }, // latin capital letter S with
+            { "Scaron", new Integer(352) }, // latin capital letter S with
                                             // caron, U+0160 ISOlat2
-            { "scaron", 353 }, // latin small letter s with caron,
+            { "scaron", new Integer(353) }, // latin small letter s with caron,
                                             // U+0161 ISOlat2
-            { "Yuml", 376 }, // latin capital letter Y with
+            { "Yuml", new Integer(376) }, // latin capital letter Y with
                                           // diaeresis, U+0178 ISOlat2
 
             // Spacing Modifier Letters
-            { "circ", 710 }, // modifier letter circumflex accent,
+            { "circ", new Integer(710) }, // modifier letter circumflex accent,
                                           // U+02C6 ISOpub
-            { "tilde", 732 }, // small tilde, U+02DC ISOdia
+            { "tilde", new Integer(732) }, // small tilde, U+02DC ISOdia
 
             // General Punctuation
-            { "ensp", 8194 }, // en space, U+2002 ISOpub
-            { "emsp", 8195 }, // em space, U+2003 ISOpub
-            { "thinsp", 8201 }, // thin space, U+2009 ISOpub
-            { "zwnj", 8204 }, // zero width non-joiner, U+200C NEW
+            { "ensp", new Integer(8194) }, // en space, U+2002 ISOpub
+            { "emsp", new Integer(8195) }, // em space, U+2003 ISOpub
+            { "thinsp", new Integer(8201) }, // thin space, U+2009 ISOpub
+            { "zwnj", new Integer(8204) }, // zero width non-joiner, U+200C NEW
                                            // RFC 2070
-            { "zwj", 8205 }, // zero width joiner, U+200D NEW RFC
+            { "zwj", new Integer(8205) }, // zero width joiner, U+200D NEW RFC
                                           // 2070
-            { "lrm", 8206 }, // left-to-right mark, U+200E NEW RFC
+            { "lrm", new Integer(8206) }, // left-to-right mark, U+200E NEW RFC
                                           // 2070
-            { "rlm", 8207 }, // right-to-left mark, U+200F NEW RFC
+            { "rlm", new Integer(8207) }, // right-to-left mark, U+200F NEW RFC
                                           // 2070
-            { "ndash", 8211 }, // en dash, U+2013 ISOpub
-            { "mdash", 8212 }, // em dash, U+2014 ISOpub
-            { "lsquo", 8216 }, // left single quotation mark,
+            { "ndash", new Integer(8211) }, // en dash, U+2013 ISOpub
+            { "mdash", new Integer(8212) }, // em dash, U+2014 ISOpub
+            { "lsquo", new Integer(8216) }, // left single quotation mark,
                                             // U+2018 ISOnum
-            { "rsquo", 8217 }, // right single quotation mark,
+            { "rsquo", new Integer(8217) }, // right single quotation mark,
                                             // U+2019 ISOnum
-            { "sbquo", 8218 }, // single low-9 quotation mark,
+            { "sbquo", new Integer(8218) }, // single low-9 quotation mark,
                                             // U+201A NEW
-            { "ldquo", 8220 }, // left double quotation mark,
+            { "ldquo", new Integer(8220) }, // left double quotation mark,
                                             // U+201C ISOnum
-            { "rdquo", 8221 }, // right double quotation mark,
+            { "rdquo", new Integer(8221) }, // right double quotation mark,
                                             // U+201D ISOnum
-            { "bdquo", 8222 }, // double low-9 quotation mark,
+            { "bdquo", new Integer(8222) }, // double low-9 quotation mark,
                                             // U+201E NEW
-            { "dagger", 8224 }, // dagger, U+2020 ISOpub
-            { "Dagger", 8225 }, // double dagger, U+2021 ISOpub
-            { "permil", 8240 }, // per mille sign, U+2030 ISOtech
-            { "lsaquo", 8249 }, // single left-pointing angle
+            { "dagger", new Integer(8224) }, // dagger, U+2020 ISOpub
+            { "Dagger", new Integer(8225) }, // double dagger, U+2021 ISOpub
+            { "permil", new Integer(8240) }, // per mille sign, U+2030 ISOtech
+            { "lsaquo", new Integer(8249) }, // single left-pointing angle
                                              // quotation mark, U+2039 ISO
                                              // proposed
             // lsaquo is proposed but not yet ISO standardized
-            { "rsaquo", 8250 }, // single right-pointing angle
+            { "rsaquo", new Integer(8250) }, // single right-pointing angle
                                              // quotation mark, U+203A ISO
                                              // proposed
             // rsaquo is proposed but not yet ISO standardized
-            { "euro", 8364 }, // euro sign, U+20AC NEW
+            { "euro", new Integer(8364) }, // euro sign, U+20AC NEW
 
-            { "nbsp", 160 }, { "iexcl", 161 }, { "cent", 162 },
-            { "pound", 163 }, { "curren", 164 }, { "yen", 165 },
-            { "brvbar", 166 }, { "sect", 167 }, { "uml", 168 },
-            { "copy", 169 }, { "ordf", 170 }, { "laquo", 171 },
-            { "not", 172 }, { "shy", 173 }, { "reg", 174 },
-            { "macr", 175 }, { "deg", 176 }, { "plusmn", 177 },
-            { "sup2", 178 }, { "sup3", 179 }, { "acute", 180 },
-            { "micro", 181 }, { "para", 182 }, { "middot", 183 },
-            { "cedil", 184 }, { "sup1", 185 }, { "ordm", 186 },
-            { "raquo", 187 }, { "frac14", 188 }, { "frac12", 189 },
-            { "frac34", 190 }, { "iquest", 191 }, { "Agrave", 192 },
-            { "Aacute", 193 }, { "Acirc", 194 }, { "Atilde", 195 },
-            { "Auml", 196 }, { "Aring", 197 }, { "AElig", 198 },
-            { "Ccedil", 199 }, { "Egrave", 200 }, { "Eacute", 201 },
-            { "Ecirc", 202 }, { "Euml", 203 }, { "Igrave", 204 },
-            { "Iacute", 205 }, { "Icirc", 206 }, { "Iuml", 207 },
-            { "ETH", 208 }, { "Ntilde", 209 }, { "Ograve", 210 },
-            { "Oacute", 211 }, { "Ocirc", 212 }, { "Otilde", 213 },
-            { "Ouml", 214 }, { "times", 215 }, { "Oslash", 216 },
-            { "Ugrave", 217 }, { "Uacute", 218 }, { "Ucirc", 219 },
-            { "Uuml", 220 }, { "Yacute", 221 }, { "THORN", 222 },
-            { "szlig", 223 }, { "agrave", 224 }, { "aacute", 225 },
-            { "acirc", 226 }, { "atilde", 227 }, { "auml", 228 },
-            { "aring", 229 }, { "aelig", 230 }, { "ccedil", 231 },
-            { "egrave", 232 }, { "eacute", 233 }, { "ecirc", 234 },
-            { "euml", 235 }, { "igrave", 236 }, { "iacute", 237 },
-            { "icirc", 238 }, { "iuml", 239 }, { "eth", 240 },
-            { "ntilde", 241 }, { "ograve", 242 }, { "oacute", 243 },
-            { "ocirc", 244 }, { "otilde", 245 }, { "ouml", 246 },
-            { "divide", 247 }, { "oslash", 248 }, { "ugrave", 249 },
-            { "uacute", 250 }, { "ucirc", 251 }, { "uuml", 252 },
-            { "yacute", 253 }, { "thorn", 254 }, { "yuml", 255 },
+            { "nbsp", new Integer(160) }, { "iexcl", new Integer(161) }, { "cent", new Integer(162) },
+            { "pound", new Integer(163) }, { "curren", new Integer(164) }, { "yen", new Integer(165) },
+            { "brvbar", new Integer(166) }, { "sect", new Integer(167) }, { "uml", new Integer(168) },
+            { "copy", new Integer(169) }, { "ordf", new Integer(170) }, { "laquo", new Integer(171) },
+            { "not", new Integer(172) }, { "shy", new Integer(173) }, { "reg", new Integer(174) },
+            { "macr", new Integer(175) }, { "deg", new Integer(176) }, { "plusmn", new Integer(177) },
+            { "sup2", new Integer(178) }, { "sup3", new Integer(179) }, { "acute", new Integer(180) },
+            { "micro", new Integer(181) }, { "para", new Integer(182) }, { "middot", new Integer(183) },
+            { "cedil", new Integer(184) }, { "sup1", new Integer(185) }, { "ordm", new Integer(186) },
+            { "raquo", new Integer(187) }, { "frac14", new Integer(188) }, { "frac12", new Integer(189) },
+            { "frac34", new Integer(190) }, { "iquest", new Integer(191) }, { "Agrave", new Integer(192) },
+            { "Aacute", new Integer(193) }, { "Acirc", new Integer(194) }, { "Atilde", new Integer(195) },
+            { "Auml", new Integer(196) }, { "Aring", new Integer(197) }, { "AElig", new Integer(198) },
+            { "Ccedil", new Integer(199) }, { "Egrave", new Integer(200) }, { "Eacute", new Integer(201) },
+            { "Ecirc", new Integer(202) }, { "Euml", new Integer(203) }, { "Igrave", new Integer(204) },
+            { "Iacute", new Integer(205) }, { "Icirc", new Integer(206) }, { "Iuml", new Integer(207) },
+            { "ETH", new Integer(208) }, { "Ntilde", new Integer(209) }, { "Ograve", new Integer(210) },
+            { "Oacute", new Integer(211) }, { "Ocirc", new Integer(212) }, { "Otilde", new Integer(213) },
+            { "Ouml", new Integer(214) }, { "times", new Integer(215) }, { "Oslash", new Integer(216) },
+            { "Ugrave", new Integer(217) }, { "Uacute", new Integer(218) }, { "Ucirc", new Integer(219) },
+            { "Uuml", new Integer(220) }, { "Yacute", new Integer(221) }, { "THORN", new Integer(222) },
+            { "szlig", new Integer(223) }, { "agrave", new Integer(224) }, { "aacute", new Integer(225) },
+            { "acirc", new Integer(226) }, { "atilde", new Integer(227) }, { "auml", new Integer(228) },
+            { "aring", new Integer(229) }, { "aelig", new Integer(230) }, { "ccedil", new Integer(231) },
+            { "egrave", new Integer(232) }, { "eacute", new Integer(233) }, { "ecirc", new Integer(234) },
+            { "euml", new Integer(235) }, { "igrave", new Integer(236) }, { "iacute", new Integer(237) },
+            { "icirc", new Integer(238) }, { "iuml", new Integer(239) }, { "eth", new Integer(240) },
+            { "ntilde", new Integer(241) }, { "ograve", new Integer(242) }, { "oacute", new Integer(243) },
+            { "ocirc", new Integer(244) }, { "otilde", new Integer(245) }, { "ouml", new Integer(246) },
+            { "divide", new Integer(247) }, { "oslash", new Integer(248) }, { "ugrave", new Integer(249) },
+            { "uacute", new Integer(250) }, { "ucirc", new Integer(251) }, { "uuml", new Integer(252) },
+            { "yacute", new Integer(253) }, { "thorn", new Integer(254) }, { "yuml", new Integer(255) },
 
-            { "fnof", 402 },
+            { "fnof", new Integer(402) },
 
-            { "Alpha", 913 }, { "Beta", 914 }, { "Gamma", 915 },
-            { "Delta", 916 }, { "Epsilon", 917 }, { "Zeta", 918 },
-            { "Eta", 919 }, { "Theta", 920 }, { "Iota", 921 },
-            { "Kappa", 922 }, { "Lambda", 923 }, { "Mu", 924 },
-            { "Nu", 925 }, { "Xi", 926 }, { "Omicron", 927 },
-            { "Pi", 928 }, { "Rho", 929 }, { "Sigma", 931 },
-            { "Tau", 932 }, { "Upsilon", 933 }, { "Phi", 934 },
-            { "Chi", 935 }, { "Psi", 936 }, { "Omega", 937 },
-            { "alpha", 945 }, { "beta", 946 }, { "gamma", 947 },
-            { "delta", 948 }, { "epsilon", 949 }, { "zeta", 950 },
-            { "eta", 951 }, { "theta", 952 }, { "iota", 953 },
-            { "kappa", 954 }, { "lambda", 955 }, { "mu", 956 },
-            { "nu", 957 }, { "xi", 958 }, { "omicron", 959 },
-            { "pi", 960 }, { "rho", 961 }, { "sigmaf", 962 },
-            { "sigma", 963 }, { "tau", 964 }, { "upsilon", 965 },
-            { "phi", 966 }, { "chi", 967 }, { "psi", 968 },
-            { "omega", 969 }, { "thetasym", 977 }, { "upsih", 978 },
-            { "piv", 982 },
+            { "Alpha", new Integer(913) }, { "Beta", new Integer(914) }, { "Gamma", new Integer(915) },
+            { "Delta", new Integer(916) }, { "Epsilon", new Integer(917) }, { "Zeta", new Integer(918) },
+            { "Eta", new Integer(919) }, { "Theta", new Integer(920) }, { "Iota", new Integer(921) },
+            { "Kappa", new Integer(922) }, { "Lambda", new Integer(923) }, { "Mu", new Integer(924) },
+            { "Nu", new Integer(925) }, { "Xi", new Integer(926) }, { "Omicron", new Integer(927) },
+            { "Pi", new Integer(928) }, { "Rho", new Integer(929) }, { "Sigma", new Integer(931) },
+            { "Tau", new Integer(932) }, { "Upsilon", new Integer(933) }, { "Phi", new Integer(934) },
+            { "Chi", new Integer(935) }, { "Psi", new Integer(936) }, { "Omega", new Integer(937) },
+            { "alpha", new Integer(945) }, { "beta", new Integer(946) }, { "gamma", new Integer(947) },
+            { "delta", new Integer(948) }, { "epsilon", new Integer(949) }, { "zeta", new Integer(950) },
+            { "eta", new Integer(951) }, { "theta", new Integer(952) }, { "iota", new Integer(953) },
+            { "kappa", new Integer(954) }, { "lambda", new Integer(955) }, { "mu", new Integer(956) },
+            { "nu", new Integer(957) }, { "xi", new Integer(958) }, { "omicron", new Integer(959) },
+            { "pi", new Integer(960) }, { "rho", new Integer(961) }, { "sigmaf", new Integer(962) },
+            { "sigma", new Integer(963) }, { "tau", new Integer(964) }, { "upsilon", new Integer(965) },
+            { "phi", new Integer(966) }, { "chi", new Integer(967) }, { "psi", new Integer(968) },
+            { "omega", new Integer(969) }, { "thetasym", new Integer(977) }, { "upsih", new Integer(978) },
+            { "piv", new Integer(982) },
 
-            { "bull", 8226 }, { "hellip", 8230 }, { "prime", 8242 },
-            { "Prime", 8243 }, { "oline", 8254 }, { "frasl", 8260 },
+            { "bull", new Integer(8226) }, { "hellip", new Integer(8230) }, { "prime", new Integer(8242) },
+            { "Prime", new Integer(8243) }, { "oline", new Integer(8254) }, { "frasl", new Integer(8260) },
 
-            { "weierp", 8472 }, { "image", 8465 }, { "real", 8476 },
-            { "trade", 8482 }, { "alefsym", 8501 },
+            { "weierp", new Integer(8472) }, { "image", new Integer(8465) }, { "real", new Integer(8476) },
+            { "trade", new Integer(8482) }, { "alefsym", new Integer(8501) },
 
-            { "larr", 8592 }, { "uarr", 8593 }, { "rarr", 8594 },
-            { "darr", 8595 }, { "harr", 8596 }, { "crarr", 8629 },
-            { "lArr", 8656 }, { "uArr", 8657 }, { "rArr", 8658 },
-            { "dArr", 8659 }, { "hArr", 8660 },
+            { "larr", new Integer(8592) }, { "uarr", new Integer(8593) }, { "rarr", new Integer(8594) },
+            { "darr", new Integer(8595) }, { "harr", new Integer(8596) }, { "crarr", new Integer(8629) },
+            { "lArr", new Integer(8656) }, { "uArr", new Integer(8657) }, { "rArr", new Integer(8658) },
+            { "dArr", new Integer(8659) }, { "hArr", new Integer(8660) },
 
-            { "forall", 8704 }, { "part", 8706 }, { "exist", 8707 },
-            { "empty", 8709 }, { "nabla", 8711 }, { "isin", 8712 },
-            { "notin", 8713 }, { "ni", 8715 }, { "prod", 8719 },
-            { "sum", 8722 }, { "minus", 8722 }, { "lowast", 8727 },
-            { "radic", 8730 }, { "prop", 8733 }, { "infin", 8734 },
-            { "ang", 8736 }, { "and", 8869 }, { "or", 8870 },
-            { "cap", 8745 }, { "cup", 8746 }, { "int", 8747 },
-            { "there4", 8756 }, { "sim", 8764 }, { "cong", 8773 },
-            { "asymp", 8773 }, { "ne", 8800 }, { "equiv", 8801 },
-            { "le", 8804 }, { "ge", 8805 }, { "sub", 8834 },
-            { "sup", 8835 }, { "nsub", 8836 }, { "sube", 8838 },
-            { "supe", 8839 }, { "oplus", 8853 }, { "otimes", 8855 },
-            { "perp", 8869 }, { "sdot", 8901 },
+            { "forall", new Integer(8704) }, { "part", new Integer(8706) }, { "exist", new Integer(8707) },
+            { "empty", new Integer(8709) }, { "nabla", new Integer(8711) }, { "isin", new Integer(8712) },
+            { "notin", new Integer(8713) }, { "ni", new Integer(8715) }, { "prod", new Integer(8719) },
+            { "sum", new Integer(8722) }, { "minus", new Integer(8722) }, { "lowast", new Integer(8727) },
+            { "radic", new Integer(8730) }, { "prop", new Integer(8733) }, { "infin", new Integer(8734) },
+            { "ang", new Integer(8736) }, { "and", new Integer(8869) }, { "or", new Integer(8870) },
+            { "cap", new Integer(8745) }, { "cup", new Integer(8746) }, { "int", new Integer(8747) },
+            { "there4", new Integer(8756) }, { "sim", new Integer(8764) }, { "cong", new Integer(8773) },
+            { "asymp", new Integer(8773) }, { "ne", new Integer(8800) }, { "equiv", new Integer(8801) },
+            { "le", new Integer(8804) }, { "ge", new Integer(8805) }, { "sub", new Integer(8834) },
+            { "sup", new Integer(8835) }, { "nsub", new Integer(8836) }, { "sube", new Integer(8838) },
+            { "supe", new Integer(8839) }, { "oplus", new Integer(8853) }, { "otimes", new Integer(8855) },
+            { "perp", new Integer(8869) }, { "sdot", new Integer(8901) },
 
-            { "lceil", 8968 }, { "rceil", 8969 }, { "lfloor", 8970 },
-            { "rfloor", 8971 }, { "lang", 9001 }, { "rang", 9002 },
+            { "lceil", new Integer(8968) }, { "rceil", new Integer(8969) }, { "lfloor", new Integer(8970) },
+            { "rfloor", new Integer(8971) }, { "lang", new Integer(9001) }, { "rang", new Integer(9002) },
 
-            { "loz", 9674 },
+            { "loz", new Integer(9674) },
 
-            { "spades", 9824 }, { "clubs", 9827 }, { "hearts", 9829 },
-            { "diams", 9830 }, };
+            { "spades", new Integer(9824) }, { "clubs", new Integer(9827) }, { "hearts", new Integer(9829) },
+            { "diams", new Integer(9830) }, };
 
     /** Converts HTML entities to normal characters */
     protected String entitiesToChars(String str) {
         int strlen = str.length();
-        StringBuilder res = new StringBuilder(strlen);
-        for (int cp, i = 0; i < strlen; i += Character.charCount(cp)) {
-            cp = str.codePointAt(i);
-            switch (cp) {
+        StringBuffer res = new StringBuffer(strlen);
+        for (int i = 0; i < strlen; i++) {
+            char ch = str.charAt(i);
+            switch (ch) {
             case '&':
-                int cp1;
+                char ch1;
                 // if there's one more symbol, reading it,
                 // otherwise it's a dangling '&'
-                if (str.codePointCount(i, strlen) < 2) {
-                    res.appendCodePoint(cp);
+                if ((i + 1) >= strlen) {
+                    res.append(ch);
                     break;
-                } else {
-                    cp1 = str.codePointAt(str.offsetByCodePoints(i, 1));
-                }
-                if (cp1 == '#') {
+                } else
+                    ch1 = str.charAt(i + 1);
+                if (ch1 == '#') {
                     // numeric entity
-                    int cp2 = str.codePointAt(str.offsetByCodePoints(i, 2));
-                    if (cp2 == 'x' || cp2 == 'X') {
+                    char ch2 = str.charAt(i + 2);
+                    if (ch2 == 'x' || ch2 == 'X') {
                         // hex numeric entity
-                        int hexStart = str.offsetByCodePoints(i, 3);
-                        int hexEnd = hexStart;
-                        while (hexEnd < strlen) {
-                            int hexCp = str.codePointAt(hexEnd);
-                            if (!isHexDigit(hexCp)) {
-                                break;
-                            }
-                            hexEnd += Character.charCount(hexCp);
-                        }
-                        String s_entity = str.substring(hexStart, hexEnd);
+                        int n = i + 3;
+                        while (n < strlen && isHexDigit(str.charAt(n)))
+                            n++;
+                        String s_entity = str.substring(i + 3, n);
                         try {
                             int n_entity = Integer.parseInt(s_entity, 16);
-                            if (n_entity > 0 && n_entity <= 0x10FFFF) {
-                                res.appendCodePoint(n_entity);
-                                if (hexEnd < strlen && str.codePointAt(hexEnd) == ';') {
-                                    i = hexEnd;
-                                } else {
-                                    i = str.offsetByCodePoints(hexEnd, -1);
-                                }
+                            if (n_entity > 0 && n_entity <= 65535) {
+                                res.append((char) n_entity);
+                                if (n < strlen && str.charAt(n) == ';')
+                                    i = n;
+                                else
+                                    i = n - 1;
                             } else {
                                 // too big number
                                 // dangling '&'
-                                res.appendCodePoint(cp);
+                                res.append(ch);
                             }
                         } catch (NumberFormatException nfe) {
                             // do nothing
                             // dangling '&'
-                            res.appendCodePoint(cp);
+                            res.append(ch);
                         }
                     } else {
                         // decimal entity
-                        int decStart = str.offsetByCodePoints(i, 2);
-                        int decEnd = decStart;
-                        while (decEnd < strlen) {
-                            int decCp = str.codePointAt(decEnd);
-                            if (!isDecimalDigit(decCp)) {
-                                break;
-                            }
-                            decEnd += Character.charCount(decCp);
-                        }
-                        String s_entity = str.substring(decStart, decEnd);
+                        int n = i + 2;
+                        while (n < strlen && isDecimalDigit(str.charAt(n)))
+                            n++;
+                        String s_entity = str.substring(i + 2, n);
                         try {
                             int n_entity = Integer.parseInt(s_entity, 10);
-                            if (n_entity > 0 && n_entity <= 0x10FFFF) {
-                                res.appendCodePoint(n_entity);
-                                if (decEnd < strlen && str.codePointAt(decEnd) == ';') {
-                                    i = decEnd;
-                                } else {
-                                    i = str.offsetByCodePoints(decEnd, -1);
-                                }
+                            if (n_entity > 0 && n_entity <= 65535) {
+                                res.append((char) n_entity);
+                                if (n < strlen && str.charAt(n) == ';')
+                                    i = n;
+                                else
+                                    i = n - 1;
                             } else {
                                 // too big number
                                 // dangling '&'
-                                res.appendCodePoint(cp);
+                                res.append(ch);
                             }
                         } catch (NumberFormatException nfe) {
                             // do nothing
                             // dangling '&'
-                            res.appendCodePoint(cp);
+                            res.append(ch);
                         }
                     }
-                } else if (isLatinLetter(cp1)) {
+                } else if (isLatinLetter(ch1)) {
                     // named entity?
-                    int entStart = str.offsetByCodePoints(i, 1);
-                    int entEnd = entStart;
-                    while (entEnd < strlen) {
-                        int entCp = str.codePointAt(entEnd);
-                        // Some entities contain numbers, e.g. frac12
-                        if (!isLatinLetter(entCp) && !isDecimalDigit(entCp)) {
-                            break;
-                        }
-                        entEnd += Character.charCount(entCp);
-                    }
-                    String s_entity = str.substring(entStart, entEnd);
+                    int n = i + 1;
+                    while (n < strlen && (isLatinLetter(str.charAt(n)) || // Some
+                                                                          // entities
+                            isDecimalDigit(str.charAt(n))) // contain numbers
+                    )
+                        // e.g., frac12
+                        n++;
+                    String s_entity = str.substring(i + 1, n);
                     int n_entity = lookupEntity(s_entity);
                     if (n_entity > 0 && n_entity <= 65535) {
                         res.append((char) n_entity);
-                        if (entEnd < strlen && str.codePointAt(entEnd) == ';') {
-                            i = entEnd;
-                        } else {
-                            i = str.offsetByCodePoints(entEnd, -1);
-                        }
+                        if (n < strlen && str.charAt(n) == ';')
+                            i = n;
+                        else
+                            i = n - 1;
                     } else {
                         // too big number
                         // dangling '&'
-                        res.appendCodePoint(cp);
+                        res.append(ch);
                     }
                 } else {
                     // dangling '&'
-                    res.appendCodePoint(cp);
+                    res.append(ch);
                 }
                 break;
             default:
-                res.appendCodePoint(cp);
+                res.append(ch);
             }
         }
         return res.toString();
     }
 
     /** Returns true if a char is a latin letter */
-    private boolean isLatinLetter(int ch) {
+    private boolean isLatinLetter(char ch) {
         return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
     }
 
     /** Returns true if a char is a decimal digit */
-    private boolean isDecimalDigit(int ch) {
+    private boolean isDecimalDigit(char ch) {
         return (ch >= '0' && ch <= '9');
     }
 
     /** Returns true if a char is a hex digit */
-    private boolean isHexDigit(int ch) {
+    private boolean isHexDigit(char ch) {
         return (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F');
     }
 
@@ -1123,10 +1098,10 @@ public class FilterVisitor extends NodeVisitor {
      */
     protected String charsToEntities(String str) {
         int strlen = str.length();
-        StringBuilder res = new StringBuilder(strlen * 5);
-        for (int cp, i = 0; i < strlen; i += Character.charCount(cp)) {
-            cp = str.codePointAt(i);
-            switch (cp) {
+        StringBuffer res = new StringBuffer(strlen * 5);
+        for (int i = 0; i < strlen; i++) {
+            char ch = str.charAt(i);
+            switch (ch) {
             case '\u00A0':
                 res.append("&nbsp;");
                 break;
@@ -1135,7 +1110,7 @@ public class FilterVisitor extends NodeVisitor {
                 break;
             case '>':
                 // If it's the end of a processing instruction
-                if ((i > 0) && str.codePointBefore(i) == '?') {
+                if ((i > 0) && str.substring(i-1, i).contentEquals("?")) {
                    res.append(">"); 
                 } else {
                     res.append("&gt;");
@@ -1144,13 +1119,13 @@ public class FilterVisitor extends NodeVisitor {
             case '<':
                 int qMarkPos = str.indexOf('?', i);
                 // If it's the beginning of a processing instruction
-                if (qMarkPos == str.offsetByCodePoints(i, 1)) {
+                if (qMarkPos == i+1) {
                     res.append("<");
                     break;
                 }
                 int gtpos = str.indexOf('>', i);
                 if (gtpos >= 0) {
-                    String maybeShortcut = str.substring(i, str.offsetByCodePoints(gtpos, 1));
+                    String maybeShortcut = str.substring(i, gtpos + 1);
                     boolean foundShortcut = false; // here because it's
                                                    // impossible to step out of
                                                    // two loops at once
@@ -1176,7 +1151,7 @@ public class FilterVisitor extends NodeVisitor {
                 }
                 break;
             default:
-                res.appendCodePoint(cp);
+                res.append(ch);
             }
         }
         String contents = res.toString();
@@ -1193,20 +1168,25 @@ public class FilterVisitor extends NodeVisitor {
         if (encoding != null) {
             CharsetEncoder charsetEncoder = Charset.forName(encoding).newEncoder();
             int i = 0;
-            while (true) {
-                String substring;
-                for (int cp; i < contents.length(); i += substring.length()) {
-                    cp = contents.codePointAt(i);
-                    substring = contents.substring(i, i + Character.charCount(cp));
-                    if (!charsetEncoder.canEncode(substring)) {
-                        String replacement = "&#" + cp + ';';
-                        contents = contents.replaceAll(Pattern.quote(substring), replacement);
+            boolean notfinished = true;
+            while (notfinished) {
+                for (; i < contents.length(); i++) {
+                    char x = contents.charAt(i);
+                    if (!charsetEncoder.canEncode(x)) {
+                        String regexp;
+                        if (x == '[' || x == '\\' || x == '^' || x == '$' || x == '.' || x == '|' || x == '?'
+                                || x == '*' || x == '+' || x == '(' || x == ')') {
+                            // escape special regexp characters
+                            regexp = "\\" + x;
+                        } else
+                            regexp = "" + x;
+                        String replacement = "&#" + (int) x + ';';
+                        contents = contents.replaceAll(regexp, replacement);
                         break;
                     }
                 }
-                if (i == contents.length()) {
-                    break;
-                }
+                if (i == contents.length())
+                    notfinished = false;
             }
         }
         return contents;

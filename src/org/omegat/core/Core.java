@@ -43,13 +43,11 @@ import org.omegat.filters2.master.PluginUtils;
 import org.omegat.gui.comments.CommentsTextArea;
 import org.omegat.gui.comments.IComments;
 import org.omegat.gui.dictionaries.DictionariesTextArea;
-import org.omegat.gui.dictionaries.IDictionaries;
 import org.omegat.gui.editor.EditorController;
 import org.omegat.gui.editor.IEditor;
 import org.omegat.gui.editor.autotext.Autotext;
 import org.omegat.gui.editor.mark.BidiMarkerFactory;
 import org.omegat.gui.editor.mark.ComesFromAutoTMMarker;
-import org.omegat.gui.editor.mark.FontFallbackMarker;
 import org.omegat.gui.editor.mark.IMarker;
 import org.omegat.gui.editor.mark.NBSPMarker;
 import org.omegat.gui.editor.mark.ProtectedPartsMarker;
@@ -104,6 +102,7 @@ public class Core {
     private static GlossaryTextArea glossary;
     private static GlossaryManager glossaryManager;
     private static MachineTranslateTextArea machineTranslatePane;
+    @SuppressWarnings("unused")
     private static DictionariesTextArea dictionaries;
     @SuppressWarnings("unused")
     private static MultipleTransPane multiple;
@@ -192,10 +191,6 @@ public class Core {
         return comments;
     }
     
-    public static IDictionaries getDictionaries() {
-        return dictionaries;
-    }
-    
     /**
      * Initialize application components.
      */
@@ -225,13 +220,12 @@ public class Core {
         Core.registerMarker(new BidiMarkerFactory.RLOMarker());
         Core.registerMarker(new ReplaceMarker());
         Core.registerMarker(new ComesFromAutoTMMarker());
-        Core.registerMarker(new FontFallbackMarker());
 
         // 3. Initialize other components. They add themselves to the main window.
         editor = new EditorController(me);
         tagValidation = new TagValidationTool(me);
         matcher = new MatchesTextArea(me);
-        glossary = new GlossaryTextArea(me);
+        glossary = new GlossaryTextArea();
         glossaryManager = new GlossaryManager(glossary);
         notes = new NotesTextArea(me);
         comments = new CommentsTextArea(me);

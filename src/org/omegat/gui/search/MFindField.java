@@ -88,7 +88,7 @@ public class MFindField extends JTextField implements FocusListener {
 
     public void setDefaultText(String text) {
         defaultText = text;
-        if (getText().isEmpty()) {
+        if (getText().length() == 0) {
             showDefaultText();
         }
     }
@@ -135,13 +135,13 @@ public class MFindField extends JTextField implements FocusListener {
     }
 
     public void focusGained(FocusEvent e) {
-        if (defaultText != null && isEditable() && getText().isEmpty()) {
+        if (defaultText != null && isEditable() && getText().length() == 0) {
             setText("");
         }
     }
 
     public void focusLost(FocusEvent e) {
-        if (defaultText != null && isEditable() && getText().isEmpty()) {
+        if (defaultText != null && isEditable() && getText().length() == 0) {
             showDefaultText();
         }
     }
@@ -159,7 +159,7 @@ public class MFindField extends JTextField implements FocusListener {
     public void setText(String t) {
         setFont(normalFont);
         setForeground(normalColor);
-        if (!t.isEmpty()) {
+        if (t.length() > 0) {
             isDirty = true;
         }
         super.setText(t);

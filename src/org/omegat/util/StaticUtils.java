@@ -9,7 +9,6 @@
                2012 Martin Fleurke, Didier Briel
                2013 Aaron Madlon-Kay, Zoltan Bartko, Didier Briel, Alex Buloichik
                2014 Aaron Madlon-Kay, Alex Buloichik
-               2015 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -36,8 +35,6 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,13 +47,16 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
+import java.util.jar.JarFile;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.omegat.core.data.ProtectedPart;
 import org.omegat.util.Platform.OsType;
 
 /**
@@ -93,11 +93,8 @@ public class StaticUtils {
     private final static String SCRIPT_DIR = "script";
 
     /**
-     * Char which should be used instead protected parts. It should be non-letter char, to be able to have
-     * correct words counter.
-     * 
-     * This char can be placed around protected text for separate words inside protected text and words
-     * outside if there are no spaces between they.
+     * Char which should be used instead protected parts. It should be
+     * non-letter char, to be able to have correct words counter.
      */
     public static final char TAG_REPLACEMENT_CHAR = '\b';
     public static final String TAG_REPLACEMENT = "\b";
@@ -115,6 +112,92 @@ public class StaticUtils {
     private static String m_scriptDir = null;
 
     /**
+     * Builds a list of format tags within the supplied string. Format tags are
+     * 'protected parts' and OmegaT style tags: &lt;xx02&gt; or &lt;/yy01&gt;.
+     */
+    public static void buildTagList(String str, ProtectedPart[] protectedParts, List<String> tagList) {
+        List<TagOrder> tags = new ArrayList<TagOrder>();
+        if (protectedParts != null) {
+            for (ProtectedPart pp : protectedParts) {
+                int pos = -1;
+                if ((pos = str.indexOf(pp.getTextInSourceSegment(), pos + 1)) >= 0) {
+                    tags.add(new TagOrder(pos, pp.getTextInSourceSegment()));
+                }
+            }
+        }
+
+        if (tags.isEmpty()) {
+            return;
+        }
+        Collections.sort(tags, new Comparator<TagOrder>() {
+            @Override
+            public int compare(TagOrder o1, TagOrder o2) {
+                return o1.pos - o2.pos;
+            }
+        });
+        for (TagOrder t : tags) {
+            tagList.add(t.tag);
+        }
+    }
+
+    /**
+     * Builds a list of all occurrences of all protected parts.
+     */
+    public static List<TagOrder> buildAllTagList(String str, ProtectedPart[] protectedParts) {
+        List<TagOrder> tags = new ArrayList<TagOrder>();
+        if (protectedParts != null) {
+            for (ProtectedPart pp : protectedParts) {
+                int pos = -1;
+                do {
+                    if ((pos = str.indexOf(pp.getTextInSourceSegment(), pos + 1)) >= 0) {
+                        tags.add(new TagOrder(pos, pp.getTextInSourceSegment()));
+                    }
+                } while (pos >= 0);
+            }
+        }
+
+        if (tags.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collections.sort(tags, new Comparator<TagOrder>() {
+            @Override
+            public int compare(TagOrder o1, TagOrder o2) {
+                return o1.pos - o2.pos;
+            }
+        });
+        return tags;
+    }
+
+    /**
+     * Builds a list of format tags within the supplied string. Format tags are
+     * OmegaT style tags: &lt;xx02&gt; or &lt;/yy01&gt;.
+     * @return a string containing the tags
+     */
+    public static String buildTagListForRemove(String str) {
+        String res = "";
+        Pattern placeholderPattern = PatternConsts.OMEGAT_TAG;
+        Matcher placeholderMatcher = placeholderPattern.matcher(str);
+        while (placeholderMatcher.find()) {
+            res += placeholderMatcher.group(0);
+        }
+        return res;
+    }
+    
+    /**
+     * Find the first tag in a segment
+     * @param str A segment
+     * @return the first tag in the segment, or null if there are no tags
+     */
+    public static String getFirstTag(String str) {
+        Pattern placeholderPattern = PatternConsts.OMEGAT_TAG;
+        Matcher placeholderMatcher = placeholderPattern.matcher(str);
+        if (placeholderMatcher.find()) {
+            return placeholderMatcher.group(0);
+        }
+        return null;
+    }
+
+    /**
      * Check if specified key pressed.
      *
      * @param e
@@ -129,15 +212,98 @@ public class StaticUtils {
         return e.getKeyCode() == code && e.getModifiers() == modifiers;
     }
 
+    public static class TagOrder {
+        public final int pos;
+        public final String tag;
+
+        public TagOrder(int pos, String tag) {
+            this.pos = pos;
+            this.tag = tag;
+        }
+    }
+
+    /**
+     * Indicates the type of a tag, e.g.:
+     * <ul>
+     * <li>&lt;foo> = START</li>
+     * <li>&lt;/foo> = END</li>
+     * <li>&lt;bar/> = SINGLE</li>
+     * </ul>
+     */
+    public static enum TagType {
+        START, END, SINGLE
+    }
+
+    /**
+     * Detect the type of a tag, e.g. one of {@link TagType}.
+     * @param tag String containing full text of tag
+     * @return The type of the tag
+     */
+    public static TagType getTagType(String tag) {
+        if (tag.length() < 4 || (!tag.startsWith("<") && !tag.endsWith(">"))) {
+            return TagType.SINGLE;
+        }
+        
+        if (tag.startsWith("</")) {
+            return TagType.END;
+        } else if (tag.endsWith("/>")) {
+            return TagType.SINGLE;
+        }
+
+        return TagType.START;
+    }
+
+    /**
+     * Retrieve info about a tag.
+     * @param tag String containing full text of tag
+     * @return A {@link TagInfo} with tag's name and type
+     */
+    public static TagInfo getTagInfo(String tag) {
+        Matcher m = PatternConsts.OMEGAT_TAG_DECOMPILE.matcher(tag);
+        String name = m.find() ? m.group(2) + m.group(3) : tag;
+        return new TagInfo(name, getTagType(tag));
+    }
+
+        
+    /**
+     * For a given tag, retrieve its pair e.g. &lt;/foo> for &lt;foo>.
+     * @param info A {@link TagInfo} describing the tag
+     * @return The tag's pair as a string, or null for self-contained tags
+     */
+    public static String getPairedTag(TagInfo info) {
+        switch(info.type) {
+        case START:
+            return String.format("</%s>", info.name);
+        case END:
+            return String.format("<%s>", info.name);
+        case SINGLE:
+        default:
+            return null;
+        }
+    }
+
+    
+    /**
+     * A tuple containing 
+     * <ul><li>A tag's name</li>
+     * <li>The tag's {@link TagType} type</li>
+     * </ul>
+     */
+    public static class TagInfo {
+        public final TagType type;
+        public final String name;
+        
+        public TagInfo (String name, TagType type) {
+            this.name = name;
+            this.type = type;
+        }
+    }
+
     /**
      * Returns a list of all files under the root directory by absolute path.
      */
     public static void buildFileList(List<String> lst, File rootDir, boolean recursive) {
-        try {
-            internalBuildFileList(lst, rootDir, recursive);
-        } catch (Exception ex) {
-            // Ignore
-        }
+        internalBuildFileList(lst, rootDir, recursive);
 
         // Get the local collator and set its strength to PRIMARY
         final Collator localCollator = Collator.getInstance(Locale.getDefault());
@@ -168,20 +334,20 @@ public class StaticUtils {
 
     static Pattern compileFileMask(String mask) {
         StringBuilder m = new StringBuilder();
-        for (int cp, i = 0; i < mask.length(); i += Character.charCount(cp)) {
-            cp = mask.codePointAt(i);
-            if (cp >= 'A' && cp <= 'Z') {
-                m.appendCodePoint(cp);
-            } else if (cp >= 'a' && cp <= 'z') {
-                m.appendCodePoint(cp);
-            } else if (cp >= '0' && cp <= '9') {
-                m.appendCodePoint(cp);
-            } else if (cp == '/') {
-                m.appendCodePoint(cp);
-            } else if (cp == '?') {
+        for (int i = 0; i < mask.length(); i++) {
+            char c = mask.charAt(i);
+            if (c >= 'A' && c <= 'Z') {
+                m.append(c);
+            } else if (c >= 'a' && c <= 'z') {
+                m.append(c);
+            } else if (c >= '0' && c <= '9') {
+                m.append(c);
+            } else if (c == '/') {
+                m.append(c);
+            } else if (c == '?') {
                 m.append('.');
-            } else if (cp == '*') {
-                if (mask.codePointCount(i, mask.length()) > 1 && mask.codePointAt(mask.offsetByCodePoints(i, 1)) == '*') {
+            } else if (c == '*') {
+                if (i + 1 < mask.length() && mask.charAt(i + 1) == '*') {
                     // **
                     m.append(".*");
                     i++;
@@ -190,7 +356,7 @@ public class StaticUtils {
                     m.append("[^/]*");
                 }
             } else {
-                m.append('\\').appendCodePoint(cp);
+                m.append('\\').append(c);
             }
         }
         return Pattern.compile(m.toString());
@@ -229,15 +395,50 @@ public class StaticUtils {
     }
 
     private static void internalBuildFileList(List<String> lst, File rootDir, boolean recursive) {
-        if (!rootDir.isDirectory()) {
-            return;
+        // read all files in current directory, recurse into subdirs
+        // append files to supplied list
+        File flist[] = null;
+        try {
+            flist = rootDir.listFiles();
+        } catch (Exception e) {
+            // don't care what exception is there.
+            // by contract, only a SecurityException is possible, but who
+            // knows...
         }
-        for (File file : rootDir.listFiles()) {
-            if (file.isDirectory() && recursive) {
-                internalBuildFileList(lst, file, recursive);
+        // if IOException occured, flist is null
+        // and we simply return
+        if (flist == null)
+            return;
+
+        for (File file : flist) {
+            if (file.isDirectory()) {
+                continue; // recurse into directories later
             }
-            if (file.isFile()) {
+            lst.add(file.getAbsolutePath());
+        }
+        if (recursive) {
+            for (File file : flist) {
+                if (isProperDirectory(file)) // Ignores some directories
+                {
+                    // now recurse into subdirectories
+                    buildFileList(lst, file, true);
+                }
+            }
+        }
+    }
+
+    // returns a list of all files under the root directory
+    // by absolute path
+    public static void buildDirList(List<String> lst, File rootDir) {
+        // read all files in current directory, recurse into subdirs
+        // append files to supplied list
+        File[] flist = rootDir.listFiles();
+        for (File file : flist) {
+            if (isProperDirectory(file)) // Ignores some directories
+            {
+                // now recurse into subdirectories
                 lst.add(file.getAbsolutePath());
+                buildDirList(lst, file);
             }
         }
     }
@@ -252,11 +453,23 @@ public class StaticUtils {
     }
 
     /**
-     * Converts a single code point into valid XML. Output stream must convert stream
+     * Tests whether a directory has to be used
+     *
+     * @return <code>true</code> or <code>false</code>
+     */
+    private static boolean isProperDirectory(File file) {
+        if (file.isDirectory()) {
+            return true;
+        } else
+            return false;
+    }
+
+    /**
+     * Converts a single char into valid XML. Output stream must convert stream
      * to UTF-8 when saving to disk.
      */
-    public static String makeValidXML(int cp) {
-        switch (cp) {
+    public static String makeValidXML(char c) {
+        switch (c) {
         // case '\'':
         // return "&apos;";
         case '&':
@@ -268,7 +481,7 @@ public class StaticUtils {
         case '"':
             return "&quot;";
         default:
-            return String.valueOf(Character.toChars(cp));
+            return String.valueOf(c);
         }
     }
 
@@ -301,11 +514,12 @@ public class StaticUtils {
      * stream to UTF-8 when saving to disk.
      */
     public static String makeValidXML(String plaintext) {
+        char c;
         StringBuilder out = new StringBuilder();
         String text = fixChars(plaintext);
-        for (int cp, i = 0; i < text.length(); i += Character.charCount(cp)) {
-            cp = text.codePointAt(i);
-            out.append(makeValidXML(cp));
+        for (int i = 0; i < text.length(); i++) {
+            c = text.charAt(i);
+            out.append(makeValidXML(c));
         }
         return out.toString();
     }
@@ -315,17 +529,16 @@ public class StaticUtils {
         int strlen = str.length();
         StringBuilder res = new StringBuilder(strlen);
         boolean wasspace = true;
-        for (int cp, i = 0; i < strlen; i += Character.charCount(cp)) {
-            cp = str.codePointAt(i);
-            if (Character.isWhitespace(cp)) {
-                if (!wasspace) {
+        for (int i = 0; i < strlen; i++) {
+            char ch = str.charAt(i);
+            boolean space = Character.isWhitespace(ch);
+            if (space) {
+                if (!wasspace)
                     wasspace = true;
-                }
             } else {
-                if (wasspace && res.length() > 0) {
+                if (wasspace && res.length() > 0)
                     res.append(' ');
-                }
-                res.appendCodePoint(cp);
+                res.append(ch);
                 wasspace = false;
             }
         }
@@ -456,7 +669,7 @@ public class StaticUtils {
 
         // if os or user home is null or empty, we cannot reliably determine
         // the config dir, so we use the current working dir (= empty string)
-        if (os == null || home == null || home.isEmpty()) {
+        if ((os == null) || (home == null) || (home.length() == 0)) {
             // set the config dir to the current working dir
             m_configDir = new File(".").getAbsolutePath() + File.separator;
             return m_configDir;
@@ -481,7 +694,7 @@ public class StaticUtils {
                 }
             }
 
-            if (!StringUtil.isEmpty(appData)) {
+            if ((appData != null) && (appData.length() > 0)) {
                 // if a valid application data dir has been found,
                 // append an OmegaT subdir to it
                 m_configDir = appData + WINDOWS_CONFIG_DIR;
@@ -512,7 +725,7 @@ public class StaticUtils {
         }
 
         // create the path to the configuration dir, if necessary
-        if (!m_configDir.isEmpty()) {
+        if (m_configDir.length() > 0) {
             try {
                 // check if the dir exists
                 File dir = new File(m_configDir);
@@ -577,6 +790,47 @@ public class StaticUtils {
     }
 
     /**
+     * Find some protected parts defined in Tag Validation Options dialog: printf variables, java
+     * MessageFormat patterns, user defined cusom tags.
+     * 
+     * These protected parts shouldn't affect statistic but just be displayed in gray in editor and take part
+     * in tag validation.
+     */
+    public static List<ProtectedPart> applyCustomProtectedParts(String source,
+            Pattern protectedPartsPatterns, List<ProtectedPart> protectedParts) {
+        List<ProtectedPart> result;
+        if (protectedParts != null) {
+            // Remove already define protected parts first for prevent intersection
+            for (ProtectedPart pp : protectedParts) {
+                source = source.replace(pp.getTextInSourceSegment(), StaticUtils.TAG_REPLACEMENT);
+            }
+            result = protectedParts;
+        } else {
+            result = new ArrayList<ProtectedPart>();
+        }
+
+        Matcher placeholderMatcher = protectedPartsPatterns.matcher(source);
+        while (placeholderMatcher.find()) {
+            ProtectedPart pp = new ProtectedPart();
+            pp.setTextInSourceSegment(placeholderMatcher.group());
+            pp.setDetailsFromSourceFile(placeholderMatcher.group());
+            pp.setReplacementWordsCountCalculation(placeholderMatcher.group());
+            pp.setReplacementUniquenessCalculation(placeholderMatcher.group());
+            pp.setReplacementMatchCalculation(placeholderMatcher.group());
+            result.add(pp);
+        }
+        return result;
+    }
+
+    /**
+     * Strips all XML tags (converts to plain text). Tags detected only by
+     * pattern. Protected parts are not used.
+     */
+    public static String stripXmlTags(String xml) {
+        return PatternConsts.OMEGAT_TAG.matcher(xml).replaceAll("");
+    }
+
+    /**
      * Compares two strings for equality. Handles nulls: if both strings are
      * nulls they are considered equal.
      */
@@ -589,7 +843,7 @@ public class StaticUtils {
      */
     public static String uuencode(byte[] buf) {
         if (buf.length <= 0)
-            return "";
+            return new String();
 
         StringBuilder res = new StringBuilder();
         res.append(buf[0]);
@@ -680,9 +934,9 @@ public class StaticUtils {
 
         // handle rest of characters to be escaped
         // String escape = "^.*+[]{}()&|-:=?!<>";
-        for (char c : "^.+[]{}()&|-:=!<>".toCharArray()) {
-            text = text.replaceAll("\\" + c, "\\\\" + c);
-        }
+        String escape = "^.+[]{}()&|-:=!<>";
+        for (int i = 0; i < escape.length(); i++)
+            text = text.replaceAll("\\" + escape.charAt(i), "\\\\" + escape.charAt(i));
 
         // handle "wildcard characters" ? and * (only if requested)
         // do this last, or the additional period (.) will cause trouble
@@ -794,42 +1048,33 @@ public class StaticUtils {
         }
     }
 
-    public static void extractFileFromJar(File archive, List<String> filenames, String destination)
+    public static void extractFileFromJar(String archive, List<String> filenames, String destination)
             throws IOException {
-        InputStream is = new FileInputStream(archive);
-        extractFileFromJar(is, filenames, destination);
-        is.close();
-    }
-    
-    public static void extractFileFromJar(InputStream in, List<String> filenames, String destination) throws IOException {
-        if (filenames == null || filenames.isEmpty()) {
-            throw new IllegalArgumentException("Caller must provide non-empty list of files to extract.");
-        }
-        List<String> toExtract = new ArrayList<String>(filenames);
-        JarInputStream jis = new JarInputStream(in);
+        // open the jar (zip) file
+        JarFile jar = new JarFile(archive);
+
         // parse the entries
-        JarEntry entry;
-        while ((entry = jis.getNextJarEntry()) != null) {
-            if (toExtract.contains(entry.getName())) {
+        Enumeration<JarEntry> entryEnum = jar.entries();
+        while (entryEnum.hasMoreElements()) {
+            JarEntry file = entryEnum.nextElement();
+            if (filenames.contains(file.getName())) {
                 // match found
-                File f = new File(destination, entry.getName());
-                f.getParentFile().mkdirs();
+                File f = new File(destination + File.separator + file.getName());
+                InputStream in = jar.getInputStream(file);
                 BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
 
                 byte[] byteBuffer = new byte[1024];
 
                 int numRead;
-                while ((numRead = jis.read(byteBuffer)) != -1) {
+                while ((numRead = in.read(byteBuffer)) != -1) {
                     out.write(byteBuffer, 0, numRead);
                 }
+
+                in.close();
                 out.close();
-                toExtract.remove(entry.getName());
             }
         }
-        jis.close();
-        if (!toExtract.isEmpty()) {
-            throw new FileNotFoundException("Failed to extract all of the specified files.");
-        }
+        jar.close();
     }
 
     /**
@@ -841,9 +1086,9 @@ public class StaticUtils {
      * @return result stream
      */
     public static String fixChars(String str) {
-        StringBuilder sb = new StringBuilder(str.length());
-        for (int c, i = 0; i < str.length(); i += Character.charCount(c)) {
-            c = str.codePointAt(i);
+        char[] result = new char[str.length()];
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
             if (c < 0x20) {
                 if (c != 0x09 && c != 0x0A && c != 0x0D) {
                     c = ' ';
@@ -854,9 +1099,70 @@ public class StaticUtils {
             } else {
                 c = ' ';
             }
-            sb.appendCodePoint(c);
+            result[i] = c;
         }
-        return sb.toString();
+        return new String(result);
+    }
+
+    /**
+     * Reconstruct a tag from its {@link TagInfo}.
+     * 
+     * @param info
+     *            Description of tag
+     * @return Reconstructed original tag
+     */
+    public static String getOriginalTag(TagInfo info) {
+        switch (info.type) {
+        case START:
+            return String.format("<%s>", info.name);
+        case END:
+            return String.format("</%s>", info.name);
+        case SINGLE:
+            return String.format("<%s/>", info.name);
+        }
+        return null;
+    }
+
+    /**
+     * Sort tags by order of their appearance in a reference string.
+     */
+    public static class TagComparator implements Comparator<String> {
+
+        private final String source;
+
+        public TagComparator(String source) {
+            super();
+            this.source = source;
+        }
+
+        @Override
+        public int compare(String tag1, String tag2) {
+            // Check for equality
+            if (tag1.equals(tag2)) {
+                return 0;
+            }
+            // Check to see if one tag encompases the other
+            if (tag1.startsWith(tag2)) {
+                return -1;
+            } else if (tag2.startsWith(tag1)) {
+                return 1;
+            }
+            // Check which tag comes first
+            int index1 = source.indexOf(tag1);
+            int index2 = source.indexOf(tag2);
+            if (index1 == index2) {
+                int len1 = tag1.length();
+                int len2 = tag2.length();
+                if (len1 > len2) {
+                    return -1;
+                } else if (len2 > len1) {
+                    return 1;
+                } else {
+                    return tag1.compareTo(tag2);
+                }
+            }
+            return index1 > index2 ? 1 : -1;
+        }
     }
 
     /**
@@ -867,34 +1173,32 @@ public class StaticUtils {
      */
     public static String[] parseCLICommand(String cmd) {
         cmd = cmd.trim();
-        if (cmd.isEmpty()) {
-            return new String[] { "" };
-        }
+        if (cmd.length() == 0) return new String[] { "" };
         
         StringBuilder arg = new StringBuilder();
         List<String> result = new ArrayList<String>();
         
         final char noQuote = '\0';
         char currentQuote = noQuote;
-        for (int cp, i = 0; i < cmd.length(); i += Character.charCount(cp)) {
-            cp = cmd.codePointAt(i);
-            if (cp == currentQuote) {
+        for (int i = 0; i < cmd.length(); i++) {
+            char c = cmd.charAt(i);
+            if (c == currentQuote) {
                 currentQuote = noQuote;
-            } else if (cp == '"' && currentQuote == noQuote) {
+            } else if (c == '"' && currentQuote == noQuote) {
                 currentQuote = '"';
-            } else if (cp == '\'' && currentQuote == noQuote) {
+            } else if (c == '\'' && currentQuote == noQuote) {
                 currentQuote = '\'';
-            } else if (cp == '\\' && i + 1 < cmd.length()) {
-                int ncp = cmd.codePointAt(cmd.offsetByCodePoints(i, 1));
-                if ((currentQuote == noQuote && Character.isWhitespace(ncp))
-                        || (currentQuote == '"' && ncp == '"')) {
-                    arg.appendCodePoint(ncp);
-                    i += Character.charCount(ncp);
+            } else if (c == '\\' && i + 1 < cmd.length()) {
+                char next = cmd.charAt(i + 1);
+                if ((currentQuote == noQuote && Character.isWhitespace(next))
+                        || (currentQuote == '"' && next == '"')) {
+                    arg.append(next);
+                    i++;
                 } else {
-                    arg.appendCodePoint(cp);
+                    arg.append(c);
                 }
             } else {
-                if (Character.isWhitespace(cp) && currentQuote == noQuote) {
+                if (Character.isWhitespace(c) && currentQuote == noQuote) {
                     if (arg.length() > 0) {
                         result.add(arg.toString());
                         arg = new StringBuilder();
@@ -902,7 +1206,7 @@ public class StaticUtils {
                         // Discard
                     }
                 } else {
-                    arg.appendCodePoint(cp);
+                    arg.append(c);
                 }
             }
         }
@@ -910,16 +1214,7 @@ public class StaticUtils {
         if (arg.length() > 0) {
             result.add(arg.toString());
         }
-        return result.toArray(new String[result.size()]);
-    }
-
-    public static boolean isProjectDir(File f) {
-        if (f == null || f.getName().isEmpty()) {
-            return false;
-        }
-        File projFile = new File(f.getAbsolutePath(), OConsts.FILE_PROJECT);
-        File internal = new File(f.getAbsolutePath(), OConsts.DEFAULT_INTERNAL);
-        return projFile.exists() && internal.isDirectory();
+        return result.toArray(new String[0]);
     }
     
 } // StaticUtils

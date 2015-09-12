@@ -98,7 +98,6 @@ import org.omegat.util.ProjectFileStorage;
 import org.omegat.util.RuntimePreferences;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
-import org.omegat.util.TagUtil;
 import org.omegat.util.gui.UIThreadsUtil;
 import org.xml.sax.SAXParseException;
 
@@ -266,7 +265,7 @@ public class RealProject implements IProject {
             }
 
             loadTranslations();
-            setProjectModified(true);
+            m_modifiedFlag = true;
             saveProject(false);
 
             allProjectEntries = Collections.unmodifiableList(allProjectEntries);
@@ -351,7 +350,7 @@ public class RealProject implements IProject {
             // Project Loaded...
             Core.getMainWindow().showStatusMessageRB(null);
 
-            setProjectModified(false);
+            m_modifiedFlag = false;
         } catch (Exception e) {
             Log.logErrorRB(e, "TF_LOAD_ERROR");
             Core.getMainWindow().displayErrorRB(e, "TF_LOAD_ERROR");
@@ -372,10 +371,10 @@ public class RealProject implements IProject {
             System.gc();
 
             // There, that should do it, now inform the user
-            long memory = Runtime.getRuntime().maxMemory() / 1024 / 1024;
-            Log.logErrorRB("OUT_OF_MEMORY", memory);
+            Object[] args = { Runtime.getRuntime().maxMemory() / 1024 / 1024 };
+            Log.logErrorRB("OUT_OF_MEMORY", args);
             Log.log(oome);
-            Core.getMainWindow().showErrorDialogRB("TF_ERROR", "OUT_OF_MEMORY", memory);
+            Core.getMainWindow().showErrorDialogRB("OUT_OF_MEMORY", args, "TF_ERROR");
             // Just quit, we can't help it anyway
             System.exit(0);
         }
@@ -567,7 +566,7 @@ public class RealProject implements IProject {
             // shorten filename to that which is relative to src root
             Matcher fileMatch = FILE_PATTERN.matcher(midName);
             if (fileMatch.matches()) {
-                File fn = new File(locRoot, midName);
+                File fn = new File(locRoot+midName);
                 if (!fn.getParentFile().exists()) {
                     // target directory doesn't exist - create it
                     if (!fn.getParentFile().mkdirs()) {
@@ -610,7 +609,7 @@ public class RealProject implements IProject {
      */
     private void doExternalCommand(String command) {
         
-        if (StringUtil.isEmpty(command)) {
+        if (command == null || command.length() == 0) {
             return;
         }
         
@@ -622,8 +621,8 @@ public class RealProject implements IProject {
         try {
             Process p = Runtime.getRuntime().exec(StaticUtils.parseCLICommand(command));
             processCache.push(p);
-            CommandMonitor stdout = CommandMonitor.newStdoutMonitor(p);
-            CommandMonitor stderr = CommandMonitor.newStderrMonitor(p);
+            CommandMonitor stdout = CommandMonitor.StdoutMonitor(p);
+            CommandMonitor stderr = CommandMonitor.StderrMonitor(p);
             stdout.start();
             stderr.start();
         } catch (IOException e) {
@@ -685,7 +684,7 @@ public class RealProject implements IProject {
                         rebaseProject();
                     }
 
-                    setProjectModified(false);
+                    m_modifiedFlag = false;
                 } catch (KnownException ex) {
                     throw ex;
                 } catch (Exception e) {
@@ -1134,7 +1133,7 @@ public class RealProject implements IProject {
 
             loadFilesCallback.fileFinished();
 
-            if (filter != null && !fi.entries.isEmpty()) {
+            if (filter != null && (fi.entries.size() > 0)) {
                 fi.filterClass = filter.getClass(); //Don't store the instance, because every file gets an instance and 
                                                     // then we consume a lot of memory for all instances. 
                                                     //See also IFilter "TODO: each filter should be stateless"
@@ -1370,13 +1369,6 @@ public class RealProject implements IProject {
         return m_modifiedFlag;
     }
 
-    private void setProjectModified(boolean isModified) {
-        m_modifiedFlag = isModified;
-        if (isModified) {
-            CoreEvents.fireProjectChange(IProjectEventListener.PROJECT_CHANGE_TYPE.MODIFIED);
-        }
-    }
-    
     @Override
     public void setTranslation(final SourceTextEntry entry, final PrepareTMXEntry trans, boolean defaultTranslation, TMXEntry.ExternalLinked externalLinked) {
         if (trans == null) {
@@ -1415,7 +1407,7 @@ public class RealProject implements IProject {
             newTrEntry = new TMXEntry(trans, defaultTranslation, externalLinked);
         }
 
-        setProjectModified(true);
+        m_modifiedFlag = true;
 
         projectTMX.setTranslation(entry, newTrEntry, defaultTranslation);
 
@@ -1450,7 +1442,7 @@ public class RealProject implements IProject {
             projectTMX.setTranslation(entry, new TMXEntry(en, true, null), true);
         }
 
-        setProjectModified(true);
+        m_modifiedFlag = true;
     }
 
     public void iterateByDefaultTranslations(DefaultTranslationsIterator it) {
@@ -1517,7 +1509,7 @@ public class RealProject implements IProject {
      * @return Tokenizer implementation
      */
     protected ITokenizer createTokenizer(String cmdLine, Class<?> projectPref) {
-        if (!StringUtil.isEmpty(cmdLine)) {
+        if (cmdLine != null && cmdLine.length() > 0) {
             try {
                 return (ITokenizer) this.getClass().getClassLoader().loadClass(cmdLine).newInstance();
             } catch (ClassNotFoundException e) {
@@ -1547,7 +1539,7 @@ public class RealProject implements IProject {
      */
     protected void configTokenizer(String cmdLine, ITokenizer tokenizer) {
         // Set from command line.
-        if (!StringUtil.isEmpty(cmdLine)) {
+        if (cmdLine != null && cmdLine.length() > 0) {
             try {
                 tokenizer.setBehavior(Version.valueOf(cmdLine));
                 return;
@@ -1560,7 +1552,7 @@ public class RealProject implements IProject {
         String vString = Preferences.getPreferenceDefault(
                 Preferences.TOK_BEHAVIOR_PREFIX + tokenizer.getClass().getName(),
                 null);
-         if (!StringUtil.isEmpty(vString)) {
+         if (vString != null && vString.length() > 0) {
              try {
                  tokenizer.setBehavior(Version.valueOf(vString));
                  return;
@@ -1579,20 +1571,6 @@ public class RealProject implements IProject {
         return Collections.unmodifiableList(projectFilesList);
     }
 
-    @Override
-    public String getTargetPathForSourceFile(String currentSource) {
-        if (StringUtil.isEmpty(currentSource)) {
-            return null;
-        }
-        try {
-            return Core.getFilterMaster().getTargetForSource(m_config.getSourceRoot(),
-                    currentSource, new FilterContext(m_config));
-        } catch (Exception e) {
-            Log.log(e);
-        }
-        return null;
-    }
-    
     @Override
     public List<String> getSourceFilesOrder() {
         final String file = m_config.getProjectInternal() + OConsts.FILES_ORDER_FILENAME;
@@ -1679,13 +1657,13 @@ public class RealProject implements IProject {
                 List<ProtectedPart> protectedParts, String segmentTranslation, boolean segmentTranslationFuzzy,
                 String comment, String prevSegment, String nextSegment, String path) {
             // if the source string is empty, don't add it to TM
-            if (segmentSource.trim().isEmpty()) {
+            if (segmentSource.length() == 0 || segmentSource.trim().length() == 0) {
                 throw new RuntimeException("Segment must not be empty");
             }
 
             EntryKey ek = new EntryKey(entryKeyFilename, segmentSource, id, prevSegment, nextSegment, path);
 
-            protectedParts = TagUtil.applyCustomProtectedParts(segmentSource,
+            protectedParts = StaticUtils.applyCustomProtectedParts(segmentSource,
                     PatternConsts.getPlaceholderPattern(), protectedParts);
 
             //If Allow translation equals to source is not set, we ignore such existing translations

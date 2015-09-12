@@ -433,33 +433,32 @@ public class ProjectProperties {
      */
     private static boolean verifyLangCode(String code) {
         // Make sure all values are characters
-        for (int cp, i = 0; i < code.length(); i += Character.charCount(cp)) {
-            cp = code.codePointAt(i);
-            if (!Character.isLetter(cp)) {
+        for (int i = 0; i < code.length(); i++) {
+            if (!Character.isLetter(code.charAt(i)))
                 return false;
-            }
         }
-        return !new Language(code).getDisplayName().isEmpty();
+        if (new Language(code).getDisplayName().length() > 0) {
+            return true;
+        } else
+            return false;
     }
 
     /**
      * Verifies whether the language code is OK.
      */
     public static boolean verifySingleLangCode(String code) {
-        int cpc = code.codePointCount(0, code.length());
-        if (cpc == 2 || cpc == 3) {
+        if (code.length() == 2 || code.length() == 3) {
             return verifyLangCode(code);
-        } else if (cpc == 5 || cpc == 6) {
+        } else if (code.length() == 5 || code.length() == 6) {
             int shift = 0;
-            if (cpc == 6) {
+            if (code.length() == 6)
                 shift = 1;
-            }
-            int sepOffset = code.offsetByCodePoints(0, 2 + shift);
-            int sep = code.codePointAt(sepOffset);
-            return verifyLangCode(code.substring(0, sepOffset))
-                    && (sep == '-' || sep == '_')
-                    && verifyLangCode(code.substring(code.offsetByCodePoints(sepOffset, 1),
-                            code.offsetByCodePoints(sepOffset, 3)));
+            if ((verifyLangCode(code.substring(0, 2 + shift)))
+                    && (code.charAt(2 + shift) == '-' || code.charAt(2 + shift) == '_')
+                    && (verifyLangCode(code.substring(3 + shift, 5 + shift))))
+                return true;
+            else
+                return false;
         }
         return false;
     }

@@ -50,8 +50,8 @@ public class XMLStreamReader {
     public XMLStreamReader() {
         m_pos = -1;
         m_stringStream = "";
-        m_charStack = new Stack<Integer>();
-        m_charCache = new ArrayList<Integer>();
+        m_charStack = new Stack<Character>();
+        m_charCache = new ArrayList<Character>();
         m_killEmptyBlocks = false;
         m_ignoreWhiteSpace = false;
         m_breakWhitespace = false;
@@ -106,7 +106,8 @@ public class XMLStreamReader {
             } else if (!ver.equals("1.0")) {
                 throw new IOException(OStrings.getString("XSR_ERROR_NONVALID_XML")
                         + "\n"
-                        + StaticUtils.format(OStrings.getString("XSR_ERROR_UNSUPPORTED_XML_VERSION"), ver));
+                        + StaticUtils.format(OStrings.getString("XSR_ERROR_UNSUPPORTED_XML_VERSION"),
+                                new Object[] { ver }));
             }
             m_headBlock = blk;
         } else {
@@ -124,32 +125,32 @@ public class XMLStreamReader {
         // if first char a '<' then we've got a tag
         // otherwise it's text
         // strip out any newline and multiple spaces (not valid xml)
-        int cp = getNextChar();
+        char c = getNextChar();
 
-        if (cp == 0) {
+        if (c == 0) {
             return null;
-        } else if (cp == '<') {
+        } else if (c == '<') {
             // be lenient on incorrectly formatted XML - if a space
             // follows the < then treat it as a literal character
-            cp = getNextChar();
-            pushChar(cp);
-            if (cp != ' ') {
+            c = getNextChar();
+            pushChar(c);
+            if (c != ' ') {
                 XMLBlock b = getNextTag();
                 return b;
             }
-        } else if (cp == ']' && end_cdata_flag) {
+        } else if (c == ']' && end_cdata_flag) {
             // very, very special case -- the end of CDATA block
             // is handled completely separately
             XMLBlock b = getNextTagCDATAEnd();
             return b;
         }
 
-        pushChar(cp);
+        pushChar(c);
         XMLBlock blk = getNextText();
         if (blk != null && m_killEmptyBlocks) {
             String str = blk.getText();
             str = str.trim();
-            if (str.isEmpty()) {
+            if (str.length() == 0) {
                 blk = getNextBlock();
             }
         }
@@ -180,16 +181,16 @@ public class XMLStreamReader {
      * Pushing chars and marking stream is to allow rewind. Mark is to try to
      * back up to correct for incorrectly formatted document
      */
-    private void pushChar(int cp) {
-        m_charStack.push(cp);
+    private void pushChar(char c) {
+        m_charStack.push(new Character(c));
     }
 
     /**
      * Caches the current character in case rewind later desired.
      */
-    private int getNextCharCache() {
-        int c = getNextChar();
-        m_charCache.add(c);
+    private char getNextCharCache() {
+        char c = getNextChar();
+        m_charCache.add(new Character(c));
         return c;
     }
 
@@ -212,31 +213,28 @@ public class XMLStreamReader {
      * Returns the next character, either from cache (if the cache is non-empty)
      * or from the underlying file reader.
      */
-    private int getNextChar() {
+    private char getNextChar() {
         if (!m_charStack.empty()) {
-            Integer ch = m_charStack.pop();
-            return ch;
+            Character ch = m_charStack.pop();
+            return ch.charValue();
         } else {
             if (m_pos >= 0) {
                 // string
                 if (m_pos < m_stringStream.length()) {
-                    int cp = m_stringStream.codePointAt(m_pos);
-                    m_pos += Character.charCount(cp);
-                    if (cp == 13) {
+                    char c = m_stringStream.charAt(m_pos++);
+                    if (c == 13) {
                         // convert 13 to 10 - or just omit 13
                         // (XML specs instruct this)
-                        cp = m_stringStream.codePointAt(m_pos);
-                        if (cp == '\n') {
+                        c = m_stringStream.charAt(m_pos);
+                        if (c == '\n') {
                             // simply drop 13
-                            m_pos += Character.charCount(cp);
-                        } else {
-                            cp = '\n';
-                        }
+                            m_pos++;
+                        } else
+                            c = '\n';
                     }
-                    return cp;
-                } else {
+                    return c;
+                } else
                     return 0;
-                }
             } else {
                 // regular call to read returns int which can't be cast
                 // ... so, get the next character in this roundabout fashion
@@ -258,13 +256,12 @@ public class XMLStreamReader {
                                         pushChar('\n');
                                 }
                                 // else - do nothing; swallow the 13
-                            } else {
+                            } else
                                 b = 0;
-                            }
                         }
-                    } else {
+                    } else
                         return 0;
-                    }
+
                     return b;
                 } catch (IOException e) {
                     Log.logErrorRB("XSR_ERROR_IOEXCEPTION");
@@ -277,25 +274,24 @@ public class XMLStreamReader {
 
     private XMLBlock getNextText() throws TranslationException {
         XMLBlock blk = new XMLBlock();
-        StringBuilder strBuf = new StringBuilder();
-        int cp;
+        StringBuffer strBuf = new StringBuffer();
+        char c;
         int wsCnt = 0;
         int wsBreak = 0;
-        while ((cp = getNextChar()) != '<' && cp != 0) {
-            if (cp == '&') {
+        while ((c = getNextChar()) != '<' && c != 0) {
+            if (c == '&') {
                 wsCnt = 0;
                 if (wsBreak == 1) {
                     // ws only tag - push char and bail out
-                    pushChar(cp);
+                    pushChar(c);
                     break;
                 }
-                int cp2 = getEscChar();
-                if (cp2 == 0) {
+                char c2 = getEscChar();
+                if (c2 == 0)
                     strBuf.append('&');
-                } else {
-                    strBuf.appendCodePoint(cp2);
-                }
-            } else if (cp == ' ' || cp == '\n' || cp == 13 || cp == 9) {
+                else
+                    strBuf.append(c2);
+            } else if (c == ' ' || c == '\n' || c == 13 || c == 9) {
                 // spaces get special handling
                 if (m_ignoreWhiteSpace) {
                     continue;
@@ -308,7 +304,7 @@ public class XMLStreamReader {
                         if (strBuf.length() > 0) {
                             if (wsBreak == 0) {
                                 // in text
-                                pushChar(cp);
+                                pushChar(c);
                                 break;
                             }
                             // else in a ws sequence
@@ -328,39 +324,38 @@ public class XMLStreamReader {
                     }
                 } else // compressWhitespace == false
                 {
-                    strBuf.appendCodePoint(cp);
+                    strBuf.append(c);
                 }
             } else {
                 wsCnt = 0;
                 if (wsBreak == 1) {
                     // ws only tag - push char and bail out
-                    pushChar(cp);
+                    pushChar(c);
                     break;
                 }
 
-                if (cp == ']' && cdata_flag) {
+                if (c == ']' && cdata_flag) {
                     // handling ]]> (closure of CDATA expression) in a special
                     // way
-                    int cp1 = getNextChar();
-                    int cp2 = getNextChar();
-                    pushChar(cp2);
-                    pushChar(cp1);
-                    if (cp1 == ']' && cp2 == '>') {
+                    char c1 = getNextChar();
+                    char c2 = getNextChar();
+                    pushChar(c2);
+                    pushChar(c1);
+                    if (c1 == ']' && c2 == '>') {
                         cdata_flag = false;
                         end_cdata_flag = true;
-                        pushChar(cp);
+                        pushChar(c);
                         break;
                     }
                 }
 
-                strBuf.appendCodePoint(cp);
+                strBuf.append(c);
             }
 
         }
 
-        if (cp == '<') {
-            pushChar(cp);
-        }
+        if (c == '<')
+            pushChar(c);
 
         blk.setText(strBuf.toString());
         return blk;
@@ -418,8 +413,8 @@ public class XMLStreamReader {
         XMLBlock blk = new XMLBlock();
         blk.setTypeChar('!');
 
-        StringBuilder name = new StringBuilder();
-        StringBuilder data = new StringBuilder();
+        String name = "";
+        String data = "";
         int state = state_start;
         int type;
         boolean err = false;
@@ -427,9 +422,9 @@ public class XMLStreamReader {
 
         int dashCnt = 0;
 
-        int cp;
-        while ((cp = getNextChar()) != 0) {
-            type = getCharType(cp);
+        char c;
+        while ((c = getNextChar()) != 0) {
+            type = getCharType(c);
             switch (state) {
             case state_start:
                 switch (type) {
@@ -440,7 +435,7 @@ public class XMLStreamReader {
                 case type_text:
                     // name - start copying
                     state = state_name;
-                    name.appendCodePoint(cp);
+                    name += c;
                     break;
 
                 case type_opBrac:
@@ -456,14 +451,14 @@ public class XMLStreamReader {
 
                 default:
                     err = true;
-                    msg = StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                            String.valueOf(Character.toChars(cp)), state);
+                    msg = StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                            "" + c, "" + state });
                 }
                 break;
 
             case state_commentStart:
                 // verify start of comment string
-                if (cp == '-') {
+                if (c == '-') {
                     state = state_comment;
                 } else {
                     err = true;
@@ -476,7 +471,7 @@ public class XMLStreamReader {
                 switch (type) {
                 case type_dash:
                     if (dashCnt >= 2)
-                        data.appendCodePoint(cp);
+                        data += c;
                     else
                         dashCnt++;
                     break;
@@ -485,7 +480,7 @@ public class XMLStreamReader {
                     if (dashCnt >= 2) {
                         // all done
                         // blk.setAttribute(data, "");
-                        blk.setText(data.toString());
+                        blk.setText(data);
                         state = state_finish;
                     }
                     break;
@@ -495,11 +490,11 @@ public class XMLStreamReader {
                         // false signal for comment end - return '-'
                         // to stream
                         while (dashCnt > 0) {
-                            data.append('-');
+                            data += '-';
                             dashCnt--;
                         }
                     }
-                    data.appendCodePoint(cp);
+                    data += c;
                 }
                 break;
 
@@ -520,12 +515,12 @@ public class XMLStreamReader {
                 switch (type) {
                 case type_text:
                     // continue copying name
-                    name.appendCodePoint(cp);
+                    name += c;
                     break;
 
                 case type_ws:
                     // name done - store it and move on
-                    blk.setTagName(name.toString());
+                    blk.setTagName(name);
                     state = state_record;
                     break;
 
@@ -536,8 +531,8 @@ public class XMLStreamReader {
 
                 default:
                     err = true;
-                    msg = StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                            String.valueOf(Character.toChars(cp)), state);
+                    msg = StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                            "" + c, "" + state });
                 }
                 break;
 
@@ -546,23 +541,23 @@ public class XMLStreamReader {
                 case type_apos:
                     // continue copying in 'safe' mode
                     state = state_recordSingle;
-                    data.appendCodePoint(cp);
+                    data += c;
                     break;
 
                 case type_quote:
                     // continue copying in 'safe' mode
                     state = state_recordDouble;
-                    data.appendCodePoint(cp);
+                    data += c;
                     break;
 
                 case type_gt:
                     // tag done - record data and close
                     state = state_finish;
-                    blk.setAttribute(data.toString(), "");
+                    blk.setAttribute(data, "");
                     break;
 
                 default:
-                    data.appendCodePoint(cp);
+                    data += c;
                 }
                 break;
 
@@ -571,23 +566,23 @@ public class XMLStreamReader {
                 case type_apos:
                     // continue copying normally
                     state = state_record;
-                    data.appendCodePoint(cp);
+                    data += c;
                     break;
 
                 case type_backSlash:
                     // ignore meaning of next char
                     state = state_escSingle;
-                    data.appendCodePoint(cp);
+                    data += c;
                     break;
 
                 default:
-                    data.appendCodePoint(cp);
+                    data += c;
                 }
                 break;
 
             case state_escSingle:
                 // whatever happens, just remember character
-                data.appendCodePoint(cp);
+                data += c;
                 state = state_recordSingle;
                 break;
 
@@ -596,23 +591,23 @@ public class XMLStreamReader {
                 case type_quote:
                     // continue copying normally
                     state = state_record;
-                    data.appendCodePoint(cp);
+                    data += c;
                     break;
 
                 case type_backSlash:
                     // ignore meaning of next char
                     state = state_escDouble;
-                    data.appendCodePoint(cp);
+                    data += c;
                     break;
 
                 default:
-                    data.appendCodePoint(cp);
+                    data += c;
                 }
                 break;
 
             case state_escDouble:
                 // whatever happens, just remember character
-                data.appendCodePoint(cp);
+                data += c;
                 state = state_recordDouble;
                 break;
 
@@ -621,12 +616,10 @@ public class XMLStreamReader {
                 // TODO construct error message with correct state data
                 // for now, just throw a parse error
                 String str = OStrings.getString("XSR_ERROR_TAG_NAME") + blk.getTagName() + " ";
-                if (blk.isComment()) {
+                if (blk.isComment())
                     str += OStrings.getString("XSR_ERROR_COMMENT_TAG");
-                }
-                if (blk.numAttributes() > 0) {
+                if (blk.numAttributes() > 0)
                     str += blk.getAttribute(0).name;
-                }
                 throw new TranslationException(msg + str + "::" + data);
             } else if (state == state_finish) {
                 break;
@@ -650,15 +643,13 @@ public class XMLStreamReader {
     }
 
     private XMLBlock getNextTag() throws TranslationException {
-        int cp = getNextChar();
-        if (cp == 0) {
+        char c = getNextChar();
+        if (c == 0)
             return null;
-        }
 
         // <! encountered - handle it seperately
-        if (cp == '!') {
+        if (c == '!')
             return getNextTagExclamation();
-        }
 
         final int state_start = 1;
         final int state_buildName = 2;
@@ -674,21 +665,21 @@ public class XMLStreamReader {
 
         XMLBlock blk = new XMLBlock();
 
-        if (cp == '?') {
+        if (c == '?') {
             // handle this like a normal tag - let stream class figure
             // out its importance
-            cp = getNextChar();
+            c = getNextChar();
             blk.setTypeChar('?');
         }
 
         int state = state_start;
-        StringBuilder name = new StringBuilder();
-        StringBuilder attr = new StringBuilder();
-        StringBuilder val = new StringBuilder();
+        String name = "";
+        String attr = "";
+        String val = "";
         int type;
         int buildValueStartType = 0;
-        while (cp != 0) {
-            type = getCharType(cp);
+        while (c != 0) {
+            type = getCharType(c);
             switch (state) {
             case state_start:
                 switch (type) {
@@ -698,15 +689,15 @@ public class XMLStreamReader {
                     break;
 
                 case type_text:
-                    name.appendCodePoint(cp);
+                    name += c;
                     state = state_buildName;
                     break;
 
                 default:
                     throwErrorInGetNextTag(
                             blk,
-                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                                    String.valueOf(Character.toChars(cp)), state));
+                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                                    "" + c, "" + state }));
                 }
                 break;
 
@@ -715,33 +706,33 @@ public class XMLStreamReader {
                 case type_dash:
                 case type_text:
                     // more name text
-                    name.appendCodePoint(cp);
+                    name += c;
                     break;
 
                 case type_ws:
                     // name is done - move on
                     state = state_attrStandby;
-                    blk.setTagName(name.toString());
+                    blk.setTagName(name);
                     break;
 
                 case type_slash:
                     // name done - standalone tag slash encountered
-                    blk.setTagName(name.toString());
+                    blk.setTagName(name);
                     blk.setStandaloneFlag();
                     state = state_setStandaloneFlag;
                     break;
 
                 case type_gt:
                     // all done
-                    blk.setTagName(name.toString());
+                    blk.setTagName(name);
                     state = state_finish;
                     break;
 
                 default:
                     throwErrorInGetNextTag(
                             blk,
-                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                                    String.valueOf(Character.toChars(cp)), state));
+                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                                    "" + c, "" + state }));
                 }
                 break;
 
@@ -749,7 +740,7 @@ public class XMLStreamReader {
                 switch (type) {
                 case type_text:
                     // close flag marked not text - start copy
-                    name.appendCodePoint(cp);
+                    name += c;
                     state = state_buildName;
                     break;
 
@@ -760,8 +751,8 @@ public class XMLStreamReader {
                 default:
                     throwErrorInGetNextTag(
                             blk,
-                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                                    String.valueOf(Character.toChars(cp)), state));
+                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                                    "" + c, "" + state }));
                 }
                 break;
 
@@ -779,8 +770,8 @@ public class XMLStreamReader {
                 default:
                     throwErrorInGetNextTag(
                             blk,
-                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                                    String.valueOf(Character.toChars(cp)), state));
+                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                                    "" + c, "" + state }));
                 }
                 break;
 
@@ -788,7 +779,7 @@ public class XMLStreamReader {
                 switch (type) {
                 case type_text:
                     // start of attribute name - start recording
-                    attr.appendCodePoint(cp);
+                    attr += c;
                     state = state_buildAttr;
                     break;
 
@@ -811,13 +802,13 @@ public class XMLStreamReader {
                 default:
                     throwErrorInGetNextTag(
                             blk,
-                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                                    String.valueOf(Character.toChars(cp)), state));
+                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                                    "" + c, "" + state }));
                 }
                 break;
 
             case state_xmlDeclaration:
-                if (cp != '>') {
+                if (c != '>') {
                     // parse error - got '?' followed by something
                     // unexpected
                     throwErrorInGetNextTag(blk, OStrings.getString("XSR_ERROR_FLOATING_QUESTION_MARK"));
@@ -830,7 +821,7 @@ public class XMLStreamReader {
                 case type_dash:
                 case type_text:
                     // more name - keep recording
-                    attr.appendCodePoint(cp);
+                    attr += c;
                     break;
 
                 case type_equals:
@@ -841,8 +832,8 @@ public class XMLStreamReader {
                 default:
                     throwErrorInGetNextTag(
                             blk,
-                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                                    String.valueOf(Character.toChars(cp)), state));
+                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                                    "" + c, "" + state }));
                 }
                 break;
 
@@ -858,8 +849,8 @@ public class XMLStreamReader {
                 default:
                     throwErrorInGetNextTag(
                             blk,
-                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                                    String.valueOf(Character.toChars(cp)), state));
+                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                                    "" + c, "" + state }));
                 }
                 break;
 
@@ -871,20 +862,20 @@ public class XMLStreamReader {
                     if (type == buildValueStartType) {
                         // done recording value
                         // store it and move on
-                        blk.setAttribute(attr.toString(), val.toString());
-                        attr = new StringBuilder();
-                        val = new StringBuilder();
+                        blk.setAttribute(attr, val);
+                        attr = "";
+                        val = "";
                         state = state_closeValueQuote;
                     } // else -- an error!
                     else {
                         // this is a quoted value - be lenient on OK chars
-                        val.appendCodePoint(cp);
+                        val += c;
                     }
                     break;
 
                 default:
                     // this is a quoted value - be lenient on OK chars
-                    val.appendCodePoint(cp);
+                    val += c;
                     break;
                 }
                 break;
@@ -893,7 +884,7 @@ public class XMLStreamReader {
                 switch (type) {
                 case type_text:
                     // new attribute - start recording
-                    attr.appendCodePoint(cp);
+                    attr += c;
                     state = state_buildAttr;
                     break;
 
@@ -921,8 +912,8 @@ public class XMLStreamReader {
                 default:
                     throwErrorInGetNextTag(
                             blk,
-                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"),
-                                    String.valueOf(Character.toChars(cp)), state));
+                            StaticUtils.format(OStrings.getString("XSR_ERROR_UNEXPECTED_CHAR"), new Object[] {
+                                    "" + c, "" + state }));
                 }
                 break;
 
@@ -934,7 +925,7 @@ public class XMLStreamReader {
                 break;
             }
 
-            cp = getNextChar();
+            c = getNextChar();
         }
 
         return blk;
@@ -957,9 +948,9 @@ public class XMLStreamReader {
     private static final int type_dash = 14;
 
     // used by getNextTag for parsing of tag data
-    private int getCharType(int cp) {
+    private int getCharType(char c) {
         int type = type_text;
-        switch (cp) {
+        switch (c) {
         case 0x20:
         case 0x0a:
         case 0x0d:
@@ -1019,16 +1010,15 @@ public class XMLStreamReader {
     }
 
     /**
-     * Converts a single code point into valid XML. Output stream must convert stream
+     * Converts a single char into valid XML. Output stream must convert stream
      * to UTF-8 when saving to disk.
      */
-    public String makeValidXML(int cp) {
-        String res = StaticUtils.makeValidXML(cp);
-        if (res.codePointCount(0, res.length()) == 1 && entityFilter != null) {
-            return entityFilter.convertToEntity(cp);
-        } else {
+    public String makeValidXML(char c) {
+        String res = StaticUtils.makeValidXML(c);
+        if (res.length() == 1 && entityFilter != null)
+            return entityFilter.convertToEntity(c);
+        else
             return res;
-        }
     }
 
     /**
@@ -1036,10 +1026,11 @@ public class XMLStreamReader {
      * stream to UTF-8 when saving to disk.
      */
     public String makeValidXML(String plaintext) {
-        StringBuilder out = new StringBuilder();
-        for (int cp, i = 0; i < plaintext.length(); i += Character.charCount(cp)) {
-            cp = plaintext.codePointAt(i);
-            out.append(makeValidXML(cp));
+        char c;
+        StringBuffer out = new StringBuffer();
+        for (int i = 0; i < plaintext.length(); i++) {
+            c = plaintext.charAt(i);
+            out.append(makeValidXML(c));
         }
         return out.toString();
     }
@@ -1094,7 +1085,10 @@ public class XMLStreamReader {
             }
         }
 
-        return lst.isEmpty() ? null : lst;
+        if (lst.size() == 0)
+            return null;
+        else
+            return lst;
     }
 
     public XMLBlock advanceToTag(String tagname) throws TranslationException {
@@ -1113,21 +1107,21 @@ public class XMLStreamReader {
         return blk;
     }
 
-    private int getEscChar() throws TranslationException {
+    private char getEscChar() throws TranslationException {
         // look for amp, lt, gt, apos, quot and &#
         clearCache();
-        int cp = getNextCharCache();
-        StringBuilder val = new StringBuilder();
+        char c = getNextCharCache();
+        String val = "";
         boolean hex = false;
 
-        if (cp == '#') {
+        if (c == '#') {
             // char code
-            cp = getNextCharCache();
-            if (cp == 'x' || cp == 'X') {
-                cp = getNextCharCache();
+            c = getNextCharCache();
+            if (c == 'x' || c == 'X') {
+                c = getNextCharCache();
                 hex = true;
             }
-        } else if (cp == ' ') {
+        } else if (c == ' ') {
             // an ampersand occured by itself - illegal format, but accept
             // anyways
             revertToCached();
@@ -1135,12 +1129,12 @@ public class XMLStreamReader {
         }
 
         int ctr = 0;
-        while (cp != ';') {
-            val.appendCodePoint(cp);
-            if (cp == 0) {
+        while (c != ';') {
+            val += c;
+            if (c == 0) {
                 throw new TranslationException(OStrings.getString("XSR_ERROR_UNTERMINATED_ESCAPE_CHAR"));
             }
-            cp = getNextCharCache();
+            c = getNextCharCache();
             if (ctr++ > 13) {
                 // appears to be literal char because close for escape
                 // sequence not found
@@ -1154,50 +1148,50 @@ public class XMLStreamReader {
         // didn't detect an error so assume everything is OK
         clearCache();
 
-        String valString = val.toString();
-        if (valString.equals("amp")) {
+        if (val.equals("amp"))
             return '&';
-        } else if (valString.equals("lt")) {
+        else if (val.equals("lt"))
             return '<';
-        } else if (valString.equals("gt")) {
+        else if (val.equals("gt"))
             return '>';
-        } else if (valString.equals("apos")) {
+        else if (val.equals("apos"))
             return '\'';
-        } else if (valString.equals("quot")) {
+        else if (val.equals("quot"))
             return '"';
-        } else if (entityFilter != null) {
-            return entityFilter.convertToSymbol(val.toString());
+        else if (entityFilter != null) {
+            return entityFilter.convertToSymbol(val);
         }
 
         // else, binary data
-        for (int cp2, i = 0; i < val.length(); i += Character.charCount(cp2)) {
-            cp2 = val.codePointAt(i);
+        char b;
+        for (int i = 0; i < val.length(); i++) {
+            b = val.charAt(i);
             if (hex) {
-                cp *= 16;
-                if (cp2 >= '0' && cp2 <= '9') {
-                    cp += cp2 - '0';
-                } else if (cp2 >= 'A' && cp2 <= 'F') {
-                    cp += 10;
-                    cp += cp2 - 'A';
-                } else if (cp2 >= 'a' && cp2 <= 'f') {
-                    cp += 10;
-                    cp += cp2 - 'a';
+                c *= 16;
+                if (b >= '0' && b <= '9')
+                    c += b - '0';
+                else if (b >= 'A' && b <= 'F') {
+                    c += 10;
+                    c += b - 'A';
+                } else if (b >= 'a' && b <= 'f') {
+                    c += 10;
+                    c += b - 'a';
                 } else {
                     throw new TranslationException(StaticUtils.format(
-                            OStrings.getString("XSR_ERROR_BAD_BINARY_CHAR"), val));
+                            OStrings.getString("XSR_ERROR_BAD_BINARY_CHAR"), new Object[] { val }));
                 }
             } else {
-                cp *= 10;
-                if (cp2 >= '0' && cp2 <= '9')
-                    cp += cp2 - '0';
+                c *= 10;
+                if (b >= '0' && b <= '9')
+                    c += b - '0';
                 else {
                     throw new TranslationException(StaticUtils.format(
-                            OStrings.getString("XSR_ERROR_BAD_DECIMAL_CHAR"), val));
+                            OStrings.getString("XSR_ERROR_BAD_DECIMAL_CHAR"), new Object[] { val }));
                 }
             }
         }
 
-        return cp;
+        return c;
     }
 
     public XMLBlock getHeadBlock() {
@@ -1219,8 +1213,8 @@ public class XMLStreamReader {
     private XMLBlock m_headBlock;
 
     private int m_pos;
-    private Stack<Integer> m_charStack;
-    private List<Integer> m_charCache;
+    private Stack<Character> m_charStack;
+    private List<Character> m_charCache;
     private boolean m_killEmptyBlocks;
     private boolean m_ignoreWhiteSpace; // don't copy ws to text
     private boolean m_breakWhitespace; // put all ws in own block

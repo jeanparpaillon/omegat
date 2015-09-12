@@ -32,15 +32,11 @@ import org.junit.Test;
 import org.omegat.core.Core;
 import org.omegat.core.data.IProject;
 import org.omegat.core.data.SourceTextEntry;
-import org.omegat.core.statistics.StatCount;
-import org.omegat.core.statistics.StatisticsSettings;
 import org.omegat.filters2.ITranslateCallback;
 import org.omegat.filters3.xml.xliff.XLIFFDialect;
 import org.omegat.filters3.xml.xliff.XLIFFFilter;
 import org.omegat.filters3.xml.xliff.XLIFFOptions;
 import org.omegat.util.FileUtil;
-import org.omegat.util.PatternConsts;
-import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
 
 public class XLIFFFilterTest extends TestFilterBase {
@@ -62,7 +58,6 @@ public class XLIFFFilterTest extends TestFilterBase {
     @Test
     public void testTranslate() throws Exception {
         translateXML(filter, "test/data/filters/xliff/file-XLIFFFilter.xlf");
-        translateXML(filter, "test/data/filters/xliff/file-XLIFFFilter-SMP.xlf");
     }
 
     @Test
@@ -153,37 +148,5 @@ public class XLIFFFilterTest extends TestFilterBase {
         checkMultiNoPrevNext("Link to a <a0>reference</a0>", null, null, null);
         checkMultiEnd();
         translateXML(filter, f);
-    }
-
-    @Test
-    public void testStatCounting() throws Exception {
-        String f = "test/data/filters/xliff/file-XLIFFFilter-statcount.xlf";
-
-        IProject.FileInfo fi = loadSourceFiles(filter, f);
-        StatCount counts = new StatCount(fi.entries.get(0));
-        assertEquals(4, counts.words);
-    }
-
-    @Test
-    public void testStatCountingNoProtectedText() throws Exception {
-        String f = "test/data/filters/xliff/file-XLIFFFilter-statcount.xlf";
-
-        StatisticsSettings.setCountingProtectedText(false);
-        IProject.FileInfo fi = loadSourceFiles(filter, f);
-        StatCount counts = new StatCount(fi.entries.get(0));
-        assertEquals(2, counts.words);
-    }
-
-    @Test
-    public void testStatCountingNoCustomTags() throws Exception {
-        String f = "test/data/filters/xliff/file-XLIFFFilter-statcount.xlf";
-
-        StatisticsSettings.setCountingProtectedText(true);
-        StatisticsSettings.setCountingCustomTags(false);
-        Preferences.setPreference(Preferences.CHECK_CUSTOM_PATTERN, "CUSTOM");
-        PatternConsts.updatePlaceholderPattern();
-        IProject.FileInfo fi = loadSourceFiles(filter, f);
-        StatCount counts = new StatCount(fi.entries.get(0));
-        assertEquals(3, counts.words);
     }
 }

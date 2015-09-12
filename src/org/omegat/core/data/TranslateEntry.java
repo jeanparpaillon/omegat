@@ -35,8 +35,8 @@ import org.omegat.core.segmentation.Rule;
 import org.omegat.core.segmentation.Segmenter;
 import org.omegat.filters2.ITranslateCallback;
 import org.omegat.util.Language;
+import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
-import org.omegat.util.TagUtil;
 
 /**
  * Base class for entry translation.
@@ -100,18 +100,17 @@ public abstract class TranslateEntry implements ITranslateCallback {
         // has been enabled.
         String tags = null;
         if (m_config.isRemoveTags()) {
-            tags = TagUtil.buildTagListForRemove(origSource);
+            tags = StaticUtils.buildTagListForRemove(origSource);
         }
         
         boolean removeSpaces = Core.getFilterMaster().getConfig().isRemoveSpacesNonseg();
-        final String source = StringUtil.normalizeUnicode(ParseEntry.stripSomeChars(
-                origSource, spr, m_config.isRemoveTags(), removeSpaces));
+        final String source = ParseEntry.stripSomeChars(origSource, spr, m_config.isRemoveTags(), removeSpaces);
         
-        StringBuilder res = new StringBuilder();
+        StringBuffer res = new StringBuffer();
 
         if (m_config.isSentenceSegmentingEnabled()) {
             boolean translated = false;
-            List<StringBuilder> spaces = new ArrayList<StringBuilder>();
+            List<StringBuffer> spaces = new ArrayList<StringBuffer>();
             List<Rule> brules = new ArrayList<Rule>();
             Language sourceLang = m_config.getSourceLanguage();
             Language targetLang = m_config.getTargetLanguage();
@@ -151,15 +150,15 @@ public abstract class TranslateEntry implements ITranslateCallback {
         if ((getCurrentFile().endsWith(".docx") || getCurrentFile().endsWith(".docm")) &&
             !m_config.isRemoveTags() && !Core.getFilterMaster().getConfig().isRemoveTags()) {
             // Locate the location of the first tag
-            String firstTag = TagUtil.getFirstTag(r);
+            String firstTag = StaticUtils.getFirstTag(r);
             if (firstTag != null) { 
                 int locFirstTag = r.indexOf(firstTag);
                 // Is there text before that first tag?
                 if (locFirstTag > 0) {
                     // Was the first tag between two words without any spaces around?
                     String addSpace = "";
-                    if (!Character.isWhitespace(r.codePointBefore(locFirstTag)) && 
-                        !Character.isWhitespace(r.codePointAt(locFirstTag + firstTag.length()))) {
+                    if (!Character.isWhitespace(r.charAt(locFirstTag -1)) && 
+                        !Character.isWhitespace(r.charAt(locFirstTag + firstTag.length()))) {
                         addSpace = " ";
                     }
                     // Move that first tag before the text, adding a space if needed.
@@ -233,7 +232,7 @@ public abstract class TranslateEntry implements ITranslateCallback {
      * @return
      */
     private String internalGetSegmentTranslation(String id, int segmentIndex, String segmentSource, String path) {
-        if (segmentSource.trim().isEmpty()) {
+        if (segmentSource.length() == 0 || segmentSource.trim().length() == 0) {
             // empty segment
             return segmentSource;
         }

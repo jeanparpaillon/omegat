@@ -90,6 +90,7 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
         });
 
         initComponents();
+        hintTextArea.setBackground(javax.swing.UIManager.getDefaults().getColor("Label.background"));
 
         getRootPane().setDefaultButton(okButton);
 
@@ -410,7 +411,6 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
         hintTextArea.setLineWrap(true);
         hintTextArea.setText(OStrings.getString("GUI_SEGMENTATION_NOTE")); // NOI18N
         hintTextArea.setWrapStyleWord(true);
-        hintTextArea.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -621,7 +621,8 @@ public class SegmentationCustomizer extends JDialog implements ListSelectionList
         MappingRulesModel model = (MappingRulesModel) mapTable.getModel();
         String set = model.getValueAt(mapTable.getSelectedRow(), 0).toString();
         String title = OStrings.getString("CONFIRM_DIALOG_TITLE");
-        String message = StaticUtils.format(OStrings.getString("SEG_CONFIRM_REMOVE_SENTSEG_SET"), set);
+        String message = StaticUtils.format(OStrings.getString("SEG_CONFIRM_REMOVE_SENTSEG_SET"),
+                new Object[] { set });
         if (JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
             model.removeRow(mapTable.getSelectedRow());
     }// GEN-LAST:event_mapDeleteButtonActionPerformed

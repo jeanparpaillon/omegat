@@ -102,7 +102,7 @@ public class RcFilter extends AbstractFilter {
                 continue;
             }
 
-            if (strim.isEmpty()) {
+            if (strim.length() == 0) {
                 if (cLevel == 0) {
                     cPart = PART.UNKNOWN;
                 }
@@ -214,19 +214,18 @@ public class RcFilter extends AbstractFilter {
         }
         e = b;
         while (true) {
-            e = s.indexOf('"', s.offsetByCodePoints(e, 1));
+            e = s.indexOf('"', e + 1);
             if (e < 0) {
                 break;
             }
-            if (s.codePointBefore(e) == '\\') {
+            if (s.charAt(e - 1) == '\\') {
                 // skip escaped quote
                 continue;
             }
-            if (s.codePointCount(e, s.length()) > 1) {
-                int cp = s.codePointAt(s.offsetByCodePoints(e, 1));
-                if (cp == '"') {
+            if (e < s.length() - 1) {
+                if (s.charAt(e + 1) == '"') {
                     // skip double quote
-                    e += Character.charCount(cp);
+                    e++;
                     continue;
                 }
             }

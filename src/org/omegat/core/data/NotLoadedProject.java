@@ -25,14 +25,18 @@
 
 package org.omegat.core.data;
 
+import gen.core.filters.Filters;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.omegat.core.data.TMXEntry.ExternalLinked;
+import org.omegat.core.segmentation.SRX;
 import org.omegat.core.statistics.StatisticsInfo;
 import org.omegat.core.team.IRemoteRepository;
 import org.omegat.filters2.TranslationException;
+import org.omegat.filters2.master.FilterMaster;
 import org.omegat.tokenizer.ITokenizer;
 import org.omegat.util.Language;
 
@@ -145,10 +149,5 @@ public class NotLoadedProject implements IProject {
     }
 
     public void setSourceFilesOrder(List<String> filesList) {
-    }
-
-    @Override
-    public String getTargetPathForSourceFile(String sourceFile) {
-        return null;
     }
 }

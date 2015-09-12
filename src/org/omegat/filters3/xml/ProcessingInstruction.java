@@ -46,10 +46,9 @@ public class ProcessingInstruction extends XMLPseudoTag {
      * original document.
      */
     public String toOriginal() {
-        if (!target.isEmpty()) {
+        if (target.length() > 0)
             return "<?" + data + " " + target + "?>";
-        } else {
+        else
             return "<?" + data + "?>";
-        }
     }
 }

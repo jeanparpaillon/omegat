@@ -45,7 +45,6 @@ import org.omegat.filters2.Instance;
 import org.omegat.filters2.TranslationException;
 import org.omegat.util.Log;
 import org.omegat.util.OStrings;
-import org.omegat.util.StringUtil;
 
 /**
  * A filter to translate HTML and XHTML files.
@@ -129,9 +128,9 @@ public class HTMLFilter2 extends AbstractFilter {
     @Override
     public void processFile(BufferedReader infile, BufferedWriter outfile, org.omegat.filters2.FilterContext fc) throws IOException,
             TranslationException {
-        StringBuilder all = null;
+        StringBuffer all = null;
         try {
-            all = new StringBuilder();
+            all = new StringBuffer();
             char cbuf[] = new char[1000];
             int len = -1;
             while ((len = infile.read(cbuf)) > 0)
@@ -147,7 +146,7 @@ public class HTMLFilter2 extends AbstractFilter {
 
         // Prepare matcher
         String skipRegExp = options.getSkipRegExp();
-        if (!StringUtil.isEmpty(skipRegExp)) {
+        if (skipRegExp != null && skipRegExp.length() > 0) {
             try {
                 this.skipRegExpPattern = Pattern.compile(skipRegExp, Pattern.CASE_INSENSITIVE);
             } catch (PatternSyntaxException e) {

@@ -179,7 +179,7 @@ public class TMXWriter2 {
         if (entry.note != null && !entry.note.equals("")) {
             String note = StaticUtils.fixChars(entry.note);
             if (forceValidTMX) {
-                note = TagUtil.stripXmlTags(note);
+                note = StaticUtils.stripXmlTags(note);
             }
             xml.writeCharacters("      ");
             xml.writeStartElement("note");
@@ -191,7 +191,7 @@ public class TMXWriter2 {
         // write source segment
         source = StaticUtils.fixChars(source);
         if (forceValidTMX) {
-            source = TagUtil.stripXmlTags(source);
+            source = StaticUtils.stripXmlTags(source);
         }
         xml.writeCharacters("      ");
         xml.writeStartElement("tuv");
@@ -215,7 +215,7 @@ public class TMXWriter2 {
         if (translation != null) {
             translation = StaticUtils.fixChars(translation);
             if (forceValidTMX) {
-                translation = TagUtil.stripXmlTags(translation);
+                translation = StaticUtils.stripXmlTags(translation);
             }
 
             xml.writeCharacters("      ");
@@ -312,9 +312,9 @@ public class TMXWriter2 {
             xml.writeCharacters(segment.substring(pos, m.start()));
             pos = m.end();
 
-            if (!m.group(1).isEmpty()) {
+            if (m.group(1).length() > 0) {
                 tagType = TAG_TYPE.END;
-            } else if (!m.group(4).isEmpty()) {
+            } else if (m.group(4).length() > 0) {
                 tagType = TAG_TYPE.SINGLE;
             } else {
                 tagType = TAG_TYPE.START;

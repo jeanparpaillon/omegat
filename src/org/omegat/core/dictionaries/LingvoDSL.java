@@ -51,38 +51,34 @@ public class LingvoDSL implements IDictionary {
     }
 
     public Map<String, Object> readHeader() throws Exception {
+        Map<String, Object> result = new HashMap<String, Object>();
         BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(file), CHARSET));
-        try {
-            Map<String, Object> result = new HashMap<String, Object>();
-            String s;
-            StringBuilder word = new StringBuilder();
-            StringBuilder trans = new StringBuilder();
-            while ((s = rd.readLine()) != null) {
-                if (s.isEmpty()) {
-                    continue;
-                }
-                if (s.codePointAt(0) == '#') {
-                    continue;
-                }
-                s = RE_SKIP.matcher(s).replaceAll("");
-                if (Character.isWhitespace(s.codePointAt(0))) {
-                    trans.append(s).append('\n');
-                } else {
-                    if (word.length() > 0) {
-                        result.put(word.toString(), trans.toString());
-                        word.setLength(0);
-                        trans.setLength(0);
-                    }
-                    word.append(s);
-                }
+        String s;
+        StringBuilder word = new StringBuilder();
+        StringBuilder trans = new StringBuilder();
+        while ((s = rd.readLine()) != null) {
+            if (s.length() == 0) {
+                continue;
             }
-            if (word.length() > 0) {
-                result.put(word.toString(), trans.toString());
+            if (s.charAt(0) == '#') {
+                continue;
             }
-            return result;
-        } finally {
-            rd.close();
+            s = RE_SKIP.matcher(s).replaceAll("");
+            if (Character.isWhitespace(s.charAt(0))) {
+                trans.append(s).append('\n');
+            } else {
+                if (word.length() > 0) {
+                    result.put(word.toString(), trans.toString());
+                    word.setLength(0);
+                    trans.setLength(0);
+                }
+                word.append(s);
+            }
         }
+        if (word.length() > 0) {
+            result.put(word.toString(), trans.toString());
+        }
+        return result;
     }
 
     public String readArticle(String word, Object articleData) throws Exception {

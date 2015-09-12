@@ -45,8 +45,6 @@ import java.util.TimeZone;
  * YYYYMMDDThhmmssZ. Since all translation tools conform to this format, this
  * parser only parses this variant of the 'basic' format.
  * 
- * DateFormat is not thread-safe, so this class must be instantiated.
- * 
  * @author Martin Fleurke
  */
 public class TMXDateParser {
@@ -54,15 +52,19 @@ public class TMXDateParser {
     /**
      * A DateFormat to format any date as YYYYMMDDThhmmssZ
      */
-    private final DateFormat tmxDateFormat;
+    private static DateFormat tmxDateFormat = initializeTMXDateFormat();
 
     /**
-     * Wraps a DateFormat with format YYYYMMDDThhmmssZ able to display a date
-     * in UTC time.
+     * Creates a DateFormat with format YYYYMMDDThhmmssZ able to display a date
+     * in UTC time. This function is added so the timezone of the dateformat can
+     * be set
+     * 
+     * @return the DateFormat.
      */
-    public TMXDateParser() {
-        tmxDateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+    private static DateFormat initializeTMXDateFormat() {
+        SimpleDateFormat tmxDateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
         tmxDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+        return tmxDateFormat;
     }
 
     /**
@@ -75,10 +77,17 @@ public class TMXDateParser {
      * @exception ParseException
      *                if the date is null or not valid
      */
-    public Date parse(String tmxDate) throws ParseException {
-        if (tmxDate == null || tmxDate.length() != 16) {
-            // Parse function does not check this itself.
-            int offset = tmxDate == null ? 0 : Math.min(tmxDate.length(), 16);
+    public static Date parse(String tmxDate) throws ParseException {
+        if (tmxDate == null || tmxDate.length() != 16) { // parse function does
+                                                         // not check this
+                                                         // itself
+            int offset = 0;
+            if (tmxDate != null) {
+                if (tmxDate.length() < 16)
+                    offset = tmxDate.length();
+                else
+                    offset = 16;
+            }
             throw new ParseException("date '" + tmxDate + "' is null or not equal to YYYYMMDDThhmmssZ",
                     offset);
         }
@@ -94,7 +103,7 @@ public class TMXDateParser {
      * @return a string representing the date in the ISO 8601 compatible format
      *         'YYYYMMDDThhmmssZ'
      */
-    public String getTMXDate(Date date) {
+    public static String getTMXDate(Date date) {
         return tmxDateFormat.format(date);
     }
 
@@ -107,7 +116,7 @@ public class TMXDateParser {
      * @return a string representing the date in the ISO 8601 compatible format
      *         'YYYYMMDDThhmmssZ'
      */
-    public String getTMXDate(long date) {
+    public static String getTMXDate(long date) {
         return tmxDateFormat.format(new Date(date));
     }
 }

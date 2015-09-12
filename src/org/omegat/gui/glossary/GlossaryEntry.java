@@ -41,11 +41,9 @@ import org.omegat.util.StringUtil;
  */
 public class GlossaryEntry {
     public GlossaryEntry(String src, String[] loc, String[] com, boolean[] fromPriorityGlossary) {
-        m_src = StringUtil.normalizeUnicode(src);
+        m_src = src;
         m_loc = loc;
-        normalize(m_loc);
         m_com = com;
-        normalize(com);
         m_priority = fromPriorityGlossary;
     }
 
@@ -85,7 +83,7 @@ public class GlossaryEntry {
             if (i > 0 && m_loc[i].equals(m_loc[i - 1])) continue;
             list.add(m_loc[i]);
         }
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[0]);
     }
 
     /**
@@ -119,7 +117,7 @@ public class GlossaryEntry {
         result.text.append(m_src);
         result.text.append(" = ");
         
-        StringBuilder comments = new StringBuilder();
+        StringBuffer comments = new StringBuffer();
         
         int commentIndex = 0;
         for (int i = 0; i < m_loc.length; i++) {
@@ -185,8 +183,8 @@ public class GlossaryEntry {
     public int hashCode() {
         int hash = 98;
         hash = hash * 17 + (m_src == null ? 0 : m_src.hashCode());
-        hash = hash * 31 + (m_loc == null ? 0 : Arrays.hashCode(m_loc));
-        hash = hash * 13 + (m_com == null ? 0 : Arrays.hashCode(m_com));
+        hash = hash * 31 + (m_loc == null ? 0 : m_loc.hashCode());
+        hash = hash * 13 + (m_com == null ? 0 : m_com.hashCode());
         return hash;
     }
 
@@ -215,12 +213,6 @@ public class GlossaryEntry {
 
         public void append(String str) {
             text.append(str);
-        }
-    }
-    
-    private void normalize(String[] strs) {
-        for (int i = 0; i < strs.length; i++) {
-            strs[i] = StringUtil.normalizeUnicode(strs[i]);
         }
     }
 

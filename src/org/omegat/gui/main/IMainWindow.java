@@ -30,6 +30,7 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import com.vlsolutions.swing.docking.Dockable;
 
@@ -133,7 +134,7 @@ public interface IMainWindow {
      *            title of dialog. message key in resource bundle of title that
      *            is to be displayed
      */
-    void showErrorDialogRB(String title, String message, Object... args);
+    void showErrorDialogRB(String message, Object[] args, String title);
 
     /**
      * shows a confirm dialog. For a GUI main window, this can be implemented as JOptionPane.showConfirmDialog

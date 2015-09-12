@@ -64,6 +64,7 @@ import org.omegat.util.FileUtil;
 import org.omegat.util.Log;
 import org.omegat.util.OStrings;
 import org.omegat.util.StringUtil;
+import org.omegat.util.gui.DockingUI;
 
 /**
  * GIT repository connection implementation.
@@ -128,7 +129,9 @@ public class GITRemoteRepository implements IRemoteRepository {
         try {
             c.call();
         } catch (InvalidRemoteException e) {
-            FileUtil.deleteTree(localDirectory);
+            if (localDirectory.exists()) {
+                deleteDirectory(localDirectory);
+            }
             Throwable cause = e.getCause();
             if (cause != null && cause instanceof org.eclipse.jgit.errors.NoRemoteRepositoryException) {
                 BadRepositoryException bre = new BadRepositoryException(((org.eclipse.jgit.errors.NoRemoteRepositoryException)cause).getLocalizedMessage());
@@ -160,6 +163,21 @@ public class GITRemoteRepository implements IRemoteRepository {
         myCredentialsProvider.saveCredentials();
         Log.logInfoRB("GIT_FINISH", "clone");
     }
+
+    static public boolean deleteDirectory(File path) {
+        if( path.exists() ) {
+          File[] files = path.listFiles();
+          for(int i=0; i<files.length; i++) {
+             if(files[i].isDirectory()) {
+               deleteDirectory(files[i]);
+             }
+             else {
+               files[i].delete();
+             }
+          }
+        }
+        return( path.delete() );
+      }
 
     public boolean isChanged(File file) throws Exception {
         Log.logInfoRB("GIT_START", "status");
@@ -518,13 +536,15 @@ public class GITRemoteRepository implements IRemoteRepository {
             TeamUserPassDialog userPassDialog = new TeamUserPassDialog(Core.getMainWindow().getApplicationFrame());
             userPassDialog.descriptionTextArea.setText(OStrings.getString(credentials.username==null ? "TEAM_USERPASS_FIRST" : "TEAM_USERPASS_WRONG"));
             //if username is already available in uri, then we will not be asked for an username, so we cannot change it.
-            if (!StringUtil.isEmpty(usernameInUri)) {
-                userPassDialog.setFixedUsername(usernameInUri);
+            if (usernameInUri != null && !"".equals(usernameInUri)) {
+                userPassDialog.userText.setText(usernameInUri);
+                userPassDialog.userText.setEditable(false);
+                userPassDialog.userText.setEnabled(false);
             }
             userPassDialog.setVisible(true);
             if (userPassDialog.getReturnStatus() == TeamUserPassDialog.RET_OK) {
                 credentials.username = userPassDialog.userText.getText();
-                credentials.password = userPassDialog.getPasswordCopy();
+                credentials.password = userPassDialog.passwordField.getPassword();
                 credentials.readOnly = userPassDialog.cbReadOnly.isSelected();
                 if (gitRemoteRepository != null) {
                     gitRemoteRepository.setReadOnly(credentials.readOnly);
@@ -570,19 +590,21 @@ public class GITRemoteRepository implements IRemoteRepository {
         if (url.startsWith("svn://") || url.startsWith("svn+")) {
             return false;
         }
+        File temp = FileUtil.createTempDir();
         try {
+            // A temporary local repository appears to be required even though
+            // we're just calling `git ls-remote`.
+            Repository repo = Git.init().setDirectory(temp).call().getRepository();
             if (credentials != null) {
                 MyCredentialsProvider provider = new MyCredentialsProvider(null);
                 provider.setCredentials(credentials);
                 CredentialsProvider.setDefault(provider);
             }
-            Collection<Ref> result = new LsRemoteCommand(null).setRemote(url).call();
+            Collection<Ref> result = new LsRemoteCommand(repo).setRemote(url).call();
             return !result.isEmpty();
         } catch (TransportException ex) {
-            String message = ex.getMessage();
-            if (message.endsWith("not authorized") || message.endsWith("Auth fail")
-            		|| message.contains("Too many authentication failures")
-            		|| message.contains("Authentication is required")) {
+            if (ex.getMessage().endsWith("not authorized") || ex.getMessage().endsWith("Auth fail")
+            		|| ex.getMessage().contains("Too many authentication failures")) {
                 throw new AuthenticationException(ex);
             }
             return false;
@@ -591,6 +613,8 @@ public class GITRemoteRepository implements IRemoteRepository {
         } catch (JGitInternalException ex) {
             // Happens if the URL is a Subversion URL like svn://...
             return false;
+        } finally {
+            FileUtil.deleteTree(temp);
         }
     }
 

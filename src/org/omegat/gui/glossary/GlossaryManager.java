@@ -6,7 +6,6 @@
  Copyright (C) 2000-2006 Keith Godfrey and Maxym Mykhalchuk
                2009-2010 Alex Buloichik
                2013 Alex Buloichik
-               2015 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -52,7 +51,6 @@ import org.omegat.util.OConsts;
  * @author Keith Godfrey
  * @author Maxym Mykhalchuk
  * @author Alex Buloichik <alex73mail@gmail.com>
- * @author Didier Briel
  */
 public class GlossaryManager implements DirectoryMonitor.Callback {
 
@@ -101,15 +99,15 @@ public class GlossaryManager implements DirectoryMonitor.Callback {
     @Override
     public void fileChanged(File file) {
         synchronized (this) {
-            glossaries.remove(file.getPath());
+            glossaries.remove(file.getName());
         }
         if (file.exists()) {
             try {
                 List<GlossaryEntry> entries = loadGlossaryFile(file);
                 if (entries != null) {
                     synchronized (this) {
-                        Log.logRB("CT_LOADING_GLOSSARY_DETAILS", entries.size(), file.getName());
-                        glossaries.put(file.getPath(), entries);
+                        Log.logRB("CT_LOADING_GLOSSARY_DETAILS", new Object[] { entries.size(), file.getName() });
+                        glossaries.put(file.getName(), entries);
                     }
                 }
             } catch (Exception ex) {
@@ -128,10 +126,6 @@ public class GlossaryManager implements DirectoryMonitor.Callback {
             }
         }
     }
-    
-    public void forceUpdateGlossary() {
-        pane.refresh();
-    }
 
     /**
      * Loads one glossary file. It choose and calls required required reader.
@@ -140,16 +134,16 @@ public class GlossaryManager implements DirectoryMonitor.Callback {
         boolean isPriority = priorityGlossary.equals(file);
         String fname_lower = file.getName().toLowerCase();
         if (fname_lower.endsWith(OConsts.EXT_TSV_DEF)) {
-            Log.logRB("CT_LOADING_GLOSSARY", file.getName());
+            Log.logRB("CT_LOADING_GLOSSARY", new Object[] { file.getName() });
             return GlossaryReaderTSV.read(file, isPriority);
         } else if (fname_lower.endsWith(OConsts.EXT_TSV_UTF8) || fname_lower.endsWith(OConsts.EXT_TSV_TXT)) {
-            Log.logRB("CT_LOADING_GLOSSARY", file.getName());
+            Log.logRB("CT_LOADING_GLOSSARY", new Object[] { file.getName() });
             return GlossaryReaderTSV.read(file, isPriority);
         } else if (fname_lower.endsWith(OConsts.EXT_CSV_UTF8)) {
-            Log.logRB("CT_LOADING_GLOSSARY", file.getName());
+            Log.logRB("CT_LOADING_GLOSSARY", new Object[] { file.getName() });
             return GlossaryReaderCSV.read(file, isPriority);
         } else if (fname_lower.endsWith(OConsts.EXT_TBX)) {
-            Log.logRB("CT_LOADING_GLOSSARY", file.getName());
+            Log.logRB("CT_LOADING_GLOSSARY", new Object[] { file.getName() });
             return GlossaryReaderTBX.read(file, isPriority);
         } else {
             return null;

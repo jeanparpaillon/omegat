@@ -29,10 +29,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Properties;
+
+import org.omegat.core.Core;
 
 /**
  * Interface for any remote repository implementation.
@@ -149,7 +149,7 @@ public interface IRemoteRepository {
         }
     }
     
-    public static class Credentials implements Cloneable {
+    public static class Credentials {
         public String username = null;
         public char[] password = null;
         public boolean saveAsPlainText = false;
@@ -178,12 +178,7 @@ public interface IRemoteRepository {
                 throw new IOException("Insufficient permissions to read file: " + file);
             }
             Properties p = new Properties();
-            InputStream stream = new FileInputStream(file);
-            try {
-                p.load(stream);
-            } finally {
-                stream.close();
-            }
+            p.load(new FileInputStream(file));
             result.username = p.getProperty(PKEY_USERNAME);
             result.password = p.getProperty(PKEY_PASSWORD).toCharArray();
             result.fingerprint = p.getProperty(PKEY_FINGERPRINT);
@@ -204,12 +199,7 @@ public interface IRemoteRepository {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            OutputStream stream = new FileOutputStream(file);
-            try {
-                p.store(stream, "Remote access credentials for OmegaT project");
-            } finally {
-                stream.close();
-            }
+            p.store(new FileOutputStream(file), "Remote access credentials for OmegaT project");
         }
         
         public Credentials clone() {

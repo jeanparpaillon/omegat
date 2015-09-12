@@ -134,7 +134,7 @@ public class HunspellTokenizer extends BaseTokenizer {
         }
         
         File dictionaryDir = new File(dictionaryDirPath);
-        if (!dictionaryDir.isDirectory()) {
+        if (!dictionaryDir.exists() || !dictionaryDir.isDirectory()) {
             return;
         }
         
@@ -159,6 +159,6 @@ public class HunspellTokenizer extends BaseTokenizer {
             result.add(lang.getLanguage().toLowerCase());
             result.add(lang.getLanguageCode().toLowerCase());
         }
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
 }

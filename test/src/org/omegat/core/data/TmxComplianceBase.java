@@ -126,7 +126,7 @@ public abstract class TmxComplianceBase extends TestCase {
                 outCharset);
     }
 
-    protected void translateUsingTmx(IFilter filter, Map<String, String> config, final String fileTextIn,
+    protected void translateUsingTmx(IFilter filter, Map<String, String> config, String fileTextIn,
             String inCharset, String fileTMX, String outCharset, ProjectProperties props,
             Map<String, TMXEntry> tmxPatch) throws Exception {
         final ProjectTMX tmx = new ProjectTMX(props.getSourceLanguage(), props.getTargetLanguage(), props.isSentenceSegmentingEnabled(), new File("test/data/tmx/TMXComplianceKit/" + fileTMX),
@@ -148,7 +148,7 @@ public abstract class TmxComplianceBase extends TestCase {
             }
             @Override
             String getCurrentFile() {
-                return fileTextIn;
+                return null;
             }
         };
         filter.translateFile(new File("test/data/tmx/TMXComplianceKit/" + fileTextIn), outFile, config, fc,
@@ -168,6 +168,9 @@ public abstract class TmxComplianceBase extends TestCase {
             public void addEntry(String id, String source, String translation, boolean isFuzzy, String comment,
                     String path, IFilter filter, List<ProtectedPart> protectedParts) {
                 result.addAll(Segmenter.segment(context.getSourceLang(), source, null, null));
+            }
+
+            public void addFileTMXEntry(String source, String translation) {
             }
 
             public void linkPrevNextSegments() {

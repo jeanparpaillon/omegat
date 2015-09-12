@@ -33,7 +33,6 @@ import java.util.List;
 
 import org.omegat.core.data.EntryKey;
 import org.omegat.core.data.SourceTextEntry;
-import org.omegat.gui.editor.autocompleter.IAutoCompleter;
 import org.omegat.gui.editor.mark.Mark;
 
 /**
@@ -59,23 +58,12 @@ public interface IEditor {
     }
 
     /**
-     * Get relative path (under <code>source</code>) of the source file
-     * currently open in the editor.
-     * <p>
+     * Get current file name which opened in editor.
+     * 
      * Can be called from any thread.
      */
     String getCurrentFile();
 
-    /**
-     * Get the relative path (under <code>target</code>) of the target file
-     * corresponding to the current source file (per {@link #getCurrentFile()}).
-     * This file is what is created upon doing Create Target Documents, but it
-     * may not exist yet.
-     * <p>
-     * Can be called from any thread.
-     */
-    String getCurrentTargetFile();
-    
     /**
      * Get current active entry.
      * 
@@ -380,9 +368,4 @@ public interface IEditor {
      * Wait for the user to commit the current translation.
      */
     void waitForCommit(int timeoutSeconds);
-
-    /**
-     * Access the AutoCompleter
-     */
-    IAutoCompleter getAutoCompleter();
 }

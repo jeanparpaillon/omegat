@@ -49,7 +49,7 @@ public abstract class Text implements Element {
     /** Whether the text is meaningful, i.e. contains anything but space. */
     public boolean isMeaningful() {
         if (!meaningEvaluated) {
-            meaningful = !text.toString().trim().isEmpty();
+            meaningful = text.toString().trim().length() > 0;
             meaningEvaluated = true;
         }
         return meaningful;
@@ -89,10 +89,6 @@ public abstract class Text implements Element {
      */
     public String toShortcut() {
         return text.toString();
-    }
-
-    public String toSafeCalcShortcut() {
-        return toShortcut();
     }
 
     /**

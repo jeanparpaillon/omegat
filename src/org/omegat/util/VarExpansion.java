@@ -98,7 +98,7 @@ public abstract class VarExpansion<Param> {
         while ((matcher = patternBundleEntry.matcher(localTemplate)).find()) {
             String original = matcher.group();
             String translation = OStrings.getString(matcher.group(1));
-            if (!StringUtil.isEmpty(matcher.group(2))) {
+            if ((matcher.group(2) != null) && (matcher.group(2).length() > 0)) {
                 String vars = matcher.group(2); 
                 List<String> values = new ArrayList<String>();
                 matcher = Pattern.compile("\\[(.+?)\\]").matcher(vars);
@@ -143,8 +143,8 @@ public abstract class VarExpansion<Param> {
         localTemplate = localTemplate.replace(VAR_FILE_NAME, filePath + numHint);
         if (filePath.contains(".")) {
             String[] splitName = filePath.split("\\.");
-            StringBuilder nameOnlyBuf = new StringBuilder(splitName[0]);
-            StringBuilder extensionBuf = new StringBuilder(splitName[splitName.length - 1]);
+            StringBuffer nameOnlyBuf = new StringBuffer (splitName[0]);
+            StringBuffer extensionBuf = new StringBuffer (splitName[splitName.length - 1]);
             localTemplate = localTemplate.replace(VAR_FILE_NAME_ONLY, nameOnlyBuf.toString());
             localTemplate = localTemplate.replace(VAR_FILE_EXTENSION, extensionBuf.toString());
             for (int i = 0; i < splitName.length; i++) {

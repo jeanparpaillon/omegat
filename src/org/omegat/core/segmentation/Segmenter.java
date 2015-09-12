@@ -34,6 +34,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.omegat.core.Core;
+import org.omegat.core.data.IProject;
 import org.omegat.util.Language;
 import org.omegat.util.PatternConsts;
 
@@ -46,7 +48,7 @@ import org.omegat.util.PatternConsts;
  */
 public final class Segmenter {
     
-    public static volatile SRX srx;
+    public static SRX srx;
     /** private to disallow creation */
     private Segmenter() {
     }
@@ -68,7 +70,7 @@ public final class Segmenter {
      *            list to store rules that account to breaks
      * @return list of sentences (String objects)
      */
-    public static List<String> segment(Language lang, String paragraph, List<StringBuilder> spaces,
+    public static List<String> segment(Language lang, String paragraph, List<StringBuffer> spaces,
             List<Rule> brules) {
         if (paragraph == null) {
             return null;
@@ -76,32 +78,26 @@ public final class Segmenter {
         List<String> segments = breakParagraph(lang, paragraph, brules);
         List<String> sentences = new ArrayList<String>(segments.size());
         if (spaces == null)
-            spaces = new ArrayList<StringBuilder>();
+            spaces = new ArrayList<StringBuffer>();
         spaces.clear();
         for (String one : segments) {
             int len = one.length();
             int b = 0;
-            StringBuilder bs = new StringBuilder();
-            for (int cp; b < len; b += Character.charCount(cp)) {
-                cp = one.codePointAt(b);
-                if (!Character.isWhitespace(cp)) {
-                    break;
-                }
-                bs.appendCodePoint(cp);
+            StringBuffer bs = new StringBuffer();
+            while (b < len && Character.isWhitespace(one.charAt(b))) {
+                bs.append(one.charAt(b));
+                b++;
             }
 
-            int e = len;
-            StringBuilder es = new StringBuilder();
-            for (int cp; e > b; e -= Character.charCount(cp)) {
-                cp = one.codePointBefore(e);
-                if (!Character.isWhitespace(cp)) {
-                    break;
-                }
-                es.appendCodePoint(cp);
+            int e = len - 1;
+            StringBuffer es = new StringBuffer();
+            while (e >= b && Character.isWhitespace(one.charAt(e))) {
+                es.append(one.charAt(e));
+                e--;
             }
             es.reverse();
 
-            String trimmed = one.substring(b, e);
+            String trimmed = one.substring(b, e + 1);
             sentences.add(trimmed);
             if (spaces != null) {
                 spaces.add(bs);
@@ -160,7 +156,7 @@ public final class Segmenter {
             // Sometimes the last segment may be empty,
             // it happens for paragraphs like "Rains. "
             // So if it's an empty segment and there's a previous segment
-            if (oneseg.trim().isEmpty() && !segments.isEmpty()) {
+            if (oneseg.trim().length() == 0 && segments.size() > 0) {
                 String prev = segments.get(segments.size() - 1);
                 prev += oneseg;
                 segments.set(segments.size() - 1, prev);
@@ -283,15 +279,15 @@ public final class Segmenter {
      * @return glued translated paragraph
      */
     public static String glue(Language sourceLang, Language targetLang, List<String> sentences,
-            List<StringBuilder> spaces, List<Rule> brules) {
+            List<StringBuffer> spaces, List<Rule> brules) {
         if (sentences.size() <= 0)
             return "";
 
-        StringBuilder res = new StringBuilder();
+        StringBuffer res = new StringBuffer();
         res.append(sentences.get(0));
 
         for (int i = 1; i < sentences.size(); i++) {
-            StringBuilder sp = new StringBuilder();
+            StringBuffer sp = new StringBuffer();
             sp.append(spaces.get(2 * i - 1));
             sp.append(spaces.get(2 * i));
 

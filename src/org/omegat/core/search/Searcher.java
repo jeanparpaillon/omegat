@@ -117,7 +117,7 @@ public class Searcher {
                     if (entry.getEntryNum() == ENTRY_ORIGIN_TRANSLATION_MEMORY) {
                         if (m_tmxMap.containsKey(key) && (m_tmxMap.get(key) > 0)) {
                         	String newPreamble = StaticUtils.format(OStrings.getString("SW_FILE_AND_NR_OF_MORE"),
-                        			entry.getPreamble(), m_tmxMap.get(key));
+                        			new Object[]{entry.getPreamble(), m_tmxMap.get(key)});
                             entry.setPreamble(newPreamble);
                         }
                     } else if (entry.getEntryNum() > ENTRY_ORIGIN_PROJECT_MEMORY) {
@@ -125,9 +125,9 @@ public class Searcher {
                         if (m_entryMap.containsKey(key) && (m_entryMap.get(key) > 0)) {
                         	String newPreamble = StringUtil.isEmpty(entry.getPreamble())
                         			? StaticUtils.format(OStrings.getString("SW_NR_OF_MORE"),
-                            				m_entryMap.get(key))
+                            				new Object[]{m_entryMap.get(key)})
                     				: StaticUtils.format(OStrings.getString("SW_FILE_AND_NR_OF_MORE"),
-                                            entry.getPreamble(), m_entryMap.get(key));
+                                            new Object[]{entry.getPreamble(), m_entryMap.get(key)});
                             entry.setPreamble(newPreamble);
                         }
                     }
@@ -190,7 +190,7 @@ public class Searcher {
             // break the search string into keywords,
             // each of which is a separate search string
             text = text.trim();
-            if (!text.isEmpty()) {
+            if (text.length() > 0) {
                 int wordStart = 0;
                 while (wordStart < text.length()) {
                     // get the location of the next space
@@ -201,7 +201,7 @@ public class Searcher {
                     ? text.substring(wordStart, text.length()).trim()
                             : text.substring(wordStart, spacePos).trim();
 
-                    if (!word.isEmpty()) {
+                    if (word.length() > 0) {
                         // escape the word, if it's not supposed to be a regular
                         // expression
                         word = StaticUtils.escapeNonRegex(word, false);
@@ -644,27 +644,27 @@ public class Searcher {
     private boolean searchAuthor(TMXEntry te) {
         if (te == null || m_author == null)
             return false;
+        String author = te.changer;
         
-        if (m_author.pattern().pattern().equals("")) {
+        if (author == null) {
             // Handle search for null author.
-            return te.changer == null && te.creator == null;
+            if (te.translation != null && m_author.pattern().pattern().equals("")) {
+                return true;
+            }
+            return false;
+        } else if (m_author.pattern().pattern().equals("")) {
+            // Don't match non-null authors when searching for null author.
+            return false;
         }
 
-        if (te.changer != null) {
-            m_author.reset(te.changer);
-            if (m_author.find()) { 
-                return true;
-            }
-        }
-        
-        if (te.creator != null) {
-            m_author.reset(te.creator);
-            if (m_author.find()) {
-                return true;
-            }
-        }
-        
-        return false;
+        // check the text against the author matcher
+        m_author.reset(author);
+        if (!m_author.find())
+            return false;
+
+        // if we arrive here, the search string has been matched,
+        // so this is a hit
+        return true;
     }
 
     // ///////////////////////////////////////////////////////////////

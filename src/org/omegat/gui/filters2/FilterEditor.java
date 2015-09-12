@@ -216,12 +216,12 @@ public class FilterEditor extends JDialog implements ListSelectionListener {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(fileFormatTextField, gridBagConstraints);
 
+        descTextArea.setBackground(javax.swing.UIManager.getDefaults().getColor("Label.background"));
         descTextArea.setEditable(false);
         descTextArea.setFont(new JLabel().getFont());
         descTextArea.setLineWrap(true);
         descTextArea.setText(OStrings.getString("FILTEREDITOR_DESC")); // NOI18N
         descTextArea.setWrapStyleWord(true);
-        descTextArea.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -301,11 +301,11 @@ public class FilterEditor extends JDialog implements ListSelectionListener {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         getContentPane().add(jPanel3, gridBagConstraints);
 
+        hintTextArea.setBackground(javax.swing.UIManager.getDefaults().getColor("Label.background"));
         hintTextArea.setEditable(false);
         hintTextArea.setFont(new JLabel().getFont());
         hintTextArea.setLineWrap(true);
         hintTextArea.setWrapStyleWord(true);
-        hintTextArea.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -320,10 +320,10 @@ public class FilterEditor extends JDialog implements ListSelectionListener {
     {// GEN-HEADEREND:event_removeButtonActionPerformed
         int row = instances.getSelectedRow();
         Files instance = filter.getFiles().get(row);
-        if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this,
-                StaticUtils.format(OStrings.getString("FILTEREDITOR_really_delete_filter_instance"),
-                        instance.getSourceFilenameMask()),
-                OStrings.getString("FILTEREDITOR_Confirm_deletion_TITLE"), JOptionPane.YES_NO_OPTION,
+        if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, StaticUtils.format(
+                OStrings.getString("FILTEREDITOR_really_delete_filter_instance"),
+                new Object[] { instance.getSourceFilenameMask() }), OStrings
+                .getString("FILTEREDITOR_Confirm_deletion_TITLE"), JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE)) {
             filter.getFiles().remove(row);
             instances.setModel(new OneFilterTableModel(filter));

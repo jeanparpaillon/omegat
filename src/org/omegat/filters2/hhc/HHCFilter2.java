@@ -55,9 +55,9 @@ public class HHCFilter2 extends HTMLFilter2 {
     @Override
     public void processFile(BufferedReader infile, BufferedWriter outfile, FilterContext fc) throws IOException,
             TranslationException {
-        StringBuilder all = null;
+        StringBuffer all = null;
         try {
-            all = new StringBuilder();
+            all = new StringBuffer();
             char cbuf[] = new char[1000];
             int len = -1;
             while ((len = infile.read(cbuf)) > 0)

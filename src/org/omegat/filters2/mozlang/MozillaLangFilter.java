@@ -3,7 +3,7 @@
           with fuzzy matching, translation memory, keyword search,
           glossaries, and translation leveraging into updated projects.
 
- Copyright (C) 2014 Enrique Estevez Fernandez 
+ Copyright (C) 2014 Enrique Estévez Fernández 
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -46,7 +46,7 @@ import org.omegat.filters2.TranslationException;
 import org.omegat.util.OStrings;
 import org.omegat.util.OConsts;
 import org.omegat.util.PatternConsts;
-import org.omegat.util.TagUtil;
+import org.omegat.util.StaticUtils;
 
 /**
  * Filter for support Mozilla lang files.
@@ -58,7 +58,7 @@ import org.omegat.util.TagUtil;
  * 
  * Code adapted from the files: PoFilter.java and SrtFilter.java
  *
- * @author Enrique Estevez (keko.gl@gmail.com)
+ * @author Enrique Estévez (keko.gl@gmail.com)
  */
 public class MozillaLangFilter extends AbstractFilter {
 
@@ -228,7 +228,7 @@ public class MozillaLangFilter extends AbstractFilter {
      */
     protected void align(String source, String translation, String comments) {
         if (entryParseCallback != null) {       
-            List<ProtectedPart> protectedParts = TagUtil.applyCustomProtectedParts(source, PatternConsts.PRINTF_VARS, null);
+            List<ProtectedPart> protectedParts = StaticUtils.applyCustomProtectedParts(source, PatternConsts.PRINTF_VARS, null);
             entryParseCallback.addEntry(null, source, translation, false, comments, null, this, protectedParts);
         } else if (entryAlignCallback != null) {
             entryAlignCallback.addTranslation(null, source, translation, false, null, this);

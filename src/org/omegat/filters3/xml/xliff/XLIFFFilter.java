@@ -224,7 +224,7 @@ public class XLIFFFilter extends XMLFilter {
             notes.add(text.toString());
         } else if (path.endsWith("trans-unit")) {
             if (entryParseCallback != null) {
-                StringBuilder buf = new StringBuilder();
+                StringBuffer buf = new StringBuffer();
                 for (int i = 0; i < groupLevel; i++) {
                     String temp = groupResname.get(i);
                     if (temp != null) {

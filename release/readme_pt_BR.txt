@@ -1,11 +1,10 @@
-Esta tradução foi feita por Thelma L , copyright© 2011.
-Versões mais recentes traduzidas por Thiago Hilger, copyright© 2015.
+Esta tradução foi feita por Thelma L Sabim, copyright© 2011.
 
 ==============================================================================
   OmegaT 3.0, arquivo Leia-me
 
   1.  Informações sobre o OmegaT
-  2.  O que é OmegaT?
+  2.  O que é o OmegaT?
   3.  Instalando o OmegaT
   4.  Contribuições ao OmegaT
   5.  Você tem problemas com o OmegaT? Precisa de ajuda?
@@ -15,7 +14,7 @@ Versões mais recentes traduzidas por Thiago Hilger, copyright© 2015.
   1.  Informações sobre o OmegaT
 
 
-As informações mais atualizadas sobre o OmegaT estão disponíveis no 
+As informações mais atualizadas sobre o OmegaT estão disponíveis no site
       http://www.omegat.org/
 
 Suporte ao usuário, no grupo (poliglota) de usuários do Yahoo, onde os arquivos podem ser pesquisados sem ser preciso fazer a inscrição no grupo:
@@ -28,24 +27,24 @@ Os relatórios de 'bugs' (em inglês), no site da SourceForge:
      https://sourceforge.net/p/omegat/bugs/
 
 ==============================================================================
-  2.  O que é OmegaT?
+  2.  O que é o OmegaT?
 
 OmegaT é uma ferramenta de tradução com auxílio do computador (sigla em inglês CAT). É gratuito, isto é, você não precisa pagar nada para usar o programa, mesmo se usá-lo profissionalmente; também poderá modificar e redistribuir o programa, desde que respeite os termos da licença de usuário.
 
-Os principais recursos do OmegaT são:
-  - pode ser executado em qualquer sistema operacional que suporta Java
-  - usa qualquer arquivo TMX válido como referência de tradução
-  - flexibilidade de segmentação de frases (usando um método como SRX)
-  - busca no projeto e nas memórias de tradução de referência
-  - pesquisa de arquivos nos formatos suportados em qualquer pasta 
-  - apresenta correspondência parcial de frases
-  - processamento inteligente de projetos, inclusive hierarquias complexas de diretórios
-  - suporte para glossários (verificação de terminologia) 
-  - suporte para corretores ortográficos do OpenSource à medida que surgirem
-  - suporte para dicionários StarDict
-  - suporte para os serviços de tradução automatizada do Google Tradutor
-  - documentação e tutorial abrangentes e fáceis de entender
-  - traduzido e localizado em diversas línguas.
+As características principais de OmegaT são:
+  - funcionamento em qualquer sistema operacional que suporte Java
+  - uso de qualquer arquivo TMX válido como referência de tradução
+  - segmentação flexível de sentenças (usando um método similar a SRX)
+  - pesquisa no projeto e nas memórias de tradução de referência
+  - pesquisa de arquivos dos formatos suportados em qualquer pasta 
+  - uso de correspondências parciais
+  - manejo inteligente de projetos incluindo hierarquias de pasta complexas
+  - suporte a glossários (verificação de terminologia)
+  - suporte a verificadores de ortografia OpenSource diretamente
+  - suporte a dicionários StarDict
+  - suporte a serviços de tradução automática do Google Tradutor
+  - documentação clara e abrangente e tutorial
+  - localização em vários idiomas.
 
 OmegaT trabalha diretamente com os seguintes tipos de arquivos:
 
@@ -55,7 +54,7 @@ OmegaT trabalha diretamente com os seguintes tipos de arquivos:
   - Texto codificado (*.UTF8)
   - Pacotes de recursos Java (*.properties)
   - Arquivos PO (*.po)
-  - INI (key=value) files (*.ini)
+  - Arquivos INI (key=value) (*.ini)
   - Arquivos DTD (*.DTD)
   - Arquivos DocuWiki (*.txt)
   - Arquivos de legenda SubRip (*.srt)
@@ -68,14 +67,14 @@ OmegaT trabalha diretamente com os seguintes tipos de arquivos:
   - (X)HTML (*.html, *.xhtml,*.xht)
   - HTML Help Compiler (*.hhc, *.hhk)
   - DocBook (*.xml)
-  - monolingual XLIFF (*.xlf, *.xliff, *.sdlxliff)
+  - XLIFF monolingue (*.xlf, *.xliff, *.sdlxliff)
   - QuarkXPress CopyFlowGold (*.tag, *.xtg)
-  - Arquivos ResX (*.resx)
+  - ResX files (*.resx)
   - Recurso Android (*.xml)
   - LaTex (*.tex, *.latex)
-  - Arquivos Help (*.xml) & Manual (*.hmxp)
+  - Arquivos do Help (*.xml) and Manual (*.hmxp)
   - Typo3 LocManager (*.xml)
-  - Localização WiX (*.wxl)
+  - WiX Localization (*.wxl)
   - Iceni Infix (*.xml)
   - Flash XML export (*.xml)
   - Wordfast TXML (*.txml)
@@ -103,7 +102,7 @@ Para isso, baixe e rode o seguinte arquivo:
 
 Ele instalará o ambiente correto para seu computador e o aplicativo na primeira vez que rodar. Para outras chamadas do programa não é preciso estar on-line.
 
-Durante a instalação, dependendo do seu sistema operacional, você pode receber diversos avisos de segurança. O certificado é da "PnS Concept". 
+Durante a instalação, dependendo do seu sistema operacional, você pode receber diversos avisos de segurança. O certificado de autenticidade e segurança tem a assinatura do "Didier Briel". 
 As permissões que você dá à esta versão (que podem ser mencionadas como um "acesso irrestrito ao computador") são idênticas às permissões que você dá à versão local, instaladas por um procedimento descrito posteriormente: elas permitem acesso ao disco rígido do computador. Se você estiver online e clicar em OmegaT.jnlp 
 o programa verificará se há atualizações. Se houver, instale-as e
 depois inicie o OmegaT. 
@@ -217,10 +216,10 @@ campo de busca do Spotlight.
 ==============================================================================
  4. Como participar no projeto OmegaT
 
-Para participar do desenvolvimento do OmegaT, entre em contato com os desenvolvedores no:
+Para participar do desenvolvimento do OmegaT, entre em contato com os desenvolvedores no site:
     http://lists.sourceforge.net/lists/listinfo/omegat-development
 
-Para traduzir a interface do usuário do OmegaT, manual do usuário ou outros documentos relacionados,
+Para traduzir a interface do usuário do OmegaT, o manual do usuário ou outros documentos relacionados,
 leia:
       
       http://www.omegat.org/en/howtos/localizing_omegat.php
@@ -228,26 +227,25 @@ leia:
 E inscreva-se na lista de tradutores:
       https://lists.sourceforge.net/lists/listinfo/omegat-l10n
 
-Para contribuir de outras formas, inscreva-se primeiro no grupo de usuários no:
+Para contribuir de outras formas, inscreva-se primeiro no grupo de usuários:
       http://tech.groups.yahoo.com/group/omegat/
 
-E fique por dentro do que acontece no mundo do OmegaT...
+E fique por dentro do que acontece no mundo do OmegaT…
 
   OmegaT originou-se do trabalho de Keith Godfrey.
-  Didier Briel é o gerente de projeto do OmegaT.
+  Marc Prior é o coordenador do projeto OmegaT.
 
 Contribuidores anteriores:
 (ordem alfabética)
 
-O código é uma contribuição de
+Contribuidores do código:
   Zoltan Bartko
   Volker Berlin
-  Didier Briel
+  Didier Briel (development manager)
   Kim Bruning
-  Alex Buloichik (desenvolvedor líder)
+  Alex Buloichik (lead developer)
   Sandra Jean Chua
   Thomas Cordonnier
-  Enrique Estévez Fernández
   Martin Fleurke  
   Wildrich Fourie
   Phillip Hall
@@ -255,13 +253,10 @@ O código é uma contribuição de
   Thomas Huriaux
   Hans-Peter Jacobs
   Kyle Katarn
-  Piotr Kulik
   Ibai Lakunza Velasco
   Guido Leenders
   Aaron Madlon-Kay
   Fabián Mandelbaum
-  Manfred Martin
-  Adiel Mittmann
   John Moran
   Maxym Mykhalchuk 
   Arno Peters
@@ -273,40 +268,40 @@ O código é uma contribuição de
   Yu Tang
   Rashid Umarov  
   Antonio Vilei
-  Ilia Vinogradov
   Martin Wunderlich
   Michael Zakharov
 
-Outras contribuições de
+Outros contribuidores:
   Sabine Cretella
   Dmitri Gabinski
-  Jean-Christophe Helary (gerente de localização)
-  Vincent Bidaux (gerente de documentação)
+  Jean-Christophe Helary (localization manager)
+  Vito Smolej (documentation manager)
   Samuel Murray
-  Marc Prior (webmaster)
-  e muitos outros colaboradores
+  Marc Prior 
+  e várias outras pessoas prestativas
 
 (Se você contribuiu de forma significativa no Projeto OmegaT
 mas seu nome não consta das listas, fale conosco.)
 
-OmegaT usa as seguintes bibliotecas:
-  HTMLParser 1.6 por Somik Raha, Derrick Oswald e outros (Licença LGPL)
-  VLDocking Framework 3.0.5-SNAPSHOT (Licença LGPL)
-  Hunspell por László Németh e outros (Licença LGPL)
-  JNA por Todd Fast, Timothy Wall e outros (Licença LGPL)
-  Swing-Layout 1.0.4 (Licença LGPL)
+O OmegaT usa as seguintes bibliotecas:
+  HTMLParser 1.6 de Somik Raha, Derrick Oswald e outros (Licença LGPL)
+  MRJ Adapter 1.0.8 de Steve Roy (Licença LGPL)
+  VLDocking Framework 2.1.4 de VLSolutions (Licença CeCILL)
+  Hunspell by László Németh e outros (Licença LGPL)
+  JNA de Todd Fast, Timothy Wall e outros (Licença LGPL)
+  Swing-Layout 1.0.2 (Licença LGPL)
   Jmyspell 2.1.4 (Licença LGPL)
-  SVNKit 1.8.5 (Licença TMate)
+  SVNKit 1.7.5 (Licença TMate)
   Sequence Library (Licença Sequence Library)
   ANTLR 3.4 (Licença ANTLR 3)
-  SQLJet 1.1.10 (GPL v2)
-  JGit (Licença Pública Eclipse)
+  SQLJet 1.1.3 (GPL v2)
+  JGit (Licença Eclipse Distribution)
   JSch (Licença JSch)
   Base64 (domínio público)
-  Diff (GPL) 
-  trilead-ssh2-1.0.0-build217 (licença Trilead SSH)
+  Diff (GPL)
+  orion-ssh2-214 (Licença Orion SSH para Java)
   lucene-*.jar (Licença Apache 2.0)
-  Os tokenizers em inglês (org.omegat.tokenizer.SnowballEnglishTokenizer e
+  Tokenizers do inglês (org.omegat.tokenizer.SnowballEnglishTokenizer e
   org.omegat.tokenizer.LuceneEnglishTokenizer) usam palavras irrelevantes do Okapi
 (http://okapi.sourceforge.net) (Licença LGPL)
   tinysegmenter.jar (Licença BSD modificada)
@@ -314,13 +309,8 @@ OmegaT usa as seguintes bibliotecas:
   jWordSplitter (Licença Apache 2.0)
   LanguageTool.jar (Licença LGPL)
   morfologik-*.jar (Licença Morfologik)
-  segment-1.4.1.jar (licença Segment)
+  segment-1.4.1.jar (Licença Segment)
   pdfbox-app-1.8.1.jar (Licença Apache 2.0)
-  KoreanAnalyzer-3x-120223.jar (Licença Apache 2.0)
-  SuperTMXMerge-for_OmegaT.jar (licença LGPL)
-  groovy-all-2.2.2.jar (Licença Apache 2.0)
-  slf4j (Licença MIT)
-  juniversalchardet-1.0.3.jar (GPL v2)
 
 ==============================================================================
  5.  Você tem problemas com o OmegaT? Precisa de ajuda?
@@ -343,8 +333,7 @@ O relatório de 'bugs' deve conter três informações.
   - O que você esperava ver, e
   - O que viu em vez disso.
 
-Você pode acrescentar cópias dos arquivos, partes do registro, capturas de tela, qualquer coisa
-que achar que possa ajudar os desenvolvedores a encontrar e reparar o problema.
+Você pode acrescentar cópias dos arquivos, partes do registro, capturas de tela, qualquer coisa que achar que possa ajudar os desenvolvedores a encontrar e reparar o problema.
 
 Para fazer uma busca nos arquivos do grupo de usuários, acesse:
      http://tech.groups.yahoo.com/group/OmegaT/

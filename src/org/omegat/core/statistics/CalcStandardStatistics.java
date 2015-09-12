@@ -6,7 +6,6 @@
  Copyright (C) 2009 Alex Buloichik
                2010 Arno Peters
                2013-2014 Alex Buloichik
-               2015 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -44,7 +43,7 @@ import org.omegat.core.data.ProtectedPart;
 import org.omegat.core.data.SourceTextEntry;
 import org.omegat.core.data.TMXEntry;
 import org.omegat.core.threads.LongProcessThread;
-import org.omegat.gui.stat.StatisticsPanel;
+import org.omegat.gui.stat.StatisticsWindow;
 import org.omegat.util.OConsts;
 import org.omegat.util.OStrings;
 import org.omegat.util.StaticUtils;
@@ -63,7 +62,6 @@ import org.omegat.util.gui.TextUtil;
  * 
  * @author Alex Buloichik (alex73mail@gmail.com)
  * @author Arno Peters
- * @author Aaron Madlon-Kay
  */
 public class CalcStandardStatistics extends LongProcessThread {
     private static final String[] htHeaders = new String[] { "", OStrings.getString("CT_STATS_Segments"),
@@ -96,17 +94,16 @@ public class CalcStandardStatistics extends LongProcessThread {
     private static final boolean[] ftAlign = new boolean[] { false, true, true, true, true, true, true, true,
             true, true, true, true, true, true, true, true, true, };
 
-    private final StatisticsPanel callback;
+    private StatisticsWindow callback;
 
-    public CalcStandardStatistics(StatisticsPanel callback) {
+    public CalcStandardStatistics(StatisticsWindow callback) {
         this.callback = callback;
     }
 
-    @Override
     public void run() {
         IProject p = Core.getProject();
-        String result = buildProjectStats(p, null, callback);
-        callback.setTextData(result);
+        String result = buildProjectStats(p, null);
+        callback.displayData(result);
         callback.finishData();
 
         String internalDir = p.getProjectProperties().getProjectInternal();
@@ -121,20 +118,14 @@ public class CalcStandardStatistics extends LongProcessThread {
         // now dump file based word counts to disk
         String fn = internalDir + OConsts.STATS_FILENAME;
         Statistics.writeStat(fn, result);
-        callback.setDataFile(fn);
     }
 
-    /** Convenience method */
-    public static String buildProjectStats(final IProject project, final StatisticsInfo hotStat) {
-        return buildProjectStats(project, hotStat, null);
-    }
-    
     /**
      * Builds a file with statistic info about the project. The total word &
      * character count of the project, the total number of unique segments, plus
      * the details for each file.
      */
-    public static String buildProjectStats(final IProject project, final StatisticsInfo hotStat, final StatisticsPanel callback) {
+    public static String buildProjectStats(final IProject project, final StatisticsInfo hotStat) {
 
         StatCount total = new StatCount();
         StatCount remaining = new StatCount();
@@ -226,23 +217,15 @@ public class CalcStandardStatistics extends LongProcessThread {
 
         StringBuilder result = new StringBuilder();
 
-        result.append(OStrings.getString("CT_STATS_Project_Statistics"));
-        result.append("\n\n");
+        result.append(OStrings.getString("CT_STATS_Project_Statistics") + "\n\n");
 
         String[][] headerTable = calcHeaderTable(new StatCount[] { total, remaining, unique, remainingUnique });
-        if (callback != null) {
-            callback.setProjectTableData(htHeaders, headerTable);
-        }
         result.append(TextUtil.showTextTable(htHeaders, headerTable, htAlign));
         result.append("\n\n");
 
         // STATISTICS BY FILE
-        result.append(OStrings.getString("CT_STATS_FILE_Statistics"));
-        result.append("\n\n");
+        result.append(OStrings.getString("CT_STATS_FILE_Statistics") + "\n\n");
         String[][] filesTable = calcFilesTable(project.getProjectProperties(), counts);
-        if (callback != null) {
-            callback.setFilesTableData(ftHeaders, filesTable);
-        }
         result.append(TextUtil.showTextTable(ftHeaders, filesTable, ftAlign));
 
         if (hotStat != null) {

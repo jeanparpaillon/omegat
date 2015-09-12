@@ -26,11 +26,17 @@
 
 package org.omegat.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.omegat.core.data.ProtectedPart;
+import org.omegat.core.data.SourceTextEntry;
 
 /**
  * Tests for (some) static utility methods.
@@ -60,6 +66,42 @@ public class StaticUtilsTest extends TestCase
         TestSuite suite = new TestSuite(StaticUtilsTest.class);
         
         return suite;
+    }
+
+    /**
+     * Test of buildTagList method, of class org.omegat.util.StaticUtils.
+     */
+    public void testBuildTagList() {
+        // TODO add your test code below by replacing the default call to fail.
+        String str = "Tag <test> case <b0>one</b0>.<b1>";
+        List<ProtectedPart> pps = StaticUtils.applyCustomProtectedParts(str, PatternConsts.OMEGAT_TAG, null);
+        ArrayList<String> tagList = new ArrayList<String>();
+        StaticUtils.buildTagList(str, new SourceTextEntry(null, 0, null, null, pps).getProtectedParts(),
+                tagList);
+
+        assertEquals("Wrong tags found in '" + str + "'", Arrays.asList("<b0>", "</b0>", "<b1>"), tagList);
+
+        tagList.clear();
+        ProtectedPart p;
+        List<ProtectedPart> pp = new ArrayList<ProtectedPart>();
+        p = new ProtectedPart();
+        p.setTextInSourceSegment("<b0>");
+        pp.add(p);
+        p = new ProtectedPart();
+        p.setTextInSourceSegment("</b0>");
+        pp.add(p);
+        StaticUtils.buildTagList(str, new SourceTextEntry(null, 0, null, null, pp).getProtectedParts(),
+                tagList);
+        assertEquals("Wrong tags found in '" + str + "'", Arrays.asList("<b0>", "</b0>"), tagList);
+
+        str = "Tag <test>case</test>.";
+        tagList.clear();
+        pp.clear();
+        p = new ProtectedPart();
+        p.setTextInSourceSegment("<test>case</test>");
+        pp.add(p);
+        StaticUtils.buildTagList(str, new SourceTextEntry(null, 0, null, null, pp).getProtectedParts(), tagList);
+        assertEquals("Wrong tags found in '" + str + "'", Arrays.asList("<test>case</test>"), tagList);
     }
 
     public void testCompressSpace()

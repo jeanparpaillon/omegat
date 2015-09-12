@@ -91,14 +91,14 @@ public class NearString {
             NearString merged = new NearString(key, source, translation, comesFrom, fuzzyMark, nearScore, nearScoreNoStem,
                     adjustedScore, nearData, null, creator, creationDate, changer, changedDate, props);
             scores.add(0, merged.scores[0]);
-            merged.projs = projs.toArray(new String[projs.size()]);
-            merged.scores = scores.toArray(new Scores[scores.size()]);
+            merged.projs = projs.toArray(new String[0]);
+            merged.scores = scores.toArray(new Scores[0]);
             return merged;
         } else {
             projs.add(projName);
             scores.add(new Scores(nearScore, nearScoreNoStem, adjustedScore));
-            ns.projs = projs.toArray(new String[projs.size()]);
-            ns.scores = scores.toArray(new Scores[scores.size()]);
+            ns.projs = projs.toArray(new String[0]);
+            ns.scores = scores.toArray(new Scores[0]);
             return ns;
         }
     }

@@ -153,7 +153,7 @@ public class TextFilter extends AbstractFilter {
 
     /** Process the file without segmenting it. */
     private void processNonSeg(BufferedReader in, Writer out) throws IOException {
-        StringBuilder segment = new StringBuilder();
+        StringBuffer segment = new StringBuffer();
         char[] buf = new char[4096];
         int len;
         while ((len = in.read(buf)) >= 0)
@@ -167,7 +167,7 @@ public class TextFilter extends AbstractFilter {
         String nontrans = "";
         String s;
         while ((s = lpin.readLine()) != null) {
-            if (s.trim().isEmpty()) {
+            if (s.trim().length() == 0) {
                 nontrans += s + lpin.getLinebreak();
                 continue;
             }
@@ -183,19 +183,18 @@ public class TextFilter extends AbstractFilter {
         }
         lpin.close();
 
-        if (!nontrans.isEmpty()) {
+        if (nontrans.length() != 0)
             out.write(nontrans);
-        }
     }
 
     /** Processes the file segmenting on line breaks. */
     private void processSegEmptyLines(BufferedReader in, Writer out) throws IOException {
         LinebreakPreservingReader lpin = new LinebreakPreservingReader(in);
-        StringBuilder nontrans = new StringBuilder();
-        StringBuilder trans = new StringBuilder();
+        StringBuffer nontrans = new StringBuffer();
+        StringBuffer trans = new StringBuffer();
         String s;
         while ((s = lpin.readLine()) != null) {
-            if (s.isEmpty()) {
+            if (s.length() == 0) {
                 out.write(nontrans.toString());
                 nontrans.setLength(0);
 
@@ -203,7 +202,7 @@ public class TextFilter extends AbstractFilter {
                 trans.setLength(0);
                 nontrans.append(lpin.getLinebreak());
             } else {
-                if (s.trim().isEmpty() && trans.length() == 0) {
+                if (s.trim().length() == 0 && trans.length() == 0) {
                     nontrans.append(s);
                     nontrans.append(lpin.getLinebreak());
                 } else {
@@ -213,12 +212,10 @@ public class TextFilter extends AbstractFilter {
             }
         }
         lpin.close();
-        if (nontrans.length() >= 0) {
+        if (nontrans.length() >= 0)
             out.write(nontrans.toString());
-        }
-        if (trans.length() >= 0) {
+        if (trans.length() >= 0)
             out.write(processEntry(trans.toString()));
-        }
     }
 
     @Override

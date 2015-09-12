@@ -34,6 +34,7 @@ import java.util.List;
 import org.omegat.core.Core;
 import org.omegat.gui.editor.autocompleter.AutoCompleterItem;
 import org.omegat.gui.editor.autocompleter.AutoCompleterListView;
+import org.omegat.gui.editor.autocompleter.AutoCompleter;
 import org.omegat.tokenizer.DefaultTokenizer;
 import org.omegat.tokenizer.ITokenizer;
 import org.omegat.util.OStrings;
@@ -45,12 +46,12 @@ import org.omegat.util.Preferences;
  */
 public class AutotextAutoCompleterView extends AutoCompleterListView {
 
-    public AutotextAutoCompleterView() {
-        super(OStrings.getString("AC_AUTOTEXT_VIEW"));
+    public AutotextAutoCompleterView(AutoCompleter completer) {
+        super(OStrings.getString("AC_AUTOTEXT_VIEW"), completer);
     }
             
     @Override
-    public List<AutoCompleterItem> computeListData(String prevText, boolean contextualOnly) {
+    public List<AutoCompleterItem> computeListData(String prevText) {
         
         List<AutoCompleterItem> result = new ArrayList<AutoCompleterItem>();
         for (AutotextPair s : Core.getAutoText().getList()) {
@@ -61,7 +62,7 @@ public class AutotextAutoCompleterView extends AutoCompleterListView {
         }
         
         if (!Core.getProject().getProjectProperties().getTargetLanguage().isSpaceDelimited()
-                && result.isEmpty() && !contextualOnly) {
+                && result.size() == 0) {
             for (AutotextPair s : Core.getAutoText().getList()) {
                 result.add(new AutoCompleterItem(s.target, new String[] { s.source, s.comment }, 0));
             }

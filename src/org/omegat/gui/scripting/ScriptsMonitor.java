@@ -89,9 +89,7 @@ public class ScriptsMonitor implements DirectoryMonitor.DirectoryCallback, Direc
     }
 
     public void stop() {
-        if (m_monitor != null) {
-            m_monitor.fin();
-        }
+        m_monitor.fin();
     }
 
     /**
@@ -103,7 +101,7 @@ public class ScriptsMonitor implements DirectoryMonitor.DirectoryCallback, Direc
 	}
 	@Override
 	public void directoryChanged(File file) {
-        if (!m_scriptDir.isDirectory()) {
+        if (! (m_scriptDir.exists() && m_scriptDir.isDirectory())) {
         	// No script directory.
         	return;
         }
@@ -113,15 +111,17 @@ public class ScriptsMonitor implements DirectoryMonitor.DirectoryCallback, Direc
     	// currently installed.
         ArrayList<ScriptItem> scriptsList = new ArrayList<ScriptItem>();
 		// Replace the script filename by its description, if available
-        for (File script : m_scriptDir.listFiles(m_filter)) {
+        for (File script : m_scriptDir.listFiles(m_filter))
+        {
         	scriptsList.add(new ScriptItem(script));
         }
 
 		Collections.sort(scriptsList, new ScriptItem.ScriptItemComparator());
-        m_list.setListData(scriptsList.toArray(new ScriptItem[scriptsList.size()]));
+        m_list.setListData(scriptsList.toArray(new ScriptItem[0]));
         
 
-        if (SCRIPTING_EVENTS) {
+        if (SCRIPTING_EVENTS)
+        {
             hookApplicationEvent();
             hookEntryEvent();
             hookProjectEvent();
@@ -245,18 +245,20 @@ public class ScriptsMonitor implements DirectoryMonitor.DirectoryCallback, Direc
 		String entryDirName = eventType.name().toLowerCase();
 		
 		File entryActivatedDir = new File(m_scriptDir, entryDirName);
-        if (!entryActivatedDir.isDirectory()) {
-            return;
-        }
-    	ArrayList<ScriptItem> eventScripts = m_eventsScript.get(eventType);
-    	// Avoid executing scripts that may be deleted during the directory change.
-    	eventScripts.clear();
+        if (entryActivatedDir.exists())
+        {
+        	ArrayList<ScriptItem> eventScripts = m_eventsScript.get(eventType);
+        	// Avoid executing scripts that may be deleted during the directory change.
+        	eventScripts.clear();
 
-        for (File script : entryActivatedDir.listFiles(m_filter)) {
-        	ScriptItem scriptItem = new ScriptItem(script);
-        	if (!eventScripts.contains(scriptItem)) {
-        		eventScripts.add(scriptItem);
-        	}
+            for (File script : entryActivatedDir.listFiles(m_filter))
+            {
+            	ScriptItem scriptItem = new ScriptItem(script);
+            	if (! eventScripts.contains(scriptItem))
+            	{
+            		eventScripts.add(scriptItem);
+            	}
+            }
         }
 	}
 	

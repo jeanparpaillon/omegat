@@ -102,7 +102,7 @@ public class SrtFilter extends AbstractFilter {
                 outFile.write(EOL);
                 break;
             case WAIT_TEXT:
-                if (s.trim().isEmpty()) {
+                if (s.trim().length() == 0) {
                     flush();
                     outFile.write(EOL);
                     state = READ_STATE.WAIT_TIME;

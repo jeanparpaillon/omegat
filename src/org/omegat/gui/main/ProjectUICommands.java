@@ -8,7 +8,7 @@
                2012 Thomas Cordonnier
                2013 Yu Tang
                2014 Aaron Madlon-Kay, Piotr Kulik
-               2015 Aaron Madlon-Kay, Yu Tang
+               2015 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -39,11 +39,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.omegat.core.Core;
-import org.omegat.core.CoreEvents;
 import org.omegat.core.KnownException;
 import org.omegat.core.data.ProjectFactory;
 import org.omegat.core.data.ProjectProperties;
-import org.omegat.core.events.IProjectEventListener;
 import org.omegat.core.team.GITRemoteRepository;
 import org.omegat.core.team.IRemoteRepository;
 import org.omegat.core.team.RepositoryUtils;
@@ -57,7 +55,7 @@ import org.omegat.util.OStrings;
 import org.omegat.util.Preferences;
 import org.omegat.util.ProjectFileStorage;
 import org.omegat.util.RecentProjects;
-import org.omegat.util.StringUtil;
+import org.omegat.util.gui.DockingUI;
 import org.omegat.util.gui.OmegaTFileChooser;
 import org.omegat.util.gui.OpenProjectFileChooser;
 import org.omegat.util.gui.UIThreadsUtil;
@@ -114,7 +112,7 @@ public class ProjectUICommands {
 
                 final String projectRoot = newProps.getProjectRoot();
 
-                if (!StringUtil.isEmpty(projectRoot)) {
+                if (projectRoot != null && projectRoot.length() > 0) {
                     // create project
                     try {
                         ProjectFactory.createProject(newProps);
@@ -174,8 +172,8 @@ public class ProjectUICommands {
                         }
                     }.execute(repository);
                 } catch (IRemoteRepository.BadRepositoryException bre) {
-                    Core.getMainWindow().showErrorDialogRB("TF_ERROR", "TEAM_BADREPOSITORY_ERROR",
-                            bre.getMessage());
+                    Object[] args = { bre.getMessage() };
+                    Core.getMainWindow().showErrorDialogRB("TEAM_BADREPOSITORY_ERROR", args, "TF_ERROR");
                     mainWindow.setCursor(oldCursor);
                     return null;
                 } catch (Exception ex) {
@@ -199,7 +197,7 @@ public class ProjectUICommands {
                                 f.mkdir();
                             }
                         } catch (Exception e) {
-                            Log.logErrorRB(e, "TEAM_MISSING_FOLDER", f.getName());
+                            Log.logErrorRB(e, "TEAM_MISSING_FOLDER", new Object[] {f.getName()});
                         };
                     }
                     //load project
@@ -218,39 +216,15 @@ public class ProjectUICommands {
     }
 
     /**
-     * Open project. Does nothing if there is already a project open.
-     * Convenience method for {@link #projectOpen(File, boolean)}.
-     * 
-     * @param projectDirectory
-     */
-    public static void projectOpen(File projectDirectory) {
-        projectOpen(projectDirectory, false);
-    }
-    
-    /**
-     * Open project. Does nothing if a project is already open and closeCurrent is false.
+     * Open project.
      * 
      * @param projectDirectory
      *            project directory or null if user must choose it
-     * @param closeCurrent
-     *            whether or not to close the current project first, if any
      */
-    public static void projectOpen(final File projectDirectory, boolean closeCurrent) {
+    public static void projectOpen(final File projectDirectory) {
         UIThreadsUtil.mustBeSwingThread();
 
         if (Core.getProject().isProjectLoaded()) {
-            if (closeCurrent) {
-                // Register to try again after closing the current project.
-                CoreEvents.registerProjectChangeListener(new IProjectEventListener() {
-                    public void onProjectChanged(PROJECT_CHANGE_TYPE eventType) {
-                        if (eventType == PROJECT_CHANGE_TYPE.CLOSE) {
-                            projectOpen(projectDirectory, false);
-                            CoreEvents.unregisterProjectChangeListener(this);
-                        }
-                    }
-                });
-                projectClose();
-            }
             return;
         }
 
@@ -311,7 +285,8 @@ public class ProjectUICommands {
                         File GlossaryFile = new File(props.getWriteableGlossary());
                         if (repository.isChanged(tmxFile) || repository.isChanged(GlossaryFile)) {
                             Log.logWarningRB("TEAM_NOCHECKOUT");
-                            Core.getMainWindow().showErrorDialogRB("TEAM_NOCHECKOUT_TITLE", "TEAM_NOCHECKOUT");
+                            Core.getMainWindow().showErrorDialogRB("TEAM_NOCHECKOUT", null,
+                                    "TEAM_NOCHECKOUT_TITLE");
                         } else {
                             new RepositoryUtils.AskCredentials() {
                                 public void callRepository() throws Exception {
@@ -484,10 +459,10 @@ public class ProjectUICommands {
 
                 // fix - reset progress bar to defaults
                 Core.getMainWindow().showLengthMessage(OStrings.getString("MW_SEGMENT_LENGTH_DEFAULT"));
-                Core.getMainWindow().showProgressMessage(
+                Core.getMainWindow().showProgressMessage(OStrings.getString(
                         Preferences.getPreferenceEnumDefault(Preferences.SB_PROGRESS_MODE,
                                 MainWindowUI.STATUS_BAR_MODE.DEFAULT) == MainWindowUI.STATUS_BAR_MODE.DEFAULT
-                        ? OStrings.getString("MW_PROGRESS_DEFAULT") : OStrings.getProgressBarDefaultPrecentageText());
+                        ? "MW_PROGRESS_DEFAULT" : "MW_PROGRESS_DEFAULT_PERCENTAGE"));
 
                 return null;
             }
@@ -541,15 +516,7 @@ public class ProjectUICommands {
             protected void done() {
                 try {
                     get();
-                    // Make sure to update Editor title
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            // activate entry later - after project will be
-                            // loaded
-                            Core.getEditor().gotoEntry(previousCurEntryNum);
-                            Core.getEditor().requestFocus();
-                        }
-                    });
+                    Core.getEditor().gotoEntry(previousCurEntryNum);
                 } catch (Exception ex) {
                     processSwingWorkerException(ex, "PP_ERROR_UNABLE_TO_READ_PROJECT_FILE");
                 }

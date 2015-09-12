@@ -8,7 +8,6 @@
                2010 Wildrich Fourie
                2013 Zoltan Bartko
                2014 Aaron Madlon-Kay
-               2015 Yu Tang
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -31,7 +30,6 @@
 package org.omegat.gui.editor;
 
 import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -133,16 +131,6 @@ public class EditorTextArea3 extends JEditorPane {
             }
         });
         setToolTipText("");
-        setDragEnabled(true);
-    }
-    
-    @Override
-    public void setFont(Font font) {
-        super.setFont(font);
-        Document3 doc = getOmDocument();
-        if (doc != null) {
-            doc.setFont(font);
-        }
     }
 
     /**
@@ -171,8 +159,9 @@ public class EditorTextArea3 extends JEditorPane {
     protected MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-            autoCompleter.setVisible(false);
-            
+            if (autoCompleter.isVisible()) {
+                autoCompleter.hidePopup();
+            }
             // where is the mouse
             int mousepos = viewToModel(e.getPoint());
             if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
@@ -325,13 +314,6 @@ public class EditorTextArea3 extends JEditorPane {
             this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             controller.toggleOrientation();
             this.setCursor(oldCursor);
-
-            IMainWindow mainWindow = Core.getMainWindow();
-            // Timed warning is not available for console window
-            if (mainWindow instanceof MainWindow) {
-                MainWindow window = (MainWindow) mainWindow;
-                window.showTimedStatusMessageRB("ETA_INFO_TOGGLE_LTR_RTL");
-            }
             processed = true;
         } else if (StaticUtils.isKey(e, KeyEvent.VK_BACK_SPACE,
                 mac ? InputEvent.ALT_MASK : InputEvent.CTRL_MASK)) {
@@ -420,7 +402,6 @@ public class EditorTextArea3 extends JEditorPane {
                 case KeyEvent.VK_KP_UP:
                 case KeyEvent.VK_KP_DOWN:
                     checkAndFixCaret(); //works only in after-processing if translation length (start and end position) has not changed, because start and end position are not updated yet.
-                    autoCompleter.updatePopup();
             }
         }
     }
@@ -583,6 +564,7 @@ public class EditorTextArea3 extends JEditorPane {
                 setCaretPosition(end);
             }
         }
+        autoCompleter.updatePopup();
     }
 
     /**

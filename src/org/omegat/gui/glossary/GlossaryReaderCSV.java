@@ -4,7 +4,6 @@
           glossaries, and translation leveraging into updated projects.
 
  Copyright (C) 2010 Alex Buloichik
-               2015 Aaron Madlon-Kay
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -34,7 +33,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omegat.filters2.EncodingDetector;
 import org.omegat.util.OConsts;
 
 /**
@@ -43,15 +41,13 @@ import org.omegat.util.OConsts;
  * @author Keith Godfrey
  * @author Maxym Mykhalchuk
  * @author Alex Buloichik <alex73mail@gmail.com>
- * @author Aaron Madlon-Kay
  */
 public class GlossaryReaderCSV {
     /** Fields separator. Can be dependent of regional options. */
     protected static final char SEPARATOR = ',';
 
     public static List<GlossaryEntry> read(final File file, boolean priorityGlossary) throws IOException {
-        String encoding = EncodingDetector.detectEncodingDefault(file, OConsts.UTF8);
-        InputStreamReader reader = new InputStreamReader(new FileInputStream(file), encoding);
+        InputStreamReader reader = new InputStreamReader(new FileInputStream(file), OConsts.UTF8);
 
         List<GlossaryEntry> result = new ArrayList<GlossaryEntry>();
         BufferedReader in = new BufferedReader(reader);
@@ -70,7 +66,7 @@ public class GlossaryReaderCSV {
                 // divide lines on tabs
                 String tokens[] = parseLine(s);
                 // check token list to see if it has a valid string
-                if (tokens.length < 2 || tokens[0].isEmpty())
+                if (tokens.length < 2 || tokens[0].length() == 0)
                     continue;
 
                 // creating glossary entry and add it to the hash
@@ -91,21 +87,22 @@ public class GlossaryReaderCSV {
         List<String> result = new ArrayList<String>();
         StringBuilder w = new StringBuilder();
         boolean fopened = false; // field opened by "
-        for (int cp, cpn, i = 0; i < line.length(); i += Character.charCount(cp)) {
-            cp = line.codePointAt(i);
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            char cn;
             try {
-                cpn = line.codePointAt(i + Character.charCount(cp));
+                cn = line.charAt(i + 1);
             } catch (StringIndexOutOfBoundsException ex) {
-                cpn = 0;
+                cn = 0;
             }
-            switch (cp) {
+            switch (c) {
             case '"':
                 if (w.length() == 0 && !fopened) {
                     // first " in field
                     fopened = true;
-                } else if (cpn == '"') {
+                } else if (cn == '"') {
                     // double " - add one
-                    w.appendCodePoint(cp);
+                    w.append(c);
                     i++;
                 } else {
                     // last " in field
@@ -114,14 +111,14 @@ public class GlossaryReaderCSV {
                 break;
             case SEPARATOR:
                 if (fopened) {
-                    w.appendCodePoint(cp);
+                    w.append(c);
                 } else {
                     result.add(w.toString());
                     w.setLength(0);
                 }
                 break;
             default:
-                w.appendCodePoint(cp);
+                w.append(c);
                 break;
             }
         }

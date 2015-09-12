@@ -198,9 +198,8 @@ public class GlossaryReaderTBX {
     }
 
     protected static void appendLine(final StringBuilder str, String line) {
-        if (line.isEmpty()) { // No need to append empty lines
+        if (!(line.length() > 0)) // No need to append empty lines
             return;
-        }
         if (str.length() > 0) {
             str.append('\n');
         }

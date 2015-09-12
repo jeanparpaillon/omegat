@@ -136,9 +136,9 @@ public class LatexFilter extends AbstractFilter {
      * @throws java.io.IOException
      */
     private void processLatexFile(BufferedReader in, Writer out) throws IOException {
-        StringBuilder par = new StringBuilder();
+        StringBuffer par = new StringBuffer();
         String s;
-        StringBuilder comment = new StringBuilder();
+        StringBuffer comment = new StringBuffer();
 
         LinkedList<String> commands = new LinkedList<String>();
 
@@ -151,7 +151,7 @@ public class LatexFilter extends AbstractFilter {
             // String[] c = s.split(""); In Java 8, that line gave a first empty element, so it was replaced with the 
             // following lines, and idx below was started at 0 instead of 1
             String[] c;
-            if (!s.isEmpty()){
+            if (s.length() > 0){
               c = s.split("(?!^)");
             } else {
               c = new String[0];
@@ -165,7 +165,7 @@ public class LatexFilter extends AbstractFilter {
 
                 if (cat == 0) {
                     /* parse control sequence */
-                    StringBuilder cmd = new StringBuilder();
+                    StringBuffer cmd = new StringBuffer();
                     cmd.append(cidx);
                     idx++;
                     while (idx < c.length) {

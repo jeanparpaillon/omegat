@@ -227,7 +227,7 @@ public class FindMatches {
         if (ALLOW_PARTIALY_MATCH && separateSegmentMatcher != null
                 && !project.getProjectProperties().isSentenceSegmentingEnabled()) {
             // split paragraph even when segmentation disabled, then find matches for every segment
-            List<StringBuilder> spaces = new ArrayList<StringBuilder>();
+            List<StringBuffer> spaces = new ArrayList<StringBuffer>();
             List<Rule> brules = new ArrayList<Rule>();
             Language sourceLang = project.getProjectProperties().getSourceLanguage();
             Language targetLang = project.getProjectProperties().getTargetLanguage();
@@ -371,19 +371,27 @@ public class FindMatches {
             return true;
         }
         NearString st = result.get(result.size() - 1);
-        int chance = checkScore(st.scores[0].score, simStem);
-        if (chance == 0) {
-            chance = checkScore(st.scores[0].scoreNoStem, simNoStem);
+        Boolean chanse = checkScore(st.scores[0].score, simStem);
+        if (chanse == null) {
+            chanse = checkScore(st.scores[0].scoreNoStem, simNoStem);
         }
-        if (chance == 0) {
-            chance = checkScore(st.scores[0].adjustedScore, simExactly);
+        if (chanse == null) {
+            chanse = checkScore(st.scores[0].adjustedScore, simExactly);
         }
-        return chance != 1;
+        if (chanse == null) {
+            chanse = true;
+        }
+        return chanse;
     }
 
-    private int checkScore(final int storedScore, final int checkedStore) {
-        return storedScore < checkedStore ? -1
-                : storedScore > checkedStore ? 1 : 0;
+    private Boolean checkScore(final int storedScore, final int checkedStore) {
+        if (storedScore < checkedStore) {
+            return true;
+        } else if (storedScore > checkedStore) {
+            return false;
+        } else {
+            return null;
+        }
     }
 
     /**

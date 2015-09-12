@@ -27,7 +27,6 @@
 package org.omegat.filters2.xtagqxp;
 
 import org.omegat.filters3.Element;
-import org.omegat.util.StaticUtils;
 
 /**
  * A Xtag in a CopyFlow Gold for QuarkXPress source text.
@@ -51,22 +50,21 @@ public class Xtag implements Element {
      * @return The shortcut
      */
     private String makeShortcut(String tag) {
-        int cp = 0;
+        char letter = ' ';
 
-        for (int i = 0; i < tag.length(); i += Character.charCount(cp)) {
-            cp = tag.codePointAt(i);
-            if (Character.isLetter(cp)) {
-                cp = Character.toLowerCase(cp);
-                return String.valueOf(Character.toChars(cp));
+        for (int i = 0; i < tag.length(); i++) {
+            letter = tag.charAt(i);
+            if (Character.isLetter(letter)) {
+                letter = Character.toLowerCase(letter);
+                return String.valueOf(letter);
             }
         }
-        if (cp == '<') {
+        if (letter == '<')
             return "<";
-        } else if (cp == '>') {
+        else if (letter == '>')
             return ">";
-        } else {
+        else
             return "x";
-        }
     }
 
     private String tag;
@@ -83,12 +81,7 @@ public class Xtag implements Element {
         if (shortcut != null)
             return shortcut;
         else
-            return String.valueOf(Character.toChars(getTag().codePointAt(0)));
-    }
-
-    public String toSafeCalcShortcut() {
-        return StaticUtils.TAG_REPLACEMENT_CHAR + getShortcut().replace('<', '_').replace('>', '_')
-                + StaticUtils.TAG_REPLACEMENT_CHAR;
+            return Character.toString(getTag().charAt(0));
     }
 
     private int index;
@@ -104,7 +97,7 @@ public class Xtag implements Element {
      * tag should return &lt;s3&gt;.
      */
     public String toShortcut() {
-        StringBuilder buf = new StringBuilder();
+        StringBuffer buf = new StringBuffer();
 
         if (getShortcut().equals("<"))
             return "<";

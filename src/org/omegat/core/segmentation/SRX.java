@@ -148,13 +148,13 @@ public class SRX implements Serializable, Cloneable {
             xmldec.close();
 
             if (myel.isExceptionOccured()) {
-                StringBuilder sb = new StringBuilder();
+                StringBuffer sb = new StringBuffer();
                 for (Exception ex : myel.getExceptionsList()) {
                     sb.append("    ");
                     sb.append(ex);
                     sb.append("\n");
                 }
-                Log.logErrorRB("CORE_SRX_EXC_LOADING_SEG_RULES", sb.toString());
+                Log.logErrorRB("CORE_SRX_EXC_LOADING_SEG_RULES", new Object[] { sb.toString() });
                 res = new SRX();
                 res.initDefaults();
                 return res;

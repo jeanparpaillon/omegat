@@ -53,7 +53,7 @@ public class XMLText extends Text {
      */
     public String toOriginal() {
         if (inCDATA) {
-            StringBuilder res = new StringBuilder();
+            StringBuffer res = new StringBuffer();
             res.append("<![CDATA[");
             res.append(getText());
             res.append("]]>");

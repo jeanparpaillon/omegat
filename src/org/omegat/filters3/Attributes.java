@@ -73,7 +73,7 @@ public class Attributes {
      * name1="value1" name2="value2" ...'
      */
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        StringBuffer buf = new StringBuffer();
         for (Attribute attr : list) {
             buf.append(' ');
             buf.append(attr.toString());

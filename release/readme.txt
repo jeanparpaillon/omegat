@@ -283,7 +283,7 @@ Code has been contributed by
   Piotr Kulik
   Ibai Lakunza Velasco
   Guido Leenders
-  Aaron Madlon-Kay (integration manager)
+  Aaron Madlon-Kay
   Fabián Mandelbaum
   Manfred Martin
   Adiel Mittmann
@@ -332,8 +332,8 @@ OmegaT uses the following libraries:
   trilead-ssh2-1.0.0-build217 (Trilead SSH license)
   lucene-*.jar (Apache License 2.0)
   The English tokenizers (org.omegat.tokenizer.SnowballEnglishTokenizer and
-org.omegat.tokenizer.LuceneEnglishTokenizer) use stop words originally from
-Okapi (http://okapi.sourceforge.net) (LGPL license)
+  org.omegat.tokenizer.LuceneEnglishTokenizer) use stop words from Okapi
+(http://okapi.sourceforge.net) (LGPL license)
   tinysegmenter.jar (Modified BSD license)
   commons-*.jar (Apache License 2.0)
   jWordSplitter (Apache License 2.0)
@@ -345,7 +345,6 @@ Okapi (http://okapi.sourceforge.net) (LGPL license)
   SuperTMXMerge-for_OmegaT.jar (LGPL license)
   groovy-all-2.2.2.jar (Apache Licence 2.0)
   slf4j (MIT License)
-  juniversalchardet-1.0.3.jar (GPL v2)
 
 ==============================================================================
  5.  Is OmegaT bugging you? Do you need help?

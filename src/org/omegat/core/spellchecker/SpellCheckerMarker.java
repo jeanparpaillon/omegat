@@ -25,6 +25,7 @@
 
 package org.omegat.core.spellchecker;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -64,7 +64,7 @@ public class XMLIntactTag extends Tag {
      * should return absolutely the same.
      */
     public String toOriginal() {
-        StringBuilder buf = new StringBuilder();
+        StringBuffer buf = new StringBuffer();
 
         buf.append("<");
         buf.append(getTag());

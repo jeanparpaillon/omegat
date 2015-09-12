@@ -60,18 +60,18 @@ import org.omegat.util.gui.UIThreadsUtil;
 public abstract class AlphabeticalMarkers extends JPanel {
 
     private static final String DEFAULT_MARKER_FONT_NAME = "Century";
-    private static final int FIRST_TITLE_LETTER = 'a';
+    private static final char   FIRST_TITLE_LETTER       = 'a';
+    
+    private final ColorScheme  colorScheme;
 
-    private final ColorScheme colorScheme;
-
-    private final Font TITLE_FONT = getTitleFont();
-    private final int BOX_SIZE = getBoxSize(TITLE_FONT);
-    private final Polygon MARKER_SHAPE = createMarkerShape(BOX_SIZE);
-    private final Rectangle GUIDING_SQUARE = new Rectangle(BOX_SIZE, BOX_SIZE);
-    private List<Marker> markers = null;
+    private final Font         TITLE_FONT     = getTitleFont();
+    private final int          BOX_SIZE       = getBoxSize(TITLE_FONT);
+    private final Polygon      MARKER_SHAPE   = createMarkerShape(BOX_SIZE);
+    private final Rectangle    GUIDING_SQUARE = new Rectangle(BOX_SIZE, BOX_SIZE);
+    private List<Marker>       markers        = null;
     private final JLayeredPane parent;
-    private final JScrollPane scrollPane;
-    private final boolean sourceLangIsRTL;
+    private final JScrollPane  scrollPane;
+    private final boolean      sourceLangIsRTL;
 
     AlphabeticalMarkers(JScrollPane scrollPane) {
         this.parent = Core.getMainWindow().getApplicationFrame().getLayeredPane();
@@ -84,10 +84,12 @@ public abstract class AlphabeticalMarkers extends JPanel {
 
     private ColorScheme createColorScheme(final Color editorBackground) {
         int MINIMUM_VISIBILITY = 0x8000;
-        int distanceToLightScheme = calculateSSD(editorBackground, Color.YELLOW);
+        int distanceToLightScheme = calcurateSSD(editorBackground, Color.YELLOW);
+        ColorScheme scheme;
         if (distanceToLightScheme >= MINIMUM_VISIBILITY) {
-            // Use the light scheme: background, foreground, border
-            return new ColorScheme(Color.YELLOW, Color.RED, Color.ORANGE);
+            // Use the light scheme
+            //                     background     | foreground | border
+            return new ColorScheme(Color.YELLOW,    Color.RED,   Color.ORANGE);
         } else {
             // Use the dark scheme
             return new ColorScheme(Color.DARK_GRAY, Color.GREEN, Color.MAGENTA);
@@ -95,10 +97,10 @@ public abstract class AlphabeticalMarkers extends JPanel {
     }
 
     // calcurate SSD (Sum of Squared Difference) for colors
-    private int calculateSSD(final Color a, final Color b) {
-        int db = a.getBlue() - b.getBlue();
+    private int calcurateSSD(final Color a, final Color b) {
+        int db = a.getBlue()  - b.getBlue();
         int dg = a.getGreen() - b.getGreen();
-        int dr = a.getRed() - b.getRed();
+        int dr = a.getRed()   - b.getRed();
         return db * db + dg * dg + dr * dr;
     }
 
@@ -119,7 +121,7 @@ public abstract class AlphabeticalMarkers extends JPanel {
 
             // draw marker
             for (Marker marker : markers) {
-                drawMarker(g2, marker.location, String.valueOf(Character.toChars(marker.title)));
+                drawMarker(g2, marker.location, marker.title);
             }
 
             g2.dispose();
@@ -128,18 +130,18 @@ public abstract class AlphabeticalMarkers extends JPanel {
         }
     }
 
-    private void drawMarker(Graphics2D g2, Point location, String title) {
+    private void drawMarker(Graphics2D g2, Point location, char title) {
         // map location to the appropriate corner of the guiding square.
         Point boxLocation = new Point(location);
         if (sourceLangIsRTL) {
             boxLocation.translate(-BOX_SIZE, -BOX_SIZE); // right-bottom corner
         } else {
-            boxLocation.translate(0, -BOX_SIZE); // left-bottom corner
+            boxLocation.translate(0, -BOX_SIZE);         // left-bottom corner
         }
         GUIDING_SQUARE.setLocation(boxLocation);
 
         // create TextLayout
-        TextLayout layout = new TextLayout(title, TITLE_FONT, g2.getFontRenderContext());
+        TextLayout layout = new TextLayout(String.valueOf(title), TITLE_FONT, g2.getFontRenderContext());
         Rectangle pixelBounds = layout.getPixelBounds(null, location.x, location.y);
         Dimension diffForCentered = getCenteredDimension(pixelBounds, GUIDING_SQUARE);
 
@@ -161,27 +163,22 @@ public abstract class AlphabeticalMarkers extends JPanel {
         g2.setColor(colorScheme.foreground);
         layout.draw(g2, location.x + diffForCentered.width, location.y + diffForCentered.height);
     }
-    
-    //  +------+
-    //  |      |
-    //  |      |
-    //  +--  --+
-    //     \/
+
     private static Polygon createMarkerShape(int boxSize) {
         Polygon poly = new Polygon();
-        poly.addPoint(0, boxSize);
-        poly.addPoint(boxSize / 3, boxSize);
-        poly.addPoint(boxSize / 2, boxSize + boxSize / 3);
-        poly.addPoint(boxSize - boxSize / 3, boxSize);
-        poly.addPoint(boxSize, boxSize);
+        poly.addPoint(0, boxSize);                         //  +------+
+        poly.addPoint(boxSize / 3, boxSize);               //  |      |
+        poly.addPoint(boxSize / 2, boxSize + boxSize / 3); //  |      |
+        poly.addPoint(boxSize - boxSize / 3, boxSize);     //  +--  --+
+        poly.addPoint(boxSize, boxSize);                   //     \/
         poly.addPoint(boxSize, 0);
         poly.addPoint(0, 0);
         return poly;
     }
 
     private static Dimension getCenteredDimension(Rectangle target, Rectangle base) {
-        double baseCenterX = base.getCenterX();
-        double baseCenterY = base.getCenterY();
+        double baseCenterX   = base.getCenterX();
+        double baseCenterY   = base.getCenterY();
         double targetCenterX = target.getCenterX();
         double targetCenterY = target.getCenterY();
         double diffX = 0, diffY = 0;
@@ -241,7 +238,7 @@ public abstract class AlphabeticalMarkers extends JPanel {
 
     private static List<Marker> createMarkers(Map<Integer, Point> map) {
         List<Marker> list = new ArrayList<Marker>();
-        int title = FIRST_TITLE_LETTER;
+        char title = FIRST_TITLE_LETTER;
         for (Entry<Integer, Point> entry : map.entrySet()) {
             Marker marker = new Marker();
             marker.segmentNumber = entry.getKey();
@@ -274,7 +271,7 @@ public abstract class AlphabeticalMarkers extends JPanel {
      * @param title as segment shortcut letter
      * @return <tt>true</tt> if this list contains the specified title
      */
-    public boolean containsTitle(int title) {
+    public boolean containsTitle(char title) {
         try {
             findMarkerByTitle(title);
             return true;
@@ -285,26 +282,26 @@ public abstract class AlphabeticalMarkers extends JPanel {
 
     private Marker findMarkerByTitle(String title) {
         String trimmed = title.trim();
-        if (trimmed.codePointCount(0, trimmed.length()) == 1) {
-            int cp = trimmed.codePointAt(0);
-            return findMarkerByTitle(cp);
+        if (trimmed.length() == 1) {
+            char ch = trimmed.charAt(0);
+            return findMarkerByTitle(ch);
         }
         throw new RuntimeException("Marker with the title '" + title + "' is not found");
     }
 
-    private Marker findMarkerByTitle(int title) {
+    private Marker findMarkerByTitle(char title) {
         for (Marker marker : markers) {
             if (title == marker.title) {
                 return marker;
             }
         }
-        throw new RuntimeException("Marker with the title '" + String.valueOf(Character.toChars(title)) + "' is not found");
+        throw new RuntimeException("Marker with the title '" + title + "' is not found");
     }
 
     private static class Marker {
         int segmentNumber = 0;
         Point location = null;
-        int title = 0;
+        char title = 0;
 
         @Override
         public String toString() {

@@ -51,7 +51,7 @@ public class XMLTag extends Tag {
      * Do specific processing for Open XML documents
      */
     public String toOriginal() {
-        StringBuilder buf = new StringBuilder();
+        StringBuffer buf = new StringBuffer();
 
         buf.append("<");
         if (Type.END == getType())

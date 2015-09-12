@@ -72,7 +72,7 @@ public class DTD extends XMLPseudoTag {
      * Returns the DTD in its original form as it was in original document.
      */
     public String toOriginal() {
-        StringBuilder res = new StringBuilder();
+        StringBuffer res = new StringBuffer();
         res.append("<!DOCTYPE");
         res.append(" ");
         res.append(name);
@@ -87,7 +87,7 @@ public class DTD extends XMLPseudoTag {
             res.append("\"" + systemId + "\"");
         }
 
-        if (!entities.isEmpty()) {
+        if (entities.size() > 0) {
             res.append("\n[\n");
             for (Entity entity : entities) {
                 res.append(entity.toString());

@@ -28,6 +28,7 @@ package org.omegat.gui.search;
 import java.util.ArrayList;
 import java.util.List;
 import org.omegat.util.Preferences;
+import org.omegat.util.StringUtil;
 
 /**
  * A class for managing search/replace history
@@ -80,13 +81,13 @@ public class HistoryManager {
     
     public static String[] getSearchItems() {
         synchronized (searchItems) {
-            return searchItems.toArray(new String[searchItems.size()]);
+            return searchItems.toArray(new String[0]);
         }
     }
     
     public static String[] getReplaceItems() {
         synchronized (replaceItems) {
-            return replaceItems.toArray(new String[replaceItems.size()]);
+            return replaceItems.toArray(new String[0]);
         }
     }
     

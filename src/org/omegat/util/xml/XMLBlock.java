@@ -76,14 +76,12 @@ public class XMLBlock {
 
         // block considered text if it has length=1 and includes non ws
         m_hasText = false;
-        if (text.codePointCount(0, text.length()) == 1) {
-            int cp = text.codePointAt(0);
-            if (cp != 9 && cp != 10 && cp != 13 && cp != ' ') {
+        if (text.length() == 1) {
+            char c = text.charAt(0);
+            if (c != 9 && c != 10 && c != 13 && c != ' ')
                 m_hasText = true;
-            }
-        } else {
+        } else
             m_hasText = true;
-        }
     }
 
     public void setTypeChar(char c) {
@@ -193,7 +191,7 @@ public class XMLBlock {
             } else {
                 tag += m_text + " ";
                 if (m_attrList != null) {
-                    if (!m_attrList.isEmpty()) {
+                    if (m_attrList.size() > 0) {
                         tag += m_attrList.get(0).name;
                     }
                 }

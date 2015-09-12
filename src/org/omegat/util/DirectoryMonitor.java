@@ -60,18 +60,12 @@ public class DirectoryMonitor extends Thread {
      *            directory to monitoring
      */
     public DirectoryMonitor(final File dir, final Callback callback) {
-        if (dir == null) {
-            throw new IllegalArgumentException("Dir cannot be null.");
-        }
         this.dir = dir;
         this.callback = callback;
         this.directoryCallback = null;
     }
 
     public DirectoryMonitor(final File dir, final Callback callback, final DirectoryCallback directoryCallback) {
-        if (dir == null) {
-            throw new IllegalArgumentException("Dir cannot be null.");
-        }
         this.dir = dir;
         this.callback = callback;
         // Can't call this(dir, callback) because fields are final.
@@ -173,7 +167,7 @@ public class DirectoryMonitor extends Thread {
     /**
      * Information about exist file.
      */
-    protected static class FileInfo {
+    protected class FileInfo {
         public long lastModified, length;
 
         public FileInfo(final File file) {
@@ -183,9 +177,6 @@ public class DirectoryMonitor extends Thread {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null || !(obj instanceof FileInfo)) {
-                return false;
-            }
             FileInfo o = (FileInfo) obj;
             return lastModified == o.lastModified && length == o.length;
         }

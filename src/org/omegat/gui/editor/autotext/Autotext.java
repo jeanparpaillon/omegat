@@ -47,11 +47,14 @@ import org.omegat.util.StaticUtils;
 public class Autotext {
     
     private List<AutotextPair> list = new ArrayList<AutotextPair>();
+    
+    private String name;
+    
+    public Autotext(String name) {
+        this.name = name;
         
-    public Autotext(String name) {        
-        if (name != null) {
+        if (name != null)
             load(name);
-        }
     }
     
     public List<AutotextPair> getList() {
@@ -67,9 +70,8 @@ public class Autotext {
         if (parts.length == 2) {
             list.add(new AutotextPair(parts[0], parts[1], ""));
         }
-        if (parts.length == 3) {
+        if (parts.length == 3)
             list.add(new AutotextPair(parts[0], parts[1], parts[2]));
-        }
     }
     
     public void load(String fileName) {

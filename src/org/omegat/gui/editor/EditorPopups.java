@@ -49,7 +49,6 @@ import org.omegat.util.Log;
 import org.omegat.util.OStrings;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.TagUtil;
-import org.omegat.util.TagUtil.Tag;
 import org.omegat.util.Token;
 import org.omegat.util.gui.UIThreadsUtil;
 
@@ -143,7 +142,7 @@ public class EditorPopups {
                 }
 
                 // what if no action is done?
-                if (suggestions.isEmpty()) {
+                if (suggestions.size() == 0) {
                     JMenuItem item = menu.add(OStrings.getString("SC_NO_SUGGESTIONS"));
                     item.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
@@ -405,11 +404,11 @@ public class EditorPopups {
                 return;
             }
 
-            for (final Tag tag : TagUtil.getAllTagsMissingFromTarget()) {
-                JMenuItem item = menu.add(StaticUtils.format(OStrings.getString("TF_MENU_EDIT_TAG_INSERT_N"), tag.tag));
+            for (final String tag : TagUtil.getAllTagsMissingFromTarget()) {
+                JMenuItem item = menu.add(StaticUtils.format(OStrings.getString("TF_MENU_EDIT_TAG_INSERT_N"), tag));
                 item.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        Core.getEditor().insertText(tag.tag);
+                        Core.getEditor().insertText(tag);
                     }
                 });
             }

@@ -73,7 +73,7 @@ public class ConsoleWindow implements IMainWindow {
 
         final String msg;
         if (messageKey == null) {
-            msg = " ";
+            msg = new String() + ' ';
         } else {
             if (params != null) {
                 msg = StaticUtils.format(OStrings.getString(messageKey), params);
@@ -95,7 +95,7 @@ public class ConsoleWindow implements IMainWindow {
     /**
      * {@inheritDoc}
      */
-    public void showErrorDialogRB(String title, String message, Object... args) {
+    public void showErrorDialogRB(String message, Object[] args, String title) {
         System.err.println(StaticUtils.format(OStrings.getString(message), args));
     }
 

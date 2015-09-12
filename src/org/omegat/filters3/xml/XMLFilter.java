@@ -227,9 +227,8 @@ public abstract class XMLFilter extends AbstractFilter implements Translator {
      */
     @Override
     public boolean isFileSupported(BufferedReader reader) {
-        if (dialect.getConstraints() == null || dialect.getConstraints().isEmpty()) {
+        if (dialect.getConstraints() == null || dialect.getConstraints().size() == 0)
             return true;
-        }
 
         try {
             char[] cbuf = new char[OConsts.READ_AHEAD_LIMIT];

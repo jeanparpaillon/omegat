@@ -25,8 +25,6 @@
 
 package org.omegat.filters3;
 
-import org.omegat.util.StaticUtils;
-
 /**
  * A tag in a source text.
  * 
@@ -53,11 +51,10 @@ public abstract class Tag implements Element {
 
     /** Returns the short form of this tag, most often -- the first letter. */
     public String getShortcut() {
-        if (shortcut != null) {
+        if (shortcut != null)
             return shortcut;
-        } else {
-            return String.valueOf(Character.toChars(getTag().codePointAt(0)));
-        }
+        else
+            return Character.toString(getTag().charAt(0));
     }
 
     private Type type;
@@ -152,7 +149,7 @@ public abstract class Tag implements Element {
             throw new RuntimeException("Shouldn't hapen!");
         }
 
-        StringBuilder buf = new StringBuilder();
+        StringBuffer buf = new StringBuffer();
 
         buf.append("<");
         buf.append(tmxtag);
@@ -176,7 +173,7 @@ public abstract class Tag implements Element {
      * return &amp;lt;strong&amp;gt;
      */
     protected String toPartialTMX() {
-        StringBuilder buf = new StringBuilder();
+        StringBuffer buf = new StringBuffer();
 
         buf.append("&amp;lt;");
         if (Type.END == getType())
@@ -195,23 +192,18 @@ public abstract class Tag implements Element {
      * &lt;strong&gt; tag should return &lt;s3&gt;.
      */
     public String toShortcut() {
-        StringBuilder buf = new StringBuilder();
+        StringBuffer buf = new StringBuffer();
 
-        buf.append('<');
+        buf.append("<");
         if (Type.END == getType())
-            buf.append('/');
+            buf.append("/");
         buf.append(getShortcut());
         buf.append(getIndex());
         if (Type.ALONE == getType())
-            buf.append('/');
-        buf.append('>');
+            buf.append("/");
+        buf.append(">");
 
         return buf.toString();
-    }
-
-    public String toSafeCalcShortcut() {
-        return StaticUtils.TAG_REPLACEMENT_CHAR + getShortcut().replace('<', '_').replace('>', '_')
-                + StaticUtils.TAG_REPLACEMENT_CHAR;
     }
 
     /**

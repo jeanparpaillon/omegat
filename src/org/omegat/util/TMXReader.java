@@ -94,7 +94,6 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
         this.sourceLanguage = sourceLanguage.getLanguage();
         this.targetLanguage = targetLanguage.getLanguage();
         this.isSegmentingEnabled = isSegmentingEnabled;
-        dateParser = new TMXDateParser();
     }
 
     /** Returns the source language */
@@ -115,7 +114,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
     /** Returns an original text of a source segment #n */
     public String getSourceSegment(int n) {
         if (n < 0 || n >= numSegments())
-            return "";
+            return new String();
         else
             return m_srcList.get(n);
     }
@@ -123,7 +122,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
     /** Returns a translation of a target segment #n */
     public String getTargetSegment(int n) {
         if (n < 0 || n >= numSegments())
-            return "";
+            return new String();
         else
             return m_tarList.get(n);
     }
@@ -256,7 +255,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
     }
 
     /** Internal class for OmegaT tag */
-    static class Tag {
+    class Tag {
         /** is this an ending tag, e.g. &lt;/b4&gt; */
         public boolean end;
         /** name of the tag, e.g. "b" for &lt;/b4&gt; */
@@ -307,10 +306,10 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
 
             int tagstart = matcher.start();
             int tagend = matcher.end();
-            boolean end = !matcher.group(1).isEmpty();
+            boolean end = matcher.group(1).length() > 0;
             String name = matcher.group(2);
             int num = Integer.parseInt(matcher.group(3));
-            boolean alone = !matcher.group(4).isEmpty();
+            boolean alone = matcher.group(4).length() > 0;
 
             if (num == 1)
                 num = 0;
@@ -336,9 +335,9 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
             while (matcher.find()) {
                 tagstart = matcher.start();
                 tagend = matcher.end();
-                end = !matcher.group(1).isEmpty();
+                end = matcher.group(1).length() > 0;
                 name = matcher.group(2);
-                alone = !matcher.group(4).isEmpty();
+                alone = matcher.group(4).length() > 0;
                 tag = new Tag(end, name, num, alone);
 
                 if (end && unclosedTagsNames.containsKey(name)) {
@@ -383,9 +382,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
 
     /** Collects a segment from TMX. Performs upgrades of a segment if needed. */
     private void storeSegment(String source, String translation, String changeId, long changeDate) {
-        source = StringUtil.normalizeUnicode(source);
         source = upgradeSegment(source);
-        translation = StringUtil.normalizeUnicode(translation);
         translation = upgradeSegment(translation);
 
         if (isUpgradeSentSeg()) {
@@ -456,7 +453,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
         // parse the TMX file
         try {
             // log the parsing attempt
-            Log.logRB("TMXR_INFO_READING_FILE", displayFilename);
+            Log.logRB("TMXR_INFO_READING_FILE", new Object[] { displayFilename });
 
             // create a new SAX parser factory
             javax.xml.parsers.SAXParserFactory parserFactory = javax.xml.parsers.SAXParserFactory
@@ -501,9 +498,10 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
      * Receives notification of a parser warning. Called by SAX parser.
      */
     public void warning(SAXParseException exception) throws SAXException {
-        Log.logWarningRB("TMXR_WARNING_WHILE_PARSING",
-                exception.getLineNumber(),
-                exception.getColumnNumber());
+        Log.logWarningRB(
+                "TMXR_WARNING_WHILE_PARSING",
+                new Object[] { String.valueOf(exception.getLineNumber()),
+                        String.valueOf(exception.getColumnNumber()) });
         Log.log(exception);
     }
 
@@ -512,9 +510,10 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
      * parser.
      */
     public void error(SAXParseException exception) throws SAXException {
-        Log.logErrorRB("TMXR_RECOVERABLE_ERROR_WHILE_PARSING",
-                exception.getLineNumber(),
-                exception.getColumnNumber());
+        Log.logErrorRB(
+                "TMXR_RECOVERABLE_ERROR_WHILE_PARSING",
+                new Object[] { String.valueOf(exception.getLineNumber()),
+                        String.valueOf(exception.getColumnNumber()) });
         Log.log(exception);
     }
 
@@ -522,9 +521,10 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
      * Receives notification of a fatal XML parsing error. Called by SAX parser.
      */
     public void fatalError(SAXParseException exception) throws SAXException {
-        Log.logErrorRB("TMXR_FATAL_ERROR_WHILE_PARSING",
-                exception.getLineNumber(),
-                exception.getColumnNumber());
+        Log.logErrorRB(
+                "TMXR_FATAL_ERROR_WHILE_PARSING",
+                new Object[] { String.valueOf(exception.getLineNumber()),
+                        String.valueOf(exception.getColumnNumber()) });
         Log.log(exception);
     }
 
@@ -717,16 +717,16 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
         tmxSourceLanguage = attributes.getValue(TMX_ATTR_SRCLANG);
 
         // log some details
-        Log.logRB("TMXR_INFO_CREATION_TOOL", creationtool);
-        Log.logRB("TMXR_INFO_CREATION_TOOL_VERSION", creationtoolversion);
-        Log.logRB("TMXR_INFO_SEG_TYPE", segtype);
-        Log.logRB("TMXR_INFO_SOURCE_LANG", tmxSourceLanguage);
+        Log.logRB("TMXR_INFO_CREATION_TOOL", new Object[] { creationtool });
+        Log.logRB("TMXR_INFO_CREATION_TOOL_VERSION", new Object[] { creationtoolversion });
+        Log.logRB("TMXR_INFO_SEG_TYPE", new Object[] { segtype });
+        Log.logRB("TMXR_INFO_SOURCE_LANG", new Object[] { tmxSourceLanguage });
 
         // give a warning if the TMX source language is
         // different from the project source language
         if (!tmxSourceLanguage.equalsIgnoreCase(sourceLanguage)) {
-            Log.logWarningRB("TMXR_WARNING_INCORRECT_SOURCE_LANG", tmxSourceLanguage,
-                    sourceLanguage);
+            Log.logWarningRB("TMXR_WARNING_INCORRECT_SOURCE_LANG", new Object[] { tmxSourceLanguage,
+                    sourceLanguage });
         }
 
         // give a warning that TMX file will be upgraded from 1.4.x
@@ -771,7 +771,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
                 // add the language to the set, but trim off any region
                 // indicators
                 // for simplicity's sake, and convert it to all uppercase
-                if (!language.isEmpty()) {
+                if (language.length() > 0) {
                     m_variantLanguages.add(language.substring(0, 2).toUpperCase(Locale.ENGLISH));
                     if (languages.length() > 0)
                         languages.append(", ");
@@ -783,7 +783,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
             } while (commaPos > 0);
 
             // Log presence of preferred variant languages
-            Log.logRB("TMXR_INFO_VARIANT_LANGUAGES_DISPLAYED", languages.toString());
+            Log.logRB("TMXR_INFO_VARIANT_LANGUAGES_DISPLAYED", new Object[] { languages.toString() });
         }
     }
 
@@ -940,11 +940,11 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
         long changeDate = 0;
         if (target.changeDate != null) {
             try {
-                changeDate = dateParser.parse(target.changeDate).getTime();
+                changeDate = TMXDateParser.parse(target.changeDate).getTime();
             } catch (ParseException e) {
                 if (target.creationDate != null) {
                     try {
-                        changeDate = dateParser.parse(target.creationDate).getTime();
+                        changeDate = TMXDateParser.parse(target.creationDate).getTime();
                     } catch (ParseException e2) {
                     }
                 }
@@ -958,7 +958,7 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
         // "pad" with empty strings, or omit segments if necessary
         // NOTE: this is not the most ideal solution, but the best possible
         for (int i = 0; i < source.subSegments.size(); i++) {
-            String starget = "";
+            String starget = new String();
             if (i < target.subSegments.size())
                 starget = target.subSegments.get(i).toString();
             storeSegment(source.subSegments.get(i).toString(), starget, changeId, changeDate);
@@ -1191,12 +1191,10 @@ public class TMXReader extends org.xml.sax.helpers.DefaultHandler {
                                     // (null if none)
     private boolean isSegmentingEnabled;
 
-    private TMXDateParser dateParser;
-
     /**
      * Internal class to represent translation unit variants
      */
-    static private class TUV {
+    private class TUV {
         /**
          * Language and (optional) country code: LL(C-CC)
          */

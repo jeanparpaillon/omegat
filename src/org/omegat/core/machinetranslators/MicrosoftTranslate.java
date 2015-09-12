@@ -162,8 +162,7 @@ public class MicrosoftTranslate extends BaseTranslate {
         if (!v.startsWith("{") || !v.endsWith("}")) {
             throw new RuntimeException("Wrong");
         }
-        str = v.substring(v.offsetByCodePoints(0, 1),
-                v.offsetByCodePoints(v.length(), -1));
+        str = v.substring(1, v.length() - 1);
         pos = 0;
 
         Map<String, String> result = new TreeMap<String, String>();
@@ -183,24 +182,22 @@ public class MicrosoftTranslate extends BaseTranslate {
     }
 
     String readString() {
-        if (str.codePointAt(pos) != '"') {
+        if (str.charAt(pos) != '"') {
             throw new RuntimeException("Wrong");
         }
-        int startOffset = str.offsetByCodePoints(pos, 1);
-        int endOffset = str.indexOf('"', startOffset);
-        if (endOffset < 0) {
+        int pose = str.indexOf('"', pos + 1);
+        if (pose < 0) {
             throw new RuntimeException("Wrong");
         }
-        String result = str.substring(startOffset, endOffset);
-        pos = str.offsetByCodePoints(endOffset, 1);
+        String result = str.substring(pos + 1, pose);
+        pos = pose + 1;
         return result;
     }
 
-    void mustBe(int c) {
-        int cp = str.codePointAt(pos);
-        if (cp != c) {
+    void mustBe(char c) {
+        if (str.charAt(pos) != c) {
             throw new RuntimeException("Wrong");
         }
-        pos += Character.charCount(cp);
+        pos++;
     }
 }

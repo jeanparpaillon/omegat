@@ -6,7 +6,6 @@
  Copyright (C) 2000-2006 Keith Godfrey, Maxym Mykhalchuk, and Henry Pijffers
                2007 Didier Briel, Zoltan Bartko
                2008 Alex Buloichik
-               2015 Didier Briel
                Home page: http://www.omegat.org/
                Support center: http://groups.yahoo.com/group/OmegaT/
 
@@ -81,11 +80,6 @@ public class DefaultTokenizer implements ITokenizer {
     public Token[] tokenizeWordsForSpelling(final String str) {
         return tokenizeTextNoCache(str, false);
     }
-    
-    @Override
-    public String[] tokenizeWordsForDictionary(String str) {
-        return tokenizeTextToStringsNoCache(str, false);
-    }
 
     /**
      * {@inheritDoc}
@@ -135,7 +129,7 @@ public class DefaultTokenizer implements ITokenizer {
      * @return array of tokens (all)
      */
     private static Token[] tokenizeTextNoCache(final String strOrig, final boolean all) {
-        if (strOrig.isEmpty()) {
+        if (strOrig.length() == 0) {
             // fixes bug nr. 1382810 (StringIndexOutOfBoundsException)
             return EMPTY_TOKENS_LIST;
         }
@@ -153,9 +147,9 @@ public class DefaultTokenizer implements ITokenizer {
         for (int end = breaker.next(); end != BreakIterator.DONE; start = end, end = breaker.next()) {
             String tokenStr = str.substring(start, end);
             boolean word = false;
-            for (int cp, i = 0; i < tokenStr.length(); i += Character.charCount(cp)) {
-                cp = tokenStr.codePointAt(i);
-                if (Character.isLetter(cp)) {
+            for (int i = 0; i < tokenStr.length(); i++) {
+                char ch = tokenStr.charAt(i);
+                if (Character.isLetter(ch)) {
                     word = true;
                     break;
                 }
@@ -168,40 +162,6 @@ public class DefaultTokenizer implements ITokenizer {
         }
 
         return tokens.toArray(new Token[tokens.size()]);
-    }
-    
-    private static String[] tokenizeTextToStringsNoCache(String str, boolean all) {
-        if (str.isEmpty()) {
-            return new String[0];
-        }
-
-        // create a new token list
-        List<String> tokens = new ArrayList<String>(64);
-
-        // get a word breaker
-        str = str.toLowerCase(); // HP: possible error, this makes
-                                 // "A" and "a" match, CHECK AND FIX
-        BreakIterator breaker = getWordBreaker();
-        breaker.setText(str);
-
-        int start = breaker.first();
-        for (int end = breaker.next(); end != BreakIterator.DONE; start = end, end = breaker.next()) {
-            String tokenStr = str.substring(start, end);
-            boolean word = false;
-            for (int cp, i = 0; i < tokenStr.length(); i += Character.charCount(cp)) {
-                cp = tokenStr.codePointAt(i);
-                if (Character.isLetter(cp)) {
-                    word = true;
-                    break;
-                }
-            }
-
-            if (all || (word && !PatternConsts.OMEGAT_TAG.matcher(tokenStr).matches())) {
-                tokens.add(tokenStr);
-            }
-        }
-
-        return tokens.toArray(new String[tokens.size()]);
     }
 
     /** Returns an iterator to break sentences into words. */
@@ -236,56 +196,14 @@ public class DefaultTokenizer implements ITokenizer {
 
     /**
      * Check if array contains other array.
-     * @param tokensList a list of tokens to be searched
-     * @param listForFind a list of tokens to search in tokensList
-     * @param notExact is true if the tokens in listForFind can be non-contiguous or in a different order in the 
-     * tokensList. If false, tokens must be exactly the same.
-     * @return true if the tokens in listForFind are found in tokensList
      */
-    public static boolean isContainsAll(Token[] tokensList, Token[] listForFind, boolean notExact) {
-        if (notExact) {         
-            for (Token t : listForFind) {
-                if (!isContains(tokensList, t)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            return isContainsExact(tokensList, listForFind);
-        }
-    }
-    
-    /**
-     * Check if a list of tokens is found contiguously in another list of tokens
-     * @param tokensList a list of tokens to be searched
-     * @param listForFind a list of tokens to search in tokensList
-     * @return true if the tokens in listForFind are found contiguously in tokensList
-     */
-    private static boolean isContainsExact(Token[] tokensList, Token[] listForFind) {
-        for (int i=0; i<tokensList.length; i++) { // For all tokens in the searched strings
-            if (tokensList[i].equals(listForFind[0])) { // We found the first position of listForFind
-                if (listForFind.length == 1) { // Only one token, and we found it
-                    return true;
-                }                   
-                int k = i+1;
-                if (listForFind.length <= tokensList.length-k+1) { // Enough words remain to match tokensList
-                    boolean found = true;
-                    for (int j=1; j<listForFind.length; j++) { 
-                        if (!listForFind[j].equals(tokensList[k])) { // One of the other tokens doesn't match
-                            found = false;
-                            break;
-                        }
-                        k++;
-                    }
-                    if (found) {  // All tokens matched
-                        return true;
-                    }
-                 } else {
-                    return false;
-                 }
+    public static boolean isContainsAll(Token[] tokensList, Token[] listForFind) {
+        for (Token t : listForFind) {
+            if (!isContains(tokensList, t)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     @Override

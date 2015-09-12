@@ -66,7 +66,7 @@ public class WorkflowOptionsDialog extends JDialog {
         insertFuzzyCheckBox.setSelected(Preferences.isPreference(Preferences.BEST_MATCH_INSERT));
         similarityLabel.setEnabled(insertFuzzyCheckBox.isSelected());
         similaritySpinner
-                .setValue(Integer.parseInt(Preferences.getPreferenceDefault(
+                .setValue(new Integer(Preferences.getPreferenceDefault(
                         Preferences.BEST_MATCH_MINIMAL_SIMILARITY,
                         Preferences.BEST_MATCH_MINIMAL_SIMILARITY_DEFAULT)));
         similaritySpinner.setEnabled(insertFuzzyCheckBox.isSelected());
@@ -139,11 +139,11 @@ public class WorkflowOptionsDialog extends JDialog {
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         descriptionTextArea.setEditable(false);
+        descriptionTextArea.setBackground(javax.swing.UIManager.getDefaults().getColor("Label.background"));
         descriptionTextArea.setFont(new JLabel().getFont());
         descriptionTextArea.setLineWrap(true);
         descriptionTextArea.setText(OStrings.getString("GUI_WORKFLOW_DESCRIPTION")); // NOI18N
         descriptionTextArea.setWrapStyleWord(true);
-        descriptionTextArea.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

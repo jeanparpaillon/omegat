@@ -32,8 +32,6 @@ import java.util.List;
 
 import org.omegat.core.data.ProtectedPart;
 import org.omegat.core.statistics.StatCount;
-import org.omegat.core.statistics.Statistics;
-import org.omegat.core.statistics.StatisticsSettings;
 import org.omegat.filters3.Attributes;
 import org.omegat.filters3.Element;
 import org.omegat.filters3.Tag;
@@ -42,7 +40,6 @@ import org.omegat.filters3.xml.XMLContentBasedTag;
 import org.omegat.filters3.xml.XMLText;
 import org.omegat.filters3.xml.xliff.XLIFFOptions.ID_TYPE;
 import org.omegat.util.InlineTagHandler;
-import org.omegat.util.Preferences;
 import org.omegat.util.StaticUtils;
 import org.omegat.util.StringUtil;
 
@@ -175,7 +172,7 @@ public class XLIFFDialect extends DefaultXMLDialect {
             if (el instanceof XMLContentBasedTag) {
                 XMLContentBasedTag tag = (XMLContentBasedTag) el;
                 String shortcut = null;
-                int shortcutLetter;
+                char shortcutLetter;
                 int tagIndex;
                 boolean tagProtected;
                 if ("bpt".equals(tag.getTag())) {
@@ -185,13 +182,13 @@ public class XLIFFDialect extends DefaultXMLDialect {
                     shortcutLetter = calcTagShortcutLetter(tag, ignoreTypeForBptTags);
                     tagHandler.setTagShortcutLetter(shortcutLetter);
                     tagIndex = tagHandler.endBPT();
-                    shortcut = "<" + (shortcutLetter != 0 ? String.valueOf(Character.toChars(shortcutLetter)) : 'f') + tagIndex + '>';
+                    shortcut = "<" + (shortcutLetter != 0 ? shortcutLetter : 'f') + tagIndex + '>';
                     tagProtected = false;
                 } else if ("ept".equals(tag.getTag())) {
                     tagHandler.startEPT(tag.getAttribute("rid"), tag.getAttribute("id"), tag.getAttribute("i"));
                     tagIndex = tagHandler.endEPT();
                     shortcutLetter = tagHandler.getTagShortcutLetter();
-                    shortcut = "</" + (shortcutLetter != 0 ? String.valueOf(Character.toChars(shortcutLetter)) : 'f') + tagIndex + '>';
+                    shortcut = "</" + (shortcutLetter != 0 ? shortcutLetter : 'f') + tagIndex + '>';
                     tagProtected = false;
                 } else if ("it".equals(tag.getTag())) {
                     tagHandler.startOTHER();
@@ -206,16 +203,16 @@ public class XLIFFDialect extends DefaultXMLDialect {
                         if (forceShortCutToF) { 
                             shortcutLetter = 'f';
                         }
-                        shortcut = "</" + (shortcutLetter != 0 ? String.valueOf(Character.toChars(shortcutLetter)) : 'f') + tagIndex + '>';
+                        shortcut = "</" + (shortcutLetter != 0 ? shortcutLetter : 'f') + tagIndex + '>';
                     } else {
-                        shortcut = "<" + (shortcutLetter != 0 ? String.valueOf(Character.toChars(shortcutLetter)) : 'f') + tagIndex + '>';
+                        shortcut = "<" + (shortcutLetter != 0 ? shortcutLetter : 'f') + tagIndex + '>';
                     }
                     tagProtected = false;
                 } else if ("ph".equals(tag.getTag())) {
                     tagHandler.startOTHER();
                     tagIndex = tagHandler.endOTHER();
                     shortcutLetter = calcTagShortcutLetter(tag, ignoreTypeForPhTags);
-                    shortcut = "<" + (shortcutLetter != 0 ? String.valueOf(Character.toChars(shortcutLetter)) : 'f') + tagIndex + "/>";
+                    shortcut = "<" + (shortcutLetter != 0 ? shortcutLetter : 'f') + tagIndex + "/>";
                     tagProtected = false;
                 } else if ("mrk".equals(tag.getTag())) {
                     tagHandler.startOTHER();
@@ -238,23 +235,18 @@ public class XLIFFDialect extends DefaultXMLDialect {
                 pp.setDetailsFromSourceFile(tag.toOriginal());
                 if (tagProtected) {
                     // protected text with related tags, like <m0>Acme</m0>
-                    if (StatisticsSettings.isCountingProtectedText()) {
-                        // Protected texts are counted, but related tags are not counted in the word count
-                        pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT
-                                + tag.getIntactContents().sourceToOriginal() + StaticUtils.TAG_REPLACEMENT);
-                    } else {
+                    if (StatCount.REMOVE_ALL_PROTECTED_PARTS) {
                         // All protected parts are not counted in the word count(default)
                         pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
+                    } else {
+                        // Protected texts are counted, but related tags are not counted in the word count
+                        pp.setReplacementWordsCountCalculation(tag.getIntactContents().sourceToOriginal());
                     }
                     pp.setReplacementUniquenessCalculation(StaticUtils.TAG_REPLACEMENT);
                     pp.setReplacementMatchCalculation(tag.getIntactContents().sourceToOriginal());
                 } else {
                     // simple tag, like <i0>
-                    if (StatisticsSettings.isCountingStandardTags()) {
-                        pp.setReplacementWordsCountCalculation(tag.toSafeCalcShortcut());
-                    } else {
-                        pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
-                    }
+                    pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
                     pp.setReplacementUniquenessCalculation(StaticUtils.TAG_REPLACEMENT);
                     pp.setReplacementMatchCalculation(StaticUtils.TAG_REPLACEMENT);
                 }
@@ -268,11 +260,7 @@ public class XLIFFDialect extends DefaultXMLDialect {
                 ProtectedPart pp = new ProtectedPart();
                 pp.setTextInSourceSegment(shortcut);
                 pp.setDetailsFromSourceFile(tag.toOriginal());
-                if (StatisticsSettings.isCountingStandardTags()) {
-                    pp.setReplacementWordsCountCalculation(tag.toSafeCalcShortcut());
-                } else {
-                    pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
-                }
+                pp.setReplacementWordsCountCalculation(StaticUtils.TAG_REPLACEMENT);
                 pp.setReplacementUniquenessCalculation(StaticUtils.TAG_REPLACEMENT);
                 pp.setReplacementMatchCalculation(StaticUtils.TAG_REPLACEMENT);
                 protectedParts.add(pp);
@@ -283,13 +271,13 @@ public class XLIFFDialect extends DefaultXMLDialect {
         return r.toString();
     }
 
-    private int calcTagShortcutLetter(XMLContentBasedTag tag) {
+    private char calcTagShortcutLetter(XMLContentBasedTag tag) {
     	return calcTagShortcutLetter(tag, false);
     }
 
-    private int calcTagShortcutLetter(XMLContentBasedTag tag, boolean ignoreTypeForPhtags) {
-        int s;
-        if (!tag.getIntactContents().isEmpty() && (tag.getIntactContents().get(0) instanceof XMLText)) {
+    private char calcTagShortcutLetter(XMLContentBasedTag tag, boolean ignoreTypeForPhtags) {
+        char s;
+        if (tag.getIntactContents().size() > 0 && (tag.getIntactContents().get(0) instanceof XMLText)) {
             XMLText xmlText = (XMLText) tag.getIntactContents().get(0);
             s = StringUtil.getFirstLetterLowercase(xmlText.getText());
         } else {
