@@ -1,0 +1,1418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "../../../docbook-xml-4.5/docbookx.dtd">
+<chapter id="chapter.menu">
+  <title>Menu e vias breve de claviero</title>
+
+  <section id="ch04.main.menu">
+    <title><indexterm class="singular">
+        <primary>Menu</primary>
+      </indexterm>Menu principal</title>
+
+    <para>Tote le functiones de OmegaT es disponibile per le barra del menu al summitate del fenestra del editor. Multe functiones es alsi disponibile per vias breve de claviero. Le vias breve es activate pulsante <keycap>Ctrl</keycap> e un littera. Alcun vias breve implica altere claves. Pro le legibilitate, le litteras ci es scribite majuscule. <keycap>Ctrl</keycap> es usate sur le systemas operative Windows, UNIX e UNIX-simile, con le clavieros presentante un clave <keycap>Ctrl</keycap> o <keycap>Control</keycap>. Le usatores de Mac usa in su loco le <keycombo> <keycap>clave</keycap> <keycap>Cmd</keycap> </keycombo>. Sur le clavieros del Apple le clave &quot;Cmd&quot; ha o un etiquetta  &quot;command&quot; o un symbolo de pomo.</para>
+
+    <para>Tu pote personalisar le vias breve existente o adder unos nove conformemente a tu necessitates. <link linkend="ch04.shortcuts.customization">Vide Appendice - Personalisation del Vias breve</link></para>
+
+    <table colsep="1" id="table.main.menu">
+      <title>Menu principal</title>
+
+      <tgroup cols="7" colsep="1">
+        <tbody>
+          <row>
+            <entry><guimenuitem>Projecto</guimenuitem></entry>
+
+            <entry><guimenuitem>Modificar</guimenuitem></entry>
+
+            <entry><guimenuitem>Vader a</guimenuitem></entry>
+
+            <entry><guimenuitem>Vider</guimenuitem></entry>
+
+            <entry><guimenuitem>Instrumentos</guimenuitem></entry>
+
+            <entry><guimenuitem>Optiones</guimenuitem></entry>
+
+            <entry><guimenuitem>Adjuta</guimenuitem></entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <section id="submenu.Project">
+      <title>Projecto<indexterm class="singular">
+          <primary>Menu</primary> <secondary>Projecto</secondary>
+        </indexterm></title>
+
+      <table colsep="1">
+        <title>Menu del projecto</title>
+
+        <tgroup cols="3" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <colspec align="left" colnum="2"/>
+
+          <tbody>
+            <row>
+              <entry><guimenuitem>Nove...</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>N</keycap>
+                </keycombo></entry>
+
+              <entry>Crea e aperi un nove projecto. Le fenestra de dialogo pro crear un nove projecto es le mesme que pro le modification. Vider<xref linkend="chapter.project.properties"/></entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Discargar un  projecto de equipa...</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Crea un copia local de un projecto OmegaT remote.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Aperir...</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>O</keycap>
+                </keycombo></entry>
+
+              <entry>Aperi un projecto create anteriormente.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Aperir un projecto recente</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Da accesso al cinque projectos modificate plus recentemente. Pulsante sur uno le projecto currente, si il ha, essera salvate e clause, postea essera aperite le altere projecto assi eligite.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Copia le files in le plica fonte...</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Copia le files seligite in le plica <filename>source</filename> e recarga le projecto pro cargar le nove files.<filename></filename></entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Discargar un pagina MediaWiki...</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Discarga le unitates ex le paginas de MediaWiki del URL inserite.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Recargar</guimenuitem></entry>
+
+              <entry><keycap>F5</keycap></entry>
+
+              <entry>Recarga le projecto pro recolliger cambios externe in le files fonte, le memorias de traduction hereditage, le glossarios e le configurationes del projecto in tu conto.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Clauder</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>W</keycap>
+                </keycombo></entry>
+
+              <entry>Salva tu traduction e claude le projecto.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Salvar</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>S</keycap>
+                </keycombo></entry>
+
+              <entry>Salva le memoria de traduction interne in le disco dur. OmegaT automaticamente salva le traductiones cata 10 minutas o quando tu claude tu projecto, o tu quita OmegaT.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Crear le documentos rendite</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>D</keycap>
+                </keycombo></entry>
+
+              <entry>Crea le documentos de destination in base a tu traduction del texto de tu documentos fonte. Le documentos final create es ubicate in le plica <filename>target</filename>.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Crear le Documento rendite actual</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>D</keycap>
+                </keycombo></entry>
+
+              <entry>Crea le documento de destination in su proprie formato final correspondente al documento actualmente in traduction.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Proprietates...</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>E</keycap>
+                </keycombo></entry>
+
+              <entry>Monstra le fenestra de dialogo <link linkend="chapter.project.properties">Proprietates de projecto</link> pro modificar le linguas e le locationes del plica del projecto.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Files de projecto...</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>L</keycap>
+                </keycombo></entry>
+
+              <entry>Claude o aperi le <link linkend="section.project.files">Fenestra del files del projecto</link> (dependente de ille es aperte o clause).</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Quitar</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Q</keycap>
+                </keycombo></entry>
+
+              <entry>Salva le projecto e quita <application>OmegaT</application>. Si tu non ha ancora salvate le projecto, isto confirma manualmente si tu vermente desidera quitar.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Modificar<indexterm class="singular">
+          <primary>Menu</primary> <secondary>Modificar</secondary>
+        </indexterm></title>
+
+      <para>Nota: le commandos trovate in le plus parte del applicationes (copiar, taliar, collar) non es monstrate in iste menu, ma es disponibile per le vias breve del systema. Per exemplo:</para>
+
+      <table colsep="1">
+        <title>Le vias breve copiar/taliar/collar</title>
+
+        <tgroup cols="3" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <colspec align="left" colnum="2"/>
+
+          <tbody>
+            <row>
+              <entry><guimenuitem>Copiar</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>C</keycap>
+                </keycombo></entry>
+
+              <entry>Copia le texto eligite al tabula del fragmento.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Secar</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>X</keycap>
+                </keycombo></entry>
+
+              <entry>Copia le texto seligite al tabula del fragmento e cancella le texto eligite.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Collar</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>V</keycap>
+                </keycombo></entry>
+
+              <entry>Colla le texto del tabula de fragmento al position del cursor.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>Le menu Modificar ipse contine le commandos sequente:</para>
+
+      <table colsep="1">
+        <title>Menu Modificar</title>
+
+        <tgroup cols="3" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <colspec align="left" colnum="2"/>
+
+          <tbody>
+            <row>
+              <entry><guimenuitem>Disfacer le ultime action</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Z</keycap>
+                </keycombo></entry>
+
+              <entry>Restaura le stato anterior al ultime modification. Isto commando non functiona un vice que le segmento modificate esseva validate.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Refacer le ultime action</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Y</keycap>
+                </keycombo></entry>
+
+              <entry>Restaura le stato anterior al ultime modification cancellate. Isto commando non functiona un vice que le segmento modificate esseva validate.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Reimplaciar con le concordantia</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>R</keycap>
+                </keycombo></entry>
+
+              <entry>Reimplacia le integre segmento final con le concordantia partial actualmente eligite (initialmente es eligite le prime concordantia).</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Inserer le concordantia</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>I</keycap>
+                </keycombo></entry>
+
+              <entry>Insere le concordantia partial actualmente eligite al position del cursor. Si esseva eligite parte del segmento, iste function superscribe le portion eligite.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Reimplaciar con le traduction automatic</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>M</keycap>
+                </keycombo></entry>
+
+              <entry>Reimplacia le segmento de destination con le traduction providite per servicio de traduction automatic eligite. Nulle action es empleate, si nulle servicio de traduction automatic esseva activate (vide le Menu &gt; Optiones sequente).</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Reimplaciar con le segmento fonte</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>R</keycap>
+                </keycombo></entry>
+
+              <entry>Reimplacia le segmento de destination complete con le segmento fonte.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Inserer le fonte</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>I</keycap>
+                </keycombo></entry>
+
+              <entry>Insere le segmento fonte al position del cursor.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Inserer le tags fonte mancante </guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>T</keycap>
+                </keycombo></entry>
+
+              <entry><indexterm class="singular">
+                  <primary>Tags</primary>: <secondary>inserer le tags fonte mancante</secondary>
+                </indexterm>Insere le tags fonte (si illos esseva perdite) al position del cursor.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Inserer le tag mancante sequente</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>T</keycap>
+                </keycombo></entry>
+
+              <entry><indexterm class="singular">
+                  <primary>Tags</primary> <secondary>Inserer le tag successive perdite</secondary>
+                </indexterm>Insere sol un tag (inter le unos perdite) al position del cursor.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Exportar le selection</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>C</keycap>
+                </keycombo></entry>
+
+              <entry>Exporta le selection currente in un file de texto pro processar lo. Si non era eligite ulle texto, le segmento fonte actual complete es scripte in iste file. Quando le usator claude <application>OmegaT</application>, iste file non es vacuate, pro esser simile al comportamento usual del tabula de fragmento. Le contentos exportate es copiate in le file <filename>selection.txt</filename> ubicate in le plica del files de preferentias del usator (vide <xref linkend="chapter.files.and.folders"/>).</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Crear un entrata del glossario</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>G</keycap>
+                </keycombo></entry>
+
+              <entry>Permitte al usator de crear un entrata in le file glossario scribibile.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Cercar in le projecto...</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>F</keycap>
+                </keycombo></entry>
+
+              <entry>Aperi un <link linkend="section.search.window">Fenestra de Recerca</link> nove.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Cercar e Replaciar...</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>K</keycap>
+                </keycombo></entry>
+
+              <entry>Aperi un nove <link linkend="section.searchreplace.window">fenestra de Cerca e Reimplacia</link>.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Commutar inter litteras majuscule e minuscule</guimenuitem></entry>
+
+              <entry><keycombo> <keycap>Shift</keycap> <keycap>F3</keycap> </keycombo> (vider texto)</entry>
+
+              <entry>Cambia le character del texto marcate in le segmento final al option seligite (Minuscule, Majuscule o Littera initial Majuscule). Usa Shift+F3 <indexterm>
+                  <primary>Vias breve</primary> <secondary>Selection del majuscule o minuscule - Shift+F3</secondary>
+                </indexterm>pro recyclar intra le tres alternativas. Si nulle texto es eligite, <application>OmegaT</application> elige le parola que contine le littera immediatemente al derecta del cursor.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Elige le concordantia</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>#N</keycap>
+                </keycombo></entry>
+
+              <entry>(#N es un cifra de 1 a 5) - Selige le concordantia partial #N monstrate in le quadro del concordantia pro reimplaciar o inserer lo al segmento. Le <xref linkend="match.viewer"/> describe le codifica del color in detalio.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Usar como traduction base</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Si il ha plure traductiones alternative disponibile pro le segmento active, tu pote etiquettar le alternativa seligite qual traduction base. Le entrata essera colorate gris, si il ha sol un traduction disponibile.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Crear un traduction alternativa</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Le mesme segmento pote, dependente del contexto, requirer traductiones diverse. Eliger iste commando del menu, si le traduction actual non es pertinente, e inserer le traduction alternative.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Remover le Traduction</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Cancella le traduction e pone le segmento como non rendite.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Fixar un traduction vacue</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Defini le traduction qual vacue. In le documento rendite, pro iste segmento apparera nihil. In le Modificar, le traduction es monstrate como &lt;VACUE&gt;</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Registrar un traduction identic</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>S</keycap>
+                </keycombo></entry>
+
+              <entry>Usar iste commando pro registrar le segmento rendite es identic al segmento fonte, etiam si &quot;Permitte traduction equal al fonte&quot; (in Optiones/Comportamento de Modification...) non es marcate.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section id="submenu.GoTo">
+      <title>Vader a<indexterm class="singular">
+          <primary>Menu</primary> <secondary>Vader a</secondary>
+        </indexterm></title>
+
+      <table colsep="1">
+        <title>Menu Vader a</title>
+
+        <tgroup cols="3" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <colspec align="left" colnum="2"/>
+
+          <tbody>
+            <row>
+              <entry><guimenuitem>Segmento sequente non rendite</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>U</keycap>
+                </keycombo></entry>
+
+              <entry>Move al segmento sequente que non es ancora registrate in le memoria de traduction del projecto.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Segmento rendite sequente</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>U</keycap>
+                </keycombo></entry>
+
+              <entry>Move al segmento sequente ja traducite, ignorante le segmentos non rendite.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Segmento sequente</guimenuitem></entry>
+
+              <entry><keycombo> <keycap>Ctrl</keycap> <keycap>N</keycap> </keycombo> o <keycap>Enter</keycap></entry>
+
+              <entry>Move al segmento sequente. Si le segmento currente es le ultime segmento in un file, illo move al prime segmento del file successive.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Segmento precedente</guimenuitem></entry>
+
+              <entry><keycombo> <keycap>Ctrl</keycap> <keycap>P</keycap> </keycombo> o <keycombo> <keycap>Ctrl</keycap> <keycap>Enter</keycap> </keycombo></entry>
+
+              <entry>Move al segmento precedente. Si le segmento currente es le prime segmento in un file, illo move al ultime segmento del file precedente.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Al segmento numero ...</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>J</keycap>
+                </keycombo></entry>
+
+              <entry>Le segmento es aperte quando su numero de segmento es inscribite.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Nota successive</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Le segmento successive con un nota, aperira.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Nota precedente</guimenuitem></entry>
+
+              <entry/>
+
+              <entry>Le segmento previe con un nota, aperira.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Fonte del concordantia seligite</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>M</keycap>
+                </keycombo></entry>
+
+              <entry>Move al segmento que corresponde al concordantia currente seligite in le quadro <guilabel>Concordantias partial</guilabel>.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Avantiar in le chronologia...</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>N</keycap>
+                </keycombo></entry>
+
+              <entry><application>OmegaT</application> rememora le segmentos executate. Con iste commando tu pote facer un passo avante al segmento, que tu ha previemente lassate per le commando <guimenuitem>Retroceder in chronologia</guimenuitem>...</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Retroceder in le chronologia...</guimenuitem></entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift</keycap>
+
+                  <keycap>P</keycap>
+                </keycombo></entry>
+
+              <entry>Con iste commando tu pote regreder un segmento a un vice, pro retornar al segmento currente per le commando sequente <guimenuitem>Avantiar in le chronologia...</guimenuitem></entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section id="submenu.View">
+      <title>Vider<indexterm class="singular">
+          <primary>Menu</primary> <secondary>Vider</secondary>
+        </indexterm></title>
+
+      <table colsep="1">
+        <title>Menu Vider</title>
+
+        <tgroup cols="2" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <tbody>
+            <row>
+              <entry><guimenuitem>Marcar le segmentos rendite</guimenuitem></entry>
+
+              <entry>Si iste option es activate, le segmentos rendite essera marcate in jalne.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Marcar le segmentos non rendite</guimenuitem></entry>
+
+              <entry>Si activate, le segmentos non rendite essera marcate in violetto.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Monstrar le segmentos fonte</guimenuitem></entry>
+
+              <entry>Si activate, le segmentos fonte essera monstrate e marcate in verde. Si non activate, le segmentos fonte non essera monstrate.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Marcar le segmentos non unic</guimenuitem></entry>
+
+              <entry>Si activate, le segmentos non unic essera marcate in gris pallide.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Marcar le segmentos con notas</guimenuitem></entry>
+
+              <entry>Si activate, le segmentos con notas essera marcate in cyano. Iste remarca ha prioritate sur Marca Segmentos Rendite e sur Marca Segmentos non Rendite.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Marcar le spatios non-frangibile</guimenuitem></entry>
+
+              <entry>Si activate, le spatios non  non-frangibile essera monstrate con un fundo gris.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Marcar le spatios blanc</guimenuitem></entry>
+
+              <entry>Si activate, le spatios blanc essera monstrate con un parve puncto.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Marcar le characteres de controlo del algorithmo bidirectional </guimenuitem></entry>
+
+              <entry>Iste option monstra le <ulink url="http://www.w3.org/International/questions/qa-bidi-controls">characteres de controlo bidirectional</ulink>
+              </entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Marcar le Segmentos Auto-Populate</guimenuitem></entry>
+
+              <entry>Si marcate, le fundo de omne segmentos de destination que ha essite auto-populate (per exemplo per TMXs ubicate in le plica /tm/auto) es monstrate in color. Le colores monstrate si es marcate le option &quot;Salva le stato auto-populate&quot; (in Optiones/Comportamento del Modifica). Usualmente le traductiones inserite per le plica auto es monstrate in orange. Altere traductiones, identificate specificamente in le memorias TMX, pote esser monstrate con colores differente. Pro le detalios technic, vider le <ulink url="http://sourceforge.net/p/omegat/feature-requests/963/">Requestas Pro Meliorationes</ulink></entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Information de Modification</guimenuitem></entry>
+
+              <entry>Prefixar le option Modification del Apparentia a <emphasis>Segmento currente</emphasis> monstrara le tempore e le autor del ultime cambio in le segmento currente. Prefixar illo a<emphasis> Omne le segmentos </emphasis>monstrara iste information pro tote le segmentos, e <emphasis>Necun</emphasis> rende non active iste option.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>Nota: le colores es personalisabile per le fenestra de dialogo <guimenu>Optiones / Colores personal...</guimenu>.</para>
+    </section>
+
+    <section id="submenu.Tools">
+      <title>Instrumentos<indexterm class="singular">
+          <primary>Menu</primary> <secondary>Instrumentos</secondary>
+        </indexterm></title>
+
+      <table colsep="1">
+        <title>Menu Instrumentos</title>
+
+        <indexterm class="singular">
+          <primary>Concordantias</primary> <secondary>Statistica del concordantias</secondary>
+        </indexterm>
+
+        <indexterm class="singular">
+          <primary>Projecto</primary> <secondary>Statistica del concordantia</secondary>
+        </indexterm>
+
+        <indexterm class="singular">
+          <primary>Projecto</primary> <secondary>Statistica</secondary>
+        </indexterm>
+
+        <tgroup cols="2" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <tbody>
+            <row>
+              <entry><guimenuitem>Validar le tags</guimenuitem></entry>
+
+              <entry><guimenu>Ctrl+Shift+V</guimenu>: controla pro tags mancante o displaciate in le files formattate. Monstrara un lista de segmentos con errores de tag e possibile contradictiones. Vide <link linkend="section.tag.validation">Validation del Tag</link> e <xref linkend="chapter.formatted.text"/>.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Valida tags pro le documento active</guimenuitem></entry>
+
+              <entry>Simile al precedente, sed sol pro le documento in traduction currente.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Statistica</guimenuitem></entry>
+
+              <entry>Aperi un nove fenestra e monstra le statistica del projecto, id es le totales del projecto e le totales pro omne file in le projecto.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Statistica del concordantias</guimenuitem></entry>
+
+              <entry>Monstra le Statisticas del Concordantia pro le projecto: le numero del repetitiones, concordantias exacte, concordantias partial e non-concordantias, pro le segmentos, le parolas e in characteres.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Statistica del concordantias per File</guimenuitem></entry>
+
+              <entry>Monstra le Statistica del Concordantia pro cata file del projecto: le numero del repetitiones, del concordantias exacte, del concordantias partial e del non-concordantias, pro le segmentos, pro le parolas e in le characteres.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Script...</guimenuitem></entry>
+
+              <entry>Aperi un cassa del dialogo ubi le location del scriptes pote esser preparate, e ubi le scriptes pote esser scripte, facite fluer e associate con un via breve (vider le <link linkend="appendix.Scripts.inOmegaT">Fenestra del scriptes</link>)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section id="submenu.Options">
+      <title><indexterm class="singular">
+          <primary>Menu</primary> <secondary>Optiones</secondary>
+        </indexterm>Optiones</title>
+
+      <table colsep="1">
+        <title>Menu Optiones</title>
+
+        <tgroup cols="2" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <tbody>
+            <row>
+              <entry><guimenuitem>Usar le clave &quot;Tab&quot; pro avantiar</guimenuitem></entry>
+
+              <entry>Pone le clave de validation del segmento a <guimenuitem>Tab</guimenuitem>, in vice del ordinari <guimenuitem>Enter</guimenuitem>. Iste option es utile pro alicun systemas de inscription de character: chinese, japonese o coreano.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Confirmar sempre le cessation</guimenuitem></entry>
+
+              <entry>Le programma videra le confirmation ante que clauder.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Traduction automatic</guimenuitem></entry>
+
+              <entry>Permitte te de activar/disactivar le applicationes de Traduction Automatic offerite. Quando active, <keycombo> <keycap>Ctrl</keycap> <keycap>M</keycap> </keycombo> inserera le suggestion in le parte de destination del segmento elaborate.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Glossario</guimenuitem></entry>
+
+              <entry>Le option <guimenuitem>Monstrar le Description Contextual pro le Glossarios TBX</guimenuitem> permitte de exhibir o occultar le informationes contextual con le terminos (que veni ex glossarios TBX locate in le plica <filename>glossary</filename> ) in le quadro Glossario.<para>Le 3 altere optiones es describite in le specific pagina reguardante <link linkend="section.TaaS.options">TaaS</link> (Terminologia 'as' Servicio).</para></entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Avisos (Tra&amp;nsTips)</guimenuitem></entry>
+
+              <entry>Permitte te de activar/disactivar le characteristica <emphasis>TransTips </emphasis>e fixar su option<emphasis> Concordantia Exacte.</emphasis> Con le <emphasis>TransTips</emphasis> activate, un clic dextre sur un parola marcate in le fonte, aperira un menu con le entratas del glossario pro le parola(s) que tu ha cliccate. Tu pote alora eliger tu traduction ideal pro inserer lo in le segmento rendite, al previe position del cursor o del texto previemente eligite. Con <emphasis>TransTips/Concordantia Exacte </emphasis> marcate, sol le parolas complete essera verificate e marcate, alteremente essera anque concordate partes del parolas.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Auto-completamento</guimenuitem></entry>
+
+              <entry><para>Cliccar sur <guimenuitem>Glossario...</guimenuitem> pro configurar le Vista del Glossario Auto-completamento.</para><para>Cliccar sur <guimenuitem>Auto-texto...</guimenuitem> pro configurar le optiones de Auto-texto e adder o remover entratas.</para><para>Cliccar sur <guimenuitem>Tabella del Character...</guimenuitem> pro poner le optiones del auto-completator del tabella del Character.</para></entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Typo de characteres...</guimenuitem></entry>
+
+              <entry>Monstra le fenestra de dialogo pro modificar le typo del character del texto monstrate. Le usatores de computatores vetule qui senti que le re-dimensionamento del fenestra es multo lente pote probar a  cambiar le typo de character. Vide le preparationes del typo del character in <link linkend="chapter.misc">Miscellanea</link></entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Colores Personal...</guimenuitem></entry>
+
+              <entry><para>Permitte eliger colores differente pro cata parte del Interfacie del Usator.</para>Le themas pre-definite pote esser fixate con un script. Un script prefixate denominate Cambia le Themas del Color supple un base &quot;obscur&quot;.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Filtros de File...</guimenuitem></entry>
+
+              <entry>Monstra le fenestra de dialogo <link linkend="chapter.file.filters">Filtros de file</link> pro configurar de tractamento e le analyse del file.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Segmentation...</guimenuitem></entry>
+
+              <entry>Aperi le fenestra de dialogo <link linkend="chapter.segmentation">Segmentation del fonte</link> pro configurar le segmentation del texto.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Controlo orthographic...</guimenuitem></entry>
+
+              <entry>Monstra le fenestra <link linkend="chapter.spellchecker">Preparation del corrector orthographic</link> pro installar, configurar e activar le corrector orthographic.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Comportamento de Modification...</guimenuitem></entry>
+
+              <entry>Monstra le fenestra de dialogo <link linkend="chapter.translation.editing">Modification traduction</link> pro configurar le comportamento del activitate de redaction del traduction.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Validation del tags...</guimenuitem></entry>
+
+              <entry>Pro le programmatores: permitte te de configurar le optiones de validation del tags pro verificar alsi le variabiles de programmation (%...) .</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Equipa... </guimenuitem></entry>
+
+              <entry>Insere ci tu nomine e illo essera alligate a omne le segmentos que tu rendera.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>TMXs externe...</guimenuitem></entry>
+
+              <entry>Permitte le usator de resolver como le tags in le files TMX estranie (id es non generate per OmegaT), debe esser tractate.<para>Le Concordantias partial pote esser ordinate in manieras differente (sol pro displicar; sin alcun influentia sur le statistica). Le Area de Apparentia del Concordantia permitte alsi cambiar quomodo essera monstrate le concordantias partial, per le uso de variabiles pre-configurate.</para></entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Vista...</guimenuitem></entry>
+
+              <entry>Contine optiones pro monstrar informationes re le textos e le modificationes in manieras differente.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Salvamento e Output...</guimenuitem></entry>
+
+              <entry>Permitte le usator de seliger le intervallo - in minutas e secundos - inter salvamentos automatic consecutive del projecto. Le minimo es 10 secundas.<para>Le quadrato de dialogo permitte alsi fixar commandos externe de Post-processo (que essera executate post le commando <guimenuitem>Crear le Documentos Traducite</guimenuitem></para></entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Connexion al Procurator (Proxy)...</guimenuitem></entry>
+
+              <entry>Insere tu nomine de usator e tu contrasigno, si tu usa un proxy pro acceder a tu projectos.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Restaurar le fenestra principal</guimenuitem></entry>
+
+              <entry>Restaura le componentes del fenestra principal de OmegaT a lor stato initial. Usa iste function quando tu ha levate, movite, o celate uno o plus componentes e tu non es plus habile a restaurar le mappa normal. Illo pote alsi esser usate quando le quadros non appare como provise, sequente un promotion de OmegaT.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Corrector del lingua </guimenuitem></entry>
+
+              <entry>Quando eligite, LanguageTool controla le traductiones, e sublinea le potential problemas in blau.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section id="submenu.Help">
+      <title>Adjuta<indexterm class="singular">
+          <primary>Menu</primary> <secondary>Adjuta</secondary>
+        </indexterm></title>
+
+      <table colsep="1">
+        <title>Menu de Adjuta</title>
+
+        <tgroup cols="2" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <tbody>
+            <row>
+              <entry><guimenuitem>Manual del Usator...</guimenuitem></entry>
+
+              <entry><keycap>F1:</keycap> Aperi le lector del Adjuta pro monstrar iste manual in un fenestra separate.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Circa...</guimenuitem></entry>
+
+              <entry>Monstra information de derecto de autor, creditos e licentia.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Ultime modificationes...</guimenuitem></entry>
+
+              <entry>Monstra le lista del nove functiones, meliorationes e reparationes de defecto pro cata nove edition.</entry>
+            </row>
+
+            <row>
+              <entry><guimenuitem>Registro del eventos...</guimenuitem></entry>
+
+              <entry>Monstra le file registro del eventos currente Le titulo del fenestra de dialogo reflecte le file actualmente usate (que depende de quante instantias de OmegaT es fluente insimul).</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+  </section>
+
+  <section id="keyboard.shortcuts">
+    <title>Vias breve de claviero<indexterm class="singular">
+        <primary>Vias breve de claviero</primary>
+      </indexterm></title>
+
+    <para>Le vias breve sequente es disponibile per le fenestra principal. Quando un altere fenestra es in prime plano, clicca sur le fenestra principal pro portar lo al prime plano o pulsa <keycap>Esc</keycap> pro clauder le altere fenestra.</para>
+
+    <para>Le vias breve es activate pulsante <keycap>Ctrl</keycap> e un littera. Alcun vias breve implica altere claves. Pro le legibilitate, le litteras ci es scribite majuscule.</para>
+
+    <para>Ctrl es usate sur le systemas operative Windows, UNIX e simile a UNIX, con le clavieros que ha un clave <keycap>Ctrl</keycap> o  <keycap>Control</keycap>. Le usatores de Mac usa in vice le <guimenuitem>cmd+key.</guimenuitem> Sur le clavieros Apple le clave <guimenuitem>cmd</guimenuitem> ha sur illo un etiquetta 'command' o un icone pomo.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Gestion del projecto </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <listitem>
+        <para>Modificar</para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <listitem>
+        <para>Mover se circa</para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <listitem>
+        <para>Fenestras de referentia</para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <listitem>
+        <para>Altere</para>
+      </listitem>
+    </itemizedlist>
+
+    <section>
+      <title id="keyboard.project.management"><indexterm class="singular">
+          <primary>Vias breve de claviero</primary> <secondary>Projecto</secondary>
+        </indexterm>Gestion del projecto <indexterm class="singular">
+          <primary>Projecto</primary> <secondary>Vias breve de gestion del Projecto</secondary>
+        </indexterm></title>
+
+      <table colsep="1">
+        <title>Vias breve de gestion del projecto</title>
+
+        <tgroup cols="3" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <colspec align="left" colnum="2"/>
+
+          <tbody>
+            <row>
+              <entry>Aperir le projecto</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>O</keycap>
+                </keycombo></entry>
+
+              <entry>Expone un fenestra de dialogo pro ubicar un projecto existente.</entry>
+            </row>
+
+            <row>
+              <entry>Salvar</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>S</keycap>
+                </keycombo></entry>
+
+              <entry>Salva le obra actual in le memoria de traduction interne (file project_save.tmx ubicate in le plica <filename>omegat</filename> del projecto).</entry>
+            </row>
+
+            <row>
+              <entry>Clauder le projecto</entry>
+
+              <entry><keycombo>
+                  <keycap>Shift</keycap>
+
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>W</keycap>
+                </keycombo></entry>
+
+              <entry>Claude le projecto actual.</entry>
+            </row>
+
+            <row>
+              <entry>Crear le documentos rendite</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>D</keycap>
+                </keycombo></entry>
+
+              <entry>Crea le documentos rendite in le plica /target del projecto e crea le files memoria de traduction (files tmx level1, level2 e omegat) in le plica radice del projecto.</entry>
+            </row>
+
+            <row>
+              <entry>Proprietates de projecto</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>E</keycap>
+                </keycombo></entry>
+
+              <entry>Monstra le optiones ordinari del projecto pro modificar los, si illo necesse.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section id="keyboard.editing">
+      <title><indexterm class="singular">
+          <primary>Vias breve de claviero</primary> <secondary>Modificar</secondary>
+        </indexterm>Modificar<indexterm class="singular">
+          <primary>Vias breve de claviero</primary> <secondary>Vade</secondary>
+        </indexterm></title>
+
+      <table colsep="1">
+        <title>Modificar le vias breve</title>
+
+        <tgroup cols="3" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <colspec align="left" colnum="2"/>
+
+          <tbody>
+            <row>
+              <entry>Disfacer le ultime action</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Z</keycap>
+                </keycombo></entry>
+
+              <entry>Disface le ultime actiones de modification in le segmento de destination currente</entry>
+            </row>
+
+            <row>
+              <entry>Refacer le ultime action</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Y</keycap>
+                </keycombo></entry>
+
+              <entry>Reface le ultime actiones de modification in le segmento de destination currente</entry>
+            </row>
+
+            <row>
+              <entry>Eliger le concordantia #N</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>#N</keycap>
+                </keycombo></entry>
+
+              <entry>#N es un numero de 1 a 5. Le via breve elige le concordantia #N monstrate in le Quadro de concordantia (le prime concordantia es eligite ordinarimente)</entry>
+            </row>
+
+            <row>
+              <entry>Reimplaciar con le concordantia</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>R</keycap>
+                </keycombo></entry>
+
+              <entry>Reimplacia le contentos del segmento de destination currente con le concordantia partial eligite (le prime concordantia es inserite ordinarimente)</entry>
+            </row>
+
+            <row>
+              <entry>Inserer le concordantia</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>I</keycap>
+                </keycombo></entry>
+
+              <entry>Insere le concordantia eligite al position del cursor in le segmento currente de destination (ordinarimente es inserite le prime concordantia)</entry>
+            </row>
+
+            <row>
+              <entry>Reimplaciar con le fonte</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift+R</keycap>
+                </keycombo></entry>
+
+              <entry>Reimplacia le contentos del segmento de destination con le contentos del texto fonte</entry>
+            </row>
+
+            <row>
+              <entry>Inserer le fonte</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift+I</keycap>
+                </keycombo></entry>
+
+              <entry>Insere le contentos del texto fonte in le segmento de destination al position del cursor</entry>
+            </row>
+
+            <row>
+              <entry>Inserer le tags fonte</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift+T</keycap>
+                </keycombo></entry>
+
+              <entry>Insere le tags fonte in le segmento de destination al position del cursor</entry>
+            </row>
+
+            <row>
+              <entry>Cercar le projecto</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>F</keycap>
+                </keycombo></entry>
+
+              <entry>Monstra un fenestra de dialogo pro ducer recercas in le projecto</entry>
+            </row>
+
+            <row>
+              <entry>Reimplaciar con le traduction automatic</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>M</keycap>
+                </keycombo></entry>
+
+              <entry>Reimplacia le segmento final con le traductor automatic del segmento fonte. Nulle action, si le applicationes de traduction automatic es inactive (vide Menu &gt; Optiones &gt; Traduction Automatic)</entry>
+            </row>
+
+            <row>
+              <entry>Exportar le selection</entry>
+
+              <entry><keycombo>
+                  <keycap>Shift</keycap>
+
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>C</keycap>
+                </keycombo></entry>
+
+              <entry>Exporta le selection currente in un file de texto pro processar lo.</entry>
+            </row>
+
+            <row>
+              <entry>Crear un entrata del glossario</entry>
+
+              <entry><keycombo>
+                  <keycap>Shift</keycap>
+
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>G</keycap>
+                </keycombo></entry>
+
+              <entry>Permitte al usator de crear un entrata in le file glossario scribibile.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section id="keyboard.moving.around">
+      <title><indexterm class="singular">
+          <primary>Vias breve de claviero</primary> <secondary>Vade</secondary>
+        </indexterm>Mover se circa</title>
+
+      <table colsep="1">
+        <title>Mover se circa le vias breve</title>
+
+        <tgroup cols="3" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <colspec align="left" colnum="2"/>
+
+          <tbody>
+            <row>
+              <entry>Segmento sequente non rendite</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>U</keycap>
+                </keycombo></entry>
+
+              <entry>Move le campo pro editar al prime segmento sequente que non es ancora registrate in le memoria de traduction del projecto</entry>
+            </row>
+
+            <row>
+              <entry>Segmento sequente</entry>
+
+              <entry><keycombo> <keycap>Ctrl</keycap> <keycap>N</keycap> </keycombo>, <keycap>Enter</keycap> o <keycap>Return</keycap></entry>
+
+              <entry>Move le campo pro editar al segmento sequente</entry>
+            </row>
+
+            <row>
+              <entry>Segmento precedente</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>P</keycap>
+                </keycombo></entry>
+
+              <entry>Move le campo pro editar al previe segmento</entry>
+            </row>
+
+            <row>
+              <entry>Al segmento numero ...</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>J</keycap>
+                </keycombo></entry>
+
+              <entry>Move al segmento con le numero inserite</entry>
+            </row>
+
+            <row>
+              <entry>Retroceder in le chronologia...</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift+P</keycap>
+                </keycombo></entry>
+
+              <entry>Move un segmento a retro in historia</entry>
+            </row>
+
+            <row>
+              <entry>Avantiar in le chronologia...</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>Shift+N</keycap>
+                </keycombo></entry>
+
+              <entry>Move un segmento in avante in historia</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section id="keyboard.other">
+      <title><indexterm class="singular">
+          <primary>Vias breve de claviero</primary> <secondary>Altere</secondary>
+        </indexterm>Altere</title>
+
+      <table colsep="1">
+        <title>Vias breve varie</title>
+
+        <tgroup cols="3" colsep="1">
+          <colspec align="left" colnum="1"/>
+
+          <colspec align="left" colnum="2"/>
+
+          <tbody>
+            <row>
+              <entry>Lista del Files del Projecto</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>L</keycap>
+                </keycombo></entry>
+
+              <entry>Monstra le Lista del Files del Projecto</entry>
+            </row>
+
+            <row>
+              <entry>Validar le tags</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>T</keycap>
+                </keycombo></entry>
+
+              <entry>Aperi le Fenestra Validation del tag.</entry>
+            </row>
+
+            <row>
+              <entry>Exportar le selection</entry>
+
+              <entry><keycombo>
+                  <keycap>Shift</keycap>
+
+                  <keycap>Ctrl+C</keycap>
+                </keycombo></entry>
+
+              <entry>Exporta le selection currente o le fonte currente, si nulle texto esseva eligite. Le texto es exportate in un file de texto simple.</entry>
+            </row>
+
+            <row>
+              <entry>Cercar le projecto</entry>
+
+              <entry><keycombo>
+                  <keycap>Ctrl</keycap>
+
+                  <keycap>F</keycap>
+                </keycombo></entry>
+
+              <entry>Aperi un nove Fenestra de Recerca.</entry>
+            </row>
+
+            <row>
+              <entry>Files de adjuta</entry>
+
+              <entry><keycap>F1</keycap></entry>
+
+              <entry>Monstra le files de adjuta de <application>OmegaT</application> in un fenestra separate</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+  </section>
+</chapter>
